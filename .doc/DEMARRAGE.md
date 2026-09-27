@@ -38,7 +38,7 @@
 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Sujet 01, Q3 — Âge minimum** : A. 18 ans pour tous (recommandé) ; B. 16 ans pour les clients, 18 pour les prestataires ; C. choisis pour moi.
+1. **Sujet 01, Q4 — Qui est administrateur ?** A. Raphael seul pour commencer, il pourra en nommer d'autres (recommandé) ; B. plusieurs dès le début ; C. choisis pour moi.
 
 ## Prochaine action
 Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets validée. Sujet 01 « Comptes et connexion » en cours (questions prévues, une par une : façon de s'inscrire, client ou prestataire à l'inscription, âge minimum, qui est administrateur). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
@@ -93,6 +93,7 @@ Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D 
 | 27/09 | 6 | Liste des 16 sujets de règles | Validée | SUIVI_REGLES_METIER.md |
 | 27/09 | 6 | Sujet 01 : comment s'inscrire ? | Mail + mot de passe, lien de vérification | RM-COMPTES.md |
 | 27/09 | 6 | Sujet 01 : client ou prestataire à l'inscription ? | Pareil pour tous, puis « Proposer mes services » | RM-COMPTES.md |
+| 27/09 | 6 | Sujet 01 : âge minimum | 16 ans, accord des parents avant 18 ans | RM-COMPTES.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin

@@ -21,8 +21,15 @@ Tout le monde s'inscrit de la même façon. Un compte neuf est un compte **clien
 - Exemple 2 : Julie s'inscrit, clique « Proposer mes services », choisit « Femme de ménage », « Nantes », SIRET 912 345 678 00014 → elle devient prestataire, et peut toujours réserver un plombier comme cliente.
 **Pourquoi :** une seule porte d'entrée, plus simple ; et un client peut devenir prestataire plus tard sans rien recréer.
 
+## Âge minimum : 16 ans, avec l'accord des parents avant 18 ans (décidé le 27/09/2026)
+On peut créer un compte dès 16 ans. Entre 16 et 18 ans, il faut l'accord écrit des parents, vérifié avant que le compte puisse réserver ou publier. Moins de 16 ans : inscription refusée.
+- Exemple 1 : Lucas, 16 ans, veut proposer du soutien scolaire → il s'inscrit, envoie l'accord signé de ses parents ; tant que l'accord n'est pas vérifié, il ne peut rien publier.
+- Exemple 2 : Emma, 15 ans → inscription refusée.
+- Exemple 3 : Mme Dupont, 54 ans → aucune démarche en plus.
+**Pourquoi :** un mineur ne peut pas signer seul un contrat ni payer seul ; devenir auto-entrepreneur avant 18 ans demande une autorisation des parents.
+
 ## Questions ouvertes
-- Âge minimum.
+- Comment l'accord des parents est envoyé et vérifié (document déposé puis contrôlé par l'administrateur ?) — à trancher avec le sujet 16 « Administration ».
 - Qui est administrateur.
 
 ## Références
