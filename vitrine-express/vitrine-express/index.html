@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vitrine Express — Votre site internet en quelques clics</title>
+<meta name="description" content="Choisissez un modèle, personnalisez-le en quelques minutes et obtenez votre site internet. Paiement unique, sans abonnement.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="barre">
+  <div class="conteneur">
+    <a class="marque" href="index.html"><span class="point"></span><span class="nom-service">Vitrine Express</span></a>
+    <a class="bouton" href="#modeles">Choisir un modèle</a>
+  </div>
+</div>
+
+<main>
+  <section class="accroche">
+    <div class="conteneur">
+      <h1>Votre site internet, <em>prêt en 5 minutes.</em></h1>
+      <p>Choisissez parmi 10 modèles professionnels et 50 styles, ajoutez vos infos et vos photos, et voyez votre site se construire en direct. Paiement unique, le site est à vous.</p>
+      <a class="bouton" href="#modeles">Voir les modèles</a>
+      <div class="pastilles">
+        <span class="pastille">✓ Sans abonnement</span>
+        <span class="pastille">✓ S'affiche bien sur téléphone</span>
+        <span class="pastille">✓ Essai gratuit, sans inscription</span>
+        <span class="pastille">✓ Le site vous appartient</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <div class="conteneur">
+      <h2>Comment ça marche ?</h2>
+      <p class="sous-titre">Trois étapes, aucune connaissance technique.</p>
+      <div class="etapes">
+        <div class="etape">
+          <div class="num">ÉTAPE 1</div>
+          <h3>Choisissez un modèle</h3>
+          <p>10 mises en page différentes, chacune en 5 styles. Changez à tout moment sans perdre vos textes.</p>
+        </div>
+        <div class="etape">
+          <div class="num">ÉTAPE 2</div>
+          <h3>Personnalisez-le</h3>
+          <p>Choisissez votre métier pour tout pré-remplir, puis modifiez textes, photos, couleurs et disposition en direct.</p>
+        </div>
+        <div class="etape">
+          <div class="num">ÉTAPE 3</div>
+          <h3>On le met en ligne</h3>
+          <p>Il vous plaît ? Envoyez votre demande, et votre site est publié avec votre propre adresse internet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc" id="modeles">
+    <div class="conteneur">
+      <h2>Les modèles</h2>
+      <p class="sous-titre">10 modèles, 5 styles chacun. Touchez une pastille de couleur pour voir un autre style, puis choisissez celui qui vous plaît.</p>
+      <div class="grille-modeles grands" id="grille-modeles"></div>
+    </div>
+  </section>
+
+  <section class="bloc">
+    <div class="conteneur">
+      <div class="offre">
+        <div>
+          <h2>Un prix unique, pour toujours</h2>
+          <p style="margin: 10px 0 18px">Pas d'abonnement mensuel. Vous payez une fois, le site est à vous.</p>
+          <div class="prix" id="prix">99 €</div>
+          <p>+ environ 12 € par an pour votre nom de domaine (ex. : mon-commerce.fr)</p>
+        </div>
+        <ul>
+          <li>Site complet : accueil, tarifs, photos, horaires, plan</li>
+          <li>Adapté aux téléphones et ordinateurs</li>
+          <li>Bouton « Appeler » en un clic</li>
+          <li>Plan Google Maps intégré</li>
+          <li>Mise en ligne incluse</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="pied">
+  <div class="conteneur">© <span id="annee"></span> <span class="nom-service">Vitrine Express</span> · <span id="ville"></span></div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/metiers.js"></script>
+<script src="js/modeles.js"></script>
+<script src="js/generateur.js"></script>
+<script>
+  // Remplit les infos de config.js
+  document.querySelectorAll(".nom-service").forEach(el => el.textContent = CONFIG.nomService);
+  document.getElementById("prix").textContent = CONFIG.prix;
+  document.getElementById("ville").textContent = CONFIG.ville;
+  document.getElementById("annee").textContent = new Date().getFullYear();
+
+  const grille = document.getElementById("grille-modeles");
+  const LARGEUR_SITE = 1280;   // les aperçus montrent le site comme sur un ordinateur, en réduit
+
+  // Met l'aperçu à la bonne taille selon la largeur de la carte
+  function ajusterApercu(carte) {
+    const zone = carte.querySelector(".apercu-mini");
+    const iframe = zone.querySelector("iframe");
+    const echelle = zone.clientWidth / LARGEUR_SITE;
+    iframe.style.transform = `scale(${echelle})`;
+    iframe.style.height = (zone.clientHeight / echelle) + "px";
+  }
+
+  function montrer(carte, idVariante) {
+    const id = carte.dataset.id;
+    carte.dataset.variante = idVariante;
+    carte.querySelector("iframe").srcdoc = genererSite(id, donneesExemple(id, idVariante));
+    carte.querySelectorAll(".pastille-style").forEach(p => p.classList.toggle("actif", p.dataset.variante === idVariante));
+    const v = MODELES[id].variantes.find(x => x.id === idVariante);
+    carte.querySelector(".nom-style").textContent = "Style : " + v.nom;
+    carte.querySelector(".bouton").href = `editeur.html?modele=${id}&variante=${idVariante}`;
+  }
+
+  // Les aperçus ne se chargent que quand la carte devient visible (plus rapide)
+  const observateur = new IntersectionObserver(entrees => {
+    entrees.forEach(e => {
+      if (!e.isIntersecting) return;
+      montrer(e.target, MODELES[e.target.dataset.id].variantes[0].id);
+      observateur.unobserve(e.target);
+    });
+  }, { rootMargin: "400px" });
+
+  Object.entries(MODELES).forEach(([id, m], i) => {
+    const carte = document.createElement("article");
+    carte.className = "carte-modele";
+    carte.dataset.id = id;
+    carte.innerHTML = `
+      <div class="apercu-mini"><iframe title="Aperçu du modèle ${m.nom}" tabindex="-1"></iframe></div>
+      <div class="corps">
+        <div class="ligne-titre"><span class="numero-modele">${String(i + 1).padStart(2, "0")}</span><h3>${m.icone} ${m.nom}</h3></div>
+        <p>${m.description}</p>
+        <div class="styles">
+          ${m.variantes.map(v => `<button type="button" class="pastille-style" data-variante="${v.id}" title="${v.nom}" aria-label="Style ${v.nom}"
+              style="background:linear-gradient(135deg, ${v.couleur} 50%, ${v.fond} 50%)"></button>`).join("")}
+          <span class="nom-style"></span>
+        </div>
+        <a class="bouton" href="editeur.html?modele=${id}">Choisir ce modèle</a>
+      </div>`;
+    grille.appendChild(carte);
+    carte.querySelectorAll(".pastille-style").forEach(p => p.addEventListener("click", () => montrer(carte, p.dataset.variante)));
+    ajusterApercu(carte);
+    observateur.observe(carte);
+  });
+  window.addEventListener("resize", () => grille.querySelectorAll(".carte-modele").forEach(ajusterApercu));
+</script>
+</body>
+</html>

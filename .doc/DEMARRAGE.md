@@ -2,7 +2,7 @@
 
 > Tenu à jour par Claude après CHAQUE réponse du développeur. C'est ce fichier qui permet de reprendre dans une nouvelle conversation.
 > État général : **En cours** (devient « Démarrage terminé » à la fin de la phase 8)
-> Dernière mise à jour : 27/09/2026 19:30
+> Dernière mise à jour : 27/09/2026 19:45
 
 ## Analyse du dossier (faite le 27/09/2026)
 - Cas : **A — dossier vide** (seul `methode-projet.md` est présent)
@@ -38,13 +38,10 @@
 3. Présentation → `.doc/PRESENTATION.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Phase 3, Q5 — Ce que rafals ne fera PAS** (plusieurs choix) : pas de comptabilité complète ; pas d'application mobile à installer ; pas de clients professionnels (entreprises) au départ ; rafals ne garde jamais l'argent des clients.
-2. **Phase 3, Q6a — Pays et langue** : France seulement, en français (recommandé) / France + pays francophones / choisis pour moi.
-3. **Phase 3, Q6b — Appareils** : site adapté ordinateur et téléphone (recommandé) / ordinateur seulement / choisis pour moi.
-4. **Phase 3, Q7 — Outil existant** : aucun / oui, un tableur ou un logiciel (préciser) / choisis pour moi.
+1. **Emplacement de vitrine-express** — Le dossier n'est ni dans `C:\Projets\`, ni dans `C:\`, ni dans le dossier personnel, le Bureau ou les Documents. Où se trouve-t-il (chemin complet, ou adresse GitHub) ?
 
 ## Prochaine action
-Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 4 répondues. Questions 5, 6a, 6b, 7 posées. Ensuite : relire la fiche complète avec Raphael, cocher la phase 3, passer à la phase 4 (vocabulaire) en proposant des objets supplémentaires.
+Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répondues (Raphael a relu les réponses 5 à 7). Reste : trouver vitrine-express, le lire sans rien modifier, le décrire à Raphael et lui demander ce qu'on garde ; compléter les contraintes légales ; une 3e exclusion (la méthode en demande au moins 3). Ensuite : relire la fiche complète avec Raphael, cocher la phase 3, passer à la phase 4 (vocabulaire) en proposant des objets supplémentaires.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -72,12 +69,17 @@ Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 4 répo
 | 27/09 | 3 | Qui utilise rafals ? | Client particulier, Prestataire, Futur auto-entrepreneur, Administrateur | PRESENTATION.md |
 | 27/09 | 3 | Grands objets | Liste de départ acceptée ; d'autres viendront, Claude aide à les trouver | PRESENTATION.md |
 | 27/09 | 3 | Actions principales | Acceptées ; le paiement en ligne n'est pas obligatoire, le prestataire choisit son mode de paiement par prestation | PRESENTATION.md |
+| 27/09 | 3 | Ce que rafals ne fera pas | Pas de comptabilité complète ; rafals ne garde jamais l'argent. (Appli mobile et clients pros restent possibles) | PRESENTATION.md |
+| 27/09 | 3 | Pays et langue | France (DOM compris), français | PRESENTATION.md |
+| 27/09 | 3 | Appareils | Ordinateur et téléphone | PRESENTATION.md |
+| 27/09 | 3 | Outil existant | vitrine-express (création de sites vitrines à partir de modèles), base de travail seulement, loin d'être fini | PRESENTATION.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
 - (aucune pour l'instant)
 
 ## Points à revoir plus tard
+- Raphael a refusé que Claude liste le contenu de `C:\Projets\` (27/09/2026) : ne pas parcourir ses dossiers sans qu'il donne le chemin.
 - Objets supplémentaires à proposer à Raphael (phase 4) : ex. Avis, Abonnement, Devis, Métier (catégorie), Zone d'intervention, Disponibilité, Mode de paiement.
 - Facturation électronique (France) : réception obligatoire pour toutes les entreprises depuis le 01/09/2026, émission obligatoire pour les micro-entreprises au 01/09/2027. Les factures doivent passer par une plateforme agréée par l'État : rafals devra probablement s'y connecter plutôt que l'être. À aborder en question 6 (contraintes) et en phase 5.
 - Déclarations URSSAF automatiques : nécessitent une habilitation (« tierce déclaration »). À aborder en question 6.

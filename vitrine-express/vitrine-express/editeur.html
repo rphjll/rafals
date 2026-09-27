@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personnaliser mon site — Vitrine Express</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="barre">
+  <div class="conteneur" style="width: calc(100% - 32px)">
+    <a class="marque" href="index.html"><span class="point"></span><span class="nom-service">Vitrine Express</span></a>
+    <a class="bouton secondaire" href="index.html#modeles">← Tous les modèles</a>
+  </div>
+</div>
+
+<!-- Barre visible seulement en mode admin (editeur.html?admin=TON_CODE) -->
+<div class="barre-admin" id="barre-admin" hidden>
+  <strong>🔧 Mode admin</strong>
+  <label class="bouton secondaire petit">
+    📂 Ouvrir un projet client
+    <input type="file" id="importer" accept=".json,application/json" hidden>
+  </label>
+  <button type="button" class="bouton secondaire petit" id="exporter-projet">💾 Sauvegarder le projet</button>
+  <button type="button" class="bouton petit" id="telecharger-site">⬇️ Télécharger le site final (index.html)</button>
+</div>
+
+<div class="editeur">
+  <!-- ===== Formulaire ===== -->
+  <aside class="panneau">
+    <h2>Personnalisez votre site</h2>
+    <p class="aide">Tout se met à jour en direct à droite. Vos modifications sont gardées sur cet appareil.</p>
+
+    <div class="groupe">
+      <label for="modele">Modèle</label>
+      <select id="modele"></select>
+    </div>
+    <div class="groupe">
+      <label>Style du modèle</label>
+      <div class="variantes" id="variantes"></div>
+    </div>
+
+    <!-- Les 3 onglets -->
+    <div class="onglets" role="tablist">
+      <button type="button" class="onglet actif" data-onglet="contenu" role="tab">✏️ Textes</button>
+      <button type="button" class="onglet" data-onglet="style" role="tab">🎨 Style</button>
+      <button type="button" class="onglet" data-onglet="disposition" role="tab">↕️ Disposition</button>
+    </div>
+
+    <!-- ===== Onglet 1 : Textes & photos ===== -->
+    <div class="page-onglet" data-page="contenu">
+      <div class="groupe groupe-metier">
+        <label for="metier">Votre métier</label>
+        <div class="choix-metier" id="choix-metier">
+          <span class="icone-metier" id="icone-metier">🔎</span>
+          <input type="text" id="metier" autocomplete="off" spellcheck="false"
+                 placeholder="Tapez votre métier (ex. : boulanger, coiffeur…)"
+                 role="combobox" aria-expanded="false" aria-controls="liste-metiers" aria-autocomplete="list">
+          <button type="button" class="ouvrir-metier" id="ouvrir-metier" aria-label="Voir tous les métiers" tabindex="-1">▾</button>
+          <ul class="liste-metiers" id="liste-metiers" role="listbox" hidden></ul>
+        </div>
+        <small>Tapez les premières lettres, ou cliquez pour voir la liste. Les textes d'exemple se remplissent tout seuls, et vous pouvez tout modifier ensuite.</small>
+      </div>
+
+      <hr class="separateur">
+      <div class="titre-section">Votre commerce</div>
+      <div class="groupe">
+        <label for="nom">Nom du commerce</label>
+        <input type="text" id="nom" data-champ="nom">
+      </div>
+      <div class="groupe">
+        <label for="slogan">Phrase d'accroche</label>
+        <input type="text" id="slogan" data-champ="slogan">
+        <small>Une phrase courte qui dit ce que vous faites.</small>
+      </div>
+      <div class="groupe">
+        <label for="description">Présentation</label>
+        <textarea id="description" data-champ="description" rows="5"></textarea>
+      </div>
+
+      <hr class="separateur">
+      <div class="titre-section">Contact</div>
+      <div class="groupe">
+        <label for="telephone">Téléphone</label>
+        <input type="tel" id="telephone" data-champ="telephone">
+      </div>
+      <div class="groupe">
+        <label for="email">E-mail (facultatif)</label>
+        <input type="email" id="email" data-champ="email">
+      </div>
+      <div class="groupe">
+        <label for="adresse">Adresse</label>
+        <input type="text" id="adresse" data-champ="adresse">
+        <small>Sert aussi à afficher le plan Google Maps.</small>
+      </div>
+
+      <hr class="separateur">
+      <div class="titre-section">Horaires & tarifs</div>
+      <div class="groupe">
+        <label for="horaires">Horaires</label>
+        <textarea id="horaires" data-champ="horaires" rows="5"></textarea>
+        <small>Une ligne par jour, sous la forme : <b>Jour : heures</b></small>
+      </div>
+      <div class="groupe">
+        <label for="services">Prestations et prix</label>
+        <textarea id="services" data-champ="services" rows="6"></textarea>
+        <small>Une ligne par prestation, sous la forme : <b>Nom | Prix</b></small>
+      </div>
+
+      <hr class="separateur">
+      <div class="titre-section">Noms des rubriques</div>
+      <p class="aide" style="margin-bottom:12px">Le nom change à la fois le titre sur le site et l'onglet du menu en haut. Laissez vide pour garder le nom proposé.</p>
+      <div id="champs-titres"></div>
+
+      <hr class="separateur">
+      <div class="titre-section">Photos</div>
+      <div class="groupe">
+        <label for="photoHero">Grande photo d'en-tête</label>
+        <input type="file" id="photoHero" accept="image/*">
+        <div class="vignettes" id="vignette-hero"></div>
+        <button type="button" class="lien-texte" id="retirer-hero" hidden>Retirer la photo</button>
+      </div>
+      <div class="groupe">
+        <label for="galerie">Photos de la galerie (jusqu'à 6)</label>
+        <input type="file" id="galerie" accept="image/*" multiple>
+        <div class="vignettes" id="vignettes-galerie"></div>
+        <button type="button" class="lien-texte" id="retirer-galerie" hidden>Retirer les photos</button>
+      </div>
+
+      <hr class="separateur">
+      <button type="button" class="lien-texte" id="reinitialiser">↺ Remettre les textes d'exemple du métier</button>
+    </div>
+
+    <!-- ===== Onglet 2 : Style ===== -->
+    <div class="page-onglet" data-page="style" hidden>
+      <div class="groupe">
+        <label>✨ Ambiances prêtes</label>
+        <small style="margin:0 0 8px">Un clic pour tout changer d'un coup. Vous pouvez ajuster ensuite.</small>
+        <div class="ambiances" id="ambiances"></div>
+      </div>
+
+      <hr class="separateur">
+      <div class="groupe">
+        <label for="couleur">Couleur principale</label>
+        <small style="margin:0 0 8px">Boutons, prix, petits traits décoratifs.</small>
+        <div class="couleurs" id="couleurs-rapides">
+          <input type="color" id="couleur" data-champ="couleur" title="Choisir une autre couleur">
+        </div>
+      </div>
+
+      <div class="groupe">
+        <label>Couleur du fond</label>
+        <div class="choix-fond" data-option="fondStyle" id="choix-fond"></div>
+      </div>
+
+      <div class="groupe">
+        <label>En-tête (le grand bandeau du haut)</label>
+        <div class="choix" data-option="entete">
+          <button type="button" data-valeur="auto">Du modèle</button>
+          <button type="button" data-valeur="degrade">Dégradé</button>
+          <button type="button" data-valeur="uni">Couleur unie</button>
+          <button type="button" data-valeur="pale">Couleur pâle</button>
+        </div>
+        <small>S'il y a une photo d'en-tête, c'est la photo qui s'affiche.</small>
+      </div>
+
+      <hr class="separateur">
+      <div class="groupe">
+        <label>Style d'écriture</label>
+        <div class="choix-ecriture" data-option="ecriture" id="choix-ecriture"></div>
+      </div>
+
+      <div class="groupe">
+        <label>Taille du texte</label>
+        <div class="choix" data-option="tailleTexte">
+          <button type="button" data-valeur="normal">Normale</button>
+          <button type="button" data-valeur="grand">Plus grande</button>
+        </div>
+      </div>
+
+      <div class="groupe">
+        <label>Forme des boutons et des photos</label>
+        <div class="choix" data-option="boutons">
+          <button type="button" data-valeur="arrondis"><span class="forme" style="border-radius:999px"></span> Ronds</button>
+          <button type="button" data-valeur="doux"><span class="forme" style="border-radius:4px"></span> Arrondis</button>
+          <button type="button" data-valeur="carres"><span class="forme" style="border-radius:0"></span> Carrés</button>
+        </div>
+      </div>
+
+      <hr class="separateur">
+      <button type="button" class="lien-texte" id="reinitialiser-style">↺ Revenir au style d'origine du modèle</button>
+    </div>
+
+    <!-- ===== Onglet 3 : Disposition ===== -->
+    <div class="page-onglet" data-page="disposition" hidden>
+      <div class="groupe">
+        <label>Position des textes</label>
+        <div class="choix" data-option="alignement">
+          <button type="button" data-valeur="gauche">⬅️ À gauche</button>
+          <button type="button" data-valeur="centre">↔️ Au centre</button>
+        </div>
+      </div>
+
+      <div class="groupe">
+        <label>Hauteur de l'en-tête</label>
+        <div class="choix" data-option="hauteur">
+          <button type="button" data-valeur="grand">Grand</button>
+          <button type="button" data-valeur="moyen">Moyen</button>
+          <button type="button" data-valeur="compact">Petit</button>
+        </div>
+      </div>
+
+      <hr class="separateur">
+      <div class="groupe">
+        <label>Placer les éléments à la main</label>
+        <button type="button" class="bouton grand-bouton" data-bascule-main>✋ Déplacer et agrandir les éléments</button>
+        <div class="mini-aide">
+          <p>Touchez un élément du site (un titre, un texte, une photo…), puis utilisez les gros boutons pour l'<b>agrandir</b> ou le <b>déplacer</b>.</p>
+        </div>
+      </div>
+
+      <div class="groupe" id="zone-cachees" hidden>
+        <label>Parties cachées</label>
+        <div class="cachees" id="liste-cachees"></div>
+      </div>
+
+      <hr class="separateur">
+      <button type="button" class="lien-texte" id="tout-remettre">↺ Remettre tous les éléments à leur place d'origine</button>
+    </div>
+  </aside>
+
+  <!-- ===== Aperçu ===== -->
+  <section class="zone-apercu">
+    <div class="outils-apercu">
+      <div class="bascule">
+        <button type="button" class="actif" data-vue="ordi">💻 Ordinateur</button>
+        <button type="button" data-vue="mobile">📱 Téléphone</button>
+      </div>
+      <div class="actions-apercu">
+        <button type="button" class="bouton secondaire" id="annuler" hidden title="Annuler la dernière modification">↶ Annuler</button>
+        <button type="button" class="bouton secondaire" id="bouton-main" data-bascule-main>✋ Déplacer / agrandir</button>
+        <button type="button" class="bouton secondaire" id="plein-ecran">Voir en grand</button>
+        <button type="button" class="bouton" id="je-le-veux">Je veux ce site</button>
+      </div>
+    </div>
+    <!-- Panneau du mode "Déplacer / agrandir" -->
+    <div class="panneau-main" id="panneau-main" hidden>
+
+      <!-- Rien n'est choisi -->
+      <div class="pm-attente" id="pm-attente">
+        <div class="pm-grand">👆 Touchez sur le site ce que vous voulez changer</div>
+        <div class="pm-petit">Un titre, un texte, les boutons, les photos, les prix…</div>
+        <button type="button" class="bouton petit vert" data-bascule-main>✅ J'ai fini</button>
+
+        <div class="pm-ordre">
+          <div class="pm-label">Ordre des rubriques</div>
+          <div class="pm-petit" style="order:0">✋ Faites glisser une rubrique vers le haut ou le bas pour changer l'ordre.</div>
+          <ol class="liste-ordre" id="liste-ordre"></ol>
+        </div>
+      </div>
+
+      <!-- Un élément est choisi -->
+      <div class="pm-outils" id="pm-outils" hidden>
+        <div class="pm-titre">✏️ Vous modifiez : <b id="pm-nom">le grand titre</b></div>
+
+        <div class="pm-groupes">
+          <div class="pm-groupe">
+            <span class="pm-label">Taille</span>
+            <div class="pm-boutons">
+              <button type="button" data-cmd="plus-petit">➖ Plus petit</button>
+              <button type="button" data-cmd="plus-grand">➕ Plus grand</button>
+            </div>
+          </div>
+
+          <div class="pm-groupe">
+            <span class="pm-label">Déplacer</span>
+            <div class="pm-fleches">
+              <button type="button" data-cmd="gauche" title="Vers la gauche">⬅️</button>
+              <button type="button" data-cmd="haut" title="Vers le haut">⬆️</button>
+              <button type="button" data-cmd="bas" title="Vers le bas">⬇️</button>
+              <button type="button" data-cmd="droite" title="Vers la droite">➡️</button>
+            </div>
+          </div>
+
+          <div class="pm-groupe" id="pm-partie">
+            <span class="pm-label">La rubrique<span> « <b id="pm-nom-partie"></b> »</span></span>
+            <div class="pm-boutons">
+              <button type="button" data-cmd="cacher">🙈 Cacher cette rubrique</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pm-bas">
+          <button type="button" data-cmd="renommer" id="pm-renommer">✏️ Changer ce titre</button>
+          <button type="button" data-cmd="remettre">↺ Remettre comme avant</button>
+          <button type="button" data-cmd="autre" class="discret">Choisir autre chose</button>
+          <button type="button" class="bouton petit vert" data-bascule-main>✅ J'ai fini</button>
+        </div>
+        <div class="pm-astuce">Astuce : vous pouvez aussi faire glisser l'élément avec la souris ou le doigt.</div>
+      </div>
+      <!-- Rubriques cachées : toujours visibles ici pour pouvoir les réafficher -->
+      <div class="pm-cachees" id="pm-cachees" hidden>
+        <span class="pm-label">Rubriques cachées</span>
+        <div class="pm-boutons" id="pm-liste-cachees"></div>
+      </div>
+    </div>
+    <div class="cadre" id="cadre">
+      <iframe id="apercu" title="Aperçu de votre site"></iframe>
+    </div>
+  </section>
+</div>
+
+<!-- ===== Fenêtre "Je veux ce site" ===== -->
+<div class="fenetre" id="fenetre">
+  <div class="boite">
+
+    <!-- Étape 1 : le client laisse ses coordonnées -->
+    <form id="form-demande">
+      <h3>Votre site vous plaît ? 🎉</h3>
+      <p>Laissez-nous vos coordonnées : votre site personnalisé nous est envoyé et on vous recontacte pour la mise en ligne.</p>
+      <div class="groupe">
+        <label for="d-nom">Votre nom</label>
+        <input type="text" id="d-nom" required>
+      </div>
+      <div class="groupe">
+        <label for="d-tel">Téléphone</label>
+        <input type="tel" id="d-tel" required>
+      </div>
+      <div class="groupe">
+        <label for="d-email">E-mail</label>
+        <input type="email" id="d-email">
+      </div>
+      <div class="groupe">
+        <label for="d-message">Un message ? (facultatif)</label>
+        <textarea id="d-message" rows="3" placeholder="Ex. : je voudrais l'adresse mon-salon.fr"></textarea>
+      </div>
+      <div class="actions">
+        <button type="submit" class="bouton" id="bouton-envoyer">Envoyer ma demande</button>
+        <button type="button" class="bouton secondaire" data-fermer>Annuler</button>
+      </div>
+    </form>
+
+    <!-- Étape 2a : envoyé automatiquement -->
+    <div id="vue-envoye" hidden>
+      <h3>Demande envoyée ! ✅</h3>
+      <p>Merci ! Nous avons bien reçu votre site et vos coordonnées. On vous recontacte très vite.</p>
+      <div class="actions"><button type="button" class="bouton" data-fermer>Fermer</button></div>
+    </div>
+
+    <!-- Étape 2b : envoi par e-mail (si l'envoi automatique n'est pas possible) -->
+    <div id="vue-mail" hidden>
+      <h3>Dernière étape ✉️</h3>
+      <p><b>1.</b> Téléchargez votre projet (il contient vos textes et vos photos).<br>
+         <b>2.</b> Envoyez-le-nous par e-mail, <b>en pièce jointe</b>.</p>
+      <div class="actions">
+        <button type="button" class="bouton" id="telecharger-projet">1. Télécharger mon projet</button>
+        <a class="bouton secondaire" id="lien-mail" href="#">2. Ouvrir l'e-mail</a>
+      </div>
+      <p style="margin-top:14px;font-size:.85rem">Adresse : <b class="email-contact"></b></p>
+      <div class="actions"><button type="button" class="lien-texte" data-fermer>Fermer</button></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Formulaire caché utilisé par Netlify Forms (envoi automatique quand le site est sur Netlify) -->
+<form name="demande-site" data-netlify="true" netlify-honeypot="champ-robot" enctype="multipart/form-data" hidden>
+  <input type="hidden" name="form-name" value="demande-site">
+  <input name="champ-robot">
+  <input name="nom-client"><input name="telephone"><input name="email">
+  <input name="commerce"><input name="modele"><textarea name="message"></textarea>
+  <input type="file" name="projet">
+</form>
+
+<script src="js/config.js"></script>
+<script src="js/metiers.js"></script>
+<script src="js/modeles.js"></script>
+<script src="js/generateur.js"></script>
+<script src="js/editeur.js"></script>
+</body>
+</html>

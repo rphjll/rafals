@@ -42,14 +42,17 @@ Raphael (27/09/2026) : « ca n'est qu'une liste de depart, il devra y en avoir d
 9. Le prestataire est aidé pour ses déclarations.
 
 ## Ce que l'application ne fera PAS
-- <À remplir>
-- <À remplir>
-- <À remplir>
+- Pas de comptabilité complète : pas de bilan, ni de déclaration de TVA de société. Seulement les factures et les déclarations simples d'auto-entrepreneur.
+- rafals ne garde jamais l'argent des clients : le paiement en ligne passe par un service de paiement spécialisé (ex. Stripe) et va directement au prestataire. Pas d'agrément Banque de France à obtenir.
+
+Restent possibles (proposés comme exclusions le 27/09/2026, non retenus) : une application mobile à installer ; des clients professionnels (entreprises).
 
 ## Contraintes connues
-- Loi : <À remplir>
-- Pays / langues : <À remplir>
-- Appareils : <À remplir>
+- Loi : <À compléter (données personnelles, facture électronique, paiement)>
+- Pays / langues : France seulement (DOM compris), en français.
+- Appareils : ordinateur et téléphone — un seul site qui s'adapte à l'écran.
 
 ## Outil existant
-<À remplir : aucun / tableur / ancien logiciel ; ce qu'on garde, ce qu'on jette.>
+**vitrine-express** : un outil commencé par Raphael pour créer des sites vitrines de prestataires à partir de modèles.
+Raphael (27/09/2026) : « ca ne doit etre utilisé que comme une base de travail pas un outil fini, loin de la ».
+Emplacement : <à préciser>. Ce qu'on garde / ce qu'on jette : <à décider après lecture du dossier>.
