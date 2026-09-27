@@ -1,6 +1,6 @@
 # Règle métier — Comptes et connexion (sujet 01)
 
-> Phase 6 du démarrage. Règles « décidé le » : validées par Raphael. Règles « proposé par Claude » : à valider à la relecture.
+> Validé et formalisé le 27/09/2026 (phase 6 du démarrage).
 
 ## Objectif
 Comment on crée un compte sur rafals, comment on se connecte, et qui a quels droits (client, prestataire, administrateur).
@@ -34,13 +34,13 @@ Au départ, Raphael est le seul administrateur. Il pourra donner ce rôle à d'a
 - Exemple 2 : en 2027, Raphael nomme son ami Tom administrateur → Tom voit l'écran « Administration » ; Raphael peut le lui retirer à tout moment.
 **Cas limite tranché :** il reste toujours au moins un administrateur ; on ne peut pas retirer le rôle au dernier.
 
-## Mot de passe (proposé par Claude, à valider à la relecture)
+## Mot de passe (proposé par Claude, validé par Raphael le 27/09/2026)
 - Au moins 10 caractères. Ex. `soleil` est refusé ; `MaisonBleue44` est accepté.
 - Mot de passe oublié : on tape son adresse mail, rafals envoie un lien valable 1 heure pour en choisir un nouveau. Ex. lien envoyé à 14 h 00, cliqué à 15 h 10 → expiré, il faut en redemander un.
 - Après 5 mauvais mots de passe de suite, la connexion est bloquée 15 minutes. **Pourquoi :** empêche un pirate d'essayer des milliers de mots de passe.
 - Le mot de passe n'est jamais stocké en clair : même l'administrateur ne peut pas le lire.
 
-## Rester connecté (proposé par Claude, à valider à la relecture)
+## Rester connecté (proposé par Claude, validé par Raphael le 27/09/2026)
 On reste connecté 30 jours sur son appareil, sauf si on clique « Se déconnecter ». Ex. Julie se connecte sur son téléphone le 01/10 ; le 20/10 elle ouvre rafals → toujours connectée.
 
 ## Qui peut faire quoi

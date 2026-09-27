@@ -38,10 +38,10 @@
 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Relecture de RM-COMPTES.md** (dont les règles proposées par Claude : mot de passe de 10 caractères, lien d'1 h, blocage 15 min après 5 erreurs, connecté 30 jours) : A. valide ; B. à corriger.
+1. **Sujet 02, Q1 — Plusieurs métiers ?** A. oui, plusieurs métiers par prestataire (recommandé) ; B. un seul ; C. choisis pour moi.
 
 ## Prochaine action
-Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets validée. Sujet 01 « Comptes et connexion » en cours (questions prévues, une par une : façon de s'inscrire, client ou prestataire à l'inscription, âge minimum, qui est administrateur). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
+Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets validée. Sujet 01 validé. Sujet 02 « Prestataires » en cours (questions prévues, une par une : plusieurs métiers, zone d'intervention, vérification du SIRET, validation par l'administrateur avant d'être visible). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -95,6 +95,7 @@ Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D 
 | 27/09 | 6 | Sujet 01 : client ou prestataire à l'inscription ? | Pareil pour tous, puis « Proposer mes services » | RM-COMPTES.md |
 | 27/09 | 6 | Sujet 01 : âge minimum | 16 ans, accord des parents avant 18 ans | RM-COMPTES.md |
 | 27/09 | 6 | Sujet 01 : qui est administrateur ? | Raphael seul au début, peut en nommer d'autres (« quelques potes », pas sûr) | RM-COMPTES.md |
+| 27/09 | 6 | Sujet 01 Comptes : relecture | Validé (y compris les règles de sécurité proposées) | RM-COMPTES.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin

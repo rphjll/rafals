@@ -14,8 +14,8 @@
 ## Avancement (liste validée par Raphael le 27/09/2026)
 | # | Niveau | Sujet | Ce que ça couvre | Statut | Fichier produit |
 |---|---|---|---|---|---|
-| 01 | 1 — Fondations | Comptes et connexion | Inscription, connexion, mot de passe oublié, un seul compte client + prestataire, rôle administrateur | en cours (27/09/2026) | `regles-metier/RM-COMPTES.md` |
-| 02 | 2 — Objets communs | Prestataires | Profil, SIRET, « en création », visibilité, désactivation | à faire | — |
+| 01 | 1 — Fondations | Comptes et connexion | Inscription, connexion, mot de passe oublié, un seul compte client + prestataire, rôle administrateur | validé et formalisé (27/09/2026) | `regles-metier/RM-COMPTES.md` |
+| 02 | 2 — Objets communs | Prestataires | Profil, SIRET, « en création », visibilité, désactivation | en cours (27/09/2026) | `regles-metier/RM-PRESTATAIRES.md` |
 | 03 | 2 — Objets communs | Clients et données personnelles | Profil du particulier, ce qu'on garde, effacement (RGPD) | à faire | — |
 | 04 | 2 — Objets communs | Métiers et catégories | La grande liste, les dossiers, la recherche par lettres | à faire | — |
 | 05 | 3 — Cœur | Annonces | Contenu, prix, ville, modes de paiement (espèces seulement sans SIRET) | à faire | — |
