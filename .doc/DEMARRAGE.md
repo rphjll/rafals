@@ -38,7 +38,7 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.3 Futur auto-entrepreneur** (pas comprise deux fois : Raphael ne sait pas ce qu'est un SIRET → expliqué le 27/09/2026, question reposée) : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
+1. **Q4.3 Futur auto-entrepreneur** (pas comprise trois fois ; Raphael demande « explique moi comme si j avais 6 ans » → reposée avec l image du club de foot) : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
 2. **Q4.4 Objets à ajouter** (pas comprise) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
