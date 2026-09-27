@@ -2,11 +2,11 @@
 
 > Tenu à jour par Claude après CHAQUE réponse du développeur. C'est ce fichier qui permet de reprendre dans une nouvelle conversation.
 > État général : **En cours** (devient « Démarrage terminé » à la fin de la phase 8)
-> Dernière mise à jour : 27/09/2026 18:45
+> Dernière mise à jour : 27/09/2026 19:00
 
 ## Analyse du dossier (faite le 27/09/2026)
 - Cas : **A — dossier vide** (seul `methode-projet.md` est présent)
-- Git : non suivi au départ → `git init` + première sauvegarde locale faits le 27/09/2026. Pas encore relié à GitHub (phase 2).
+- Git : non suivi au départ → `git init` + première sauvegarde locale faits le 27/09/2026. Relié le 27/09/2026 au dépôt privé https://github.com/rphjll/rafals (branche `main`, anciennement `master`).
 - Identité git : déjà réglée sur le poste (nom « Raphael », adresse raphael.jallu@gmail.com).
 - Documents trouvés : `methode-projet.md` (la méthode elle-même). Aucun cahier des charges.
 - Code trouvé : aucun.
@@ -26,7 +26,7 @@
 
 ## Phases
 - [x] 1. Le poste (terminée le 27/09/2026)
-- [ ] 2. Le projet (git, GitHub, arborescence)
+- [x] 2. Le projet (git, GitHub, arborescence) (terminée le 27/09/2026)
 - [ ] 3. Présentation → `.doc/PRESENTATION.md`
 - [ ] 4. Vocabulaire → `GLOSSAIRE-METIER.md`
 - [ ] 5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md`
@@ -35,13 +35,16 @@
 - [ ] 8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
 
 ## Phase en cours
-2. Le projet (git, GitHub, arborescence)
+3. Présentation → `.doc/PRESENTATION.md`
 
 ## Questions en attente (posées, pas encore répondues)
 - (aucune)
 
 ## Prochaine action
-Raphael crée le dépôt vide **privé** `rafals` sur github.com (compte `rphjll`, sans README, sans .gitignore, sans licence). Ensuite Claude : renomme la branche locale `master` en `main` (nom par défaut de GitHub), relie le dossier (`git remote add origin https://github.com/rphjll/rafals.git`), envoie (`git push -u origin main`, une fenêtre de connexion GitHub s'ouvre la première fois), puis crée l'arborescence vide de `.doc/` (méthode § 2.2).
+Phase 3 : poser les 7 questions de la fiche de présentation (méthode § 3.1, modèle B), par séries de 3 ou 4, et remplir `.doc/PRESENTATION.md` au fil des réponses.
+
+## Arborescence créée (phase 2)
+`.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
 
 ## Guide donné pour le BIOS (HP EliteBook 840 G2, BIOS M71 01.18, processeur Intel i5-5300U)
 1. Sauvegarder son travail et redémarrer le PC.
