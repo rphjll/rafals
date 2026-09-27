@@ -38,7 +38,7 @@
 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Sujet 02, Q4 — Où a lieu le service ?** A. le prestataire choisit par annonce : chez le client, chez lui, ou les deux (recommandé) ; B. toujours chez le client ; C. choisis pour moi.
+1. **Sujet 02, Q5 — Visible tout de suite ?** A. visible tout de suite, l'administrateur peut bloquer ensuite (recommandé) ; B. visible seulement après validation de l'administrateur ; C. choisis pour moi.
 
 ## Prochaine action
 Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets validée. Sujet 01 validé. Sujet 02 « Prestataires » en cours (questions prévues, une par une : plusieurs métiers, zone d'intervention, vérification du SIRET, validation par l'administrateur avant d'être visible). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
@@ -99,6 +99,7 @@ Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D 
 | 27/09 | 6 | Sujet 02 : plusieurs métiers ? | Oui : un métier principal + des secondaires ; en métier secondaire, affiché après les spécialistes ; classement par note | RM-PRESTATAIRES.md |
 | 27/09 | 6 | Sujet 02 : zone d'intervention | Ville + distance en km (vol d'oiseau, choix de Claude pour le cas limite) | RM-PRESTATAIRES.md |
 | 27/09 | 6 | Sujet 02 : vérifier le SIRET ? | Oui, automatiquement (répertoire de l'État) | RM-PRESTATAIRES.md |
+| 27/09 | 6 | Sujet 02 : lieu du service | Au choix par annonce : chez le client, chez moi, les deux | RM-PRESTATAIRES.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin

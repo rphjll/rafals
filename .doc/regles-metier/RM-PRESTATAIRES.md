@@ -32,9 +32,14 @@ Quand un prestataire écrit son SIRET, rafals le cherche aussitôt dans le répe
 **Pourquoi :** empêcher un faux SIRET d'ouvrir le paiement par carte.
 **Cas limite tranché :** si le répertoire de l'État ne répond pas (panne), le SIRET est mis « en attente » et revérifié automatiquement plus tard ; en attendant, espèces seulement.
 
+## Lieu du service : au choix, pour chaque annonce (décidé le 27/09/2026)
+Pour chaque annonce, le prestataire indique où a lieu le service : « chez le client », « chez moi / dans mon local » (avec l'adresse), ou « les deux ».
+- Exemple 1 : Karim, « Plomberie, dépannage fuite » → chez le client (la zone d'intervention s'applique).
+- Exemple 2 : Léa, coiffeuse à Mérignac : « Coupe femme — au salon, 12 rue des Lilas » et « Coupe à domicile — chez le client, +10 € ».
+**Cas limite tranché :** pour un service « chez moi », la zone d'intervention sert seulement à la recherche (les clients dans le rayon voient l'annonce) ; le client se déplace.
+
 ## Questions ouvertes
-- Le client vient-il chez le prestataire (salon de coiffure) ou le prestataire se déplace-t-il ?
-- Validation par l'administrateur avant d'être visible.
+- Un nouveau prestataire est-il visible tout de suite, ou après validation par l'administrateur ?
 
 ## Références
 - `GLOSSAIRE-METIER.md`, `RM-COMPTES.md`
