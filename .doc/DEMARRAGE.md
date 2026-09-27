@@ -2,7 +2,7 @@
 
 > Tenu à jour par Claude après CHAQUE réponse du développeur. C'est ce fichier qui permet de reprendre dans une nouvelle conversation.
 > État général : **En cours** (devient « Démarrage terminé » à la fin de la phase 8)
-> Dernière mise à jour : 27/09/2026 18:20
+> Dernière mise à jour : 27/09/2026 18:45
 
 ## Analyse du dossier (faite le 27/09/2026)
 - Cas : **A — dossier vide** (seul `methode-projet.md` est présent)
@@ -13,17 +13,19 @@
 - Poste (Windows 10 Home, version 19045) :
   - git 2.55.0 : installé
   - VS Code + extension Claude Code : installés (la conversation tourne dedans)
-  - Docker : **absent** (ni la commande, ni Docker Desktop)
+  - Docker : **fonctionne** (vérifié le 27/09/2026 : Docker 29.8.0, `docker run hello-world` affiche « Hello from Docker! »)
   - WSL 2 : **installé le 27/09/2026** (`wsl --install --no-distribution --web-download` ; la version Microsoft Store avait échoué avec « Défaillance irrémédiable ») → PC redémarré, vérifié par `wsl --status` (version par défaut 2, WSL 2.7.14)
   - Virtualisation du processeur : **activée** (vérifié le 27/09/2026 par commande : `VirtualizationFirmwareEnabled = True`)
   - Mémoire vive : 7,9 Go (suffisant, mais juste pour Docker)
   - Disque C : 19,3 Go libres au départ, **16,4 Go** après WSL (Docker Desktop prendra environ 3 à 4 Go, puis 2 à 3 Go pour les conteneurs du projet)
   - Docker Desktop 4.91.0 : **installé le 27/09/2026** par winget. Disque C : **12,9 Go** libres après installation.
   - Comptes Windows : Raphael travaille sous `rapha` (compte **standard**, pas administrateur). Les administrateurs sont `Administrateur` et `lione`. L'installation de Docker a donc été validée avec `lione`, et c'est `lione` qui a été mis dans le groupe `docker-users` : `rapha` n'y est pas → → `rapha` **ajouté à `docker-users`** le 27/09/2026 (vérifié : le groupe contient `lione` et `rapha`).
+  - Disque C après redémarrage : **44,3 Go** libres (Windows a libéré de la place au redémarrage, sans doute les fichiers temporaires des installations)
+  - Outil `gh` (GitHub en ligne de commande) : absent, pas nécessaire (le dépôt se crée sur le site)
   - winget 1.29 (installateur de logiciels de Windows) : présent
 
 ## Phases
-- [ ] 1. Le poste
+- [x] 1. Le poste (terminée le 27/09/2026)
 - [ ] 2. Le projet (git, GitHub, arborescence)
 - [ ] 3. Présentation → `.doc/PRESENTATION.md`
 - [ ] 4. Vocabulaire → `GLOSSAIRE-METIER.md`
@@ -33,13 +35,13 @@
 - [ ] 8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
 
 ## Phase en cours
-1. Le poste
+2. Le projet (git, GitHub, arborescence)
 
 ## Questions en attente (posées, pas encore répondues)
-- (aucune)
+1. **Visibilité du dépôt GitHub `rafals`** — Choix : A. Privé : toi seul le vois (recommandé) ; B. Public : tout le monde peut lire le code ; C. Choisis pour moi.
 
 ## Prochaine action
-Raphael redémarre le PC. À la reprise : ouvrir Docker Desktop (accepter les conditions, passer la création de compte), vérifier `docker --version` et `docker run hello-world`. Phase 1 alors terminée → phase 2 (dépôt GitHub `rphjll/rafals`).
+Raphael crée le dépôt vide `rafals` sur github.com (compte `rphjll`, sans README, sans .gitignore, sans licence). Ensuite Claude : renomme la branche locale `master` en `main` (nom par défaut de GitHub), relie le dossier (`git remote add origin https://github.com/rphjll/rafals.git`), envoie (`git push -u origin main`, une fenêtre de connexion GitHub s'ouvre la première fois), puis crée l'arborescence vide de `.doc/` (méthode § 2.2).
 
 ## Guide donné pour le BIOS (HP EliteBook 840 G2, BIOS M71 01.18, processeur Intel i5-5300U)
 1. Sauvegarder son travail et redémarrer le PC.
