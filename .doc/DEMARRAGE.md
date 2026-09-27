@@ -38,7 +38,7 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.5 Visible sans SIRET ?** (question de Raphael : « ce n'est pas obligatoire d'avoir la liscence pour que les clients le voient si ? ») A. Invisible tant qu'il n'a pas de SIRET (recommandé : travailler sans être déclaré est interdit) ; B. Visible sans réservation possible ; C. Choisis pour moi. (Raphael a demandé pourquoi un SIRET est obligatoire pour vendre : expliqué le 27/09/2026, question reposée)
+1. **Q4.6 Que veut dire « publication » ?** Choix : A. une annonce de service (ex. « Plomberie, Pessac, 40 €/h ») = une Prestation ; B. un message de type réseau social (photos de chantiers, nouvelles) ; C. les deux.
 2. **Q4.4 Objets à ajouter** (pas comprise) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
@@ -80,12 +80,14 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 | 27/09 | 4 | Client et prestataire : un seul compte ? | Oui, un seul compte | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Société avec plusieurs salariés : combien d'agendas ? | Un seul agenda par prestataire (pour commencer) | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Futur auto-entrepreneur qui reçoit son SIRET | Il garde le même compte | GLOSSAIRE-METIER.md |
+| 27/09 | 4 | Prestataire sans SIRET visible ? | Il peut publier, paiement en espèces seulement ; rafals lui conseille le SIRET. Avec SIRET : carte sur le site ou espèces, au choix par publication. ⚠️ à vérifier juridiquement | GLOSSAIRE-METIER.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
 - (aucune pour l'instant)
 
 ## Points à revoir plus tard
+- ⚠️ **Juridique, avant mise en ligne** : prestataires sans SIRET payés en espèces via rafals → risque de travail non déclaré et de responsabilité de la plateforme. Faire vérifier par un avocat ou un expert-comptable.
 - Idée à proposer plus tard : les particuliers peuvent employer quelqu'un sans SIRET pour le ménage, le jardinage ou le petit bricolage, en le payant avec le CESU (chèque emploi service universel) ; rafals pourrait un jour proposer cette formule.
 - Ajouter « SIRET » au glossaire (numéro d'identité d'une entreprise, 14 chiffres), Raphael ne connaissait pas le mot.
 - Façon de poser les questions : 3 questions sur 4 non comprises le 27/09/2026 → une seule question à la fois, phrases courtes, notion expliquée juste avant.
