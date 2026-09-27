@@ -38,10 +38,10 @@
 5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md`
 
 ## Questions en attente (posées, pas encore répondues)
-- (aucune)
+1. **Hébergeur** : A. OVHcloud, France, ≈ 7,79 €/mois (recommandé) ; B. Hetzner, Allemagne, ≈ 5-6 €/mois ; C. Choisis pour moi. Rien à payer maintenant.
 
 ## Prochaine action
-Phase 5 : lire l'étape 4 de la méthode (hébergeur, puis outils) ; expliquer ce qu'est un hébergeur avec une image simple ; poser les questions une par une (explication dans le texte de la question). Tenir compte de : France, données personnelles en Europe, sous-domaines `*.rafals.fr` pour les sites vitrines, paiement en ligne avec commission, reprise possible de vitrine-express.
+Phase 5 : `technique/HEBERGEMENT.md` rédigé (prix vérifiés le 27/09/2026 ; rafals.fr semble libre, rafals.com pris). Question hébergeur posée. Ensuite : réservation du nom rafals.fr (quand ?), puis les outils (proposer ceux de la méthode § 4.3), puis ports, puis remplir « Outils » de CLAUDE.md + REGLES-PROJET.md. Tenir compte de : France, données personnelles en Europe, sous-domaines `*.rafals.fr` pour les sites vitrines, paiement en ligne avec commission, reprise possible de vitrine-express.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
