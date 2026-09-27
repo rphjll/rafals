@@ -38,10 +38,13 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-- (aucune)
+1. **Q4.1 Client et prestataire, un seul compte ?** A. Un seul compte peut être client ET prestataire (recommandé) ; B. Deux comptes séparés ; C. Choisis pour moi.
+2. **Q4.2 Société à plusieurs intervenants ?** A. Oui, chaque intervenant a son agenda ; B. Non, un prestataire = un agenda (recommandé pour commencer) ; C. Choisis pour moi.
+3. **Q4.3 Futur auto-entrepreneur** : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
+4. **Q4.4 Objets à ajouter** (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
-Phase 4 : lire le modèle C de la méthode, proposer une définition pour chacun des 8 objets de départ (avec exemples), puis proposer des objets supplémentaires (voir « Points à revoir »). Écrire dans `GLOSSAIRE-METIER.md` au fil des réponses.
+Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 objets (à valider). Questions 4.1 à 4.4 posées. Ensuite : écrire les réponses, définir les nouveaux objets, faire relire le glossaire complet, cocher la phase 4.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
