@@ -38,7 +38,7 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.3 Futur auto-entrepreneur** (pas comprise ; Raphael pense qu'un indépendant n'a pas de SIRET : corrigé par Claude, un micro-entrepreneur déclaré en a un) : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
+1. **Q4.3 Futur auto-entrepreneur** (pas comprise deux fois : Raphael ne sait pas ce qu'est un SIRET → expliqué le 27/09/2026, question reposée) : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
 2. **Q4.4 Objets à ajouter** (pas comprise) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
@@ -85,6 +85,7 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 - (aucune pour l'instant)
 
 ## Points à revoir plus tard
+- Ajouter « SIRET » au glossaire (numéro d'identité d'une entreprise, 14 chiffres), Raphael ne connaissait pas le mot.
 - Façon de poser les questions : 3 questions sur 4 non comprises le 27/09/2026 → une seule question à la fois, phrases courtes, notion expliquée juste avant.
 - Raphael a refusé que Claude liste le contenu de `C:\Projets\` (27/09/2026) : ne pas parcourir ses dossiers sans qu'il donne le chemin.
 - Objets supplémentaires à proposer à Raphael (phase 4) : ex. Avis, Abonnement, Devis, Métier (catégorie), Zone d'intervention, Disponibilité, Mode de paiement.
