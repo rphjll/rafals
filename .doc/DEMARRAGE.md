@@ -28,20 +28,20 @@
 - [x] 1. Le poste (terminée le 27/09/2026)
 - [x] 2. Le projet (git, GitHub, arborescence) (terminée le 27/09/2026)
 - [x] 3. Présentation → `.doc/PRESENTATION.md` (terminée le 27/09/2026)
-- [ ] 4. Vocabulaire → `GLOSSAIRE-METIER.md`
+- [x] 4. Vocabulaire → `GLOSSAIRE-METIER.md` (terminée le 27/09/2026)
 - [ ] 5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md`
 - [ ] 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 - [ ] 7. Charte et conventions d'écran → `CHARTE-VISUELLE.md`, `CONVENTIONS-IHM.md`
 - [ ] 8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
 
 ## Phase en cours
-4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
+5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Relecture du glossaire** (14 mots) : A. il me convient, phase 5 ; B. je veux corriger.
+- (aucune)
 
 ## Prochaine action
-Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 objets (à valider). Questions 4.1 à 4.4 posées. Ensuite : écrire les réponses, définir les nouveaux objets, faire relire le glossaire complet, cocher la phase 4.
+Phase 5 : lire l'étape 4 de la méthode (hébergeur, puis outils) ; expliquer ce qu'est un hébergeur avec une image simple ; poser les questions une par une (explication dans le texte de la question). Tenir compte de : France, données personnelles en Europe, sous-domaines `*.rafals.fr` pour les sites vitrines, paiement en ligne avec commission, reprise possible de vitrine-express.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -86,6 +86,7 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 | 27/09 | 4 | Avis des clients ? | Oui, seulement après un vrai rendez-vous | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Devis sur rafals ? | Oui, accepté en un clic, transformé en facture | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Comment rafals gagne de l'argent ? | Commission sur les paiements par carte (sûr) ; site vitrine : abonnement ou prix unique « à vie », à décider ensemble | GLOSSAIRE-METIER.md |
+| 27/09 | 4 | Glossaire validé ? | Oui (14 mots) | GLOSSAIRE-METIER.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin

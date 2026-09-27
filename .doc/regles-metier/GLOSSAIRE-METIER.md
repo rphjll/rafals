@@ -2,7 +2,7 @@
 
 Un mot = une définition = un seul sens dans tout le projet. Ce fichier ne décrit pas les tables : un objet peut s'étendre sur plusieurs tables.
 
-> Phase 4 du démarrage : définitions proposées par Claude et tranchées une à une par Raphael le 27/09/2026. Relecture d'ensemble en attente.
+> Phase 4 du démarrage : définitions proposées par Claude et tranchées une à une par Raphael le 27/09/2026. Relu et validé par Raphael le 27/09/2026.
 
 ## Les grands objets
 Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative, Métier, Catégorie de métier, Avis, Devis, Commission.
