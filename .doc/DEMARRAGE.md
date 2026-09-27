@@ -14,7 +14,7 @@
   - git 2.55.0 : installé
   - VS Code + extension Claude Code : installés (la conversation tourne dedans)
   - Docker : **absent** (ni la commande, ni Docker Desktop)
-  - WSL 2 : **absent**
+  - WSL 2 : **installé le 27/09/2026** (`wsl --install --no-distribution --web-download` ; la version Microsoft Store avait échoué avec « Défaillance irrémédiable ») → redémarrage du PC nécessaire
   - Virtualisation du processeur : **activée** (vérifié le 27/09/2026 par commande : `VirtualizationFirmwareEnabled = True`)
   - Mémoire vive : 7,9 Go (suffisant, mais juste pour Docker)
   - Disque C : 19,3 Go libres (juste : Docker + WSL prennent 5 à 10 Go)
@@ -36,7 +36,7 @@
 - (aucune)
 
 ## Prochaine action
-WSL 2 en cours d'installation (lancé par Claude, fenêtre administrateur). Raphael redémarre le PC ensuite. À la reprise : vérifier WSL par `wsl --status`, puis guider l'installation de Docker Desktop (docker.com/products/docker-desktop), puis vérifier `docker --version`.
+WSL 2 installé, en attente du redémarrage du PC par Raphael. À la reprise : vérifier WSL par `wsl --status`, puis guider l'installation de Docker Desktop (docker.com/products/docker-desktop), puis vérifier `docker --version`.
 
 ## Guide donné pour le BIOS (HP EliteBook 840 G2, BIOS M71 01.18, processeur Intel i5-5300U)
 1. Sauvegarder son travail et redémarrer le PC.
