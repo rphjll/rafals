@@ -38,7 +38,7 @@
 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Sujet 02, Q1 — Plusieurs métiers ?** A. oui, plusieurs métiers par prestataire (recommandé) ; B. un seul ; C. choisis pour moi.
+1. **Sujet 02, Q2 — Zone d'intervention** : A. une ville + une distance en km (recommandé) ; B. une liste de villes ; C. choisis pour moi. (Avant : faire confirmer l'interprétation « plus bas que les plombiers » = après les électriciens de métier principal.)
 
 ## Prochaine action
 Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets validée. Sujet 01 validé. Sujet 02 « Prestataires » en cours (questions prévues, une par une : plusieurs métiers, zone d'intervention, vérification du SIRET, validation par l'administrateur avant d'être visible). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
@@ -96,6 +96,7 @@ Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D 
 | 27/09 | 6 | Sujet 01 : âge minimum | 16 ans, accord des parents avant 18 ans | RM-COMPTES.md |
 | 27/09 | 6 | Sujet 01 : qui est administrateur ? | Raphael seul au début, peut en nommer d'autres (« quelques potes », pas sûr) | RM-COMPTES.md |
 | 27/09 | 6 | Sujet 01 Comptes : relecture | Validé (y compris les règles de sécurité proposées) | RM-COMPTES.md |
+| 27/09 | 6 | Sujet 02 : plusieurs métiers ? | Oui : un métier principal + des secondaires ; en métier secondaire, affiché après les spécialistes ; classement par note | RM-PRESTATAIRES.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
