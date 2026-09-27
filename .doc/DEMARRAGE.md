@@ -38,10 +38,9 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.1 Client et prestataire, un seul compte ?** A. Un seul compte peut être client ET prestataire (recommandé) ; B. Deux comptes séparés ; C. Choisis pour moi.
-2. **Q4.2 Société à plusieurs intervenants ?** A. Oui, chaque intervenant a son agenda ; B. Non, un prestataire = un agenda (recommandé pour commencer) ; C. Choisis pour moi.
-3. **Q4.3 Futur auto-entrepreneur** : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
-4. **Q4.4 Objets à ajouter** (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
+1. **Q4.2 Société à plusieurs intervenants ?** (Raphael n'a pas compris la 1re formulation : la reposer seule, plus simplement) A. Oui, chaque intervenant a son agenda ; B. Non, un prestataire = un agenda (recommandé pour commencer) ; C. Choisis pour moi.
+2. **Q4.3 Futur auto-entrepreneur** (pas comprise ; Raphael pense qu'un indépendant n'a pas de SIRET : corrigé par Claude, un micro-entrepreneur déclaré en a un) : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
+3. **Q4.4 Objets à ajouter** (pas comprise) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
 Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 objets (à valider). Questions 4.1 à 4.4 posées. Ensuite : écrire les réponses, définir les nouveaux objets, faire relire le glossaire complet, cocher la phase 4.
@@ -79,12 +78,14 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 | 27/09 | 3 | Garder vitrine-express suivi par git ? | Oui | DEMARRAGE.md |
 | 27/09 | 3 | 3e limite (ne fera pas) | Pas de vente d'objets (conseil personnalisé et salariés restent possibles) | PRESENTATION.md |
 | 27/09 | 3 | Fiche de présentation validée ? | Oui | PRESENTATION.md |
+| 27/09 | 4 | Client et prestataire : un seul compte ? | Oui, un seul compte | GLOSSAIRE-METIER.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
 - (aucune pour l'instant)
 
 ## Points à revoir plus tard
+- Façon de poser les questions : 3 questions sur 4 non comprises le 27/09/2026 → une seule question à la fois, phrases courtes, notion expliquée juste avant.
 - Raphael a refusé que Claude liste le contenu de `C:\Projets\` (27/09/2026) : ne pas parcourir ses dossiers sans qu'il donne le chemin.
 - Objets supplémentaires à proposer à Raphael (phase 4) : ex. Avis, Abonnement, Devis, Métier (catégorie), Zone d'intervention, Disponibilité, Mode de paiement.
 - Facturation électronique (France) : réception obligatoire pour toutes les entreprises depuis le 01/09/2026, émission obligatoire pour les micro-entreprises au 01/09/2027. Les factures doivent passer par une plateforme agréée par l'État : rafals devra probablement s'y connecter plutôt que l'être. À aborder en question 6 (contraintes) et en phase 5.
