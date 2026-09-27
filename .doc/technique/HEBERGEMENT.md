@@ -24,4 +24,8 @@
 Sources : [Next, hausse des VPS OVHcloud 2026](https://next.ink/225720/ovhcloud-augmente-fortement-le-prix-de-ses-vps-2026-et-ipv4/), [Northflank, hausses Hetzner 2026](https://northflank.com/blog/hetzner-cloud-server-price-increases), [Hetzner, ajustement de prix du 15/06/2026](https://docs.hetzner.com/general/infrastructure-and-availability/price-adjustment/).
 
 ## Décision
-<En attente de Raphael.>
+**OVHcloud** (Raphael, 27/09/2026 : « pour l'instant on vas partir sur ovh »), avec la possibilité d'en changer.
+
+## Pouvoir changer d'hébergeur (règle de portabilité)
+rafals n'utilise que des briques standards, acceptées par tous les hébergeurs : Docker, PostgreSQL, stockage de fichiers S3. Changer d'hébergeur = louer un autre serveur, y copier les données et les fichiers, faire pointer `rafals.fr` vers la nouvelle adresse. Aucun code à réécrire.
+Interdit donc : tout service propre à OVH (base de données « maison », outils OVH dans le code).
