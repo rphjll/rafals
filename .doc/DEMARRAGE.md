@@ -38,7 +38,7 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.6 Que veut dire « publication » ?** Choix : A. une annonce de service (ex. « Plomberie, Pessac, 40 €/h ») = une Prestation ; B. un message de type réseau social (photos de chantiers, nouvelles) ; C. les deux.
+1. **Q4.7 Quel mot garder** pour une annonce de service (ex. « Plomberie, dépannage fuite, Pessac, 40 €/h ») : Prestation / Publication / Annonce.
 2. **Q4.4 Objets à ajouter** (pas comprise) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
@@ -81,6 +81,7 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 | 27/09 | 4 | Société avec plusieurs salariés : combien d'agendas ? | Un seul agenda par prestataire (pour commencer) | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Futur auto-entrepreneur qui reçoit son SIRET | Il garde le même compte | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Prestataire sans SIRET visible ? | Il peut publier, paiement en espèces seulement ; rafals lui conseille le SIRET. Avec SIRET : carte sur le site ou espèces, au choix par publication. ⚠️ à vérifier juridiquement | GLOSSAIRE-METIER.md |
+| 27/09 | 4 | « Publication », c'est quoi ? | Une annonce de service (= Prestation) | GLOSSAIRE-METIER.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
