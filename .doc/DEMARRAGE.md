@@ -38,7 +38,7 @@
 5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Réserver rafals.fr** : A. maintenant, Raphael l'achète guidé par Claude (≈ 7 à 12 €/an) (recommandé : il peut être pris par quelqu'un d'autre) ; B. plus tard, avant la mise en ligne.
+1. **Outils** : A. garder les outils de la méthode (Python + FastAPI, Vue 3 + TypeScript + Tailwind, PostgreSQL, MinIO/S3, Docker) (recommandé) ; B. d'autres outils ; C. Choisis pour moi.
 
 ## Prochaine action
 Phase 5 : `technique/HEBERGEMENT.md` rédigé (prix vérifiés le 27/09/2026 ; rafals.fr semble libre, rafals.com pris). Question hébergeur posée. Ensuite : réservation du nom rafals.fr (quand ?), puis les outils (proposer ceux de la méthode § 4.3), puis ports, puis remplir « Outils » de CLAUDE.md + REGLES-PROJET.md. Tenir compte de : France, données personnelles en Europe, sous-domaines `*.rafals.fr` pour les sites vitrines, paiement en ligne avec commission, reprise possible de vitrine-express.
@@ -88,12 +88,14 @@ Phase 5 : `technique/HEBERGEMENT.md` rédigé (prix vérifiés le 27/09/2026 ; r
 | 27/09 | 4 | Comment rafals gagne de l'argent ? | Commission sur les paiements par carte (sûr) ; site vitrine : abonnement ou prix unique « à vie », à décider ensemble | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Glossaire validé ? | Oui (14 mots) | GLOSSAIRE-METIER.md |
 | 27/09 | 5 | Hébergeur | OVHcloud « pour l'instant », avec possibilité de changer (portabilité : Docker, PostgreSQL, S3) | HEBERGEMENT.md |
+| 27/09 | 5 | Réserver rafals.fr | Plus tard, avant la mise en ligne | HEBERGEMENT.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
 - (aucune pour l'instant)
 
 ## Points à revoir plus tard
+- Réserver `rafals.fr` avant la mise en ligne (libre au 27/09/2026) ; revérifier qu'il est toujours libre.
 - À décider ensemble : pourcentage de la commission ; prix du site vitrine (abonnement ou prix unique à vie).
 - Liste de « tous les métiers qui existent » : choisir la source (ex. répertoire officiel des métiers de France Travail, le « ROME », en ne gardant que les métiers qui servent des particuliers ; ou compléter les 110 de vitrine-express). À décider au lot qui construit la recherche.
 - ⚠️ **Juridique, avant mise en ligne** : prestataires sans SIRET payés en espèces via rafals → risque de travail non déclaré et de responsabilité de la plateforme. Faire vérifier par un avocat ou un expert-comptable.

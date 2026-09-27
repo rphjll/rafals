@@ -12,7 +12,7 @@
 - Sous-domaines illimités pour les sites vitrines (`julie-menage.rafals.fr`) : il faut pouvoir régler le nom de domaine pour que **toutes** les adresses `*.rafals.fr` arrivent sur le serveur.
 
 ## Nom de domaine (vérifié le 27/09/2026)
-- `rafals.fr` : **semble libre** (aucune fiche au registre français AFNIC). Environ 7 à 12 € par an. À réserver avant que quelqu'un d'autre le prenne.
+- `rafals.fr` : **semble libre** (aucune fiche au registre français AFNIC). Environ 7 à 12 € par an. Raphael choisit de le réserver **plus tard**, avant la mise en ligne (27/09/2026). Risque accepté : s'il est pris entre-temps, il faudra un autre nom.
 - `rafals.com` : **déjà pris**.
 
 ## Hébergeurs comparés (prix relevés le 27/09/2026, hors taxes, à revérifier au moment d'acheter)
