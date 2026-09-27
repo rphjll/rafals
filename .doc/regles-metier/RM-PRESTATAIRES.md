@@ -24,9 +24,16 @@ Le prestataire indique sa ville de départ et la distance maximale, en kilomètr
 - Exemple 2 : M. Petit à Libourne (40 km) → il ne trouve pas Karim.
 **Cas limite tranché :** la distance est mesurée à vol d'oiseau, entre le centre des deux villes (plus simple et suffisant pour choisir un prestataire).
 
+## Vérification automatique du SIRET (décidé le 27/09/2026)
+Quand un prestataire écrit son SIRET, rafals le cherche aussitôt dans le répertoire public des entreprises de l'État (INSEE, gratuit). Le SIRET est refusé si le numéro n'existe pas, si l'établissement est fermé, ou si le nom de l'entreprise ne correspond pas au nom du prestataire.
+- Exemple 1 : Julie Martin écrit 912 345 678 00014 → trouvé, ouvert, au nom de « Julie Martin » → accepté ; le paiement par carte devient possible sur ses annonces.
+- Exemple 2 : un inconnu écrit 123 456 789 00012 → numéro inexistant → refusé ; il reste « sans SIRET » (espèces seulement).
+- Exemple 3 : Karim écrit le SIRET de son oncle « Plomberie Benali » → le nom ne correspond pas → refusé.
+**Pourquoi :** empêcher un faux SIRET d'ouvrir le paiement par carte.
+**Cas limite tranché :** si le répertoire de l'État ne répond pas (panne), le SIRET est mis « en attente » et revérifié automatiquement plus tard ; en attendant, espèces seulement.
+
 ## Questions ouvertes
 - Le client vient-il chez le prestataire (salon de coiffure) ou le prestataire se déplace-t-il ?
-- Vérification du SIRET.
 - Validation par l'administrateur avant d'être visible.
 
 ## Références
