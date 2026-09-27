@@ -15,8 +15,13 @@ On s'inscrit avec son adresse mail et un mot de passe. rafals envoie un mail ave
 **Pourquoi :** sans adresse vérifiée, impossible d'envoyer les confirmations de rendez-vous, les factures ou le lien « mot de passe oublié ».
 Pas de bouton « Continuer avec Google » pour commencer (pourra s'ajouter plus tard).
 
+## Même inscription pour tous, puis « Proposer mes services » (décidé le 27/09/2026)
+Tout le monde s'inscrit de la même façon. Un compte neuf est un compte **client**. Pour devenir prestataire, on clique dans son compte sur « Proposer mes services » et on remplit son profil de prestataire (métier, ville, SIRET s'il en a un). Le compte reste aussi client.
+- Exemple 1 : Mme Dupont s'inscrit, réserve un ménage ; elle ne voit jamais les écrans prestataire.
+- Exemple 2 : Julie s'inscrit, clique « Proposer mes services », choisit « Femme de ménage », « Nantes », SIRET 912 345 678 00014 → elle devient prestataire, et peut toujours réserver un plombier comme cliente.
+**Pourquoi :** une seule porte d'entrée, plus simple ; et un client peut devenir prestataire plus tard sans rien recréer.
+
 ## Questions ouvertes
-- À l'inscription : choisit-on « client » ou « prestataire » ?
 - Âge minimum.
 - Qui est administrateur.
 
