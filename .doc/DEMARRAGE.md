@@ -38,7 +38,7 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.3 Futur auto-entrepreneur** (pas comprise trois fois ; Raphael demande « explique moi comme si j avais 6 ans » → reposée avec l image du club de foot) : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
+1. **Q4.5 Visible sans SIRET ?** (question de Raphael : « ce n'est pas obligatoire d'avoir la liscence pour que les clients le voient si ? ») A. Invisible tant qu'il n'a pas de SIRET (recommandé : travailler sans être déclaré est interdit) ; B. Visible avec un badge « en cours de déclaration » ; C. Choisis pour moi.
 2. **Q4.4 Objets à ajouter** (pas comprise) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
@@ -79,6 +79,7 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 | 27/09 | 3 | Fiche de présentation validée ? | Oui | PRESENTATION.md |
 | 27/09 | 4 | Client et prestataire : un seul compte ? | Oui, un seul compte | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Société avec plusieurs salariés : combien d'agendas ? | Un seul agenda par prestataire (pour commencer) | GLOSSAIRE-METIER.md |
+| 27/09 | 4 | Futur auto-entrepreneur qui reçoit son SIRET | Il garde le même compte | GLOSSAIRE-METIER.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin

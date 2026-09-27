@@ -13,7 +13,8 @@ Personne ou société qui propose des services aux clients via rafals : un auto-
 Exemple : Julie Martin, auto-entrepreneuse à Nantes, propose « Ménage 2 h — 50 € » et « Repassage 1 h — 20 € ».
 À ne pas confondre avec : **Client** (celui qui achète le service). Une même personne peut être les deux avec **un seul compte** (validé par Raphael le 27/09/2026) : ex. Julie Martin, prestataire de ménage, cherche aussi un plombier pour chez elle, avec la même adresse mail et le même mot de passe.
 Un Prestataire a **un seul agenda**, même si c'est une société avec plusieurs salariés (validé par Raphael le 27/09/2026) : ex. Mme Dupont réserve « Net & Clair, mardi 9 h » ; c'est Net & Clair qui décide si Sonia, Léa ou Maria y va. Le choix de la personne pourra venir plus tard.
-Question en attente : un futur auto-entrepreneur (pas encore de SIRET) est-il déjà un Prestataire ?
+Un futur auto-entrepreneur (pas encore de SIRET) a déjà un compte Prestataire, qu'il **garde** quand il reçoit son SIRET : rien à ressaisir (validé par Raphael le 27/09/2026). Ex. Karim s'inscrit pour se faire aider à déclarer son activité de plombier, puis écrit son SIRET dans le même compte.
+Question en attente : un prestataire sans SIRET peut-il être visible des clients ?
 
 ## Client
 Particulier qui cherche un prestataire, prend rendez-vous et paie une prestation. Il a des Rendez-vous, reçoit des Factures, fait des Paiements.
