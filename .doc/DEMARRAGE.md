@@ -38,10 +38,11 @@
 3. Présentation → `.doc/PRESENTATION.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Emplacement de vitrine-express** — Le dossier n'est ni dans `C:\Projets\`, ni dans `C:\`, ni dans le dossier personnel, le Bureau ou les Documents. Où se trouve-t-il (chemin complet, ou adresse GitHub) ?
+1. **vitrine-express dans git** — Le dossier `vitrine-express/` a été inclus par erreur (commande `git add -A` de Claude) dans la sauvegarde 57d4859, envoyée sur GitHub (dépôt privé, aucun secret dedans). Choix : A. le garder suivi par git dans rafals (recommandé) ; B. ne plus le suivre (fichiers gardés sur le PC, mais il reste dans l'historique déjà envoyé).
+2. **3e exclusion** (la méthode en demande au moins 3) : pas de conseil juridique ou fiscal personnalisé ; pas de gestion de salariés (paie) ; pas de vente de produits (seulement des services).
 
 ## Prochaine action
-Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répondues (Raphael a relu les réponses 5 à 7). Reste : trouver vitrine-express, le lire sans rien modifier, le décrire à Raphael et lui demander ce qu'on garde ; compléter les contraintes légales ; une 3e exclusion (la méthode en demande au moins 3). Ensuite : relire la fiche complète avec Raphael, cocher la phase 3, passer à la phase 4 (vocabulaire) en proposant des objets supplémentaires.
+Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répondues (Raphael a relu les réponses 5 à 7). Reste : réponses aux 2 questions en attente ; compléter les contraintes légales ; une 3e exclusion (la méthode en demande au moins 3). Ensuite : relire la fiche complète avec Raphael, cocher la phase 3, passer à la phase 4 (vocabulaire) en proposant des objets supplémentaires.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.

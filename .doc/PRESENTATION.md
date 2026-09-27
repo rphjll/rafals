@@ -55,4 +55,13 @@ Restent possibles (proposés comme exclusions le 27/09/2026, non retenus) : une 
 ## Outil existant
 **vitrine-express** : un outil commencé par Raphael pour créer des sites vitrines de prestataires à partir de modèles.
 Raphael (27/09/2026) : « ca ne doit etre utilisé que comme une base de travail pas un outil fini, loin de la ».
-Emplacement : <à préciser>. Ce qu'on garde / ce qu'on jette : <à décider après lecture du dossier>.
+Emplacement : `vitrine-express/vitrine-express/` dans le dossier rafals.
+
+Ce qu'il fait (lu par Claude le 27/09/2026, sans rien modifier) : site en HTML + JavaScript seuls (pas de serveur, pas de base de données), qui s'ouvre d'un double-clic.
+- 10 modèles de mise en page × 5 styles chacun = 50 combinaisons (Classique, Élégance, Duo, Magazine, Cartes, Minimal, Impact, Galerie photo, Carte & menu, Pro).
+- Textes d'exemple pour 110 métiers rangés en 10 catégories (`js/metiers.js`), avec recherche par les premières lettres.
+- Un éditeur : textes, couleurs, disposition, déplacement des rubriques, aperçu ordinateur et téléphone.
+- Le client clique « Je veux ce site » : son projet part en fichier `.json` (formulaire Netlify ou e-mail) ; l'administrateur l'ouvre avec un code, puis télécharge le `index.html` final à mettre en ligne sur Netlify.
+- Aucun mot de passe ni clé secrète dans les fichiers (vérifié).
+
+Ce qu'on garde / ce qu'on jette : <à décider en phase 5 (outils) et au lot « site vitrine »>. Pistes : les modèles, les styles et la liste des 110 métiers sont réutilisables comme idées et comme contenu ; le fonctionnement (fichier envoyé par e-mail, mise en ligne à la main sur Netlify) sera remplacé par les comptes prestataires et les sous-domaines de rafals.
