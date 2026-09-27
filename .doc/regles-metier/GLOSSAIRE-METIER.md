@@ -5,7 +5,7 @@ Un mot = une définition = un seul sens dans tout le projet. Ce fichier ne décr
 > Phase 4 du démarrage : définitions **proposées par Claude le 27/09/2026, en cours de validation** par Raphael. Les points marqués « question en attente » ne sont pas tranchés.
 
 ## Les grands objets
-Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative, Métier, Catégorie de métier.
+Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative, Métier, Catégorie de métier, Avis.
 Liste de départ : d'autres objets seront ajoutés (voir `PRESENTATION.md`).
 
 ## Prestataire
@@ -67,6 +67,11 @@ Exemple 2 : « Fleuriste », catégorie « Commerces ».
 Un « dossier » qui regroupe des Métiers voisins, pour que le client s'y retrouve dans la grande liste (mot de Raphael : une « rubrique »). Point de départ : les 10 catégories de vitrine-express (Beauté & bien-être, Restauration, Commerces, Maison & travaux, Auto & transport, Santé, Sport & loisirs, Événements, Animaux, Services).
 Exemple : la catégorie « Commerces » contient Fleuriste, Boulanger, Fromager…
 À ne pas confondre avec : **Métier**.
+
+## Avis
+Une note (de 1 à 5 étoiles) et un petit texte laissés par un Client après un Rendez-vous, visibles par les autres clients sur les Annonces du Prestataire. Seul un client qui a eu un vrai rendez-vous peut en laisser un, ce qui évite les faux avis (validé par Raphael le 27/09/2026).
+Exemple : « ★★★★★ Mme Dupont, 16/10/2026 : ponctuel et soigneux » sur l'annonce « Plomberie, dépannage fuite » de Karim.
+À ne pas confondre avec : une réclamation ou un litige (un problème à régler par l'administrateur).
 
 ## Cycle de vie (valable pour tous les objets)
 - **Désactiver** : réversible (ex. Julie met en pause son annonce « Repassage » pendant l'été).

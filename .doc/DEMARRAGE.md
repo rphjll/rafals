@@ -38,7 +38,7 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.4 Objets à ajouter** — Métier et Catégorie répondus. Suivant : les avis des clients (oui / non / plus tard). Puis devis, abonnement. (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
+1. **Q4.4 Objets à ajouter** — Métier, Catégorie, Avis répondus. Suivant : devis (oui / non / plus tard). Puis abonnement. (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
 Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 objets (à valider). Questions 4.1 à 4.4 posées. Ensuite : écrire les réponses, définir les nouveaux objets, faire relire le glossaire complet, cocher la phase 4.
@@ -83,6 +83,7 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 | 27/09 | 4 | « Publication », c'est quoi ? | Une annonce de service (= Prestation) | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Mot pour une annonce de service | « Annonce » (remplace « Prestation » et « Publication ») | GLOSSAIRE-METIER.md, PRESENTATION.md |
 | 27/09 | 4 | Comment le client cherche ? | Grande liste de tous les métiers, rangés dans des catégories (« dossiers », ex. Commerces), + recherche par les premières lettres | GLOSSAIRE-METIER.md |
+| 27/09 | 4 | Avis des clients ? | Oui, seulement après un vrai rendez-vous | GLOSSAIRE-METIER.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
