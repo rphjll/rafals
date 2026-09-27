@@ -1,4 +1,4 @@
-# <NOM DU PROJET> — Consignes pour Claude Code
+# rafal — Consignes pour Claude Code
 
 > Ce fichier est dupliqué dans `.doc/REGLES-PROJET.md`. Toute modification ici est recopiée là-bas dans la même sauvegarde git.
 

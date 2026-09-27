@@ -2,7 +2,7 @@
 
 > Tenu à jour par Claude après CHAQUE réponse du développeur. C'est ce fichier qui permet de reprendre dans une nouvelle conversation.
 > État général : **En cours** (devient « Démarrage terminé » à la fin de la phase 8)
-> Dernière mise à jour : 27/09/2026 17:32
+> Dernière mise à jour : 27/09/2026 17:40
 
 ## Analyse du dossier (faite le 27/09/2026)
 - Cas : **A — dossier vide** (seul `methode-projet.md` est présent)
@@ -33,16 +33,25 @@
 1. Le poste
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Compte GitHub** — As-tu déjà un compte sur github.com ? Choix : A. Oui (donner l'identifiant) ; B. Non, guide-moi pour le créer (recommandé si pas de compte) ; C. Je ne sais pas.
-2. **Virtualisation et Docker** — Docker a besoin que la « virtualisation » soit activée dans le BIOS, ce qui n'est pas le cas sur ce PC. Choix : A. Guide-moi maintenant pas à pas (recommandé : sans Docker, le code ne pourra pas tourner à partir du lot 0.1) ; B. Plus tard, on avance d'abord sur les phases 2 à 8 qui ne produisent que des documents ; C. Je ne sais pas, choisis pour moi.
-3. **Nom du projet** — Le dossier s'appelle « rafal ». Choix : A. Garder « rafal » comme nom du projet ; B. Un autre nom (le donner) ; C. Je ne sais pas encore, on verra en phase 3.
+1. **Identifiant GitHub** — Quel est ton identifiant sur github.com (le nom affiché en haut à droite quand tu es connecté) ?
+2. **Virtualisation** — As-tu pu activer « Virtualization Technology (VTx) » dans le BIOS de ton HP EliteBook 840 G2 ? Choix : A. Oui, c'est fait (Claude le vérifie par une commande) ; B. Je suis bloqué (dire à quel moment).
 
 ## Prochaine action
-Attendre les réponses aux 3 questions ci-dessus, puis guider l'installation (compte GitHub, virtualisation, WSL 2, Docker Desktop) selon les réponses.
+Guide en cours : activer la virtualisation dans le BIOS (le PC redémarre, la conversation s'arrête). À la reprise : vérifier par commande que la virtualisation est activée (`VirtualizationFirmwareEnabled`), puis guider l'installation de WSL 2 (`wsl --install`, avec accord), puis de Docker Desktop.
+
+## Guide donné pour le BIOS (HP EliteBook 840 G2, BIOS M71 01.18, processeur Intel i5-5300U)
+1. Sauvegarder son travail et redémarrer le PC.
+2. Dès l'allumage, appuyer plusieurs fois sur **Échap**, puis **F10** (« Computer Setup »).
+3. Onglet **Advanced** → **Device Configurations** (ou **System Options**) → cocher **Virtualization Technology (VTx)**.
+4. **Main** → **Save Changes and Exit** → confirmer.
+5. Si le BIOS demande un mot de passe administrateur : s'arrêter et le dire à Claude.
 
 ## Réponses obtenues
 | Date | Phase | Question | Réponse | Écrite dans |
 |---|---|---|---|---|
+| 27/09 | 1 | As-tu un compte GitHub ? | Oui (identifiant à donner) | DEMARRAGE.md |
+| 27/09 | 1 | Quand activer la virtualisation et installer Docker ? | Maintenant | DEMARRAGE.md |
+| 27/09 | 1 | Nom du projet ? | Garder « rafal » | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
 - (aucune pour l'instant)
