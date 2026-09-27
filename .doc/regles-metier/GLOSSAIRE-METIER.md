@@ -5,40 +5,40 @@ Un mot = une définition = un seul sens dans tout le projet. Ce fichier ne décr
 > Phase 4 du démarrage : définitions **proposées par Claude le 27/09/2026, en cours de validation** par Raphael. Les points marqués « question en attente » ne sont pas tranchés.
 
 ## Les grands objets
-Prestataire, Client, Prestation, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative.
+Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative.
 Liste de départ : d'autres objets seront ajoutés (voir `PRESENTATION.md`).
 
 ## Prestataire
-Personne ou société qui propose des services aux clients via rafals : un auto-entrepreneur (ex. Julie Martin, ménage à domicile) ou une société (ex. « Plomberie Martin SARL »). Il a des Prestations, un agenda de Rendez-vous, émet des Factures, peut avoir un Site vitrine et suivre des Démarches administratives.
+Personne ou société qui propose des services aux clients via rafals : un auto-entrepreneur (ex. Julie Martin, ménage à domicile) ou une société (ex. « Plomberie Martin SARL »). Il a des Annonces, un agenda de Rendez-vous, émet des Factures, peut avoir un Site vitrine et suivre des Démarches administratives.
 Exemple : Julie Martin, auto-entrepreneuse à Nantes, propose « Ménage 2 h — 50 € » et « Repassage 1 h — 20 € ».
 À ne pas confondre avec : **Client** (celui qui achète le service). Une même personne peut être les deux avec **un seul compte** (validé par Raphael le 27/09/2026) : ex. Julie Martin, prestataire de ménage, cherche aussi un plombier pour chez elle, avec la même adresse mail et le même mot de passe.
 Un Prestataire a **un seul agenda**, même si c'est une société avec plusieurs salariés (validé par Raphael le 27/09/2026) : ex. Mme Dupont réserve « Net & Clair, mardi 9 h » ; c'est Net & Clair qui décide si Sonia, Léa ou Maria y va. Le choix de la personne pourra venir plus tard.
 Un futur auto-entrepreneur (pas encore de SIRET) a déjà un compte Prestataire, qu'il **garde** quand il reçoit son SIRET : rien à ressaisir (validé par Raphael le 27/09/2026). Ex. Karim s'inscrit pour se faire aider à déclarer son activité de plombier, puis écrit son SIRET dans le même compte.
 Prestataire **sans SIRET** (réponse de Raphael le 27/09/2026, mot pour mot : « non en faite dans le site faura lui conseiller d'avoir un siret mais si il n'en a pas juste il peut faire des publications mais il peut que payer en liquide directement quand il rend le service ») :
 - rafals lui conseille de se déclarer pour obtenir un SIRET ;
-- il peut quand même faire des « publications », c'est-à-dire des annonces de service = des **Prestations** (précisé par Raphael le 27/09/2026 ; mot à garder : question en attente) ;
+- il peut quand même faire des « publications », c'est-à-dire des **Annonces** (précisé par Raphael le 27/09/2026) ;
 - le client ne peut le payer qu'**en espèces**, directement chez lui, le jour du service ; pas de paiement par carte sur le site.
 ⚠️ **À faire vérifier par un professionnel du droit avant la mise en ligne** : aider des personnes non déclarées à se faire payer régulièrement en espèces peut être considéré comme du travail non déclaré, et engager la responsabilité de rafals (alerte donnée par Claude le 27/09/2026).
-Prestataire **avec SIRET** : pour chaque publication, il choisit le mode de paiement : **par carte sur le site**, ou **en espèces chez le client**.
+Prestataire **avec SIRET** : pour chaque annonce, il choisit le mode de paiement : **par carte sur le site**, ou **en espèces chez le client**.
 
 ## Client
-Particulier qui cherche un prestataire, prend rendez-vous et paie une prestation. Il a des Rendez-vous, reçoit des Factures, fait des Paiements.
+Particulier qui cherche un prestataire, prend rendez-vous et paie le service. Il a des Rendez-vous, reçoit des Factures, fait des Paiements.
 Exemple : Mme Dupont, Nantes, prend rendez-vous avec Julie Martin le mardi 14/10 à 9 h.
 À ne pas confondre avec : **Prestataire**.
 
-## Prestation
-Un service qu'un Prestataire propose, avec un nom, une durée, un prix et les modes de paiement qu'il accepte pour ce service. Appartient à un seul Prestataire.
-Exemple 1 : « Ménage 2 h — 50 € — paiement en ligne, espèces ou chèque » (Julie Martin).
-Exemple 2 : « Repassage 1 h — 20 € — espèces ou chèque seulement » (Julie Martin).
-À ne pas confondre avec : **Rendez-vous** (la prestation réalisée pour un client à une date donnée).
+## Annonce
+Un service qu'un Prestataire met en ligne pour être trouvé et réservé, avec un nom, une durée ou un tarif, une ville, et les modes de paiement qu'il accepte pour ce service. Appartient à un seul Prestataire. Mot choisi par Raphael le 27/09/2026 : on dit **annonce** partout (écrans, code, documents), jamais « publication » ni « prestation ».
+Exemple 1 : « Ménage 2 h — 50 € — Nantes — carte sur le site ou espèces » (Julie Martin, avec SIRET).
+Exemple 2 : « Plomberie, dépannage fuite — 40 €/h — Pessac — espèces seulement » (Karim, sans SIRET).
+À ne pas confondre avec : **Rendez-vous** (le service réalisé pour un client à une date donnée).
 
 ## Rendez-vous
-Un créneau dans l'agenda d'un Prestataire, réservé par un Client pour une Prestation.
+Un créneau dans l'agenda d'un Prestataire, réservé par un Client pour une Annonce.
 Exemple : « Mme Dupont — Ménage 2 h — mardi 14/10/2026 de 9 h à 11 h — chez Julie Martin ».
-À ne pas confondre avec : **Prestation** (le service proposé, sans date ni client).
+À ne pas confondre avec : **Annonce** (le service proposé, sans date ni client).
 
 ## Facture
-Document émis par un Prestataire à un Client pour une ou plusieurs prestations réalisées, avec un numéro qui se suit sans trou.
+Document émis par un Prestataire à un Client pour un ou plusieurs Rendez-vous réalisés, avec un numéro qui se suit sans trou.
 Exemple : « F-2026-0012 — Julie Martin → Mme Dupont — Ménage 2 h du 14/10/2026 — 50 € ».
 À ne pas confondre avec : **Paiement** (l'argent reçu ; une facture peut être payée en plusieurs fois, ou pas encore payée).
 
@@ -58,6 +58,6 @@ Exemple 1 : « Déclaration URSSAF du chiffre d'affaires de septembre 2026 — �
 Exemple 2 : « Création de l'auto-entreprise de Karim — étape 2 sur 5 : choix de l'activité ».
 
 ## Cycle de vie (valable pour tous les objets)
-- **Désactiver** : réversible (ex. Julie met en pause sa prestation « Repassage » pendant l'été).
+- **Désactiver** : réversible (ex. Julie met en pause son annonce « Repassage » pendant l'été).
 - **Clôturer** : définitif (ex. un rendez-vous passé et payé).
-- **Supprimer** : interdit dès que l'objet a servi (ex. une prestation qui a déjà eu un rendez-vous ne se supprime pas, elle se désactive).
+- **Supprimer** : interdit dès que l'objet a servi (ex. une annonce qui a déjà eu un rendez-vous ne se supprime pas, elle se désactive).

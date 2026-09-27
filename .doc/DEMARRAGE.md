@@ -38,8 +38,7 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.7 Quel mot garder** pour une annonce de service (ex. « Plomberie, dépannage fuite, Pessac, 40 €/h ») : Prestation / Publication / Annonce.
-2. **Q4.4 Objets à ajouter** (pas comprise) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
+1. **Q4.4 Objets à ajouter** (pas comprise ; reposée objet par objet, en commençant par le métier : liste fixe ou texte libre) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
 Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 objets (à valider). Questions 4.1 à 4.4 posées. Ensuite : écrire les réponses, définir les nouveaux objets, faire relire le glossaire complet, cocher la phase 4.
@@ -82,6 +81,7 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 | 27/09 | 4 | Futur auto-entrepreneur qui reçoit son SIRET | Il garde le même compte | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Prestataire sans SIRET visible ? | Il peut publier, paiement en espèces seulement ; rafals lui conseille le SIRET. Avec SIRET : carte sur le site ou espèces, au choix par publication. ⚠️ à vérifier juridiquement | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | « Publication », c'est quoi ? | Une annonce de service (= Prestation) | GLOSSAIRE-METIER.md |
+| 27/09 | 4 | Mot pour une annonce de service | « Annonce » (remplace « Prestation » et « Publication ») | GLOSSAIRE-METIER.md, PRESENTATION.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
