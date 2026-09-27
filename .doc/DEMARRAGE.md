@@ -38,9 +38,8 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.2 Société à plusieurs intervenants ?** (Raphael n'a pas compris la 1re formulation : la reposer seule, plus simplement) A. Oui, chaque intervenant a son agenda ; B. Non, un prestataire = un agenda (recommandé pour commencer) ; C. Choisis pour moi.
-2. **Q4.3 Futur auto-entrepreneur** (pas comprise ; Raphael pense qu'un indépendant n'a pas de SIRET : corrigé par Claude, un micro-entrepreneur déclaré en a un) : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
-3. **Q4.4 Objets à ajouter** (pas comprise) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
+1. **Q4.3 Futur auto-entrepreneur** (pas comprise ; Raphael pense qu'un indépendant n'a pas de SIRET : corrigé par Claude, un micro-entrepreneur déclaré en a un) : A. c'est un Prestataire au statut « en création » (recommandé) ; B. un objet à part ; C. Choisis pour moi.
+2. **Q4.4 Objets à ajouter** (pas comprise) (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
 
 ## Prochaine action
 Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 objets (à valider). Questions 4.1 à 4.4 posées. Ensuite : écrire les réponses, définir les nouveaux objets, faire relire le glossaire complet, cocher la phase 4.
@@ -79,6 +78,7 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 | 27/09 | 3 | 3e limite (ne fera pas) | Pas de vente d'objets (conseil personnalisé et salariés restent possibles) | PRESENTATION.md |
 | 27/09 | 3 | Fiche de présentation validée ? | Oui | PRESENTATION.md |
 | 27/09 | 4 | Client et prestataire : un seul compte ? | Oui, un seul compte | GLOSSAIRE-METIER.md |
+| 27/09 | 4 | Société avec plusieurs salariés : combien d'agendas ? | Un seul agenda par prestataire (pour commencer) | GLOSSAIRE-METIER.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
