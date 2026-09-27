@@ -2,7 +2,7 @@
 
 > Tenu à jour par Claude après CHAQUE réponse du développeur. C'est ce fichier qui permet de reprendre dans une nouvelle conversation.
 > État général : **En cours** (devient « Démarrage terminé » à la fin de la phase 8)
-> Dernière mise à jour : 27/09/2026 17:50
+> Dernière mise à jour : 27/09/2026 18:10
 
 ## Analyse du dossier (faite le 27/09/2026)
 - Cas : **A — dossier vide** (seul `methode-projet.md` est présent)
@@ -15,7 +15,7 @@
   - VS Code + extension Claude Code : installés (la conversation tourne dedans)
   - Docker : **absent** (ni la commande, ni Docker Desktop)
   - WSL 2 : **absent**
-  - Virtualisation du processeur : **désactivée dans le BIOS** → à activer avant Docker
+  - Virtualisation du processeur : **activée** (vérifié le 27/09/2026 par commande : `VirtualizationFirmwareEnabled = True`)
   - Mémoire vive : 7,9 Go (suffisant, mais juste pour Docker)
   - Disque C : 19,3 Go libres (juste : Docker + WSL prennent 5 à 10 Go)
 
@@ -33,11 +33,10 @@
 1. Le poste
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Identifiant GitHub** — Quel est ton identifiant sur github.com (le nom affiché en haut à droite quand tu es connecté) ?
-2. **Virtualisation** — As-tu pu activer « Virtualization Technology (VTx) » dans le BIOS de ton HP EliteBook 840 G2 ? Choix : A. Oui, c'est fait (Claude le vérifie par une commande) ; B. Je suis bloqué (dire à quel moment).
+- (aucune)
 
 ## Prochaine action
-Guide en cours : activer la virtualisation dans le BIOS (le PC redémarre, la conversation s'arrête). À la reprise : vérifier par commande que la virtualisation est activée (`VirtualizationFirmwareEnabled`), puis guider l'installation de WSL 2 (`wsl --install`, avec accord), puis de Docker Desktop.
+WSL 2 en cours d'installation (lancé par Claude, fenêtre administrateur). Raphael redémarre le PC ensuite. À la reprise : vérifier WSL par `wsl --status`, puis guider l'installation de Docker Desktop (docker.com/products/docker-desktop), puis vérifier `docker --version`.
 
 ## Guide donné pour le BIOS (HP EliteBook 840 G2, BIOS M71 01.18, processeur Intel i5-5300U)
 1. Sauvegarder son travail et redémarrer le PC.
@@ -52,6 +51,9 @@ Guide en cours : activer la virtualisation dans le BIOS (le PC redémarre, la co
 | 27/09 | 1 | As-tu un compte GitHub ? | Oui (identifiant à donner) | DEMARRAGE.md |
 | 27/09 | 1 | Quand activer la virtualisation et installer Docker ? | Maintenant | DEMARRAGE.md |
 | 27/09 | 1 | Nom du projet ? | Garder « rafal » (remplacé ensuite par « rafals ») | CLAUDE.md, REGLES-PROJET.md |
+| 27/09 | 1 | Virtualisation activée dans le BIOS ? | Oui, vérifié par commande (`True`) | DEMARRAGE.md |
+| 27/09 | 1 | Identifiant GitHub | `rphjll` | DEMARRAGE.md |
+| 27/09 | 1 | Installer WSL 2 : qui lance la commande ? | Claude, en fenêtre administrateur, sans Ubuntu | DEMARRAGE.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
