@@ -38,10 +38,10 @@
 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-- (aucune)
+1. **Liste des 16 sujets de règles** (`SUIVI_REGLES_METIER.md`) : A. elle convient ; B. à corriger.
 
 ## Prochaine action
-Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Proposer la liste des sujets de règles métier rangés par niveau, la faire valider, puis écrire les règles des niveaux 1 et 2, une question à la fois.
+Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets proposée dans `SUIVI_REGLES_METIER.md` (à valider). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
