@@ -18,8 +18,14 @@ Réponse de Raphael, mot pour mot : « oui mais plus loin que les plombiers il d
 **Pourquoi :** le client voit d'abord les spécialistes du métier qu'il cherche.
 Le détail du classement (prestataires sans avis, distance…) sera traité dans le sujet 07 « Recherche ».
 
+## Zone d'intervention : une ville et une distance (décidé le 27/09/2026)
+Le prestataire indique sa ville de départ et la distance maximale, en kilomètres, jusqu'à laquelle il se déplace. Il apparaît dans les recherches des clients situés dans ce rayon.
+- Exemple 1 : Karim, « Pessac, jusqu'à 15 km ». Mme Dupont à Talence (6 km) → elle le trouve.
+- Exemple 2 : M. Petit à Libourne (40 km) → il ne trouve pas Karim.
+**Cas limite tranché :** la distance est mesurée à vol d'oiseau, entre le centre des deux villes (plus simple et suffisant pour choisir un prestataire).
+
 ## Questions ouvertes
-- Zone d'intervention.
+- Le client vient-il chez le prestataire (salon de coiffure) ou le prestataire se déplace-t-il ?
 - Vérification du SIRET.
 - Validation par l'administrateur avant d'être visible.
 
