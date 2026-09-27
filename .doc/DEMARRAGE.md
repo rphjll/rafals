@@ -38,10 +38,10 @@
 2. Le projet (git, GitHub, arborescence)
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Visibilité du dépôt GitHub `rafals`** — Choix : A. Privé : toi seul le vois (recommandé) ; B. Public : tout le monde peut lire le code ; C. Choisis pour moi.
+- (aucune)
 
 ## Prochaine action
-Raphael crée le dépôt vide `rafals` sur github.com (compte `rphjll`, sans README, sans .gitignore, sans licence). Ensuite Claude : renomme la branche locale `master` en `main` (nom par défaut de GitHub), relie le dossier (`git remote add origin https://github.com/rphjll/rafals.git`), envoie (`git push -u origin main`, une fenêtre de connexion GitHub s'ouvre la première fois), puis crée l'arborescence vide de `.doc/` (méthode § 2.2).
+Raphael crée le dépôt vide **privé** `rafals` sur github.com (compte `rphjll`, sans README, sans .gitignore, sans licence). Ensuite Claude : renomme la branche locale `master` en `main` (nom par défaut de GitHub), relie le dossier (`git remote add origin https://github.com/rphjll/rafals.git`), envoie (`git push -u origin main`, une fenêtre de connexion GitHub s'ouvre la première fois), puis crée l'arborescence vide de `.doc/` (méthode § 2.2).
 
 ## Guide donné pour le BIOS (HP EliteBook 840 G2, BIOS M71 01.18, processeur Intel i5-5300U)
 1. Sauvegarder son travail et redémarrer le PC.
@@ -61,6 +61,7 @@ Raphael crée le dépôt vide `rafals` sur github.com (compte `rphjll`, sans REA
 | 27/09 | 1 | Installer WSL 2 : qui lance la commande ? | Claude, en fenêtre administrateur, sans Ubuntu | DEMARRAGE.md |
 | 27/09 | 1 | Installer Docker Desktop : comment ? | Claude, avec winget | DEMARRAGE.md |
 | 27/09 | 1 | Ajouter `rapha` au groupe `docker-users` ? | Oui, fait par Claude | DEMARRAGE.md |
+| 27/09 | 2 | Visibilité du dépôt GitHub | Privé | DEMARRAGE.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
