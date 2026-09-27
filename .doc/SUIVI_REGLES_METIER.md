@@ -11,10 +11,10 @@
 ## Statuts
 à faire · à vérifier ou compléter · validé et formalisé
 
-## Avancement (liste proposée par Claude le 27/09/2026, à valider)
+## Avancement (liste validée par Raphael le 27/09/2026)
 | # | Niveau | Sujet | Ce que ça couvre | Statut | Fichier produit |
 |---|---|---|---|---|---|
-| 01 | 1 — Fondations | Comptes et connexion | Inscription, connexion, mot de passe oublié, un seul compte client + prestataire, rôle administrateur | à faire | — |
+| 01 | 1 — Fondations | Comptes et connexion | Inscription, connexion, mot de passe oublié, un seul compte client + prestataire, rôle administrateur | en cours (27/09/2026) | `regles-metier/RM-COMPTES.md` |
 | 02 | 2 — Objets communs | Prestataires | Profil, SIRET, « en création », visibilité, désactivation | à faire | — |
 | 03 | 2 — Objets communs | Clients et données personnelles | Profil du particulier, ce qu'on garde, effacement (RGPD) | à faire | — |
 | 04 | 2 — Objets communs | Métiers et catégories | La grande liste, les dossiers, la recherche par lettres | à faire | — |
@@ -32,6 +32,5 @@
 | 16 | 6 — Services | Administration de la plateforme | Validation des prestataires, litiges, signalements | à faire | — |
 
 ## Décisions en attente
-- Validation de la liste des sujets ci-dessus (27/09/2026).
 - ⚠️ Prestataires sans SIRET payés en espèces : à faire vérifier juridiquement (sujets 02, 05, 12).
 - Prix du site vitrine et pourcentage de la commission (sujets 12, 13).

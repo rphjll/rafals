@@ -38,10 +38,10 @@
 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Liste des 16 sujets de règles** (`SUIVI_REGLES_METIER.md`) : A. elle convient ; B. à corriger.
+1. **Sujet 01, Q1 — Comment s'inscrire ?** A. adresse mail + mot de passe (recommandé pour commencer) ; B. + bouton « Continuer avec Google » ; C. choisis pour moi.
 
 ## Prochaine action
-Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets proposée dans `SUIVI_REGLES_METIER.md` (à valider). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
+Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets validée. Sujet 01 « Comptes et connexion » en cours (questions prévues, une par une : façon de s'inscrire, client ou prestataire à l'inscription, âge minimum, qui est administrateur). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -90,6 +90,7 @@ Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D 
 | 27/09 | 5 | Hébergeur | OVHcloud « pour l'instant », avec possibilité de changer (portabilité : Docker, PostgreSQL, S3) | HEBERGEMENT.md |
 | 27/09 | 5 | Réserver rafals.fr | Plus tard, avant la mise en ligne | HEBERGEMENT.md |
 | 27/09 | 5 | Outils | Ceux de la méthode : Python + FastAPI, Vue 3 + TypeScript + Tailwind, PostgreSQL, MinIO/S3, Docker. Ports 8001 / 5174 / 5433 gardés (choix par défaut de Claude) | CLAUDE.md, REGLES-PROJET.md |
+| 27/09 | 6 | Liste des 16 sujets de règles | Validée | SUIVI_REGLES_METIER.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
