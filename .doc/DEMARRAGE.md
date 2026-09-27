@@ -2,7 +2,7 @@
 
 > Tenu à jour par Claude après CHAQUE réponse du développeur. C'est ce fichier qui permet de reprendre dans une nouvelle conversation.
 > État général : **En cours** (devient « Démarrage terminé » à la fin de la phase 8)
-> Dernière mise à jour : 27/09/2026 18:10
+> Dernière mise à jour : 27/09/2026 18:20
 
 ## Analyse du dossier (faite le 27/09/2026)
 - Cas : **A — dossier vide** (seul `methode-projet.md` est présent)
@@ -14,10 +14,11 @@
   - git 2.55.0 : installé
   - VS Code + extension Claude Code : installés (la conversation tourne dedans)
   - Docker : **absent** (ni la commande, ni Docker Desktop)
-  - WSL 2 : **installé le 27/09/2026** (`wsl --install --no-distribution --web-download` ; la version Microsoft Store avait échoué avec « Défaillance irrémédiable ») → redémarrage du PC nécessaire
+  - WSL 2 : **installé le 27/09/2026** (`wsl --install --no-distribution --web-download` ; la version Microsoft Store avait échoué avec « Défaillance irrémédiable ») → PC redémarré, vérifié par `wsl --status` (version par défaut 2, WSL 2.7.14)
   - Virtualisation du processeur : **activée** (vérifié le 27/09/2026 par commande : `VirtualizationFirmwareEnabled = True`)
   - Mémoire vive : 7,9 Go (suffisant, mais juste pour Docker)
-  - Disque C : 19,3 Go libres (juste : Docker + WSL prennent 5 à 10 Go)
+  - Disque C : 19,3 Go libres au départ, **16,4 Go** après WSL (Docker Desktop prendra environ 3 à 4 Go, puis 2 à 3 Go pour les conteneurs du projet)
+  - winget 1.29 (installateur de logiciels de Windows) : présent
 
 ## Phases
 - [ ] 1. Le poste
@@ -36,7 +37,7 @@
 - (aucune)
 
 ## Prochaine action
-WSL 2 installé, en attente du redémarrage du PC par Raphael. À la reprise : vérifier WSL par `wsl --status`, puis guider l'installation de Docker Desktop (docker.com/products/docker-desktop), puis vérifier `docker --version`.
+Docker Desktop en cours d'installation par Claude (winget). Ensuite : Raphael redémarre le PC, puis vérifier `docker --version` et `docker run hello-world`. Phase 1 alors terminée → phase 2 (dépôt GitHub `rphjll/rafals`).
 
 ## Guide donné pour le BIOS (HP EliteBook 840 G2, BIOS M71 01.18, processeur Intel i5-5300U)
 1. Sauvegarder son travail et redémarrer le PC.
@@ -54,6 +55,7 @@ WSL 2 installé, en attente du redémarrage du PC par Raphael. À la reprise : v
 | 27/09 | 1 | Virtualisation activée dans le BIOS ? | Oui, vérifié par commande (`True`) | DEMARRAGE.md |
 | 27/09 | 1 | Identifiant GitHub | `rphjll` | DEMARRAGE.md |
 | 27/09 | 1 | Installer WSL 2 : qui lance la commande ? | Claude, en fenêtre administrateur, sans Ubuntu | DEMARRAGE.md |
+| 27/09 | 1 | Installer Docker Desktop : comment ? | Claude, avec winget | DEMARRAGE.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
