@@ -27,7 +27,7 @@
 ## Phases
 - [x] 1. Le poste (terminée le 27/09/2026)
 - [x] 2. Le projet (git, GitHub, arborescence) (terminée le 27/09/2026)
-- [ ] 3. Présentation → `.doc/PRESENTATION.md`
+- [x] 3. Présentation → `.doc/PRESENTATION.md` (terminée le 27/09/2026)
 - [ ] 4. Vocabulaire → `GLOSSAIRE-METIER.md`
 - [ ] 5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md`
 - [ ] 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
@@ -35,13 +35,13 @@
 - [ ] 8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
 
 ## Phase en cours
-3. Présentation → `.doc/PRESENTATION.md`
+4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Relecture de PRESENTATION.md** — La fiche est complète. Choix : A. elle me convient, on passe à la phase 4 ; B. je veux corriger (préciser quoi).
+- (aucune)
 
 ## Prochaine action
-Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répondues (Raphael a relu les réponses 5 à 7). Fiche complète (contraintes légales ajoutées par Claude, marquées « à vérifier »). Attendre la relecture de Raphael. Ensuite : relire la fiche complète avec Raphael, cocher la phase 3, passer à la phase 4 (vocabulaire) en proposant des objets supplémentaires.
+Phase 4 : lire le modèle C de la méthode, proposer une définition pour chacun des 8 objets de départ (avec exemples), puis proposer des objets supplémentaires (voir « Points à revoir »). Écrire dans `GLOSSAIRE-METIER.md` au fil des réponses.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -75,6 +75,7 @@ Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répo
 | 27/09 | 3 | Outil existant | vitrine-express (création de sites vitrines à partir de modèles), base de travail seulement, loin d'être fini | PRESENTATION.md |
 | 27/09 | 3 | Garder vitrine-express suivi par git ? | Oui | DEMARRAGE.md |
 | 27/09 | 3 | 3e limite (ne fera pas) | Pas de vente d'objets (conseil personnalisé et salariés restent possibles) | PRESENTATION.md |
+| 27/09 | 3 | Fiche de présentation validée ? | Oui | PRESENTATION.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
