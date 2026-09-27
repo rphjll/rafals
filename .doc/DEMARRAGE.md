@@ -38,7 +38,7 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Q4.4 Objets à ajouter** — Métier, Catégorie, Avis, Devis répondus. Suivant : comment rafals gagne de l'argent (abonnement / commission / les deux / pas encore décidé). (plusieurs choix) : Métier ; Avis ; Devis ; Abonnement.
+1. **Relecture du glossaire** (15 mots) : A. il me convient, phase 5 ; B. je veux corriger.
 
 ## Prochaine action
 Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 objets (à valider). Questions 4.1 à 4.4 posées. Ensuite : écrire les réponses, définir les nouveaux objets, faire relire le glossaire complet, cocher la phase 4.
@@ -85,16 +85,17 @@ Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 ob
 | 27/09 | 4 | Comment le client cherche ? | Grande liste de tous les métiers, rangés dans des catégories (« dossiers », ex. Commerces), + recherche par les premières lettres | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Avis des clients ? | Oui, seulement après un vrai rendez-vous | GLOSSAIRE-METIER.md |
 | 27/09 | 4 | Devis sur rafals ? | Oui, accepté en un clic, transformé en facture | GLOSSAIRE-METIER.md |
+| 27/09 | 4 | Comment rafals gagne de l'argent ? | Commission sur les paiements par carte (sûr) ; site vitrine : abonnement ou prix unique « à vie », à décider ensemble | GLOSSAIRE-METIER.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
 - (aucune pour l'instant)
 
 ## Points à revoir plus tard
+- À décider ensemble : pourcentage de la commission ; prix du site vitrine (abonnement ou prix unique à vie).
 - Liste de « tous les métiers qui existent » : choisir la source (ex. répertoire officiel des métiers de France Travail, le « ROME », en ne gardant que les métiers qui servent des particuliers ; ou compléter les 110 de vitrine-express). À décider au lot qui construit la recherche.
 - ⚠️ **Juridique, avant mise en ligne** : prestataires sans SIRET payés en espèces via rafals → risque de travail non déclaré et de responsabilité de la plateforme. Faire vérifier par un avocat ou un expert-comptable.
 - Idée à proposer plus tard : les particuliers peuvent employer quelqu'un sans SIRET pour le ménage, le jardinage ou le petit bricolage, en le payant avec le CESU (chèque emploi service universel) ; rafals pourrait un jour proposer cette formule.
-- Ajouter « SIRET » au glossaire (numéro d'identité d'une entreprise, 14 chiffres), Raphael ne connaissait pas le mot.
 - Façon de poser les questions : 3 questions sur 4 non comprises le 27/09/2026 → une seule question à la fois, phrases courtes, notion expliquée juste avant.
 - Raphael a refusé que Claude liste le contenu de `C:\Projets\` (27/09/2026) : ne pas parcourir ses dossiers sans qu'il donne le chemin.
 - Objets supplémentaires à proposer à Raphael (phase 4) : ex. Avis, Abonnement, Devis, Métier (catégorie), Zone d'intervention, Disponibilité, Mode de paiement.

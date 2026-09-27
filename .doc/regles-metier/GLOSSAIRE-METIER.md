@@ -2,10 +2,10 @@
 
 Un mot = une définition = un seul sens dans tout le projet. Ce fichier ne décrit pas les tables : un objet peut s'étendre sur plusieurs tables.
 
-> Phase 4 du démarrage : définitions **proposées par Claude le 27/09/2026, en cours de validation** par Raphael. Les points marqués « question en attente » ne sont pas tranchés.
+> Phase 4 du démarrage : définitions proposées par Claude et tranchées une à une par Raphael le 27/09/2026. Relecture d'ensemble en attente.
 
 ## Les grands objets
-Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative, Métier, Catégorie de métier, Avis, Devis.
+Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative, Métier, Catégorie de métier, Avis, Devis, Commission.
 Liste de départ : d'autres objets seront ajoutés (voir `PRESENTATION.md`).
 
 ## Prestataire
@@ -50,6 +50,7 @@ Exemple : « 50 € — carte bancaire en ligne — 14/10/2026 — facture F-202
 ## Site vitrine
 Site internet d'un Prestataire, créé à partir d'un modèle (repris de vitrine-express) et publié sur un sous-domaine de rafals.
 Exemple : « julie-menage.rafals.fr », modèle « Classique », style bleu.
+Prix du site vitrine pour le prestataire : **pas encore décidé** — soit un abonnement, soit un prix payé une fois pour avoir le site à vie (Raphael, 27/09/2026 : « je sais pas encore faudra voire ca ensemble »).
 À ne pas confondre avec : la **page profil** du prestataire dans les résultats de recherche de rafals.
 
 ## Démarche administrative
@@ -77,6 +78,15 @@ Exemple : « ★★★★★ Mme Dupont, 16/10/2026 : ponctuel et soigneux » su
 Un prix proposé par un Prestataire à un Client **avant** de faire le travail, que le client accepte ou refuse sur rafals. Une fois le travail fait, la Facture est fabriquée à partir du devis accepté, sans tout ressaisir (validé par Raphael le 27/09/2026). Sert quand le prix dépend du travail (bâtiment, déménagement, événement…).
 Exemple : « D-2026-003 — Karim → Mme Dupont — salle de bain complète — 1 800 € — accepté le 20/10/2026 ».
 À ne pas confondre avec : **Facture** (émise après le travail ; c'est elle qui compte pour les impôts) ; **Annonce** (prix public affiché pour tous, pas pour un client précis).
+
+## Commission
+Le petit pourcentage que rafals garde sur chaque Paiement par carte fait sur le site ; le reste va directement au Prestataire (décidé par Raphael le 27/09/2026 : « la comission ca c sur »). Pourcentage à fixer. Rien sur les paiements en espèces, puisque l'argent ne passe pas par rafals.
+Exemple (avec 5 %) : Mme Dupont paie 50 € par carte → Julie reçoit 47,50 €, rafals 2,50 €.
+À ne pas confondre avec : le prix du **Site vitrine** (payé par le prestataire à rafals, pas pris sur les paiements des clients).
+
+## SIRET
+Le numéro d'identité d'une entreprise (14 chiffres), donné par l'État quand une personne ou une société déclare son activité. Il doit figurer sur les factures. Un auto-entrepreneur en a un dès qu'il est déclaré.
+Exemple : Julie Martin, auto-entrepreneuse de ménage depuis 2024 : SIRET 912 345 678 00014. Karim, pas encore déclaré : pas de SIRET.
 
 ## Cycle de vie (valable pour tous les objets)
 - **Désactiver** : réversible (ex. Julie met en pause son annonce « Repassage » pendant l'été).
