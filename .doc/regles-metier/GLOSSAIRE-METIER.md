@@ -5,7 +5,7 @@ Un mot = une définition = un seul sens dans tout le projet. Ce fichier ne décr
 > Phase 4 du démarrage : définitions **proposées par Claude le 27/09/2026, en cours de validation** par Raphael. Les points marqués « question en attente » ne sont pas tranchés.
 
 ## Les grands objets
-Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative, Métier, Catégorie de métier, Avis.
+Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative, Métier, Catégorie de métier, Avis, Devis.
 Liste de départ : d'autres objets seront ajoutés (voir `PRESENTATION.md`).
 
 ## Prestataire
@@ -72,6 +72,11 @@ Exemple : la catégorie « Commerces » contient Fleuriste, Boulanger, Fromager�
 Une note (de 1 à 5 étoiles) et un petit texte laissés par un Client après un Rendez-vous, visibles par les autres clients sur les Annonces du Prestataire. Seul un client qui a eu un vrai rendez-vous peut en laisser un, ce qui évite les faux avis (validé par Raphael le 27/09/2026).
 Exemple : « ★★★★★ Mme Dupont, 16/10/2026 : ponctuel et soigneux » sur l'annonce « Plomberie, dépannage fuite » de Karim.
 À ne pas confondre avec : une réclamation ou un litige (un problème à régler par l'administrateur).
+
+## Devis
+Un prix proposé par un Prestataire à un Client **avant** de faire le travail, que le client accepte ou refuse sur rafals. Une fois le travail fait, la Facture est fabriquée à partir du devis accepté, sans tout ressaisir (validé par Raphael le 27/09/2026). Sert quand le prix dépend du travail (bâtiment, déménagement, événement…).
+Exemple : « D-2026-003 — Karim → Mme Dupont — salle de bain complète — 1 800 € — accepté le 20/10/2026 ».
+À ne pas confondre avec : **Facture** (émise après le travail ; c'est elle qui compte pour les impôts) ; **Annonce** (prix public affiché pour tous, pas pour un client précis).
 
 ## Cycle de vie (valable pour tous les objets)
 - **Désactiver** : réversible (ex. Julie met en pause son annonce « Repassage » pendant l'été).
