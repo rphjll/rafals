@@ -38,10 +38,10 @@
 3. Présentation → `.doc/PRESENTATION.md`
 
 ## Questions en attente (posées, pas encore répondues)
-- (aucune)
+1. **Phase 3, question 1 — À quoi sert « rafals » ?** En une ou deux phrases, avec tes mots : qu'est-ce que l'application permet de faire, et pour qui ? (question ouverte : les questions 2 à 7 seront proposées sous forme de choix à partir de cette réponse)
 
 ## Prochaine action
-Phase 3 : poser les 7 questions de la fiche de présentation (méthode § 3.1, modèle B), par séries de 3 ou 4, et remplir `.doc/PRESENTATION.md` au fil des réponses.
+Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Attendre la réponse à la question 1, l'écrire, puis proposer les questions 2 à 7 (qui l'utilise, grands objets, actions, ce qu'elle ne fera pas, contraintes, outil existant) par séries de 3 ou 4.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
