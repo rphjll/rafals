@@ -38,7 +38,7 @@
 4. Vocabulaire → `.doc/regles-metier/GLOSSAIRE-METIER.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Relecture du glossaire** (15 mots) : A. il me convient, phase 5 ; B. je veux corriger.
+1. **Relecture du glossaire** (14 mots) : A. il me convient, phase 5 ; B. je veux corriger.
 
 ## Prochaine action
 Phase 4 : `GLOSSAIRE-METIER.md` écrit avec les définitions proposées des 8 objets (à valider). Questions 4.1 à 4.4 posées. Ensuite : écrire les réponses, définir les nouveaux objets, faire relire le glossaire complet, cocher la phase 4.
