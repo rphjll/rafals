@@ -5,7 +5,7 @@ Un mot = une définition = un seul sens dans tout le projet. Ce fichier ne décr
 > Phase 4 du démarrage : définitions **proposées par Claude le 27/09/2026, en cours de validation** par Raphael. Les points marqués « question en attente » ne sont pas tranchés.
 
 ## Les grands objets
-Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative.
+Prestataire, Client, Annonce, Rendez-vous, Facture, Paiement, Site vitrine, Démarche administrative, Métier, Catégorie de métier.
 Liste de départ : d'autres objets seront ajoutés (voir `PRESENTATION.md`).
 
 ## Prestataire
@@ -56,6 +56,17 @@ Exemple : « julie-menage.rafals.fr », modèle « Classique », style bleu.
 Une tâche administrative qu'un Prestataire (ou futur auto-entrepreneur) doit faire, que rafals l'aide à préparer ou fait à sa place quand c'est autorisé.
 Exemple 1 : « Déclaration URSSAF du chiffre d'affaires de septembre 2026 — à faire avant le 31/10/2026 ».
 Exemple 2 : « Création de l'auto-entreprise de Karim — étape 2 sur 5 : choix de l'activité ».
+
+## Métier
+Une activité professionnelle, choisie dans une grande liste qui doit contenir **tous les métiers qui existent** (demande de Raphael le 27/09/2026). Chaque Annonce est rangée sous un Métier ; c'est ce qui permet au client de la trouver. Chaque Métier appartient à une Catégorie de métier. Le client le trouve de deux façons : en ouvrant une catégorie, ou en tapant les premières lettres du nom (« plom » → Plombier), comme dans vitrine-express.
+Exemple 1 : « Plombier », catégorie « Maison & travaux ».
+Exemple 2 : « Fleuriste », catégorie « Commerces ».
+À ne pas confondre avec : **Annonce** (un service précis d'un prestataire précis ; ex. « Plomberie, dépannage fuite, Pessac, 40 €/h » de Karim est une annonce du métier « Plombier »).
+
+## Catégorie de métier
+Un « dossier » qui regroupe des Métiers voisins, pour que le client s'y retrouve dans la grande liste (mot de Raphael : une « rubrique »). Point de départ : les 10 catégories de vitrine-express (Beauté & bien-être, Restauration, Commerces, Maison & travaux, Auto & transport, Santé, Sport & loisirs, Événements, Animaux, Services).
+Exemple : la catégorie « Commerces » contient Fleuriste, Boulanger, Fromager…
+À ne pas confondre avec : **Métier**.
 
 ## Cycle de vie (valable pour tous les objets)
 - **Désactiver** : réversible (ex. Julie met en pause son annonce « Repassage » pendant l'été).
