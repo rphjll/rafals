@@ -38,8 +38,7 @@
 3. Présentation → `.doc/PRESENTATION.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **vitrine-express dans git** — Le dossier `vitrine-express/` a été inclus par erreur (commande `git add -A` de Claude) dans la sauvegarde 57d4859, envoyée sur GitHub (dépôt privé, aucun secret dedans). Choix : A. le garder suivi par git dans rafals (recommandé) ; B. ne plus le suivre (fichiers gardés sur le PC, mais il reste dans l'historique déjà envoyé).
-2. **3e exclusion** (la méthode en demande au moins 3) : pas de conseil juridique ou fiscal personnalisé ; pas de gestion de salariés (paie) ; pas de vente de produits (seulement des services).
+1. **3e exclusion** (Raphael n'a pas compris la première formulation : réexpliquée le 27/09/2026) (la méthode en demande au moins 3) : pas de conseil juridique ou fiscal personnalisé ; pas de gestion de salariés (paie) ; pas de vente de produits (seulement des services).
 
 ## Prochaine action
 Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répondues (Raphael a relu les réponses 5 à 7). Reste : réponses aux 2 questions en attente ; compléter les contraintes légales ; une 3e exclusion (la méthode en demande au moins 3). Ensuite : relire la fiche complète avec Raphael, cocher la phase 3, passer à la phase 4 (vocabulaire) en proposant des objets supplémentaires.
@@ -74,6 +73,7 @@ Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répo
 | 27/09 | 3 | Pays et langue | France (DOM compris), français | PRESENTATION.md |
 | 27/09 | 3 | Appareils | Ordinateur et téléphone | PRESENTATION.md |
 | 27/09 | 3 | Outil existant | vitrine-express (création de sites vitrines à partir de modèles), base de travail seulement, loin d'être fini | PRESENTATION.md |
+| 27/09 | 3 | Garder vitrine-express suivi par git ? | Oui | DEMARRAGE.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
