@@ -18,6 +18,8 @@
   - Virtualisation du processeur : **activée** (vérifié le 27/09/2026 par commande : `VirtualizationFirmwareEnabled = True`)
   - Mémoire vive : 7,9 Go (suffisant, mais juste pour Docker)
   - Disque C : 19,3 Go libres au départ, **16,4 Go** après WSL (Docker Desktop prendra environ 3 à 4 Go, puis 2 à 3 Go pour les conteneurs du projet)
+  - Docker Desktop 4.91.0 : **installé le 27/09/2026** par winget. Disque C : **12,9 Go** libres après installation.
+  - Comptes Windows : Raphael travaille sous `rapha` (compte **standard**, pas administrateur). Les administrateurs sont `Administrateur` et `lione`. L'installation de Docker a donc été validée avec `lione`, et c'est `lione` qui a été mis dans le groupe `docker-users` : `rapha` n'y est pas → → `rapha` **ajouté à `docker-users`** le 27/09/2026 (vérifié : le groupe contient `lione` et `rapha`).
   - winget 1.29 (installateur de logiciels de Windows) : présent
 
 ## Phases
@@ -37,7 +39,7 @@
 - (aucune)
 
 ## Prochaine action
-Docker Desktop en cours d'installation par Claude (winget). Ensuite : Raphael redémarre le PC, puis vérifier `docker --version` et `docker run hello-world`. Phase 1 alors terminée → phase 2 (dépôt GitHub `rphjll/rafals`).
+Raphael redémarre le PC. À la reprise : ouvrir Docker Desktop (accepter les conditions, passer la création de compte), vérifier `docker --version` et `docker run hello-world`. Phase 1 alors terminée → phase 2 (dépôt GitHub `rphjll/rafals`).
 
 ## Guide donné pour le BIOS (HP EliteBook 840 G2, BIOS M71 01.18, processeur Intel i5-5300U)
 1. Sauvegarder son travail et redémarrer le PC.
@@ -56,6 +58,7 @@ Docker Desktop en cours d'installation par Claude (winget). Ensuite : Raphael re
 | 27/09 | 1 | Identifiant GitHub | `rphjll` | DEMARRAGE.md |
 | 27/09 | 1 | Installer WSL 2 : qui lance la commande ? | Claude, en fenêtre administrateur, sans Ubuntu | DEMARRAGE.md |
 | 27/09 | 1 | Installer Docker Desktop : comment ? | Claude, avec winget | DEMARRAGE.md |
+| 27/09 | 1 | Ajouter `rapha` au groupe `docker-users` ? | Oui, fait par Claude | DEMARRAGE.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
