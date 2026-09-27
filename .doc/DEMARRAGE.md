@@ -2,7 +2,7 @@
 
 > Tenu à jour par Claude après CHAQUE réponse du développeur. C'est ce fichier qui permet de reprendre dans une nouvelle conversation.
 > État général : **En cours** (devient « Démarrage terminé » à la fin de la phase 8)
-> Dernière mise à jour : 27/09/2026 17:40
+> Dernière mise à jour : 27/09/2026 17:50
 
 ## Analyse du dossier (faite le 27/09/2026)
 - Cas : **A — dossier vide** (seul `methode-projet.md` est présent)
@@ -51,7 +51,8 @@ Guide en cours : activer la virtualisation dans le BIOS (le PC redémarre, la co
 |---|---|---|---|---|
 | 27/09 | 1 | As-tu un compte GitHub ? | Oui (identifiant à donner) | DEMARRAGE.md |
 | 27/09 | 1 | Quand activer la virtualisation et installer Docker ? | Maintenant | DEMARRAGE.md |
-| 27/09 | 1 | Nom du projet ? | Garder « rafal » | CLAUDE.md, REGLES-PROJET.md |
+| 27/09 | 1 | Nom du projet ? | Garder « rafal » (remplacé ensuite par « rafals ») | CLAUDE.md, REGLES-PROJET.md |
+| 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
 - (aucune pour l'instant)
