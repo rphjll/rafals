@@ -44,11 +44,17 @@ Raphael (27/09/2026) : « ca n'est qu'une liste de depart, il devra y en avoir d
 ## Ce que l'application ne fera PAS
 - Pas de comptabilité complète : pas de bilan, ni de déclaration de TVA de société. Seulement les factures et les déclarations simples d'auto-entrepreneur.
 - rafals ne garde jamais l'argent des clients : le paiement en ligne passe par un service de paiement spécialisé (ex. Stripe) et va directement au prestataire. Pas d'agrément Banque de France à obtenir.
+- Pas de vente d'objets : rafals ne gère que des services (ménage, plomberie, coiffure…). Ex. un fleuriste ne peut pas vendre ses bouquets en ligne avec livraison.
 
-Restent possibles (proposés comme exclusions le 27/09/2026, non retenus) : une application mobile à installer ; des clients professionnels (entreprises).
+Restent possibles (proposés comme exclusions le 27/09/2026, non retenus) : une application mobile à installer ; des clients professionnels (entreprises) ; le conseil personnalisé (juridique, fiscal) ; la gestion de salariés (paie).
 
 ## Contraintes connues
-- Loi : <À compléter (données personnelles, facture électronique, paiement)>
+- Loi (relevé par Claude le 27/09/2026, **à vérifier** en phase 5 et dans les règles métier) :
+  - **Données personnelles (RGPD)** : rafals enregistre des noms, adresses, téléphones, rendez-vous. Il faut dire à quoi elles servent, permettre de les consulter et de les effacer, et les héberger en Europe.
+  - **Facture électronique** : depuis le 01/09/2026, toute entreprise doit pouvoir recevoir des factures électroniques ; les micro-entreprises devront en émettre à partir du 01/09/2027, en passant par une plateforme agréée par l'État. Entre un prestataire et un **particulier**, ce n'est pas une facture électronique mais une transmission des montants encaissés aux impôts (« e-reporting »).
+  - **Plateforme de mise en relation** : obligation d'informer clairement les clients (qui est le prestataire, comment les résultats sont classés) et, sans doute, de déclarer chaque année aux impôts les revenus des prestataires (règle européenne « DAC7 »).
+  - **Paiement en ligne** : passe par un service agréé (voir « ne fera pas »).
+  - **Déclarations URSSAF automatiques** : nécessitent une habilitation (« tierce déclaration »).
 - Pays / langues : France seulement (DOM compris), en français.
 - Appareils : ordinateur et téléphone — un seul site qui s'adapte à l'écran.
 

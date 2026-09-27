@@ -2,7 +2,7 @@
 
 > Tenu à jour par Claude après CHAQUE réponse du développeur. C'est ce fichier qui permet de reprendre dans une nouvelle conversation.
 > État général : **En cours** (devient « Démarrage terminé » à la fin de la phase 8)
-> Dernière mise à jour : 27/09/2026 19:45
+> Dernière mise à jour : 27/09/2026 20:00
 
 ## Analyse du dossier (faite le 27/09/2026)
 - Cas : **A — dossier vide** (seul `methode-projet.md` est présent)
@@ -38,10 +38,10 @@
 3. Présentation → `.doc/PRESENTATION.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **3e exclusion** (Raphael n'a pas compris la première formulation : réexpliquée le 27/09/2026) (la méthode en demande au moins 3) : pas de conseil juridique ou fiscal personnalisé ; pas de gestion de salariés (paie) ; pas de vente de produits (seulement des services).
+1. **Relecture de PRESENTATION.md** — La fiche est complète. Choix : A. elle me convient, on passe à la phase 4 ; B. je veux corriger (préciser quoi).
 
 ## Prochaine action
-Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répondues (Raphael a relu les réponses 5 à 7). Reste : réponses aux 2 questions en attente ; compléter les contraintes légales ; une 3e exclusion (la méthode en demande au moins 3). Ensuite : relire la fiche complète avec Raphael, cocher la phase 3, passer à la phase 4 (vocabulaire) en proposant des objets supplémentaires.
+Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répondues (Raphael a relu les réponses 5 à 7). Fiche complète (contraintes légales ajoutées par Claude, marquées « à vérifier »). Attendre la relecture de Raphael. Ensuite : relire la fiche complète avec Raphael, cocher la phase 3, passer à la phase 4 (vocabulaire) en proposant des objets supplémentaires.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -74,6 +74,7 @@ Phase 3 : `.doc/PRESENTATION.md` créé vide (modèle B). Questions 1 à 7 répo
 | 27/09 | 3 | Appareils | Ordinateur et téléphone | PRESENTATION.md |
 | 27/09 | 3 | Outil existant | vitrine-express (création de sites vitrines à partir de modèles), base de travail seulement, loin d'être fini | PRESENTATION.md |
 | 27/09 | 3 | Garder vitrine-express suivi par git ? | Oui | DEMARRAGE.md |
+| 27/09 | 3 | 3e limite (ne fera pas) | Pas de vente d'objets (conseil personnalisé et salariés restent possibles) | PRESENTATION.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
