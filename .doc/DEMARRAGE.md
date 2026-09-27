@@ -29,19 +29,19 @@
 - [x] 2. Le projet (git, GitHub, arborescence) (terminée le 27/09/2026)
 - [x] 3. Présentation → `.doc/PRESENTATION.md` (terminée le 27/09/2026)
 - [x] 4. Vocabulaire → `GLOSSAIRE-METIER.md` (terminée le 27/09/2026)
-- [ ] 5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md`
+- [x] 5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md` (terminée le 27/09/2026)
 - [ ] 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 - [ ] 7. Charte et conventions d'écran → `CHARTE-VISUELLE.md`, `CONVENTIONS-IHM.md`
 - [ ] 8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
 
 ## Phase en cours
-5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md`
+6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Outils** : A. garder les outils de la méthode (Python + FastAPI, Vue 3 + TypeScript + Tailwind, PostgreSQL, MinIO/S3, Docker) (recommandé) ; B. d'autres outils ; C. Choisis pour moi.
+- (aucune)
 
 ## Prochaine action
-Phase 5 : `technique/HEBERGEMENT.md` rédigé (prix vérifiés le 27/09/2026 ; rafals.fr semble libre, rafals.com pris). Question hébergeur posée. Ensuite : réservation du nom rafals.fr (quand ?), puis les outils (proposer ceux de la méthode § 4.3), puis ports, puis remplir « Outils » de CLAUDE.md + REGLES-PROJET.md. Tenir compte de : France, données personnelles en Europe, sous-domaines `*.rafals.fr` pour les sites vitrines, paiement en ligne avec commission, reprise possible de vitrine-express.
+Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Proposer la liste des sujets de règles métier rangés par niveau, la faire valider, puis écrire les règles des niveaux 1 et 2, une question à la fois.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -89,10 +89,12 @@ Phase 5 : `technique/HEBERGEMENT.md` rédigé (prix vérifiés le 27/09/2026 ; r
 | 27/09 | 4 | Glossaire validé ? | Oui (14 mots) | GLOSSAIRE-METIER.md |
 | 27/09 | 5 | Hébergeur | OVHcloud « pour l'instant », avec possibilité de changer (portabilité : Docker, PostgreSQL, S3) | HEBERGEMENT.md |
 | 27/09 | 5 | Réserver rafals.fr | Plus tard, avant la mise en ligne | HEBERGEMENT.md |
+| 27/09 | 5 | Outils | Ceux de la méthode : Python + FastAPI, Vue 3 + TypeScript + Tailwind, PostgreSQL, MinIO/S3, Docker. Ports 8001 / 5174 / 5433 gardés (choix par défaut de Claude) | CLAUDE.md, REGLES-PROJET.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
-- (aucune pour l'instant)
+- Ports côté PC : serveur 8001, écrans 5174, base 5433 (ceux du modèle ; aucun autre projet sur ce PC ne les utilise pour l'instant).
+- Mots de passe des bases : fixés au lot 0.1 (fichier `.env`, jamais envoyé sur GitHub).
 
 ## Points à revoir plus tard
 - Réserver `rafals.fr` avant la mise en ligne (libre au 27/09/2026) ; revérifier qu'il est toujours libre.

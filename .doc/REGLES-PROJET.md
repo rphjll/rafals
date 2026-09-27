@@ -28,20 +28,20 @@ Raphael, débutant en programmation. Explique le « pourquoi » de chaque choix 
 
 ## Outils
 
-- Serveur : <Python + FastAPI>
-- Écrans : <Vue 3 + TypeScript + Vite + Tailwind CSS>, composants faits main
-- Base : <PostgreSQL>, pilote <psycopg version 3>, <SQLAlchemy 2>
-- Fichiers : <MinIO en local, stockage S3 en ligne>
-- Tout tourne dans Docker : conteneurs <db>, <backend>, <frontend>, <minio>
-- Ports côté PC : serveur <8001>, écrans <5174>, base <5433>
-- Hébergement prévu : <hébergeur, pays>
+- Serveur : Python + FastAPI
+- Écrans : Vue 3 + TypeScript + Vite + Tailwind CSS, composants faits main
+- Base : PostgreSQL, pilote psycopg version 3, SQLAlchemy 2
+- Fichiers : MinIO en local, stockage S3 en ligne
+- Tout tourne dans Docker : conteneurs `db`, `backend`, `frontend`, `minio`
+- Ports côté PC : serveur 8001, écrans 5174, base 5433
+- Hébergement prévu : OVHcloud, France (détail et portabilité : `.doc/technique/HEBERGEMENT.md`)
 - Les fichiers `.bat` s'écrivent sans aucun accent ni tiret long.
 
 ## Base de données
 
-- Base principale : `<projet>_db` ; base des tests : `<projet>_test_db` (même conteneur)
-- Compte administrateur : `<projet>_user` / `<mot de passe>` (création des tables, inspection)
-- Compte application : `<projet>_app` / `<mot de passe>` (serveur et tests ; aucun droit de créer une table)
+- Base principale : `rafals_db` ; base des tests : `rafals_test_db` (même conteneur)
+- Compte administrateur : `rafals_user` / `<mot de passe, fixé au lot 0.1>` (création des tables, inspection)
+- Compte application : `rafals_app` / `<mot de passe, fixé au lot 0.1>` (serveur et tests ; aucun droit de créer une table)
 
 ## Ordre imposé à chaque évolution de données
 
@@ -57,7 +57,7 @@ Artifact HTML avec un schéma Mermaid `flowchart` sur fond blanc uni. Nom de tab
 
 ## Données de test (RÈGLE STRICTE)
 
-- Tests lancés uniquement par `lancer-tests.bat`, sur `<projet>_test_db`, avec le compte `<projet>_app`. Les tests refusent de démarrer sur une autre base.
+- Tests lancés uniquement par `lancer-tests.bat`, sur `rafals_test_db`, avec le compte `rafals_app`. Les tests refusent de démarrer sur une autre base.
 - Données saisies à la main dans l'application : marquées dès la création (`@example.com`, `ZZTEST `, `ZZ-`), nettoyées par `nettoyer-donnees-test.bat`.
 - Un script Playwright ne touche que les lignes qu'il a créées et marquées.
 - Jamais de suppression d'une donnée existante ou ambiguë sans mon accord explicite.
