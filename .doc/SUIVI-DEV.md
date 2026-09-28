@@ -4,16 +4,14 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 2.1 — Métiers et catégories : liste triée (relue par Raphael), mots-clés, recherche sans accents, propositions de métier (Raphael : « Oui, je valide » le lot 1.4)
+- **Demande** : Lot 2.2 — Écrans : choix d'un métier (recherche par lettres, dossiers) ; administration des métiers et des propositions (Raphael : « je valide le lot 2.1 »)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [x] 1. MLD proposé et validé le 28/09/2026 ; `db/schema_v4.sql` écrit (pas encore exécuté)
-  - [x] 2. Liste des catégories et métiers proposée (Artifact) et validée par Raphael le 28/09/2026 (14 dossiers, 128 métiers)
-  - [x] 3. `schema_v4.sql` exécuté (extension `unaccent` + 3 tables) ; liste chargée (`scripts/charger_metiers.py`, `charger-metiers.bat`), relancée sans doublon
-  - [x] 4. Modèles (`metiers.py`), calculs (recherche, dossiers, propositions, création/modification), routes (`routes/metiers.py`) ; tests : 54 OK (15 nouveaux + test de fiche dossier/métier/proposition)
-  - [x] 5. Essais de recherche sur la vraie liste (plom, fuite, electricien, kine, piano, punaises, eben, 100%) ; invariants ; sauvegarde
-  - [ ] 6. Validation par Raphael  ← on en est là
-- **Question en attente** : validation du lot 2.1 par Raphael
+  - [ ] 1. Maquette cliquable validée  ← on en est là
+  - [ ] 2. Composant de choix d'un métier + page « Trouver un prestataire » (choix du métier) + proposer un métier
+  - [ ] 3. Administration : onglets « Propositions de métiers » et « Métiers »
+  - [ ] 4. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
+- **Question en attente** : validation de la maquette du lot 2.2
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -48,8 +46,8 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 ## Niveau 2 — Objets communs
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 2.1 | Serveur | Métiers et catégories : liste triée (relue par Raphael), mots-clés, recherche sans accents, propositions de métier | RM-METIERS | 1.3 | 🔎 |
-| 2.2 | Écrans | Choix d'un métier (recherche par lettres, dossiers) ; Administration des métiers et des propositions | RM-METIERS | 2.1, 1.4 | ⬜ |
+| 2.1 | Serveur | Métiers et catégories : liste triée (relue par Raphael), mots-clés, recherche sans accents, propositions de métier | RM-METIERS | 1.3 | ✅ |
+| 2.2 | Écrans | Choix d'un métier (recherche par lettres, dossiers) ; Administration des métiers et des propositions | RM-METIERS | 2.1, 1.4 | 🟡 |
 | 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | ⬜ |
 | 2.4 | Serveur | Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne | RM-PRESTATAIRES | 2.3 | ⬜ |
 | 2.5 | Écrans | Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage | RM-PRESTATAIRES | 2.4, 2.2 | ⬜ |
@@ -84,3 +82,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Lot 1.4 — Maquette validée, puis pages Mon compte (informations ; accord des parents pour les 16-17 ans : dépôt, en attente, accepté, refusé avec motif) et Administration (onglets Accords à vérifier : voir le fichier, accepter, refuser avec motif ; Comptes : nommer / retirer un administrateur avec confirmation). Entrée « Administration » dans le menu seulement pour un administrateur ; page protégée aussi à l'écran. Nouveaux : `AppChampFichier` (resservira pour les photos), `outils/dates.ts` (dates à la française, heure de Paris, âge), `api.ts` accepte les fichiers. Serveur : « moi » renvoie aussi téléphone et date de naissance. Décision : tutoiement dans la partie « Accord de tes parents » (public de 16-17 ans), comme dans la maquette validée. Essais : aucune faute, 39 tests OK, parcours complet par les écrans OK, comptes d'essai nettoyés (0 fichier dans le placard ; le compte n° 5 de Raphael et sa ligne de journal restent). Invariants : interface OK (clic → résultat visible, erreurs dans la fenêtre ou au-dessus du bouton, bouton de rôle confirmé, `RM-*-IHM.md` écrits, tableau qui défile sur téléphone) ; sécurité OK (403 côté serveur, page protégée côté écran) ; données OK ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`.
 - **28/09/2026** — Lot 1.4 validé par Raphael (« cb », confirmé par « Oui, je valide » ; base propre : seul son compte reste) → ✅. **Niveau 1 terminé.** Lot 2.1 commencé.
 - **28/09/2026** — Lot 2.1 — MLD validé ; liste de 14 dossiers et 128 métiers proposée en page de relecture (avec recherche d'essai) et validée ; écartés de vitrine-express listés avec leur raison. `schema_v4.sql` exécuté (extension `unaccent`, tables `categorie_metier`, `metier` avec mots-clés, `proposition_metier`). Chargement relançable par code (`charger-metiers.bat`) ; les tests chargent la liste dans la base de test au démarrage. Serveur : recherche sans accents (nom, mot du nom, mot-clé ; jokers `%`/`_` neutralisés), dossiers, propositions (refus si le métier existe), décision (acceptée/remplacée/refusée), création et modification de métier par l'administrateur, journal. Problème : 1er jet de la recherche confus (brouillon laissé dans le code) → réécrit proprement avant les tests. Tests : 54 OK. Invariants : architecture OK ; sécurité OK (propositions : connecté ; gestion : administrateur) ; données OK (vraie base : 128 métiers, aucune donnée d'essai) ; tests OK ; interface : écrans au lot 2.2 ; documentation : `RM-METIERS.md` précisé, `CLAUDE.md` = `REGLES-PROJET.md`.
+- **28/09/2026** — Lot 2.1 validé par Raphael (« je valide le lot 2.1 ») → ✅. Lot 2.2 commencé.
