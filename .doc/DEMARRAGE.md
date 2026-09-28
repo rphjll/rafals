@@ -38,7 +38,7 @@
 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Sujet 04, Q2 — Métier manquant** : A. le prestataire propose un nouveau métier, l'administrateur l'accepte (recommandé) ; B. seul l'administrateur ajoute ; C. choisis pour moi.
+1. **Relecture de RM-METIERS.md** (propositions de Claude : mots-clés sans accents, une seule catégorie par métier, désactivation/suppression) : A. valide ; B. à corriger.
 
 ## Prochaine action
 Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets validée. Sujets 01, 02, 03 validés. Sujet 04 « Métiers et catégories » en cours (questions prévues, une par une : source de la liste, métier manquant). Ensuite : phase 6 terminée → phase 7 (charte visuelle, maquette cliquable). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
@@ -106,6 +106,7 @@ Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D 
 | 28/09 | 6 | Sujet 03 : avis d'un client qui part | Gardés, signés « Client ayant quitté rafals » | RM-CLIENTS.md |
 | 28/09 | 6 | Sujet 03 Clients : relecture | Validé (y compris les propositions de Claude) | RM-CLIENTS.md |
 | 28/09 | 6 | Sujet 04 : source de la liste des métiers | Triée : vitrine-express + liste officielle, seulement les métiers pour particuliers, relue par Raphael | RM-METIERS.md |
+| 28/09 | 6 | Sujet 04 : métier manquant | Le prestataire le propose, l'administrateur accepte ; « Autre » en attendant | RM-METIERS.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin

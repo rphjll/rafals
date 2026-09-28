@@ -15,8 +15,37 @@ Claude construit la liste à partir des 110 métiers et 10 catégories de vitrin
 - Exemple 2 : « Contrôleur aérien » → écarté (ne sert pas des particuliers).
 **Pourquoi :** Mme Dupont ne doit pas se perdre dans des milliers de métiers qui ne la concernent pas.
 
+## Métier manquant : le prestataire le propose (décidé le 28/09/2026)
+Un prestataire qui ne trouve pas son métier clique « Mon métier n'est pas dans la liste » et écrit son nom. La demande arrive dans l'écran « Administration » : l'administrateur l'accepte (et la range dans une catégorie), ou la remplace par un métier existant. En attendant, le prestataire utilise le métier « Autre ».
+- Exemple 1 : Nadia propose « Cerf-voliste » le 02/11 → Raphael l'accepte le 03/11 dans « Sport & loisirs » → les annonces de Nadia passent de « Autre » à « Cerf-voliste ».
+- Exemple 2 : Tom propose « Plombier chauffagiste » → Raphael répond « Plombier » (existe déjà) et ajoute « chauffagiste » aux mots-clés de « Plombier ».
+**Pourquoi :** la liste s'enrichit avec les vrais besoins, sans laisser entrer des doublons ou des fautes.
+
+## Mots-clés (proposé par Claude, à valider à la relecture)
+Chaque métier a des mots-clés, comme dans vitrine-express : la recherche les trouve, sans tenir compte des accents.
+- Exemple 1 : taper « kine » trouve « Kinésithérapeute ».
+- Exemple 2 : taper « electricien » (sans accent) trouve « Électricien ».
+
+## Une seule catégorie par métier (proposé par Claude, à valider à la relecture)
+Chaque métier est rangé dans une seule catégorie ; les mots-clés servent à le retrouver par d'autres chemins.
+- Exemple : « Photographe » est dans « Événements » ; taper « photo » le trouve aussi.
+
+## Qui peut faire quoi
+| Action | Qui | Condition |
+|---|---|---|
+| Proposer un métier | Prestataire | — |
+| Accepter / refuser une proposition | Administrateur | — |
+| Ajouter, renommer, désactiver un métier ou une catégorie | Administrateur | — |
+
+## Désactivation / clôture / suppression
+- Désactiver un métier (réversible) : il n'apparaît plus dans les choix pour les nouvelles annonces ; les annonces existantes le gardent.
+- Supprimer un métier : interdit dès qu'une annonce l'a utilisé.
+
+## Valeurs figées
+Aucune.
+
 ## Questions ouvertes
-- Que se passe-t-il si un prestataire ne trouve pas son métier dans la liste ?
+- (aucune)
 
 ## Références
 - `GLOSSAIRE-METIER.md`, `RM-PRESTATAIRES.md`, `PRESENTATION.md` (vitrine-express)
