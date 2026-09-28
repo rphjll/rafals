@@ -38,7 +38,7 @@
 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Sujet 04, Q1 — D'où vient la liste des métiers ?** A. Claude part des 110 métiers de vitrine-express et complète avec la liste officielle (France Travail), en ne gardant que les métiers qui servent des particuliers ; Raphael relit (recommandé) ; B. la liste officielle complète, telle quelle ; C. choisis pour moi.
+1. **Sujet 04, Q2 — Métier manquant** : A. le prestataire propose un nouveau métier, l'administrateur l'accepte (recommandé) ; B. seul l'administrateur ajoute ; C. choisis pour moi.
 
 ## Prochaine action
 Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets validée. Sujets 01, 02, 03 validés. Sujet 04 « Métiers et catégories » en cours (questions prévues, une par une : source de la liste, métier manquant). Ensuite : phase 6 terminée → phase 7 (charte visuelle, maquette cliquable). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
@@ -105,6 +105,7 @@ Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D 
 | 28/09 | 6 | Sujet 03 : quand demander l'adresse ? | Seulement pour un service chez le client, puis gardée | RM-CLIENTS.md |
 | 28/09 | 6 | Sujet 03 : avis d'un client qui part | Gardés, signés « Client ayant quitté rafals » | RM-CLIENTS.md |
 | 28/09 | 6 | Sujet 03 Clients : relecture | Validé (y compris les propositions de Claude) | RM-CLIENTS.md |
+| 28/09 | 6 | Sujet 04 : source de la liste des métiers | Triée : vitrine-express + liste officielle, seulement les métiers pour particuliers, relue par Raphael | RM-METIERS.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
@@ -115,7 +116,7 @@ Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D 
 ## Points à revoir plus tard
 - Réserver `rafals.fr` avant la mise en ligne (libre au 27/09/2026) ; revérifier qu'il est toujours libre.
 - À décider ensemble : pourcentage de la commission ; prix du site vitrine (abonnement ou prix unique à vie).
-- Liste de « tous les métiers qui existent » : choisir la source (ex. répertoire officiel des métiers de France Travail, le « ROME », en ne gardant que les métiers qui servent des particuliers ; ou compléter les 110 de vitrine-express). À décider au lot qui construit la recherche.
+- Construire la liste triée des métiers (vitrine-express + France Travail) et la faire relire à Raphael, au lot des métiers.
 - ⚠️ **Juridique, avant mise en ligne** : prestataires sans SIRET payés en espèces via rafals → risque de travail non déclaré et de responsabilité de la plateforme. Faire vérifier par un avocat ou un expert-comptable.
 - Idée à proposer plus tard : les particuliers peuvent employer quelqu'un sans SIRET pour le ménage, le jardinage ou le petit bricolage, en le payant avec le CESU (chèque emploi service universel) ; rafals pourrait un jour proposer cette formule.
 - Façon de poser les questions : 3 questions sur 4 non comprises le 27/09/2026 → une seule question à la fois, phrases courtes, notion expliquée juste avant.
