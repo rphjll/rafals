@@ -14,7 +14,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 5. `frontend` minimal (Vue + Vite, page d'accueil provisoire)
   - [ ] 6. `demarrer.bat`, `arreter.bat`, `sauver.bat`
   - [ ] 7. Essai : tout démarre, la page s'ouvre ; invariants ; sauvegarde
-- **Question en attente** : validation du plan du lot 0.1
+- **Question en attente** : MinIO n'est plus distribué (mode maintenance depuis 12/2025, plus d'image Docker officielle) → remplacer par : A. Garage (recommandé) ; B. RustFS ; C. MinIO via l'image Chainguard. Puis validation du plan du lot 0.1.
 - **En pause** : aucune
 
 ## Définition de « terminé »
