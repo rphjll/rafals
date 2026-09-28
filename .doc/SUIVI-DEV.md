@@ -56,3 +56,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 
 ## Journal
 - **28/09/2026** — Démarrage — Plan de développement écrit (phase 8). Décisions : niveaux 3 à 6 découpés plus tard, juste après l'écriture de leurs règles (méthode § 0.5, précision phase 6) ; mails de test en local par un conteneur dédié (détail au lot 1.1).
+- **28/09/2026** — Démarrage terminé — Plan validé par Raphael. Pas de Notion : le suivi reste dans ce fichier. Prochain lot : 0.1.

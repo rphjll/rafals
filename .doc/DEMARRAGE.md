@@ -1,7 +1,7 @@
 # Démarrage du projet — fichier de reprise
 
 > Tenu à jour par Claude après CHAQUE réponse du développeur. C'est ce fichier qui permet de reprendre dans une nouvelle conversation.
-> État général : **En cours** (devient « Démarrage terminé » à la fin de la phase 8)
+> État général : **Démarrage terminé** (le 28/09/2026). La suite se suit dans `.doc/SUIVI-DEV.md`.
 > Dernière mise à jour : 28/09/2026
 
 ## Analyse du dossier (faite le 27/09/2026)
@@ -32,16 +32,16 @@
 - [x] 5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md` (terminée le 27/09/2026)
 - [x] 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md` (terminée le 28/09/2026)
 - [x] 7. Charte et conventions d'écran → `CHARTE-VISUELLE.md`, `CONVENTIONS-IHM.md` (terminée le 28/09/2026)
-- [ ] 8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
+- [x] 8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md` (terminée le 28/09/2026)
 
 ## Phase en cours
-8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
+Aucune : démarrage terminé.
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Phase 8 — Validation du plan** (`PLAN-DEV.md`, `SUIVI-DEV.md` : 4 lots de niveau 0, 4 de niveau 1, 7 de niveau 2, niveaux 3 à 6 découpés plus tard) : A. valide ; B. à corriger.
+- (aucune)
 
 ## Prochaine action
-Phase 8 : les 5 fichiers sont écrits. Attendre la validation du plan. Ensuite : question Notion (oui/non), marquer le démarrage terminé, sauvegarde, présenter le lot 0.1.
+Démarrage terminé. Prochain lot : 0.1 (voir `.doc/SUIVI-DEV.md`).
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -111,6 +111,8 @@ Phase 8 : les 5 fichiers sont écrits. Attendre la validation du plan. Ensuite :
 | 28/09 | 7 | Ambiance de couleurs | B. Vert sauge (vert #2F6B4F, touche orange #D9793A) | DEMARRAGE.md (charte à écrire) |
 | 28/09 | 7 | Forme des boutons | Arrondis (10 px) | CHARTE-VISUELLE.md |
 | 28/09 | 7 | Conventions d'écran | Validées | CONVENTIONS-IHM.md |
+| 28/09 | 8 | Plan de développement | Validé | PLAN-DEV.md, SUIVI-DEV.md |
+| 28/09 | 8 | Notion ? | Non, le fichier SUIVI-DEV.md suffit | CLAUDE.md, REGLES-PROJET.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin

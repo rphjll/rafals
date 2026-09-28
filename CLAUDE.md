@@ -78,7 +78,7 @@ Dès la 2ᵉ apparition d'une même logique ou d'un même style, la regrouper à
 
 ## Suivi
 
-- `.doc/SUIVI-DEV.md` (et Notion : base `<identifiant>`) : états ⬜ à faire / 🟡 en cours / 🔎 à vérifier / ✅ fait.
+- `.doc/SUIVI-DEV.md` (pas de Notion, décidé le 28/09/2026) : états ⬜ à faire / 🟡 en cours / 🔎 à vérifier / ✅ fait.
 - Claude met « à vérifier », jamais « fait ». Seul Raphael passe un lot à « fait ». Sans validation explicite, lui demander.
 - Fin de chaque lot : repasser `.doc/INVARIANTS-TRANSVERSES.md`.
 - Règles métier : lire `.doc/SUIVI_REGLES_METIER.md` avant de répondre sur une règle.
