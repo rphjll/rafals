@@ -309,7 +309,7 @@ label{display:block;font-weight:600;font-size:13px;margin-bottom:6px}
 <script>
 (function(){
   var app=document.getElementById('app');
-  var etat={amb:'',forme:'',annonce:'karim'};
+  var etat={amb:'amb-sauge',forme:'',annonce:'karim'};
   try{var s=JSON.parse(localStorage.getItem('rafals-maquette')||'{}');if(s.amb!==undefined)etat.amb=s.amb;if(s.forme!==undefined)etat.forme=s.forme;}catch(e){}
   function sauver(){try{localStorage.setItem('rafals-maquette',JSON.stringify({amb:etat.amb,forme:etat.forme}))}catch(e){}}
   function appliquer(){

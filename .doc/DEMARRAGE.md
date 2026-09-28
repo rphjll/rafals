@@ -38,11 +38,10 @@
 7. Charte et conventions d'écran → `CHARTE-VISUELLE.md`, `CONVENTIONS-IHM.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Phase 7, Q2 — Forme des boutons** (dans la maquette, avec Vert sauge) : A. Arrondis ; B. Carrés ; C. Pilules.
-Ensuite : conventions d'écran (proposer celles de la méthode § 6.2).
+1. **Phase 7, Q3 — Conventions d'écran** (`technique/CONVENTIONS-IHM.md`, reprises de la méthode § 6.2) : A. valide ; B. à corriger.
 
 ## Prochaine action
-Phase 7 : maquette cliquable publiée (3 ambiances × 3 formes de boutons ; accueil, résultats, annonce, fenêtre de confirmation, bouton verrouillé avec bulle). Attendre les choix de Raphael, puis écrire `technique/CHARTE-VISUELLE.md` et `technique/CONVENTIONS-IHM.md`.
+Phase 7 : `CHARTE-VISUELLE.md` écrit (Vert sauge, boutons arrondis) ; `CONVENTIONS-IHM.md` écrit, attend la validation de Raphael. Ensuite : cocher la phase 7, passer à la phase 8 (plan).
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -110,6 +109,7 @@ Phase 7 : maquette cliquable publiée (3 ambiances × 3 formes de boutons ; accu
 | 28/09 | 6 | Sujet 04 : métier manquant | Le prestataire le propose, l'administrateur accepte ; « Autre » en attendant | RM-METIERS.md |
 | 28/09 | 6 | Sujet 04 Métiers : relecture | Validé ; phase 6 terminée | RM-METIERS.md |
 | 28/09 | 7 | Ambiance de couleurs | B. Vert sauge (vert #2F6B4F, touche orange #D9793A) | DEMARRAGE.md (charte à écrire) |
+| 28/09 | 7 | Forme des boutons | Arrondis (10 px) | CHARTE-VISUELLE.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
