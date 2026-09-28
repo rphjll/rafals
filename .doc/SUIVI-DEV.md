@@ -11,7 +11,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 2. Composant de choix d'un métier + page « Trouver un prestataire » (choix du métier) + proposer un métier
   - [ ] 3. Administration : onglets « Propositions de métiers » et « Métiers »
   - [ ] 4. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 2.2
+- **Question en attente** : validation de la maquette du lot 2.2 (https://claude.ai/artifact/42y7FG6oGyj6168hqHZswG, fichier `.doc/ihm/maquette-lot-2.2-metiers.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
