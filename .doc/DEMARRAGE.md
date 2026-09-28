@@ -38,7 +38,7 @@
 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Sujet 03, Q2 — Avis d'un client qui ferme son compte** : A. gardés, signés « Client ayant quitté rafals » (recommandé) ; B. effacés ; C. choisis pour moi.
+1. **Relecture de RM-CLIENTS.md** (propositions de Claude : prestataire voit les coordonnées 3 mois après le dernier rendez-vous, téléchargement des données, fermeture de compte, comptes inactifs fermés après 3 ans) : A. valide ; B. à corriger.
 
 ## Prochaine action
 Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D et E. Liste des 16 sujets validée. Sujets 01 et 02 validés. Sujet 03 « Clients et données personnelles » en cours (questions prévues, une par une : quand demander l'adresse, que deviennent les avis quand un client ferme son compte ; puis propositions RGPD à valider). Ensuite : écrire les règles des niveaux 1 et 2, une question à la fois.
@@ -103,6 +103,7 @@ Phase 6 : lire l'étape 5 et le § 7.1 de la méthode (niveaux), les modèles D 
 | 27/09 | 6 | Sujet 02 : visible tout de suite ? | Oui, l'administrateur peut bloquer ensuite | RM-PRESTATAIRES.md |
 | 28/09 | 6 | Sujet 02 Prestataires : relecture | Validé (y compris les propositions de Claude) | RM-PRESTATAIRES.md |
 | 28/09 | 6 | Sujet 03 : quand demander l'adresse ? | Seulement pour un service chez le client, puis gardée | RM-CLIENTS.md |
+| 28/09 | 6 | Sujet 03 : avis d'un client qui part | Gardés, signés « Client ayant quitté rafals » | RM-CLIENTS.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
