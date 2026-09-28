@@ -8,6 +8,7 @@ import ConnexionPage from './pages/ConnexionPage.vue'
 import InscriptionPage from './pages/InscriptionPage.vue'
 import MotDePasseOubliePage from './pages/MotDePasseOubliePage.vue'
 import NouveauMotDePassePage from './pages/NouveauMotDePassePage.vue'
+import TrouverPage from './pages/TrouverPage.vue'
 import VerifierAdressePage from './pages/VerifierAdressePage.vue'
 
 // Les entrées du menu pas encore construites mènent à « Bientôt disponible » :
@@ -28,7 +29,7 @@ export const routeur = createRouter({
     // Adresses des liens envoyés par mail (voir backend/app/services/comptes.py)
     { path: '/verifier-adresse', name: 'verifier-adresse', component: VerifierAdressePage },
     { path: '/nouveau-mot-de-passe', name: 'nouveau-mot-de-passe', component: NouveauMotDePassePage },
-    { path: '/trouver', name: 'trouver', ...bientot('Trouver un prestataire', 'avec la recherche (niveau 4)') },
+    { path: '/trouver', name: 'trouver', component: TrouverPage },
     { path: '/proposer', name: 'proposer', ...bientot('Proposer mes services', 'au lot 2.5') },
     { path: '/rendez-vous', name: 'rendez-vous', ...bientot('Mes rendez-vous', 'avec les rendez-vous (niveau 4)') },
     { path: '/compte', name: 'compte', component: ComptePage },

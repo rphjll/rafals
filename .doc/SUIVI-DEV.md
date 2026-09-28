@@ -7,11 +7,12 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 2.2 — Écrans : choix d'un métier (recherche par lettres, dossiers) ; administration des métiers et des propositions (Raphael : « je valide le lot 2.1 »)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. Maquette cliquable validée  ← on en est là
-  - [ ] 2. Composant de choix d'un métier + page « Trouver un prestataire » (choix du métier) + proposer un métier
-  - [ ] 3. Administration : onglets « Propositions de métiers » et « Métiers »
-  - [ ] 4. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 2.2 (https://claude.ai/artifact/42y7FG6oGyj6168hqHZswG, fichier `.doc/ihm/maquette-lot-2.2-metiers.html`)
+  - [x] 1. Maquette cliquable validée le 28/09/2026 (« Oui, vas-y »)
+  - [x] 2. `AppChoixMetier` (recherche, clavier, dossiers, proposer) + `useMetiers` + page « Trouver un prestataire » ; `AppSelection`
+  - [x] 3. Administration découpée en un fichier par onglet ; onglets « Propositions de métiers » et « Métiers » ; compteurs
+  - [x] 4. `RM-CHOIX-METIER-IHM.md`, `RM-TROUVER-IHM.md` + mises à jour ; aucune faute ; parcours complet par les écrans (proposition → acceptation → métier trouvé) ; essai nettoyé (1 compte, 128 métiers) ; invariants ; sauvegarde
+  - [ ] 5. Essai par Raphael  ← on en est là
+- **Question en attente** : Raphael essaie « Trouver un prestataire » et les onglets Métiers, puis valide (ou non) le lot 2.2
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -47,7 +48,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
 | 2.1 | Serveur | Métiers et catégories : liste triée (relue par Raphael), mots-clés, recherche sans accents, propositions de métier | RM-METIERS | 1.3 | ✅ |
-| 2.2 | Écrans | Choix d'un métier (recherche par lettres, dossiers) ; Administration des métiers et des propositions | RM-METIERS | 2.1, 1.4 | 🟡 |
+| 2.2 | Écrans | Choix d'un métier (recherche par lettres, dossiers) ; Administration des métiers et des propositions | RM-METIERS | 2.1, 1.4 | 🔎 |
 | 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | ⬜ |
 | 2.4 | Serveur | Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne | RM-PRESTATAIRES | 2.3 | ⬜ |
 | 2.5 | Écrans | Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage | RM-PRESTATAIRES | 2.4, 2.2 | ⬜ |
@@ -83,3 +84,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Lot 1.4 validé par Raphael (« cb », confirmé par « Oui, je valide » ; base propre : seul son compte reste) → ✅. **Niveau 1 terminé.** Lot 2.1 commencé.
 - **28/09/2026** — Lot 2.1 — MLD validé ; liste de 14 dossiers et 128 métiers proposée en page de relecture (avec recherche d'essai) et validée ; écartés de vitrine-express listés avec leur raison. `schema_v4.sql` exécuté (extension `unaccent`, tables `categorie_metier`, `metier` avec mots-clés, `proposition_metier`). Chargement relançable par code (`charger-metiers.bat`) ; les tests chargent la liste dans la base de test au démarrage. Serveur : recherche sans accents (nom, mot du nom, mot-clé ; jokers `%`/`_` neutralisés), dossiers, propositions (refus si le métier existe), décision (acceptée/remplacée/refusée), création et modification de métier par l'administrateur, journal. Problème : 1er jet de la recherche confus (brouillon laissé dans le code) → réécrit proprement avant les tests. Tests : 54 OK. Invariants : architecture OK ; sécurité OK (propositions : connecté ; gestion : administrateur) ; données OK (vraie base : 128 métiers, aucune donnée d'essai) ; tests OK ; interface : écrans au lot 2.2 ; documentation : `RM-METIERS.md` précisé, `CLAUDE.md` = `REGLES-PROJET.md`.
 - **28/09/2026** — Lot 2.1 validé par Raphael (« je valide le lot 2.1 ») → ✅. Lot 2.2 commencé.
+- **28/09/2026** — Lot 2.2 — Maquette (avec la vraie liste) validée, puis : composant `AppChoixMetier` (recherche dès la 1re lettre avec pause de 150 ms, clavier ↑ ↓ Entrée, dossiers, « Proposer un métier » avec fenêtre, connecté ou non), page « Trouver un prestataire » provisoire, `AppSelection`. Administration découpée en `components/admin/` (un fichier par onglet ; la page ne gère plus que les onglets, l'accès et les compteurs) + onglets Propositions (accepter dans un dossier, remplacer par un métier existant via `AppChoixMetier`, refuser) et Métiers (filtre, créer, modifier, désactiver). Serveur inchangé. Problème : le shell a refusé de fabriquer la maquette en une commande → fabriquée par un petit programme dans le dossier temporaire. Essais : aucune faute ; parcours complet par les écrans ; nettoyage d'un métier « ZZTEST » vérifié. Invariants : interface OK (composant réutilisé 2 fois dès ce lot, erreurs dans les fenêtres, tableaux défilants, `RM-*-IHM.md` écrits) ; sécurité, données OK ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`.

@@ -28,4 +28,5 @@
 | `AppAlerte` | Bandeau posé là où l'on regarde : erreur du serveur au-dessus du bouton, information (lot 1.2) | `etat` : erreur, attente, ok |
 | `AppSeparateur` | Trait avec un petit texte au milieu, ex. « déjà inscrit ? » (lot 1.2) | contenu |
 | `AppChampFichier` | Zone « Choisir un fichier » (lot 1.4) | `etiquette`, `aide`, `accepte` (formats), `v-model` (le fichier) |
+| `AppSelection` | Liste déroulante (lot 2.2) | `etiquette`, `options` (valeur, texte), `obligatoire`, `v-model` |
 | `AppMessage` + `useMessage()` | Message court après une action, 3 secondes | `afficherMessage(texte, 'ok' \| 'erreur')` ; placé une seule fois dans `App.vue` |

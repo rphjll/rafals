@@ -46,5 +46,8 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AppAlerte` — bandeau d'erreur ou d'information posé là où l'on regarde (lot 1.2).
 - `AppSeparateur` — trait avec un petit texte au milieu (lot 1.2).
 - `AppChampFichier` — zone « Choisir un fichier » (lot 1.4).
+- `AppSelection` — liste déroulante (lot 2.2).
+- `AppChoixMetier` (dans `components/`) — choix d'un métier par recherche ou par dossier, avec « Proposer un métier » (lot 2.2).
+- Écrans d'administration : un fichier par onglet dans `components/admin/`.
 - Dates : toujours par `frontend/src/outils/dates.ts` (« 28/09/2026 à 18 h 40 », heure de Paris ; âge).
 - Appels au serveur : toujours par `frontend/src/api.ts` (messages d'erreur du serveur montrés tels quels).

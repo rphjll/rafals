@@ -18,7 +18,6 @@ Utilisée par les entrées du menu pas encore construites, et pour toute adresse
 
 | Adresse | Titre | Texte |
 |---|---|---|
-| `/trouver` | Trouver un prestataire | Cette page arrive avec la recherche (niveau 4). |
 | `/proposer` | Proposer mes services | Cette page arrive au lot 2.5. |
 | `/rendez-vous` | Mes rendez-vous | Cette page arrive avec les rendez-vous (niveau 4). |
 | toute autre adresse | Page introuvable | Cette adresse ne correspond à aucune page de rafals. |
