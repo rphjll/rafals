@@ -1,8 +1,8 @@
-"""Miroir exact des tables de db/schema_v2.sql (compte, session, jeton_mail). Aucun calcul ici."""
+"""Miroir exact des tables compte, session, jeton_mail (db/schema_v2.sql, schema_v3.sql). Aucun calcul ici."""
 
 from datetime import date, datetime
 
-from sqlalchemy import BigInteger, Date, DateTime, ForeignKey, Identity, Integer, Text, func
+from sqlalchemy import BigInteger, Boolean, Date, DateTime, ForeignKey, Identity, Integer, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.modeles.base import Base
@@ -23,6 +23,7 @@ class Compte(Base):
     bloque_jusqu_au: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     derniere_connexion_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    est_administrateur: Mapped[bool] = mapped_column(Boolean, server_default="false")  # schema_v3
 
 
 class SessionConnexion(Base):

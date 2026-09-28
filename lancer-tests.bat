@@ -8,7 +8,7 @@ echo [2/3] Base de test : copie de la structure de la vraie base...
 docker compose exec -T db sh -s < db\copier_structure_vers_test.sh
 if errorlevel 1 goto erreur
 echo [3/3] Tests...
-docker compose exec -T -e POSTGRES_DB=rafals_test_db backend pytest -v
+docker compose exec -T -e POSTGRES_DB=rafals_test_db -e S3_COMPARTIMENT=rafals-test backend pytest -v
 pause
 exit /b 0
 

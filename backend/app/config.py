@@ -18,6 +18,13 @@ SMTP_HOTE = os.environ.get("SMTP_HOTE", "mailpit")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "1025"))
 MAIL_EXPEDITEUR = os.environ.get("MAIL_EXPEDITEUR", "rafals <ne-pas-repondre@rafals.fr>")
 
+# Stockage de fichiers compatible S3 : Garage sur le PC, stockage d'OVH en ligne
+S3_ADRESSE = os.environ.get("S3_ADRESSE", "http://garage:3900")
+S3_REGION = os.environ.get("S3_REGION", "garage")
+S3_COMPARTIMENT = os.environ.get("S3_COMPARTIMENT", "rafals")
+S3_CLE_ACCES = os.environ.get("S3_CLE_ACCES", "")
+S3_CLE_SECRETE = os.environ.get("S3_CLE_SECRETE", "")
+
 # Adresse des écrans, pour fabriquer les liens envoyés par mail
 ADRESSE_SITE = os.environ.get("ADRESSE_SITE", "http://localhost:5174")
 

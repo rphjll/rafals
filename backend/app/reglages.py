@@ -10,7 +10,13 @@ from zoneinfo import ZoneInfo
 FUSEAU_AFFICHAGE = ZoneInfo("Europe/Paris")
 
 AGE_MINIMUM = 16
+# Entre AGE_MINIMUM et AGE_MAJORITE : accord des parents vérifié avant de réserver ou publier
+AGE_MAJORITE = 18
 MOT_DE_PASSE_LONGUEUR_MIN = 10
+
+# Accord des parents : formats et taille acceptés (validé par Raphael le 28/09/2026)
+ACCORD_TYPES_ACCEPTES = {"application/pdf": "PDF", "image/jpeg": "JPG", "image/png": "PNG"}
+ACCORD_TAILLE_MAX_OCTETS = 5 * 1024 * 1024
 
 SESSION_DUREE = timedelta(days=30)
 LIEN_MOT_DE_PASSE_DUREE = timedelta(hours=1)

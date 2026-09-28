@@ -64,8 +64,16 @@ On reste connecté 30 jours sur son appareil, sauf si on clique « Se déconnect
 ## Valeurs figées
 Aucune pour ce sujet.
 
+## Accord des parents : dépôt et vérification (décidé au lot 1.3, validé par Raphael le 28/09/2026)
+- Le compte de 16 ou 17 ans dépose lui-même l'accord signé de ses parents : **PDF, JPG ou PNG, 5 Mo au maximum** (rafals vérifie le contenu du fichier, pas seulement son nom).
+- **Un seul accord en attente à la fois.** Un administrateur le regarde, puis l'accepte ou le **refuse avec un motif** ; après un refus, on peut en déposer un nouveau.
+  - Ex. Inès dépose une photo floue → refusée, motif « Signature illisible » → elle renvoie un PDF → accepté.
+- **Peut réserver ou publier** = adresse vérifiée ET (18 ans ou plus, OU accord accepté). Ex. Lucas, 16 ans, adresse vérifiée, accord en attente → non ; accepté → oui.
+- Chaque dépôt et chaque décision sont écrits au journal des actions.
+- Le 1er administrateur est nommé une seule fois avec `nommer-premier-administrateur.bat` ; les suivants depuis l'écran Administration.
+
 ## Questions ouvertes
-- Comment l'accord des parents est envoyé et vérifié (document déposé puis contrôlé par l'administrateur ?) — à trancher avec le sujet 16 « Administration ».
+- (aucune)
 
 ## Références
 - `GLOSSAIRE-METIER.md`, `PRESENTATION.md`

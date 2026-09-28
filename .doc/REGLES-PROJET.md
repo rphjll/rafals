@@ -31,8 +31,8 @@ Raphael, débutant en programmation. Explique le « pourquoi » de chaque choix 
 - Serveur : Python + FastAPI
 - Écrans : Vue 3 + TypeScript + Vite + Tailwind CSS, composants faits main
 - Base : PostgreSQL, pilote psycopg version 3, SQLAlchemy 2
-- Fichiers : MinIO en local, stockage S3 en ligne
-- Tout tourne dans Docker : conteneurs `db`, `backend`, `frontend`, `mailpit` (mails de test) ; stockage de fichiers à choisir avant le lot 1.3
+- Fichiers : Garage en local, stockage S3 d'OVH en ligne (MinIO abandonné par son éditeur en 2025)
+- Tout tourne dans Docker : conteneurs `db`, `backend`, `frontend`, `mailpit` (mails de test), `garage` (fichiers)
 - Ports côté PC : serveur 8001, écrans 5174, base 5433, mails de test 8025
 - Hébergement prévu : OVHcloud, France (détail et portabilité : `.doc/technique/HEBERGEMENT.md`)
 - Les fichiers `.bat` s'écrivent sans aucun accent ni tiret long.

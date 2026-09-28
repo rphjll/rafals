@@ -43,5 +43,20 @@ services:
     ports:
       - "8025:8025"
 
+  # Le "placard" a fichiers (compatible S3) : accords des parents, photos, factures.
+  # Aucune porte ouverte sur le PC : seul le serveur de rafals lui parle.
+  # A preparer une seule fois par PC avec preparer-stockage.bat
+  garage:
+    image: dxflrs/garage:v2.3.0
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN}
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml:ro
+      - rafals_garage_meta:/var/lib/garage/meta
+      - rafals_garage_data:/var/lib/garage/data
+
 volumes:
   rafals_db_data:
+  rafals_garage_meta:
+  rafals_garage_data:

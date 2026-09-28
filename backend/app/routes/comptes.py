@@ -1,26 +1,18 @@
 """Adresses des comptes et de la connexion (appelées par les écrans du lot 1.2)."""
 
-from datetime import UTC, date, datetime
-from typing import Annotated
+from datetime import date, datetime
 
-from fastapi import APIRouter, Cookie, Depends, Request, Response
+from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app import config, reglages
-from app.db import ouvrir_base
 from app.modeles.comptes import Compte
+from app.routes.dependances import Base, CompteConnecte, CookieSession, maintenant
 from app.services import comptes as service
-from app.services.erreurs import ErreurRegle
+from app.services import droits
 
 routeur = APIRouter(prefix="/api")
-
-Base = Annotated[Session, Depends(ouvrir_base)]
-CookieSession = Annotated[str | None, Cookie(alias=reglages.NOM_COOKIE_SESSION)]
-
-
-def maintenant() -> datetime:
-    return datetime.now(UTC)
 
 
 class Inscription(BaseModel):
@@ -56,15 +48,21 @@ class CompteVisible(BaseModel):
     prenom: str
     nom: str
     email_verifie: bool
+    est_administrateur: bool
+    accord_parental_necessaire: bool
+    peut_reserver_ou_publier: bool
 
     @classmethod
-    def depuis(cls, compte: Compte) -> "CompteVisible":
+    def depuis(cls, db: Session, compte: Compte, moment: datetime) -> "CompteVisible":
         return cls(
             id=compte.id,
             email=compte.email,
             prenom=compte.prenom,
             nom=compte.nom,
             email_verifie=compte.email_verifie_le is not None,
+            est_administrateur=bool(compte.est_administrateur),
+            accord_parental_necessaire=droits.accord_parental_necessaire(compte, moment),
+            peut_reserver_ou_publier=droits.peut_reserver_ou_publier(db, compte, moment),
         )
 
 
@@ -74,9 +72,10 @@ class Message(BaseModel):
 
 @routeur.post("/comptes", status_code=201)
 def inscription(donnees: Inscription, db: Base) -> CompteVisible:
-    compte = service.inscrire(db, **donnees.model_dump(), maintenant=maintenant())
+    moment = maintenant()
+    compte = service.inscrire(db, **donnees.model_dump(), maintenant=moment)
     db.commit()
-    return CompteVisible.depuis(compte)
+    return CompteVisible.depuis(db, compte, moment)
 
 
 @routeur.post("/comptes/verification")
@@ -95,12 +94,13 @@ def renvoi_verification(donnees: AdresseMail, db: Base) -> Message:
 
 @routeur.post("/connexion")
 def connexion(donnees: Connexion, requete: Request, reponse: Response, db: Base) -> CompteVisible:
+    moment = maintenant()
     compte, jeton = service.connecter(
         db,
         email=donnees.email,
         mot_de_passe=donnees.mot_de_passe,
         appareil=requete.headers.get("user-agent"),
-        maintenant=maintenant(),
+        maintenant=moment,
     )
     db.commit()
     reponse.set_cookie(
@@ -111,7 +111,7 @@ def connexion(donnees: Connexion, requete: Request, reponse: Response, db: Base)
         samesite="lax",
         secure=config.COOKIE_SECURISE,
     )
-    return CompteVisible.depuis(compte)
+    return CompteVisible.depuis(db, compte, moment)
 
 
 @routeur.post("/deconnexion")
@@ -123,11 +123,8 @@ def deconnexion(reponse: Response, db: Base, jeton: CookieSession = None) -> Mes
 
 
 @routeur.get("/moi")
-def moi(db: Base, jeton: CookieSession = None) -> CompteVisible:
-    compte = service.compte_connecte(db, jeton, maintenant())
-    if compte is None:
-        raise ErreurRegle("Vous n'êtes pas connecté.", 401)
-    return CompteVisible.depuis(compte)
+def moi(db: Base, compte: CompteConnecte) -> CompteVisible:
+    return CompteVisible.depuis(db, compte, maintenant())
 
 
 @routeur.post("/mot-de-passe/oubli")

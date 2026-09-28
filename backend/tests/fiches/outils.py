@@ -5,7 +5,7 @@ from datetime import UTC, date, datetime, timedelta
 from typing import Any
 from uuid import uuid4
 
-from sqlalchemy import Date, DateTime, Integer, Text, inspect
+from sqlalchemy import Boolean, Date, DateTime, Integer, Text, inspect
 from sqlalchemy.orm import Session
 
 
@@ -32,6 +32,8 @@ def valeurs(modele: type, variante: int, imposees: dict[str, Any] | None = None)
             resultat[colonne.key] = datetime(2026, 1, 1, 9, 0, tzinfo=UTC) + timedelta(days=variante)
         elif isinstance(colonne.type, Date):
             resultat[colonne.key] = date(1990, 1, 1) + timedelta(days=variante)
+        elif isinstance(colonne.type, Boolean):
+            resultat[colonne.key] = variante == 1
         elif isinstance(colonne.type, Integer):
             resultat[colonne.key] = variante
         else:

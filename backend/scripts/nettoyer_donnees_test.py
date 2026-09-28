@@ -7,20 +7,39 @@ Chaque ligne est classée :
 
 Lancé par nettoyer-donnees-test.bat, qui fait une sauvegarde de la base juste avant.
 À compléter à chaque nouvelle table qui contient des données saisies à la main.
+
+L'effacement se fait avec le compte ADMINISTRATEUR de la base : c'est la seule exception à
+« on n'efface jamais le journal » (les lignes du journal d'un compte d'essai sont elles-mêmes des essais).
 """
 
-from sqlalchemy import text
+import os
 
+from sqlalchemy import URL, create_engine, text
+
+from app import config
 from app.db import moteur
+from app.services import stockage
 
 # (table, colonne, marque de test au format SQL LIKE) — une ligne par table concernée.
 MARQUES: list[tuple[str, str, str]] = [
     ("compte", "email", "%@example.com"),
 ]
 
-# Lignes rattachées à effacer AVANT la ligne principale (la base refuse sinon) : table → [(table liée, colonne FK)]
-RATTACHEES: dict[str, list[tuple[str, str]]] = {
-    "compte": [("session", "compte_id"), ("jeton_mail", "compte_id")],
+# Lignes rattachées à effacer AVANT la ligne principale, dans cet ordre (la base refuse sinon).
+RATTACHEES: dict[str, list[str]] = {
+    "compte": [
+        "DELETE FROM journal_action WHERE auteur_id = :id OR (table_cible = 'compte' AND ligne_id = :id)"
+        " OR (table_cible = 'accord_parental' AND ligne_id IN (SELECT id FROM accord_parental WHERE compte_id = :id))",
+        "DELETE FROM accord_parental WHERE compte_id = :id",
+        "DELETE FROM fichier WHERE depose_par_id = :id",
+        "DELETE FROM session WHERE compte_id = :id",
+        "DELETE FROM jeton_mail WHERE compte_id = :id",
+    ],
+}
+
+# Fichiers rangés dans le stockage, à retirer aussi : table → requête qui donne leurs clés
+FICHIERS_RATTACHES: dict[str, str] = {
+    "compte": "SELECT cle_stockage FROM fichier WHERE depose_par_id = :id",
 }
 
 # Identifiants de vraies lignes à ne jamais toucher, même si elles portent une marque.
@@ -31,8 +50,20 @@ PROTEGEES: dict[str, list[int]] = {}
 MOTS_DOUTEUX = ["%test%", "%essai%", "%zz%"]
 
 
-def main() -> None:
+def moteur_administrateur():
+    return create_engine(
+        URL.create(
+            "postgresql+psycopg",
+            username=os.environ["POSTGRES_USER"],
+            password=os.environ["POSTGRES_PASSWORD"],
+            host=config.DB_HOTE,
+            port=config.DB_PORT,
+            database=config.DB_NOM,
+        )
+    )
 
+
+def main() -> None:
     a_effacer: list[tuple[str, str, int]] = []
     with moteur.connect() as connexion:
         for table, colonne, marque in MARQUES:
@@ -66,12 +97,17 @@ def main() -> None:
         print("Annulé : rien n'a été effacé.")
         return
 
-    with moteur.begin() as connexion:
+    cles_a_retirer: list[str] = []
+    with moteur_administrateur().begin() as connexion:
         for table, _valeur, identifiant in a_effacer:
-            for table_liee, colonne in RATTACHEES.get(table, []):
-                connexion.execute(text(f"DELETE FROM {table_liee} WHERE {colonne} = :id"), {"id": identifiant})
+            if table in FICHIERS_RATTACHES:
+                cles_a_retirer += connexion.execute(text(FICHIERS_RATTACHES[table]), {"id": identifiant}).scalars().all()
+            for requete in RATTACHEES.get(table, []):
+                connexion.execute(text(requete), {"id": identifiant})
             connexion.execute(text(f"DELETE FROM {table} WHERE id = :id"), {"id": identifiant})
-    print(f"{len(a_effacer)} ligne(s) effacée(s).")
+    for cle in cles_a_retirer:
+        stockage.supprimer(cle)
+    print(f"{len(a_effacer)} ligne(s) effacée(s), {len(cles_a_retirer)} fichier(s) retiré(s) du stockage.")
 
 
 if __name__ == "__main__":

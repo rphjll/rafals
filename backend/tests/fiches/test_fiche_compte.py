@@ -1,4 +1,4 @@
-"""Test de fiche du compte : ajout → modification → fiches liées (session, lien par mail)
+"""Test de fiche du compte : ajout → modification → fiches liées (session, lien par mail, fichier)
 → suppression du compte refusée tant qu'un lien existe → suppression."""
 
 import pytest
@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.modeles.comptes import Compte, JetonMail, SessionConnexion
+from app.modeles.fichiers import Fichier
 from tests.fiches.outils import relire_et_comparer, valeurs
 
 # Rubriques limitées par la base à une liste de valeurs (contrainte jeton_mail_usage_connu)
@@ -42,6 +43,7 @@ def test_fiche_compte(base: Session) -> None:
     for modele, imposees in (
         (SessionConnexion, lambda v: {"compte_id": compte.id}),
         (JetonMail, lambda v: {"compte_id": compte.id, "usage": USAGES[v]}),
+        (Fichier, lambda v: {"depose_par_id": compte.id}),
     ):
         ajout_lie = valeurs(modele, 1, imposees(1))
         liee = modele(**ajout_lie)
