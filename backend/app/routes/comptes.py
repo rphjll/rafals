@@ -7,7 +7,10 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app import config, reglages
+from sqlalchemy import select
+
 from app.modeles.comptes import Compte
+from app.modeles.prestataires import Prestataire
 from app.routes.dependances import Base, CompteConnecte, CookieSession, maintenant
 from app.services import comptes as service
 from app.services import droits
@@ -53,6 +56,7 @@ class CompteVisible(BaseModel):
     est_administrateur: bool
     accord_parental_necessaire: bool
     peut_reserver_ou_publier: bool
+    prestataire_id: int | None  # rempli quand la personne propose ses services (lot 2.3)
 
     @classmethod
     def depuis(cls, db: Session, compte: Compte, moment: datetime) -> "CompteVisible":
@@ -67,6 +71,7 @@ class CompteVisible(BaseModel):
             est_administrateur=bool(compte.est_administrateur),
             accord_parental_necessaire=droits.accord_parental_necessaire(compte, moment),
             peut_reserver_ou_publier=droits.peut_reserver_ou_publier(db, compte, moment),
+            prestataire_id=db.scalar(select(Prestataire.id).where(Prestataire.compte_id == compte.id)),
         )
 
 

@@ -18,6 +18,14 @@ MOT_DE_PASSE_LONGUEUR_MIN = 10
 ACCORD_TYPES_ACCEPTES = {"application/pdf": "PDF", "image/jpeg": "JPG", "image/png": "PNG"}
 ACCORD_TAILLE_MAX_OCTETS = 5 * 1024 * 1024
 
+# Profil prestataire (RM-PRESTATAIRES.md ; valeurs choisies par Claude le 28/09/2026 en mode « tout seul », à valider)
+PRESTATAIRE_DISTANCE_MAX_KM = 100
+PRESTATAIRE_METIERS_SECONDAIRES_MAX = 5
+PRESTATAIRE_NOM_LONGUEUR = (2, 80)
+PRESTATAIRE_PRESENTATION_MAX = 1000
+PHOTO_TYPES_ACCEPTES = {"image/jpeg", "image/png"}
+PHOTO_TAILLE_MAX_OCTETS = 5 * 1024 * 1024
+
 SESSION_DUREE = timedelta(days=30)
 LIEN_MOT_DE_PASSE_DUREE = timedelta(hours=1)
 # Non fixé par les règles : choix de Claude le 28/09/2026 (voir journal de SUIVI-DEV.md)

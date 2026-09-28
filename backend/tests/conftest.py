@@ -55,10 +55,12 @@ def pytest_sessionstart(session: pytest.Session) -> None:
         stockage.supprimer(cle)
 
     # Données de référence : la liste des métiers (la base de test ne reçoit que la structure)
+    from scripts.charger_communes import charger as charger_communes
     from scripts.charger_metiers import charger
 
     with Session(moteur) as db:
         charger(db)
+        charger_communes(db)
         db.commit()
 
 

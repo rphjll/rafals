@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from app.db import moteur
-from app.routes import accords, administration, comptes, metiers
+from app.routes import accords, administration, comptes, metiers, prestataires
 from app.services.erreurs import ErreurRegle
 
 app = FastAPI(title="rafals")
@@ -13,6 +13,7 @@ app.include_router(comptes.routeur)
 app.include_router(accords.routeur)
 app.include_router(administration.routeur)
 app.include_router(metiers.routeur)
+app.include_router(prestataires.routeur)
 
 
 @app.exception_handler(ErreurRegle)

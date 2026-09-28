@@ -8,10 +8,11 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Commencé le** : 28/09/2026
 - **Étapes** :
   - [x] 1. MLD proposé et validé le 28/09/2026
-  - [ ] 2. `schema_v5.sql` exécuté ; liste des communes chargée (plan décidé par Claude, mode « tout seul »)  ← on en est là
-  - [ ] 3. Modèles, calculs, routes, tests
-  - [ ] 4. Essais, invariants, sauvegarde
-- **Question en attente** : aucune (mode « tout seul » : questions gardées pour le bilan)
+  - [x] 2. `schema_v5.sql` exécuté ; liste officielle des communes (34 969) téléchargée, rangée dans `backend/app/donnees/communes.json.gz` et chargée (`charger-communes.bat`, relançable)
+  - [x] 3. Modèles (`prestataires.py`), calculs (`communes.py` : recherche, distance ; `prestataires.py` : profil, SIRET, photo, statuts, blocage ; `fichiers.py` : vérification et rangement regroupés), routes (`routes/prestataires.py`) ; tests : 78 OK (24 nouveaux + test de fiche du prestataire)
+  - [x] 4. Essai par les écrans sur la vraie base (profil, photo, blocage) puis nettoyage : seules les données de Raphael restent ; invariants ; sauvegarde
+  - [ ] 5. Bilan à Raphael et validation des précisions « à valider » de `RM-PRESTATAIRES.md`  ← on en est là
+- **Question en attente** : validation du lot 2.3 et des précisions « À VALIDER » de `RM-PRESTATAIRES.md` (bilan du mode « tout seul »)
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -48,7 +49,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 |---|---|---|---|---|---|
 | 2.1 | Serveur | Métiers et catégories : liste triée (relue par Raphael), mots-clés, recherche sans accents, propositions de métier | RM-METIERS | 1.3 | ✅ |
 | 2.2 | Écrans | Choix d'un métier (recherche par lettres, dossiers) ; Administration des métiers et des propositions | RM-METIERS | 2.1, 1.4 | ✅ |
-| 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | 🟡 |
+| 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | 🔎 |
 | 2.4 | Serveur | Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne | RM-PRESTATAIRES | 2.3 | ⬜ |
 | 2.5 | Écrans | Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage | RM-PRESTATAIRES | 2.4, 2.2 | ⬜ |
 | 2.6 | Serveur | Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans | RM-CLIENTS | 1.3 | ⬜ |
@@ -88,3 +89,14 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Retouche hors lot (onglet Métiers) : la désactivation n'était accessible que par une case cachée dans la fenêtre « Modifier » (Raphael ne la trouvait pas, contraire à « une action = un bouton ») → boutons visibles [Désactiver] / [Réactiver] sur chaque ligne.
 - **28/09/2026** — Décision de Raphael : pas de bouton « Supprimer » pour les métiers, désactiver suffit (écrit dans `RM-METIERS.md`). Ajout de la case « Montrer les désactivés » (décochée par défaut) dans l'onglet Métiers. Retouche terminée.
 - **28/09/2026** — Lot 2.3 : MLD validé par Raphael, qui demande de finir « tout seul » (il va se coucher). Décisions notées ci-dessous au fil du lot.
+- **28/09/2026** — Lot 2.3 (mode « tout seul ») — Décisions prises par Claude, sans question, selon les règles :
+  - Plan du lot décidé seul (MLD validé par Raphael avant son départ) ; `schema_v5.sql` exécuté (tables `commune`, `prestataire`, `metier_secondaire`).
+  - Communes : liste officielle geo.api.gouv.fr (34 969, toutes avec un centre) **gardée dans git** (670 Ko compressés) pour installer rafals sans internet ; `telecharger_communes.py` pour la rafraîchir ; chargement en une requête, relançable ; les tests la chargent dans la base de test.
+  - Recherche de commune : début du nom sans accents (« st » = « saint », tiret = espace) ou code postal ; à début égal, le nom le plus court d'abord.
+  - Valeurs choisies (dans `app/reglages.py`, à valider) : distance 1 à 100 km, 5 métiers secondaires au plus, nom affiché 2 à 80 caractères, présentation 1 000 caractères, photo JPG/PNG 5 Mo.
+  - SIRET : contrôle immédiat du format et de la clé de contrôle (Luhn ; règle particulière de La Poste) ; nouveau ou changé → « à vérifier » (lot 2.4).
+  - Statuts : transitions pause/reprise/arrêt par le prestataire, blocage/déblocage par l'administrateur ; bloqué → ne peut rien changer ; arrêté → définitif. L'annulation des rendez-vous au blocage viendra avec les rendez-vous (noté dans le code).
+  - Réutilisation : la vérification et le rangement des fichiers (accord des parents, photo) regroupés dans `services/fichiers.py`.
+  - « moi » renvoie aussi `prestataire_id` (servira à l'en-tête et au lot 2.5).
+  - Problèmes : l'exemple de SIRET de Julie dans les règles ne passe pas la clé de contrôle (retiré du message d'erreur, signalé dans `RM-PRESTATAIRES.md`) ; chemins `/tmp` et `/c/…` non compris par l'outil de téléchargement sous Windows (contournés, pas un défaut de rafals).
+  - Invariants : architecture OK (MLD → SQL → modèles → services → routes → tests) ; sécurité OK (profil : connecté ; blocage et liste : administrateur ; coordonnées non exposées) ; données OK (0 donnée d'essai restante, vérifié) ; tests OK (78) ; interface : écrans au lot 2.5 ; réutilisation OK ; documentation : `RM-PRESTATAIRES.md` précisé (à valider), `CLAUDE.md` = `REGLES-PROJET.md`.

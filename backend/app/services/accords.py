@@ -7,13 +7,10 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.comptes import Compte
-from app.modeles.fichiers import AccordParental, Fichier
-from app.services import journal, stockage
+from app.modeles.fichiers import AccordParental
+from app.services import fichiers, journal
 from app.services.droits import accord_parental_necessaire
 from app.services.erreurs import ErreurRegle
-
-# Premiers octets de chaque format : on vérifie le contenu, pas seulement le nom du fichier
-_SIGNATURES = {"application/pdf": b"%PDF", "image/jpeg": b"\xff\xd8\xff", "image/png": b"\x89PNG"}
 
 
 def dernier_accord(db: Session, compte: Compte) -> AccordParental | None:
@@ -33,25 +30,11 @@ def deposer_accord(
     if precedent is not None and precedent.statut == "en_attente":
         raise ErreurRegle("Un accord attend déjà la décision de l'administrateur.")
 
-    if not contenu:
-        raise ErreurRegle("Le fichier est vide.")
-    formats = ", ".join(reglages.ACCORD_TYPES_ACCEPTES.values())
-    if type_mime not in reglages.ACCORD_TYPES_ACCEPTES or not contenu.startswith(_SIGNATURES[type_mime]):
-        raise ErreurRegle(f"Ce fichier n'est pas accepté : envoyez un {formats}.")
-    if len(contenu) > reglages.ACCORD_TAILLE_MAX_OCTETS:
-        taille_max = reglages.ACCORD_TAILLE_MAX_OCTETS // (1024 * 1024)
-        raise ErreurRegle(f"Le fichier est trop lourd : {taille_max} Mo au maximum (une photo de téléphone suffit).")
-
-    fichier = Fichier(
-        depose_par_id=compte.id,
-        cle_stockage=stockage.deposer(contenu, type_mime),
-        nom_origine=nom_fichier[:200],
-        type_mime=type_mime,
-        taille_octets=len(contenu),
-        depose_le=maintenant,
+    fichiers.verifier(
+        contenu, type_mime,
+        types_acceptes=set(reglages.ACCORD_TYPES_ACCEPTES), taille_max_octets=reglages.ACCORD_TAILLE_MAX_OCTETS,
     )
-    db.add(fichier)
-    db.flush()
+    fichier = fichiers.enregistrer(db, compte, nom_fichier=nom_fichier, type_mime=type_mime, contenu=contenu, maintenant=maintenant)
     accord = AccordParental(compte_id=compte.id, fichier_id=fichier.id, statut="en_attente", depose_le=maintenant)
     db.add(accord)
     db.flush()
