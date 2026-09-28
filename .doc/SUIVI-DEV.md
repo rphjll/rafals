@@ -4,7 +4,18 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- (aucun)
+- **Demande** : Lot 0.1 — Conteneurs Docker, `.env`, `demarrer.bat`, `arreter.bat`, `sauver.bat` (Raphael : « continuer »)
+- **Commencé le** : 28/09/2026
+- **Étapes** :
+  - [ ] 1. Plan du lot proposé à Raphael, fichier par fichier  ← on en est là
+  - [ ] 2. `.gitignore` et `.env` (mots de passe) + `.env.exemple`
+  - [ ] 3. `docker-compose.yml` avec `db`, `minio`
+  - [ ] 4. `backend` minimal (Python + FastAPI, page « rafals démarre »)
+  - [ ] 5. `frontend` minimal (Vue + Vite, page d'accueil provisoire)
+  - [ ] 6. `demarrer.bat`, `arreter.bat`, `sauver.bat`
+  - [ ] 7. Essai : tout démarre, la page s'ouvre ; invariants ; sauvegarde
+- **Question en attente** : validation du plan du lot 0.1
+- **En pause** : aucune
 
 ## Définition de « terminé »
 
@@ -22,7 +33,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 ## Niveau 0 — Amorçage
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 0.1 | Serveur | Conteneurs Docker (`db`, `backend`, `frontend`, `minio`), fichier `.env` (mots de passe, jamais sur GitHub), `demarrer.bat`, `arreter.bat`, `sauver.bat` | CLAUDE.md | — | ⬜ |
+| 0.1 | Serveur | Conteneurs Docker (`db`, `backend`, `frontend`, `minio`), fichier `.env` (mots de passe, jamais sur GitHub), `demarrer.bat`, `arreter.bat`, `sauver.bat` | CLAUDE.md | — | 🟡 |
 | 0.2 | Serveur | Connexion à la base avec les 2 comptes (`rafals_user`, `rafals_app`), adresse de contrôle `/health` | CLAUDE.md | 0.1 | ⬜ |
 | 0.3 | Serveur | Squelette de tests, base `rafals_test_db`, `lancer-tests.bat`, `nettoyer-donnees-test.bat`, `restaurer_base.bat` | CLAUDE.md, méthode étape 10 | 0.2 | ⬜ |
 | 0.4 | Écrans | Squelette Vue + Tailwind avec la charte Vert sauge, en-tête + menu ☰, composants `AppBouton`, `AppChamp`, `AppFenetre`, `AppBadge`, `AppMessage` | CHARTE-VISUELLE, CONVENTIONS-IHM | 0.1 | ⬜ |
