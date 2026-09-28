@@ -1,0 +1,387 @@
+<title>Maquette rafals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --fond:#F4F6F9; --surface:#FFFFFF; --texte:#1B2430; --texte-doux:#5A6677; --bord:#DCE2EA;
+  --primaire:#1D4E89; --primaire-texte:#FFFFFF; --primaire-doux:#E4EDF7; --accent:#E9A23B;
+  --ok:#2E7D4F; --ok-doux:#E3F2E8; --attente:#B26A00; --attente-doux:#FCF0DC; --erreur:#B3261E; --erreur-doux:#FBE4E2;
+  --gris-bouton:#E8ECF1; --gris-texte:#8A94A3;
+  --rayon:10px; --rayon-bouton:10px;
+  --titre:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --corps:"Figtree", "Segoe UI", system-ui, sans-serif;
+}
+.amb-sauge{ --fond:#F3F6F2; --primaire:#2F6B4F; --primaire-doux:#E2EEE7; --accent:#D9793A; --bord:#D8E1DA; --texte:#1D2620; --texte-doux:#58665C; }
+.amb-prune{ --fond:#F7F4F7; --primaire:#6B2D5C; --primaire-doux:#F1E4EE; --accent:#E3A72F; --bord:#E5DAE2; --texte:#281D26; --texte-doux:#6B5C67; }
+.forme-carre{ --rayon:4px; --rayon-bouton:4px; }
+.forme-pilule{ --rayon:14px; --rayon-bouton:999px; }
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ color-scheme:dark; }
+  :root:not([data-theme="light"]) .app{
+    --fond:#12161C; --surface:#1B2129; --texte:#E7ECF2; --texte-doux:#A3AEBD; --bord:#2E3744;
+    --primaire:#6FA3E0; --primaire-texte:#0E1620; --primaire-doux:#1E2D40;
+    --ok:#6CC592; --ok-doux:#17301F; --attente:#F0B35A; --attente-doux:#33260F; --erreur:#F08A82; --erreur-doux:#3A1A18;
+    --gris-bouton:#262E39; --gris-texte:#6D7888;
+  }
+  :root:not([data-theme="light"]) .app.amb-sauge{ --fond:#121713; --surface:#1A211C; --bord:#2C3730; --primaire:#79C49C; --primaire-texte:#0F1A13; --primaire-doux:#1C3024; --accent:#F0955A; }
+  :root:not([data-theme="light"]) .app.amb-prune{ --fond:#171217; --surface:#211A20; --bord:#3A2D37; --primaire:#D38BC0; --primaire-texte:#1C0F19; --primaire-doux:#35202F; --accent:#F0BD55; }
+}
+:root[data-theme="dark"]{ color-scheme:dark; }
+:root[data-theme="dark"] .app{
+  --fond:#12161C; --surface:#1B2129; --texte:#E7ECF2; --texte-doux:#A3AEBD; --bord:#2E3744;
+  --primaire:#6FA3E0; --primaire-texte:#0E1620; --primaire-doux:#1E2D40;
+  --ok:#6CC592; --ok-doux:#17301F; --attente:#F0B35A; --attente-doux:#33260F; --erreur:#F08A82; --erreur-doux:#3A1A18;
+  --gris-bouton:#262E39; --gris-texte:#6D7888;
+}
+:root[data-theme="dark"] .app.amb-sauge{ --fond:#121713; --surface:#1A211C; --bord:#2C3730; --primaire:#79C49C; --primaire-texte:#0F1A13; --primaire-doux:#1C3024; --accent:#F0955A; }
+:root[data-theme="dark"] .app.amb-prune{ --fond:#171217; --surface:#211A20; --bord:#3A2D37; --primaire:#D38BC0; --primaire-texte:#1C0F19; --primaire-doux:#35202F; --accent:#F0BD55; }
+
+*{box-sizing:border-box}
+body{background:#E9ECF0;font-family:var(--corps);margin:0}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body{background:#0B0E12} }
+:root[data-theme="dark"] body{background:#0B0E12}
+
+/* Panneau de choix (hors maquette) */
+.reglages{padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;font-size:14px;color:#3A4350;background:#fff;border-bottom:1px solid #D5DBE3}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .reglages{background:#161B22;color:#C5CDD8;border-color:#2A323D} }
+:root[data-theme="dark"] .reglages{background:#161B22;color:#C5CDD8;border-color:#2A323D}
+.reglages strong{font-weight:700;margin-right:6px}
+.groupe{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.choix{border:1px solid #C9D1DC;background:transparent;color:inherit;border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.choix[aria-pressed="true"]{border-color:currentColor;font-weight:700;box-shadow:inset 0 0 0 1px currentColor}
+.pastille{width:14px;height:14px;border-radius:50%;display:inline-block}
+.note-maquette{flex-basis:100%;font-size:12.5px;opacity:.75;margin:0}
+
+/* Application */
+.app{background:var(--fond);color:var(--texte);min-height:100vh;font-family:var(--corps);font-size:15px}
+.entete{background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.entete-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:16px;height:60px}
+.logo{font-family:var(--titre);font-weight:700;font-size:24px;color:var(--primaire);letter-spacing:-.5px;background:none;border:0;cursor:pointer;padding:0}
+.logo span{color:var(--accent)}
+.menu{display:flex;gap:4px;margin-left:auto;align-items:center}
+.menu a{color:var(--texte-doux);text-decoration:none;padding:8px 10px;border-radius:var(--rayon-bouton);font-weight:500}
+.menu a:hover{background:var(--primaire-doux);color:var(--primaire)}
+.burger{display:none;margin-left:auto;background:none;border:1px solid var(--bord);color:var(--texte);border-radius:var(--rayon-bouton);width:42px;height:38px;font-size:20px;cursor:pointer}
+@media (max-width:767px){
+  .menu{display:none;position:absolute;top:60px;left:0;right:0;background:var(--surface);flex-direction:column;align-items:stretch;padding:8px 16px 14px;border-bottom:1px solid var(--bord)}
+  .menu.ouvert{display:flex}
+  .burger{display:block}
+}
+main{padding-inline:16px;padding-block:28px 60px}
+.contenu{max-width:1080px;margin:0 auto}
+
+/* Boutons (composant unique) */
+.btn{font:inherit;font-weight:600;border-radius:var(--rayon-bouton);padding:10px 18px;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:8px;justify-content:center;min-height:42px}
+.btn:focus-visible,.choix:focus-visible,.dossier:focus-visible,.carte-res:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn-prim{background:var(--primaire);color:var(--primaire-texte)}
+.btn-prim:hover{filter:brightness(1.08)}
+.btn-sec{background:var(--surface);color:var(--primaire);border-color:var(--primaire)}
+.btn-danger{background:var(--surface);color:var(--erreur);border-color:var(--erreur)}
+.btn-verrou{background:var(--gris-bouton);color:var(--gris-texte);cursor:not-allowed;position:relative}
+.bulle{position:absolute;bottom:calc(100% + 8px);left:0;width:260px;background:var(--texte);color:var(--surface);font-weight:500;font-size:13px;line-height:1.4;padding:10px 12px;border-radius:8px;text-align:left;z-index:3}
+.bulle::after{content:"";position:absolute;top:100%;left:22px;border:7px solid transparent;border-top-color:var(--texte)}
+
+/* Accueil */
+.hero{padding-block:24px 8px}
+h1,h2,h3{font-family:var(--titre);text-wrap:balance;letter-spacing:-.3px;margin:0}
+h1{font-size:clamp(28px,5vw,42px);line-height:1.1;max-width:18ch}
+.hero p{color:var(--texte-doux);font-size:17px;max-width:52ch;margin:12px 0 24px}
+.recherche{background:var(--surface);border:1px solid var(--bord);border-radius:var(--rayon);padding:14px;display:grid;grid-template-columns:1.4fr 1fr auto;gap:10px;align-items:end;max-width:820px}
+@media (max-width:640px){.recherche{grid-template-columns:1fr}}
+label{display:block;font-weight:600;font-size:13px;margin-bottom:6px}
+.champ{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--bord);border-radius:var(--rayon-bouton);background:var(--fond);color:var(--texte);min-height:42px}
+.champ:focus{outline:2px solid var(--primaire);border-color:var(--primaire)}
+.suggestions{margin-top:6px;border:1px solid var(--bord);border-radius:8px;background:var(--surface);overflow:hidden}
+.suggestions div{padding:8px 12px;font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.suggestions div:first-child{background:var(--primaire-doux)}
+.suggestions small{color:var(--texte-doux)}
+.titre-section{display:flex;justify-content:space-between;align-items:baseline;margin:36px 0 14px;gap:12px;flex-wrap:wrap}
+.titre-section h2{font-size:22px}
+.titre-section span{color:var(--texte-doux);font-size:14px}
+.dossiers{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.dossier{background:var(--surface);border:1px solid var(--bord);border-radius:var(--rayon);padding:14px;text-align:left;font:inherit;color:var(--texte);cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.dossier:hover{border-color:var(--primaire)}
+.dossier b{font-weight:700}
+.dossier small{color:var(--texte-doux)}
+
+/* Résultats */
+.fil{color:var(--texte-doux);font-size:14px;margin-bottom:10px}
+.fil button{background:none;border:0;color:var(--primaire);font:inherit;cursor:pointer;padding:0;font-weight:600}
+.groupe-res{margin-top:22px}
+.groupe-res h3{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--texte-doux);font-family:var(--corps);font-weight:700;margin-bottom:10px}
+.liste-res{display:flex;flex-direction:column;gap:10px}
+.carte-res{background:var(--surface);border:1px solid var(--bord);border-radius:var(--rayon);padding:14px 16px;display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;text-align:left;font:inherit;color:var(--texte);cursor:pointer;width:100%}
+.carte-res:hover{border-color:var(--primaire)}
+.avatar{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-family:var(--titre);font-size:20px;background:var(--primaire-doux);color:var(--primaire)}
+.carte-res .nom{font-weight:700;font-size:16px}
+.carte-res .meta{color:var(--texte-doux);font-size:14px;margin-top:2px}
+.note{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.note em{color:var(--accent);font-style:normal}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.badge{font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px}
+.b-ok{background:var(--ok-doux);color:var(--ok)}
+.b-attente{background:var(--attente-doux);color:var(--attente)}
+.b-neutre{background:var(--gris-bouton);color:var(--texte-doux)}
+@media (max-width:520px){.carte-res{grid-template-columns:44px 1fr}.carte-res .note{grid-column:2}.avatar{width:44px;height:44px;font-size:17px}}
+
+/* Annonce */
+.annonce{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:start}
+@media (max-width:820px){.annonce{grid-template-columns:1fr}}
+.bloc{background:var(--surface);border:1px solid var(--bord);border-radius:var(--rayon);padding:20px}
+.bloc h2{font-size:26px;margin-bottom:6px}
+.prix{font-family:var(--titre);font-size:30px;font-weight:700;color:var(--primaire);font-variant-numeric:tabular-nums}
+.infos{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:18px 0;font-size:14.5px}
+.infos dt{color:var(--texte-doux)}
+.infos dd{margin:0;font-weight:500}
+.avis{border-top:1px solid var(--bord);padding-top:12px;margin-top:12px;font-size:14.5px}
+.avis p{margin:4px 0 0;color:var(--texte-doux)}
+.creneaux{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 16px}
+.creneau{font:inherit;padding:9px 4px;border:1px solid var(--bord);background:var(--fond);color:var(--texte);border-radius:var(--rayon-bouton);cursor:pointer;font-variant-numeric:tabular-nums;font-weight:600}
+.creneau[aria-pressed="true"]{background:var(--primaire);color:var(--primaire-texte);border-color:var(--primaire)}
+.creneau:disabled{color:var(--gris-texte);text-decoration:line-through;cursor:not-allowed}
+.actions{display:flex;flex-direction:column;gap:10px}
+.message-clic{font-size:14px;padding:10px 12px;border-radius:8px;background:var(--erreur-doux);color:var(--erreur);font-weight:500}
+
+/* Fenêtre propre à l'application */
+.voile{position:fixed;inset:0;background:rgba(10,14,20,.55);display:grid;place-items:center;padding:16px;z-index:20}
+.fenetre{background:var(--surface);color:var(--texte);border-radius:var(--rayon);width:min(440px,100%);padding:22px;border:1px solid var(--bord)}
+.fenetre h3{font-size:20px;margin-bottom:8px}
+.fenetre p{color:var(--texte-doux);margin:0 0 18px;line-height:1.5}
+.fenetre .pied{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ok);color:#fff;padding:12px 18px;border-radius:var(--rayon-bouton);font-weight:600;z-index:30}
+@media (prefers-reduced-motion:no-preference){.fenetre{animation:monte .18s ease-out}@keyframes monte{from{transform:translateY(8px);opacity:.6}}}
+</style>
+
+<div class="reglages" id="reglages">
+  <div class="groupe"><strong>Ambiance</strong>
+    <button class="choix" data-amb="" aria-pressed="true"><span class="pastille" style="background:#1D4E89"></span>A. Bleu atelier</button>
+    <button class="choix" data-amb="amb-sauge" aria-pressed="false"><span class="pastille" style="background:#2F6B4F"></span>B. Vert sauge</button>
+    <button class="choix" data-amb="amb-prune" aria-pressed="false"><span class="pastille" style="background:#6B2D5C"></span>C. Prune</button>
+  </div>
+  <div class="groupe"><strong>Boutons</strong>
+    <button class="choix" data-forme="" aria-pressed="true">Arrondis</button>
+    <button class="choix" data-forme="forme-carre" aria-pressed="false">Carrés</button>
+    <button class="choix" data-forme="forme-pilule" aria-pressed="false">Pilules</button>
+  </div>
+  <p class="note-maquette">Maquette de rafals : exemples fictifs (Julie, Karim, Mme Dupont). Tout est cliquable. Ce bandeau n'existera pas dans rafals.</p>
+</div>
+
+<div class="app" id="app">
+  <header class="entete">
+    <div class="entete-in">
+      <button class="logo" data-aller="accueil" aria-label="Accueil rafals">rafals<span>.</span></button>
+      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+      <nav class="menu" id="menu">
+        <a href="#" data-aller="accueil">Trouver un prestataire</a>
+        <a href="#" data-aller="accueil">Proposer mes services</a>
+        <a href="#" data-aller="accueil">Mes rendez-vous</a>
+        <a href="#" data-aller="accueil">Mon compte</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="contenu">
+
+      <!-- ÉCRAN 1 : ACCUEIL -->
+      <section id="ecran-accueil">
+        <div class="hero">
+          <h1>Le bon prestataire, près de chez vous.</h1>
+          <p>Plombiers, femmes de ménage, coiffeuses à domicile… Des indépendants de votre ville, avec leurs prix, leurs disponibilités et les avis de leurs clients.</p>
+        </div>
+        <form class="recherche" id="form-recherche">
+          <div>
+            <label for="metier">Quel métier ?</label>
+            <input class="champ" id="metier" value="elec" autocomplete="off">
+            <div class="suggestions" aria-hidden="true">
+              <div><span>Électricien</span><small>Maison &amp; travaux</small></div>
+              <div><span>Électroménager (réparateur)</span><small>Services</small></div>
+            </div>
+          </div>
+          <div>
+            <label for="ville">Où ?</label>
+            <input class="champ" id="ville" value="Pessac (33600)" autocomplete="off">
+          </div>
+          <button class="btn btn-prim" type="submit">Rechercher</button>
+        </form>
+
+        <div class="titre-section"><h2>Parcourir par métier</h2><span>10 catégories · 110 métiers</span></div>
+        <div class="dossiers">
+          <button class="dossier" data-aller="resultats"><b>Maison &amp; travaux</b><small>Plombier, Électricien, Peintre…</small></button>
+          <button class="dossier" data-aller="resultats"><b>Beauté &amp; bien-être</b><small>Coiffeuse, Esthéticienne…</small></button>
+          <button class="dossier" data-aller="resultats"><b>Services</b><small>Ménage, Repassage, Garde…</small></button>
+          <button class="dossier" data-aller="resultats"><b>Auto &amp; transport</b><small>Mécanicien, VTC…</small></button>
+          <button class="dossier" data-aller="resultats"><b>Sport &amp; loisirs</b><small>Coach, Prof de guitare…</small></button>
+          <button class="dossier" data-aller="resultats"><b>Événements</b><small>Photographe, DJ, Traiteur…</small></button>
+        </div>
+      </section>
+
+      <!-- ÉCRAN 2 : RÉSULTATS -->
+      <section id="ecran-resultats" hidden>
+        <div class="fil"><button data-aller="accueil">Accueil</button> › Électricien › Pessac</div>
+        <h2 style="font-size:26px">Électricien à Pessac <span style="color:var(--texte-doux);font-weight:600;font-size:18px">· 3 prestataires</span></h2>
+
+        <div class="groupe-res">
+          <h3>Électricien, métier principal</h3>
+          <div class="liste-res">
+            <button class="carte-res" data-aller="annonce">
+              <span class="avatar">SL</span>
+              <span><span class="nom">Sophie Laurent</span><span class="meta" style="display:block">Dépannage électrique · Talence · 4 km</span>
+                <span class="badges"><span class="badge b-ok">SIRET vérifié</span><span class="badge b-neutre">Carte ou espèces</span></span></span>
+              <span class="note"><em>★</em> 4,8 <small style="color:var(--texte-doux);font-weight:500">(23)</small></span>
+            </button>
+            <button class="carte-res" data-aller="annonce">
+              <span class="avatar">MR</span>
+              <span><span class="nom">Marc Roussel</span><span class="meta" style="display:block">Mise aux normes, tableaux · Mérignac · 7 km</span>
+                <span class="badges"><span class="badge b-ok">SIRET vérifié</span><span class="badge b-neutre">Carte ou espèces</span></span></span>
+              <span class="note"><em>★</em> 4,2 <small style="color:var(--texte-doux);font-weight:500">(9)</small></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="groupe-res">
+          <h3>Font aussi de l'électricité</h3>
+          <div class="liste-res">
+            <button class="carte-res" data-aller="annonce-karim">
+              <span class="avatar">KB</span>
+              <span><span class="nom">Karim Benali</span><span class="meta" style="display:block">Plombier · petits travaux électriques · Pessac · 0 km</span>
+                <span class="badges"><span class="badge b-attente">Sans SIRET</span><span class="badge b-neutre">Espèces seulement</span></span></span>
+              <span class="note"><em>★</em> 4,9 <small style="color:var(--texte-doux);font-weight:500">(4)</small></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ÉCRAN 3 : ANNONCE -->
+      <section id="ecran-annonce" hidden>
+        <div class="fil"><button data-aller="accueil">Accueil</button> › <button data-aller="resultats">Électricien › Pessac</button> › <span id="fil-nom">Karim Benali</span></div>
+        <div class="annonce">
+          <div class="bloc">
+            <h2 id="an-titre">Petits travaux électriques</h2>
+            <div style="color:var(--texte-doux)" id="an-qui">Karim Benali · Plombier · Pessac</div>
+            <div class="badges" id="an-badges"></div>
+            <dl class="infos">
+              <dt>Lieu</dt><dd>Chez vous, jusqu'à 15 km de Pessac</dd>
+              <dt>Durée</dt><dd>1 h environ</dd>
+              <dt>Paiement</dt><dd id="an-paiement">Espèces, le jour du rendez-vous</dd>
+            </dl>
+            <div class="avis"><b><span style="color:var(--accent)">★★★★★</span> Mme Dupont · 16/10/2026</b><p>Ponctuel et soigneux, a changé ma prise en 20 minutes.</p></div>
+            <div class="avis"><b><span style="color:var(--accent)">★★★★★</span> Client ayant quitté rafals · 02/09/2026</b><p>Travail propre, prix respecté.</p></div>
+          </div>
+          <div class="bloc">
+            <div class="prix" id="an-prix">40 € / h</div>
+            <div style="color:var(--texte-doux);font-size:14px">Choisissez un créneau · mardi 14/10</div>
+            <div class="creneaux" id="creneaux">
+              <button class="creneau" aria-pressed="false">8 h 00</button>
+              <button class="creneau" disabled>9 h 00</button>
+              <button class="creneau" aria-pressed="true">10 h 00</button>
+              <button class="creneau" aria-pressed="false">14 h 00</button>
+              <button class="creneau" disabled>15 h 00</button>
+              <button class="creneau" aria-pressed="false">16 h 30</button>
+            </div>
+            <div class="actions">
+              <button class="btn btn-prim" id="btn-reserver">Réserver mardi 14/10 à 10 h 00</button>
+              <div id="zone-carte"></div>
+              <button class="btn btn-sec">Demander un devis</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="voile" id="voile" hidden>
+  <div class="fenetre" role="dialog" aria-modal="true" aria-labelledby="f-titre">
+    <h3 id="f-titre">Confirmer le rendez-vous ?</h3>
+    <p id="f-texte">Karim Benali · Petits travaux électriques<br>Mardi 14/10/2026 à 10 h 00 · 8 allée des Pins, Talence<br>Paiement en espèces le jour même.</p>
+    <div class="pied">
+      <button class="btn btn-prim" id="f-ok">Confirmer</button>
+      <button class="btn btn-danger" id="f-non">Annuler</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden>Rendez-vous confirmé · mardi 14/10 à 10 h 00</div>
+
+<script>
+(function(){
+  var app=document.getElementById('app');
+  var etat={amb:'',forme:'',annonce:'karim'};
+  try{var s=JSON.parse(localStorage.getItem('rafals-maquette')||'{}');if(s.amb!==undefined)etat.amb=s.amb;if(s.forme!==undefined)etat.forme=s.forme;}catch(e){}
+  function sauver(){try{localStorage.setItem('rafals-maquette',JSON.stringify({amb:etat.amb,forme:etat.forme}))}catch(e){}}
+  function appliquer(){
+    app.className='app '+etat.amb+' '+etat.forme;
+    document.querySelectorAll('[data-amb]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.amb===etat.amb)});
+    document.querySelectorAll('[data-forme]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.forme===etat.forme)});
+  }
+  document.querySelectorAll('[data-amb]').forEach(function(b){b.addEventListener('click',function(){etat.amb=b.dataset.amb;appliquer();sauver()})});
+  document.querySelectorAll('[data-forme]').forEach(function(b){b.addEventListener('click',function(){etat.forme=b.dataset.forme;appliquer();sauver()})});
+  appliquer();
+
+  var ecrans=['accueil','resultats','annonce'];
+  function aller(nom){
+    var cible=nom;
+    if(nom==='annonce-karim'){etat.annonce='karim';cible='annonce'}
+    else if(nom==='annonce'){etat.annonce='sophie'}
+    ecrans.forEach(function(e){document.getElementById('ecran-'+e).hidden=(e!==cible)});
+    if(cible==='annonce')remplirAnnonce();
+    document.getElementById('menu').classList.remove('ouvert');
+    document.getElementById('burger').setAttribute('aria-expanded','false');
+    window.scrollTo(0,0);
+  }
+  document.addEventListener('click',function(ev){
+    var el=ev.target.closest('[data-aller]');
+    if(el){ev.preventDefault();aller(el.dataset.aller)}
+  });
+  document.getElementById('form-recherche').addEventListener('submit',function(ev){ev.preventDefault();aller('resultats')});
+  document.getElementById('burger').addEventListener('click',function(){
+    var m=document.getElementById('menu');var o=m.classList.toggle('ouvert');this.setAttribute('aria-expanded',o);
+  });
+
+  function remplirAnnonce(){
+    var k=etat.annonce==='karim';
+    document.getElementById('fil-nom').textContent=k?'Karim Benali':'Sophie Laurent';
+    document.getElementById('an-titre').textContent=k?'Petits travaux électriques':'Dépannage électrique';
+    document.getElementById('an-qui').textContent=k?'Karim Benali · Plombier · Pessac':'Sophie Laurent · Électricienne · Talence';
+    document.getElementById('an-prix').textContent=k?'40 € / h':'55 € / h';
+    document.getElementById('an-paiement').textContent=k?'Espèces, le jour du rendez-vous':'Carte sur rafals, ou espèces le jour du rendez-vous';
+    document.getElementById('an-badges').innerHTML=k?'<span class="badge b-attente">Sans SIRET</span><span class="badge b-neutre">Espèces seulement</span>':'<span class="badge b-ok">SIRET vérifié</span><span class="badge b-neutre">Carte ou espèces</span>';
+    var z=document.getElementById('zone-carte');
+    if(k){
+      z.innerHTML='<div style="position:relative"><button class="btn btn-verrou" id="btn-carte" aria-disabled="true" style="width:100%">🔒 Payer par carte</button></div>';
+      document.getElementById('btn-carte').addEventListener('click',function(){
+        var p=this.parentNode;var b=p.querySelector('.bulle');
+        if(b){b.remove();return}
+        var d=document.createElement('div');d.className='bulle';d.setAttribute('role','status');
+        d.textContent='Karim n’a pas encore de SIRET : il ne peut être payé qu’en espèces, le jour du rendez-vous. Réservez, puis payez-le sur place.';
+        p.appendChild(d);
+      });
+    } else {
+      z.innerHTML='<button class="btn btn-sec" style="width:100%" id="btn-carte2">Réserver et payer par carte</button>';
+      document.getElementById('btn-carte2').addEventListener('click',ouvrir);
+    }
+    document.getElementById('f-texte').innerHTML=k?'Karim Benali · Petits travaux électriques<br>Mardi 14/10/2026 à '+creneauChoisi()+' · 8 allée des Pins, Talence<br>Paiement en espèces le jour même.':'Sophie Laurent · Dépannage électrique<br>Mardi 14/10/2026 à '+creneauChoisi()+' · 8 allée des Pins, Talence<br>Paiement par carte ou en espèces.';
+  }
+  function creneauChoisi(){var c=document.querySelector('.creneau[aria-pressed="true"]');return c?c.textContent:'10 h 00'}
+  document.getElementById('creneaux').addEventListener('click',function(ev){
+    var c=ev.target.closest('.creneau');if(!c||c.disabled)return;
+    document.querySelectorAll('.creneau').forEach(function(x){if(!x.disabled)x.setAttribute('aria-pressed','false')});
+    c.setAttribute('aria-pressed','true');
+    document.getElementById('btn-reserver').textContent='Réserver mardi 14/10 à '+c.textContent;
+    remplirAnnonce();
+  });
+  var voile=document.getElementById('voile');
+  function ouvrir(){remplirAnnonce();voile.hidden=false;document.getElementById('f-ok').focus()}
+  document.getElementById('btn-reserver').addEventListener('click',ouvrir);
+  document.getElementById('f-non').addEventListener('click',function(){voile.hidden=true});
+  document.getElementById('f-ok').addEventListener('click',function(){
+    voile.hidden=true;var t=document.getElementById('toast');
+    t.textContent='Rendez-vous confirmé · mardi 14/10 à '+creneauChoisi();t.hidden=false;
+    setTimeout(function(){t.hidden=true},3000);
+  });
+  document.addEventListener('keydown',function(ev){if(ev.key==='Escape')voile.hidden=true});
+})();
+</script>

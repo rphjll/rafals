@@ -38,10 +38,11 @@
 7. Charte et conventions d'écran → `CHARTE-VISUELLE.md`, `CONVENTIONS-IHM.md`
 
 ## Questions en attente (posées, pas encore répondues)
-- (aucune)
+1. **Phase 7, Q1 — Ambiance de couleurs** (maquette https://claude.ai/artifact/K2WSEd51fSMiCsQ2S3s3R7, fichier `.doc/ihm/maquette-charte.html`) : A. Bleu atelier ; B. Vert sauge ; C. Prune ; D. autre.
+Ensuite, une par une : forme des boutons (arrondis / carrés / pilules) ; puis conventions d'écran (proposer celles de la méthode § 6.2).
 
 ## Prochaine action
-Phase 7 : lire l'étape 6 de la méthode et les modèles F et G ; proposer la charte et les conventions par défaut, les montrer dans une maquette cliquable (Artifact), ajuster avec Raphael une question à la fois.
+Phase 7 : maquette cliquable publiée (3 ambiances × 3 formes de boutons ; accueil, résultats, annonce, fenêtre de confirmation, bouton verrouillé avec bulle). Attendre les choix de Raphael, puis écrire `technique/CHARTE-VISUELLE.md` et `technique/CONVENTIONS-IHM.md`.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
