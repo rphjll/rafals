@@ -38,10 +38,10 @@
 8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
 
 ## Questions en attente (posées, pas encore répondues)
-- (aucune)
+1. **Phase 8 — Validation du plan** (`PLAN-DEV.md`, `SUIVI-DEV.md` : 4 lots de niveau 0, 4 de niveau 1, 7 de niveau 2, niveaux 3 à 6 découpés plus tard) : A. valide ; B. à corriger.
 
 ## Prochaine action
-Phase 8 : lire les modèles H, I (et suivants) et les étapes 8 à 11 de la méthode ; écrire `PLAN-DEV.md`, `SUIVI-DEV.md`, `INVARIANTS-TRANSVERSES.md`, `PROMPT-TYPE-LOT.md`, `MEMO.md` ; faire valider l'ordre des lots ; marquer le démarrage terminé.
+Phase 8 : les 5 fichiers sont écrits. Attendre la validation du plan. Ensuite : question Notion (oui/non), marquer le démarrage terminé, sauvegarde, présenter le lot 0.1.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
