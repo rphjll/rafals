@@ -9,8 +9,10 @@ const props = withDefaults(
     raisonVerrou?: string
     type?: 'button' | 'submit'
     pleineLargeur?: boolean
+    // Demande en cours d'envoi : le bouton ne réagit plus, pour ne pas envoyer deux fois
+    occupe?: boolean
   }>(),
-  { variante: 'principal', raisonVerrou: '', type: 'button', pleineLargeur: false },
+  { variante: 'principal', raisonVerrou: '', type: 'button', pleineLargeur: false, occupe: false },
 )
 const emit = defineEmits<{ click: [evenement: MouseEvent] }>()
 
@@ -25,6 +27,10 @@ const classesVariante: Record<string, string> = {
 }
 
 function clic(evenement: MouseEvent) {
+  if (props.occupe) {
+    evenement.preventDefault()
+    return
+  }
   if (verrouille.value) {
     bulleVisible.value = !bulleVisible.value
     return
@@ -38,8 +44,9 @@ function clic(evenement: MouseEvent) {
     <button
       :type="verrouille ? 'button' : type"
       :aria-disabled="verrouille || undefined"
+      :aria-busy="occupe || undefined"
       class="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-rafals border px-[18px] py-2.5 font-semibold transition"
-      :class="[classesVariante[variante], pleineLargeur ? 'w-full' : '']"
+      :class="[classesVariante[variante], pleineLargeur ? 'w-full' : '', occupe ? 'cursor-wait opacity-70' : '']"
       @click="clic"
       @blur="bulleVisible = false"
     >

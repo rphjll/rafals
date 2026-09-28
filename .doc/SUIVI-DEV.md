@@ -7,11 +7,12 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 1.2 — Pages Inscription, Connexion, Mot de passe oublié (Raphael : « Oui, je valide » le lot 1.1, suite du plan)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. Maquette cliquable (Artifact) et plan du lot validés  ← on en est là
-  - [ ] 2. État « connecté » partagé + en-tête (Se connecter / prénom + Se déconnecter)
-  - [ ] 3. Pages Inscription, Connexion, Mot de passe oublié, Vérifier l'adresse, Nouveau mot de passe
-  - [ ] 4. `RM-*-IHM.md`, essais à la main (données `@example.com`), nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 1.2 (https://claude.ai/artifact/M78HvT73JCMTfsS71VC8jc, fichier `.doc/ihm/maquette-lot-1.2-comptes.html`)
+  - [x] 1. Maquette cliquable (Artifact) et plan du lot validés le 28/09/2026 (« Oui, vas-y »)
+  - [x] 2. État « connecté » partagé (`useCompte`) + en-tête (Se connecter / prénom + Se déconnecter) + appels au serveur (`api.ts`)
+  - [x] 3. Pages Inscription, Connexion, Mot de passe oublié, Vérifier l'adresse, Nouveau mot de passe ; bandeau « vérifiez votre adresse » sur l'accueil ; composants `AppCarte`, `AppAlerte`, `AppSeparateur`
+  - [x] 4. 5 nouveaux `RM-*-IHM.md` + mises à jour ; aucune faute (vue-tsc) ; parcours complet par les écrans OK ; compte d'essai de Claude nettoyé (0 compte) ; invariants ; sauvegarde
+  - [ ] 5. Essai par Raphael dans son navigateur (compte d'essai `@example.com`), puis nettoyage  ← on en est là
+- **Question en attente** : Raphael essaie l'inscription, la connexion et le mot de passe oublié, nettoie, puis valide (ou non) le lot 1.2
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -39,7 +40,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
 | 1.1 | Serveur | Comptes : inscription, mail de vérification (conteneur de mails de test en local), connexion, rester connecté 30 jours, mot de passe oublié (lien 1 h), blocage après 5 erreurs | RM-COMPTES | 0.3 | ✅ |
-| 1.2 | Écrans | Pages Inscription, Connexion, Mot de passe oublié | RM-COMPTES | 1.1, 0.4 | 🟡 |
+| 1.2 | Écrans | Pages Inscription, Connexion, Mot de passe oublié | RM-COMPTES | 1.1, 0.4 | 🔎 |
 | 1.3 | Serveur | ⚠️ Avant de commencer : faire choisir à Raphael le « placard » à fichiers (Garage recommandé, ou RustFS ; MinIO abandonné), reporté 2 fois (« encore plus tard », 28/09/2026). Âge (16 ans) et accord des parents (document déposé), rôle administrateur (jamais retirer le dernier), journal des actions | RM-COMPTES | 1.1 | ⬜ |
 | 1.4 | Écrans | Mon compte (premiers éléments, accord des parents) ; Administration : comptes et administrateurs | RM-COMPTES | 1.3, 1.2 | ⬜ |
 
@@ -75,3 +76,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Lot 0.4 validé par Raphael (« je valide le lot 0.4 ») → ✅. **Niveau 0 terminé.** Lot 1.1 commencé.
 - **28/09/2026** — Lot 1.1 — MLD validé puis `db/schema_v2.sql` exécuté (tables `compte`, `session`, `jeton_mail`). Boîte `mailpit` ajoutée (mails de test, port 8025) ; `CLAUDE.md` et `REGLES-PROJET.md` mis à jour (conteneurs, ports). Serveur : inscription (16 ans, mot de passe 10 caractères, adresse unique en minuscules), lien de vérification, connexion avec cookie (30 jours), blocage 15 min après 5 erreurs, déconnexion, mot de passe oublié (lien 1 h). Valeurs des règles dans `app/reglages.py`. Tests : 20 OK, dont le test de fiche du compte. Décisions (validées par Raphael, écrites dans `RM-COMPTES.md`) : lien de vérification 7 jours ; connexion possible avant vérification ; même message pour adresse inconnue et mauvais mot de passe ; déconnexion de tous les appareils après un mot de passe oublié. Problème rencontré : 2 tests en échec (durée de 30 jours moins 3 ms, dates fixées par 2 horloges différentes) → le serveur fixe désormais les deux dates. Essai à la main : mail reçu dans Mailpit, compte d'essai nettoyé par Raphael. Invariants : architecture OK (MLD → SQL → modèles → services → routes → tests ; aucune création automatique) ; sécurité OK (mot de passe argon2, jetons brouillés, cookie HttpOnly ; pas encore de route réservée à un rôle) ; données OK (dates en UTC, affichage heure de Paris ; réglages hors du code) ; tests OK ; 0 donnée de test (comptage) ; interface : sans objet (écrans au lot 1.2) ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`.
 - **28/09/2026** — Lot 1.1 validé par Raphael (« Oui, je valide ») → ✅. Lot 1.2 commencé.
+- **28/09/2026** — Lot 1.2 — Maquette validée, puis pages Inscription (+ état « vérifiez votre boîte mail »), Connexion, Mot de passe oublié, Vérifier l'adresse, Nouveau mot de passe ; en-tête avec Se connecter / prénom + Se déconnecter ; bandeau orange sur l'accueil tant que l'adresse n'est pas vérifiée. Nouveaux composants communs `AppCarte`, `AppAlerte`, `AppSeparateur` (réutilisés sur les 5 pages) ; `AppBouton` gagne l'état « envoi en cours » ; `AppChamp` transmet l'autocomplétion du navigateur ; `api.ts` : un seul endroit pour appeler le serveur. Serveur inchangé. Essais : aucune faute, parcours complet (inscription → mail → lien → connexion → déconnexion) OK par les écrans ; compte d'essai de Claude nettoyé (comptage 0). Invariants : interface OK (clic → résultat visible, erreurs au-dessus du bouton, couleurs de la charte, composants uniques, `RM-*-IHM.md` écrits) ; 4 formats : à vérifier par Raphael ; données OK (0 donnée de test) ; architecture, sécurité : inchangées ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`. Limite connue : recharger la page de vérification après succès affiche « lien déjà utilisé ».

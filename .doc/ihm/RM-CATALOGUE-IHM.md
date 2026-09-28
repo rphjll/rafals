@@ -20,8 +20,11 @@
 ## Composants communs (`frontend/src/components/ui/`)
 | Composant | Rôle | Options |
 |---|---|---|
-| `AppBouton` | Tous les boutons | `variante` : principal, secondaire, danger, verrouille ; `raison-verrou` (texte de la bulle) ; `type` ; `pleine-largeur` |
+| `AppBouton` | Tous les boutons | `variante` : principal, secondaire, danger, verrouille ; `raison-verrou` (texte de la bulle) ; `type` ; `pleine-largeur` ; `occupe` (envoi en cours : inactif, lot 1.2) |
 | `AppChamp` | Tous les champs de saisie | `etiquette`, `obligatoire` (astérisque), `erreur`, `aide`, `type`, `v-model` |
 | `AppFenetre` | Toutes les fenêtres de confirmation | `ouverte`, `titre`, contenu, emplacement `pied` pour les boutons ; ferme sur Échap ou clic sur le fond |
 | `AppBadge` | Étiquettes d'état | `etat` : ok, attente, erreur, neutre |
+| `AppCarte` | Carte centrée des formulaires courts (lot 1.2) | `titre`, `intro`, contenu |
+| `AppAlerte` | Bandeau posé là où l'on regarde : erreur du serveur au-dessus du bouton, information (lot 1.2) | `etat` : erreur, attente, ok |
+| `AppSeparateur` | Trait avec un petit texte au milieu, ex. « déjà inscrit ? » (lot 1.2) | contenu |
 | `AppMessage` + `useMessage()` | Message court après une action, 3 secondes | `afficherMessage(texte, 'ok' \| 'erreur')` ; placé une seule fois dans `App.vue` |

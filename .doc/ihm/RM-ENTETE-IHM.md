@@ -1,6 +1,6 @@
 # En-tête commun — Interface
 
-> Fichiers : `frontend/src/components/AppEntete.vue`, `frontend/src/App.vue`. Construit au lot 0.4 (28/09/2026).
+> Fichiers : `frontend/src/components/AppEntete.vue`, `frontend/src/App.vue`, `frontend/src/composables/useCompte.ts`. Construit au lot 0.4, zone du compte au lot 1.2 (28/09/2026).
 
 ## Disposition
 Bandeau blanc (`surface`) collé en haut de toutes les pages, bordure fine en bas, hauteur 60 px. Contenu centré sur 1080 px au maximum, marges de 16 px sur les côtés.
@@ -12,6 +12,11 @@ Bandeau blanc (`surface`) collé en haut de toutes les pages, bordure fine en ba
    2. « Proposer mes services » → `/proposer`
    3. « Mes rendez-vous » → `/rendez-vous`
    4. « Mon compte » → `/compte`
+
+3. Zone du compte, au bout du menu (affichée seulement une fois qu'on sait si quelqu'un est connecté, pour éviter un clignotement) :
+   - personne n'est connecté : bouton principal [Se connecter] → `/connexion` ;
+   - connecté : le prénom (ex. « Marie »), puis bouton secondaire [Se déconnecter] → accueil + message vert « Vous êtes déconnecté. ».
+   (Ajouté au lot 1.2, 28/09/2026.)
 
 L'entrée de la page affichée est surlignée (fond `primaire-doux`, texte `primaire`). Survol : même effet.
 

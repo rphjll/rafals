@@ -42,3 +42,7 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AppBadge` — étiquette d'état (OK, en attente, erreur, neutre).
 - `AppCarteResultat` — carte d'un prestataire dans les résultats.
 - `AppMessage` — message court après une action.
+- `AppCarte` — carte centrée des formulaires courts (lot 1.2).
+- `AppAlerte` — bandeau d'erreur ou d'information posé là où l'on regarde (lot 1.2).
+- `AppSeparateur` — trait avec un petit texte au milieu (lot 1.2).
+- Appels au serveur : toujours par `frontend/src/api.ts` (messages d'erreur du serveur montrés tels quels).

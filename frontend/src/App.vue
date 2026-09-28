@@ -1,7 +1,12 @@
 <script setup lang="ts">
 // Structure commune : l'en-tête en haut, la page en dessous, le message court par-dessus.
+import { onMounted } from 'vue'
 import AppEntete from './components/AppEntete.vue'
 import AppMessage from './components/ui/AppMessage.vue'
+import { useCompte } from './composables/useCompte'
+
+const { chargerCompte } = useCompte()
+onMounted(chargerCompte)
 </script>
 
 <template>

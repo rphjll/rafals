@@ -2,10 +2,17 @@
 // En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md).
 // Sous 768 px de large, le menu se replie derrière le bouton ☰.
 import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { messageErreur } from '../api'
+import { useCompte } from '../composables/useCompte'
+import { useMessage } from '../composables/useMessage'
+import AppBouton from './ui/AppBouton.vue'
 
 const menuOuvert = ref(false)
 const route = useRoute()
+const routeur = useRouter()
+const { compte, chargementFait, seDeconnecter } = useCompte()
+const { afficherMessage } = useMessage()
 watch(() => route.fullPath, () => (menuOuvert.value = false))
 
 const liens = [
@@ -14,6 +21,16 @@ const liens = [
   { vers: '/rendez-vous', texte: 'Mes rendez-vous' },
   { vers: '/compte', texte: 'Mon compte' },
 ]
+
+async function deconnexion() {
+  try {
+    await seDeconnecter()
+    afficherMessage('Vous êtes déconnecté.')
+    routeur.push('/')
+  } catch (erreur) {
+    afficherMessage(messageErreur(erreur), 'erreur')
+  }
+}
 </script>
 
 <template>
@@ -46,6 +63,14 @@ const liens = [
         >
           {{ lien.texte }}
         </RouterLink>
+        <!-- Tant qu'on ne sait pas si quelqu'un est connecté, on n'affiche rien (évite un clignotement) -->
+        <div v-if="chargementFait" class="flex flex-wrap items-center gap-2 pt-2 md:pt-0 md:pl-2">
+          <template v-if="compte">
+            <span class="px-1 font-semibold">{{ compte.prenom }}</span>
+            <AppBouton variante="secondaire" @click="deconnexion">Se déconnecter</AppBouton>
+          </template>
+          <AppBouton v-else @click="routeur.push('/connexion')">Se connecter</AppBouton>
+        </div>
       </nav>
     </div>
   </header>

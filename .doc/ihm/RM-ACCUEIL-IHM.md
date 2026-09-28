@@ -4,13 +4,14 @@
 
 ## Page Accueil (`/`)
 **Ordre des éléments :**
+0. (connecté, adresse pas encore vérifiée) bandeau orange « Vérifiez votre adresse mail pour pouvoir réserver. » avec un bouton secondaire [Renvoyer le lien] → message vert « Si un compte non vérifié existe… ». (Lot 1.2.)
 1. Titre « Le bon prestataire, près de chez vous. » (police des titres, 28 à 42 px selon l'écran).
 2. Texte « Plombiers, femmes de ménage, coiffeuses à domicile… rafals est en construction : la recherche arrive bientôt. »
 3. Badge d'état du serveur (lit `/api/etat`) :
    - (chargement) badge neutre « Vérification du serveur… »
    - (OK) badge vert avec le message du serveur « Le serveur de rafals répond. »
    - (erreur) badge rouge « Le serveur ne répond pas. Relance demarrer.bat. »
-4. Bouton secondaire [Voir le catalogue des composants] → `/catalogue`.
+4. Boutons, de gauche à droite : [Créer mon compte] (principal, seulement si personne n'est connecté) → `/inscription` ; [Voir le catalogue des composants] (secondaire) → `/catalogue`.
 
 ## Page « Bientôt disponible »
 Utilisée par les entrées du menu pas encore construites, et pour toute adresse inconnue.
