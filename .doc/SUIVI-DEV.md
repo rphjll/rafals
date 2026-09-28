@@ -11,7 +11,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 2. État « connecté » partagé + en-tête (Se connecter / prénom + Se déconnecter)
   - [ ] 3. Pages Inscription, Connexion, Mot de passe oublié, Vérifier l'adresse, Nouveau mot de passe
   - [ ] 4. `RM-*-IHM.md`, essais à la main (données `@example.com`), nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 1.2
+- **Question en attente** : validation de la maquette du lot 1.2 (https://claude.ai/artifact/M78HvT73JCMTfsS71VC8jc, fichier `.doc/ihm/maquette-lot-1.2-comptes.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
