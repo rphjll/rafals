@@ -13,7 +13,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 4. Modèles, calculs (`services/`), routes
   - [ ] 5. Tests (dont test de fiche du compte)
   - [ ] 6. Essais à la main, invariants, sauvegarde
-- **Question en attente** : validation du MLD du lot 1.1
+- **Question en attente** : validation du MLD du lot 1.1 (https://claude.ai/artifact/Vcb7r3fXum38tJguPJmGYc, fichier `.doc/mld/MLD-lot-1.1-comptes.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »

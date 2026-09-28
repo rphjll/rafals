@@ -1,0 +1,117 @@
+<title>MLD rafals comptes</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:980px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 1.1 « Comptes et connexion »</h1>
+    <p class="sous">rafals · proposé le 28/09/2026 · source : <code>.doc/regles-metier/RM-COMPTES.md</code> et <code>RM-CLIENTS.md</code> · 3 tables nouvelles, aucune table existante modifiée</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  SESSION["<b>SESSION</b><br/>id (PK)<br/>compte_id (FK)"]
+  JETON_MAIL["<b>JETON_MAIL</b><br/>id (PK)<br/>compte_id (FK)"]
+  COMPTE -- "(0,n)  ——  (1,1)" --- SESSION
+  COMPTE -- "(0,n)  ——  (1,1)" --- JETON_MAIL
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne (un numéro donné par la base).</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table (ici : le compte à qui appartient la ligne).</span>
+      <b>(0,n)</b><span>côté COMPTE : un compte a zéro, une ou plusieurs sessions (ou jetons).</span>
+      <b>(1,1)</b><span>côté SESSION / JETON_MAIL : chacun appartient à un et un seul compte.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques de chaque table</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>COMPTE</h3>
+        <ul>
+          <li><code>email</code> — adresse mail, unique, enregistrée en minuscules</li>
+          <li><code>mot_de_passe_hache</code> — mot de passe brouillé (illisible, même par l'administrateur)</li>
+          <li><code>prenom</code>, <code>nom</code>, <code>telephone</code></li>
+          <li><code>date_naissance</code> — pour la règle des 16 ans</li>
+          <li><code>email_verifie_le</code> — date du clic sur le lien ; vide = pas encore vérifié</li>
+          <li><code>echecs_connexion</code> — mauvais mots de passe de suite (remis à 0 après une connexion réussie)</li>
+          <li><code>bloque_jusqu_au</code> — fin du blocage de 15 min ; vide = pas bloqué</li>
+          <li><code>derniere_connexion_le</code> — pour les comptes inactifs (3 ans)</li>
+          <li><code>cree_le</code></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>SESSION</h3>
+        <p class="note" style="margin-bottom:6px">« Rester connecté 30 jours » sur un appareil.</p>
+        <ul>
+          <li><code>jeton_hache</code> — le « badge » secret gardé par le navigateur (brouillé dans la base)</li>
+          <li><code>appareil</code> — ex. « Chrome sur Android »</li>
+          <li><code>cree_le</code>, <code>expire_le</code> (création + 30 jours)</li>
+          <li><code>fermee_le</code> — clic sur « Se déconnecter » ; vide = active</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>JETON_MAIL</h3>
+        <p class="note" style="margin-bottom:6px">Les liens envoyés par mail.</p>
+        <ul>
+          <li><code>usage</code> — « verification » (adresse) ou « mot_de_passe » (mot de passe oublié)</li>
+          <li><code>jeton_hache</code> — le secret du lien (brouillé dans la base)</li>
+          <li><code>cree_le</code>, <code>expire_le</code> (mot de passe : 1 heure)</li>
+          <li><code>utilise_le</code> — un lien ne sert qu'une fois ; vide = pas encore utilisé</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>COMPTE</code> n° 1 : email <code>dupont.marie@gmail.com</code>, prénom Marie, nom Dupont, né le 12/03/1972, <code>email_verifie_le</code> = 27/09/2026 20:02, <code>echecs_connexion</code> = 0.<br/>
+      <code>SESSION</code> n° 7 : <code>compte_id</code> = 1, appareil « Chrome sur Android », <code>expire_le</code> = 27/10/2026.
+      <p class="trad"><b>Traduction :</b> Mme Dupont a vérifié son adresse le 27/09 à 20 h 02 ; elle est connectée sur son téléphone jusqu'au 27/10 sans retaper son mot de passe.</p>
+    </div>
+    <div class="exemple">
+      <code>COMPTE</code> n° 2 : email <code>karim.plomb@gmail.com</code>, <code>email_verifie_le</code> = vide, <code>echecs_connexion</code> = 5, <code>bloque_jusqu_au</code> = 28/09/2026 14:15.<br/>
+      <code>JETON_MAIL</code> n° 3 : <code>compte_id</code> = 2, usage « verification », <code>utilise_le</code> = vide.
+      <p class="trad"><b>Traduction :</b> Karim n'a pas encore cliqué sur le lien de vérification reçu par mail ; il s'est trompé 5 fois de mot de passe et ne peut plus essayer avant 14 h 15.</p>
+    </div>
+    <div class="exemple">
+      <code>SESSION</code> n° 8 : <code>compte_id</code> = 1, appareil « Edge sur Windows ».
+      <p class="trad"><b>Traduction :</b> Mme Dupont est aussi connectée sur son ordinateur : un compte peut avoir plusieurs sessions (0,n), mais une session appartient à un seul compte (1,1).</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Pas encore dans ce lot : le rôle administrateur, l'accord des parents et le journal des actions (lot 1.3) ; l'adresse postale (lot 2.6) ; le profil prestataire (lot 2.3).</p>
+  </section>
+</div>
