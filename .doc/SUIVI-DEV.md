@@ -7,12 +7,12 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 2.1 — Métiers et catégories : liste triée (relue par Raphael), mots-clés, recherche sans accents, propositions de métier (Raphael : « Oui, je valide » le lot 1.4)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. MLD proposé et validé  ← on en est là
-  - [ ] 2. Liste des catégories et métiers proposée (Artifact) et relue par Raphael
+  - [x] 1. MLD proposé et validé le 28/09/2026 ; `db/schema_v4.sql` écrit (pas encore exécuté)
+  - [ ] 2. Liste des catégories et métiers proposée (Artifact) et relue par Raphael  ← on en est là (`backend/app/donnees/metiers.json` : 14 dossiers, 128 métiers)
   - [ ] 3. Plan validé, `schema_v4.sql` + données des métiers exécutés
   - [ ] 4. Modèles, calculs, routes, tests
   - [ ] 5. Essais, invariants, sauvegarde
-- **Question en attente** : validation du MLD du lot 2.1 (https://claude.ai/artifact/DvTZvnKKGLqdgGXDUh4FfY, fichier `.doc/mld/MLD-lot-2.1-metiers.html`)
+- **Question en attente** : relecture de la liste des métiers (https://claude.ai/artifact/SK4EXJ789cPZLRWhzMp7oA, fichier `.doc/ihm/liste-metiers-a-relire.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »

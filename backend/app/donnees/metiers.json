@@ -1,0 +1,168 @@
+{
+  "_source": "Liste triée des métiers de rafals (lot 2.1, 28/09/2026) : 110 métiers de vitrine-express + répertoire des métiers de France Travail, en ne gardant que les services qu'un particulier peut réserver (RM-METIERS.md). À relire par Raphael avant chargement.",
+  "categories": [
+    {"code": "maison-travaux", "nom": "Maison & travaux", "metiers": [
+      ["plombier", "Plombier", "plomberie, fuite, chauffagiste, sanitaire, robinet, chauffe-eau, debouchage"],
+      ["electricien", "Électricien", "electricite, prise, tableau electrique, panne, eclairage, mise aux normes"],
+      ["chauffagiste", "Chauffagiste", "chaudiere, chauffage, entretien chaudiere, radiateur"],
+      ["climatisation", "Climatisation / Pompe à chaleur", "clim, climatiseur, pompe a chaleur, pac, frigoriste"],
+      ["serrurier", "Serrurier", "serrure, porte claquee, cle, blindage, depannage serrure"],
+      ["menuisier", "Menuisier / Ébéniste", "menuiserie, bois, meuble sur mesure, porte, fenetre, placard"],
+      ["peintre", "Peintre en bâtiment", "peinture, murs, plafond, papier peint, decoration"],
+      ["plaquiste", "Plaquiste", "placo, placoplatre, cloison, faux plafond, isolation"],
+      ["carreleur", "Carreleur", "carrelage, faience, sol, salle de bain"],
+      ["macon", "Maçon", "maconnerie, mur, beton, terrasse, dalle, extension"],
+      ["couvreur", "Couvreur / Zingueur", "toiture, toit, tuiles, gouttiere, zinc, fuite toit"],
+      ["facadier", "Façadier / Ravalement", "facade, ravalement, crepi, enduit"],
+      ["poseur-sols", "Poseur de sols / Parquet", "parquet, sol, lino, moquette, stratifie, ponçage"],
+      ["cuisiniste", "Cuisiniste / Salles de bain", "cuisine, salle de bain, pose cuisine, amenagement"],
+      ["vitrier", "Vitrier", "vitre, vitrage, fenetre cassee, double vitrage, miroir"],
+      ["storiste", "Stores / Volets", "volet roulant, store, banne, motorisation volet"],
+      ["multiservices", "Homme toutes mains / Multiservices", "bricolage, petits travaux, montage meuble, reparation, bricoleur"],
+      ["montage-meubles", "Montage de meubles", "montage meuble, ikea, assemblage, kit"],
+      ["ramoneur", "Ramoneur", "ramonage, cheminee, poele, conduit"],
+      ["pisciniste", "Pisciniste / Entretien piscine", "piscine, entretien piscine, spa, jacuzzi"],
+      ["architecte-interieur", "Architecte d'intérieur / Décorateur", "decoration interieur, amenagement, home staging, plans"],
+      ["diagnostiqueur", "Diagnostiqueur immobilier", "diagnostic, dpe, amiante, plomb, electricite, vente, location"],
+      ["domoticien", "Domotique / Alarmes", "alarme, videosurveillance, domotique, interphone, camera"],
+      ["antenniste", "Antenniste / Parabole", "antenne, tnt, parabole, satellite, reception tv"]
+    ]},
+    {"code": "menage-entretien", "nom": "Ménage & entretien", "metiers": [
+      ["menage", "Femme / Homme de ménage", "menage, nettoyage, entretien maison, aide menagere"],
+      ["repassage", "Repassage", "repasser, linge, pressing a domicile"],
+      ["vitres", "Nettoyage de vitres", "laveur de vitres, vitres, baies vitrees"],
+      ["grand-nettoyage", "Grand nettoyage / Fin de chantier", "nettoyage fin de bail, fin de chantier, remise en etat, demenagement"],
+      ["nettoyage-textiles", "Nettoyage de canapés et tapis", "canape, tapis, moquette, matelas, shampouineuse"],
+      ["desinsectisation", "Désinsectisation / Dératisation", "punaises de lit, cafards, rats, souris, guepes, nuisibles, frelons"],
+      ["debarras", "Débarras / Vide-maison", "debarras, vide grenier, vider cave, encombrants, succession"]
+    ]},
+    {"code": "jardin-exterieur", "nom": "Jardin & extérieur", "metiers": [
+      ["jardinier", "Jardinier", "jardin, tonte, pelouse, desherbage, entretien jardin"],
+      ["paysagiste", "Paysagiste", "amenagement jardin, plantation, massif, gazon, arrosage"],
+      ["elagueur", "Élagueur / Abattage", "elagage, arbre, abattage, taille haie, dessouchage"],
+      ["taille-haies", "Taille de haies", "haie, taille, thuya, arbustes"],
+      ["terrassier", "Terrassier", "terrassement, tranchee, allee, mini pelle"],
+      ["cloture", "Clôtures / Portails", "cloture, portail, grillage, palissade"]
+    ]},
+    {"code": "beaute-bien-etre", "nom": "Beauté & bien-être", "metiers": [
+      ["coiffure", "Coiffeur / Coiffeuse", "coiffure, coupe, couleur, brushing, salon"],
+      ["coiffure-domicile", "Coiffeur / Coiffeuse à domicile", "coiffure a domicile, coupe a domicile"],
+      ["barbier", "Barbier", "barbe, rasage, coupe homme"],
+      ["estheticienne", "Esthéticienne", "institut, epilation, soin visage, beaute"],
+      ["onglerie", "Onglerie / Prothésiste ongulaire", "ongles, manucure, pose gel, vernis semi permanent, nail art"],
+      ["maquillage", "Maquilleur / Maquilleuse", "maquillage, mariage, make up"],
+      ["cils", "Extensions de cils / Regard", "cils, rehaussement, sourcils, microblading"],
+      ["massage", "Masseur / Masseuse bien-être", "massage, relaxation, spa, modelage"],
+      ["sophrologue", "Sophrologue", "sophrologie, stress, relaxation, sommeil"],
+      ["tatoueur", "Tatoueur / Pierceur", "tatouage, tattoo, piercing"],
+      ["relooking", "Conseil en image / Relooking", "relooking, style, colorimetrie, garde robe"]
+    ]},
+    {"code": "sante", "nom": "Santé", "metiers": [
+      ["kinesitherapeute", "Kinésithérapeute", "kine, reeducation, massage, dos"],
+      ["infirmier", "Infirmier / Infirmière", "infirmiere, soins a domicile, prise de sang, pansement, piqure"],
+      ["osteopathe", "Ostéopathe", "osteo, dos, douleurs, bebe"],
+      ["psychologue", "Psychologue / Thérapeute", "psy, therapie, ecoute, anxiete"],
+      ["orthophoniste", "Orthophoniste", "ortho, langage, parole, dyslexie"],
+      ["podologue", "Pédicure-podologue", "podologue, pieds, semelles, pedicure"],
+      ["dieteticien", "Diététicien / Nutritionniste", "dietetique, nutrition, regime, alimentation"],
+      ["sage-femme", "Sage-femme", "grossesse, accouchement, suivi, reeducation perineale"],
+      ["naturopathe", "Naturopathe / Médecines douces", "naturopathie, medecine douce, plantes"],
+      ["ergotherapeute", "Ergothérapeute", "ergo, handicap, autonomie, amenagement"],
+      ["psychomotricien", "Psychomotricien", "psychomotricite, enfant, motricite"]
+    ]},
+    {"code": "enfants-famille", "nom": "Enfants & famille", "metiers": [
+      ["garde-enfants", "Garde d'enfants / Baby-sitting", "baby sitter, babysitting, nounou, garde, sortie d ecole"],
+      ["assistante-maternelle", "Assistante maternelle", "nounou agreee, creche, bebe, garde a la journee"],
+      ["aide-devoirs", "Aide aux devoirs", "devoirs, primaire, college, accompagnement scolaire"],
+      ["animateur-enfants", "Animateur / Anniversaires enfants", "anniversaire, animation enfants, magicien, clown, maquillage enfant"]
+    ]},
+    {"code": "cours-formation", "nom": "Cours & formation", "metiers": [
+      ["soutien-scolaire", "Soutien scolaire", "cours particuliers, maths, francais, physique, bac, brevet"],
+      ["cours-langues", "Cours de langues", "anglais, espagnol, allemand, italien, arabe, chinois, fle"],
+      ["cours-musique", "Cours de musique", "piano, guitare, violon, batterie, chant, solfege"],
+      ["cours-informatique", "Cours d'informatique", "ordinateur, internet, smartphone, bureautique, seniors"],
+      ["cours-cuisine", "Cours de cuisine / Pâtisserie", "cuisine, patisserie, atelier culinaire"],
+      ["cours-dessin", "Cours de dessin / Peinture", "dessin, peinture, arts plastiques, aquarelle"],
+      ["cours-couture", "Cours de couture", "couture, machine a coudre, tricot"],
+      ["moniteur-conduite", "Moniteur de conduite", "permis, auto ecole, conduite accompagnee, code"],
+      ["formateur", "Formateur / Consultant", "formation, coaching professionnel, bilan"]
+    ]},
+    {"code": "sport-loisirs", "nom": "Sport & loisirs", "metiers": [
+      ["coach-sportif", "Coach sportif", "fitness, musculation, remise en forme, perte de poids, personal trainer"],
+      ["yoga", "Professeur de yoga / Pilates", "yoga, pilates, meditation, stretching"],
+      ["arts-martiaux", "Arts martiaux / Boxe", "boxe, judo, karate, self defense, krav maga"],
+      ["danse", "Professeur de danse", "danse, salsa, rock, hip hop, danse classique"],
+      ["equitation", "Moniteur d'équitation", "equitation, cheval, poney, balade a cheval"],
+      ["sports-nautiques", "Moniteur de surf / Sports nautiques", "surf, voile, paddle, kitesurf, plongee"],
+      ["guide", "Guide / Accompagnateur randonnée", "randonnee, guide, montagne, visite, balade"],
+      ["tennis", "Professeur de tennis / Padel", "tennis, padel, raquette"],
+      ["natation", "Maître-nageur / Cours de natation", "natation, piscine, apprendre a nager, aquagym"]
+    ]},
+    {"code": "evenements", "nom": "Événements", "metiers": [
+      ["photographe", "Photographe", "photo, shooting, mariage, portrait, bapteme, naissance"],
+      ["videaste", "Vidéaste", "video, film mariage, montage, drone"],
+      ["dj", "DJ / Animation musicale", "dj, musique, soiree, sono, animation"],
+      ["musicien", "Musicien / Chanteur", "musicien, chanteur, groupe, orchestre, ceremonie"],
+      ["wedding-planner", "Organisateur de mariage / d'événements", "wedding planner, organisation mariage, evenement"],
+      ["traiteur", "Traiteur", "traiteur, buffet, cocktail, repas, reception"],
+      ["chef-domicile", "Chef à domicile", "chef, cuisinier a domicile, repas prive, diner"],
+      ["patissier-evenements", "Pâtissier pour événements", "gateau, wedding cake, gateau anniversaire, pieces montees"],
+      ["decoration-evenements", "Décorateur d'événements", "decoration mariage, fleurs, ballons, deco"],
+      ["location-fete", "Location matériel de fête / Photobooth", "location, photobooth, tente, sono, vaisselle"],
+      ["fleuriste-evenements", "Fleuriste pour événements", "fleurs, bouquet mariee, compositions florales"],
+      ["magicien", "Magicien", "magie, spectacle, close up"]
+    ]},
+    {"code": "animaux", "nom": "Animaux", "metiers": [
+      ["toiletteur", "Toiletteur", "toilettage, chien, chat, tonte, bain"],
+      ["pet-sitter", "Pet-sitter / Garde d'animaux", "garde chat, garde chien, visites, pension"],
+      ["promeneur-chiens", "Promeneur de chiens", "promenade chien, dog walker, sortie"],
+      ["educateur-canin", "Éducateur canin", "education chien, dressage, comportement"],
+      ["veterinaire", "Vétérinaire", "veto, soins animaux, vaccins, a domicile"],
+      ["marechal-ferrant", "Maréchal-ferrant", "ferrage, cheval, sabots"]
+    ]},
+    {"code": "auto-transport", "nom": "Auto & transport", "metiers": [
+      ["mecanicien", "Mécanicien", "garage, reparation voiture, vidange, entretien, freins"],
+      ["mecanicien-domicile", "Mécanicien à domicile", "mecanique a domicile, vidange a domicile"],
+      ["carrossier", "Carrossier", "carrosserie, rayure, bosse, peinture auto"],
+      ["lavage-auto", "Lavage / Nettoyage auto", "lavage voiture, nettoyage interieur, detailing"],
+      ["depannage-auto", "Dépannage / Remorquage", "depanneuse, remorquage, panne, batterie"],
+      ["moto", "Mécanicien moto / Scooter", "moto, scooter, deux roues"],
+      ["velo", "Réparation de vélos", "velo, cycliste, crevaison, entretien velo, trottinette"],
+      ["demenageur", "Déménageur", "demenagement, transport meubles, monte meuble"],
+      ["chauffeur", "Chauffeur privé / VTC", "vtc, chauffeur, taxi, transport, aeroport"],
+      ["coursier", "Coursier / Livraison", "livraison, course, colis"],
+      ["controle-technique", "Contrôle technique", "controle technique, ct, visite technique"]
+    ]},
+    {"code": "numerique-bureau", "nom": "Numérique & bureau", "metiers": [
+      ["depannage-informatique", "Dépannage informatique", "ordinateur, pc, virus, lenteur, wifi, installation"],
+      ["reparation-telephone", "Réparation de téléphones", "smartphone, ecran casse, batterie, iphone"],
+      ["developpeur-web", "Création de sites web", "site internet, developpeur, web, e commerce"],
+      ["graphiste", "Graphiste", "logo, flyer, carte de visite, identite visuelle"],
+      ["secretariat", "Secrétariat / Assistance administrative", "secretaire, papiers, administratif, courriers, classement"],
+      ["redacteur", "Rédacteur / Correcteur", "redaction, correction, relecture, cv, lettre de motivation"],
+      ["traducteur", "Traducteur", "traduction, interprete, anglais"],
+      ["comptable", "Comptable / Aide à la gestion", "comptabilite, declaration, bilan, gestion"],
+      ["community-manager", "Community manager", "reseaux sociaux, instagram, facebook, communication"]
+    ]},
+    {"code": "services-personne", "nom": "Services à la personne", "metiers": [
+      ["aide-domicile", "Aide à domicile / Seniors", "aide a domicile, personne agee, auxiliaire de vie, accompagnement"],
+      ["courses", "Courses et accompagnement", "faire les courses, accompagnement rendez vous, sorties"],
+      ["retouches", "Couturière / Retouches", "retouche, ourlet, couture, reparation vetement"],
+      ["cordonnier", "Cordonnier / Clés", "cordonnerie, chaussures, cles, talons"],
+      ["conciergerie", "Conciergerie / Location saisonnière", "airbnb, conciergerie, remise des cles, menage location"],
+      ["ecrivain-public", "Écrivain public", "courrier, lettre, demarches, formulaire"],
+      ["reparation-electromenager", "Réparation d'électroménager", "lave linge, frigo, lave vaisselle, four, electromenager"],
+      ["horloger", "Horloger", "montre, pile, bracelet, reparation montre"]
+    ]},
+    {"code": "autre", "nom": "Autre", "metiers": [
+      ["autre", "Autre", "autre, divers"]
+    ]}
+  ],
+  "ecartes_de_vitrine_express": [
+    ["Restaurants et cafés (Restaurant, Pizzeria, Burger, Sushi, Kebab, Crêperie, Café / Bar, Bar à cocktails, Restaurant asiatique, Food truck, Glacier)", "on n'y réserve pas un service à domicile ou un rendez-vous"],
+    ["Commerces (Boulangerie, Chocolatier, Fromagerie, Primeur, Poissonnerie, Librairie, Bijouterie, Boutique de vêtements, Friperie, Décoration / Concept store, Magasin de jouets, Animalerie)", "vente d'objets (règle « ne fera pas »)"],
+    ["Opticien, Dentiste", "prise de rendez-vous déjà gérée par des outils de santé spécialisés"],
+    ["Club sportif / Association, Escape game, Salle d'escalade / Trampoline, Centre équestre, Location de salle", "lieux plutôt que personnes (gardés : les moniteurs et professeurs)"],
+    ["Avocat, Assurance / Courtier, Agence de voyages, Pompes funèbres", "professions réglementées ou agences, hors services du quotidien"]
+  ]
+}
