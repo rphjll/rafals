@@ -4,18 +4,14 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 0.1 — Conteneurs Docker, `.env`, `demarrer.bat`, `arreter.bat`, `sauver.bat` (Raphael : « continuer »)
+- **Demande** : Lot 0.2 — Connexion à la base avec les 2 comptes, adresse de contrôle `/health` (Raphael : « je valide le lot 0.1 », suite du plan)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [x] 1. Plan du lot proposé à Raphael, fichier par fichier (validé le 28/09/2026 : « Oui, vas-y », étape par étape)
-  - [x] 2. `.gitignore` et `.env` (mots de passe tirés au hasard, ignoré par git : vérifié) + `.env.exemple`
-  - [x] 3. `docker-compose.yml` avec `db`, `backend`, `frontend` (le « placard » à fichiers viendra quand Raphael aura choisi sa marque)
-  - [x] 4. `backend` minimal (Python 3.13 + FastAPI, adresse `/api/etat`)
-  - [x] 5. `frontend` minimal (Vue + Vite, page provisoire qui interroge le serveur)
-  - [x] 6. `demarrer.bat`, `arreter.bat`, `sauver.bat` (aucun accent : vérifié)
-  - [x] 7. Essai : les 3 boîtes démarrent (PostgreSQL 18.6), `/api/etat` répond en direct (port 8001) et via la page (port 5174), la page s'affiche, la copie de la base (`pg_dump`) marche ; invariants repassés ; sauvegarde
-  - [ ] 8. Essai par Raphael : double-clic sur `demarrer.bat`  ← on en est là
-- **Question en attente** : Raphael essaie `demarrer.bat` et valide (ou non) le lot 0.1.
+  - [ ] 1. Plan du lot proposé à Raphael, fichier par fichier  ← on en est là
+  - [ ] 2. `db/schema_v1.sql` : création du compte `rafals_app` (aucune table), exécuté à la main avec l'accord de Raphael
+  - [ ] 3. Serveur : SQLAlchemy 2 + psycopg 3, connexion avec `rafals_app`, adresse `/health`
+  - [ ] 4. Essais : `/health` répond, `rafals_app` ne peut pas créer de table ; invariants ; sauvegarde
+- **Question en attente** : validation du plan du lot 0.2
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -34,8 +30,8 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 ## Niveau 0 — Amorçage
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 0.1 | Serveur | Conteneurs Docker (`db`, `backend`, `frontend` ; le « placard » à fichiers plus tard), fichier `.env` (mots de passe, jamais sur GitHub), `demarrer.bat`, `arreter.bat`, `sauver.bat` | CLAUDE.md | — | 🔎 |
-| 0.2 | Serveur | Connexion à la base avec les 2 comptes (`rafals_user`, `rafals_app`), adresse de contrôle `/health` | CLAUDE.md | 0.1 | ⬜ |
+| 0.1 | Serveur | Conteneurs Docker (`db`, `backend`, `frontend` ; le « placard » à fichiers plus tard), fichier `.env` (mots de passe, jamais sur GitHub), `demarrer.bat`, `arreter.bat`, `sauver.bat` | CLAUDE.md | — | ✅ |
+| 0.2 | Serveur | Connexion à la base avec les 2 comptes (`rafals_user`, `rafals_app`), adresse de contrôle `/health` | CLAUDE.md | 0.1 | 🟡 |
 | 0.3 | Serveur | Squelette de tests, base `rafals_test_db`, `lancer-tests.bat`, `nettoyer-donnees-test.bat`, `restaurer_base.bat` | CLAUDE.md, méthode étape 10 | 0.2 | ⬜ |
 | 0.4 | Écrans | Squelette Vue + Tailwind avec la charte Vert sauge, en-tête + menu ☰, composants `AppBouton`, `AppChamp`, `AppFenetre`, `AppBadge`, `AppMessage` | CHARTE-VISUELLE, CONVENTIONS-IHM | 0.1 | ⬜ |
 
@@ -70,3 +66,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Démarrage — Plan de développement écrit (phase 8). Décisions : niveaux 3 à 6 découpés plus tard, juste après l'écriture de leurs règles (méthode § 0.5, précision phase 6) ; mails de test en local par un conteneur dédié (détail au lot 1.1).
 - **28/09/2026** — Démarrage terminé — Plan validé par Raphael. Pas de Notion : le suivi reste dans ce fichier. Prochain lot : 0.1.
 - **28/09/2026** — Lot 0.1 — Boîtes `db` (PostgreSQL 18), `backend` (Python 3.13 + FastAPI), `frontend` (Node 24 + Vue + Vite) ; `.env` hors de git ; `demarrer.bat`, `arreter.bat`, `sauver.bat`. Essais : serveur et page répondent, `pg_dump` marche. Décisions : MinIO abandonné par son éditeur (12/2025) → boîte de stockage reportée au choix de Raphael (Garage ou RustFS), au plus tard avant le lot 1.3 ; la page lit le serveur via le relais `/api` de Vite (pas de réglage CORS). Invariants : architecture OK (aucune table ; outils standards seulement) ; sécurité, données, tests : sans objet à ce lot (tests au lot 0.3) ; interface : page provisoire, charte complète au lot 0.4 ; réutilisation OK ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`, la ligne « minio » sera mise à jour au choix du stockage. Reste à noter : `package-lock.json` à générer au lot 0.4 pour figer les versions des écrans.
+- **28/09/2026** — Lot 0.1 validé par Raphael (« je valide le lot 0.1 ») après essai de `demarrer.bat` → ✅. Lot 0.2 commencé.
