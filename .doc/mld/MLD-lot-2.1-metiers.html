@@ -1,0 +1,117 @@
+<title>MLD rafals metiers</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 2.1 « Métiers et catégories »</h1>
+    <p class="sous">rafals · proposé le 28/09/2026 · source : <code>.doc/regles-metier/RM-METIERS.md</code> · 3 tables nouvelles, aucune table existante modifiée</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  CATEGORIE["<b>CATEGORIE_METIER</b><br/>id (PK)"]
+  METIER["<b>METIER</b><br/>id (PK)<br/>categorie_id (FK)"]
+  PROPOSITION["<b>PROPOSITION_METIER</b><br/>id (PK)<br/>propose_par_id (FK)<br/>metier_retenu_id (FK)<br/>decide_par_id (FK)"]
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  CATEGORIE -- "range · (1,n) —— (1,1)" --- METIER
+  COMPTE -- "propose · (0,n) —— (1,1)" --- PROPOSITION
+  METIER -- "retenu pour · (0,n) —— (0,1)" --- PROPOSITION
+  COMPTE -- "décide · (0,n) —— (0,1)" --- PROPOSITION
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(1,n)</b><span>au moins un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>la 1re cardinalité est du côté de la table de gauche. Ex. « range · (1,n) —— (1,1) » : une catégorie range au moins un métier ; un métier est rangé dans une et une seule catégorie.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>CATEGORIE_METIER</h3>
+        <p class="note" style="margin-bottom:6px">Les « dossiers » de métiers.</p>
+        <ul>
+          <li><code>code</code> — identifiant stable, ex. « maison-travaux » (unique)</li>
+          <li><code>nom</code> — ex. « Maison &amp; travaux »</li>
+          <li><code>ordre</code> — place dans la liste (1, 2, 3…)</li>
+          <li><code>est_active</code> — oui / non (désactiver au lieu de supprimer)</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>METIER</h3>
+        <ul>
+          <li><code>code</code> — ex. « plombier », « autre » (unique)</li>
+          <li><code>nom</code> — ex. « Plombier »</li>
+          <li><code>mots_cles</code> — liste, ex. « plomberie, fuite, chauffagiste, sanitaire »</li>
+          <li><code>est_active</code> — oui / non : un métier désactivé n'est plus proposé pour les nouvelles annonces</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PROPOSITION_METIER</h3>
+        <p class="note" style="margin-bottom:6px">« Mon métier n'est pas dans la liste ».</p>
+        <ul>
+          <li><code>nom_propose</code> — ex. « Cerf-voliste »</li>
+          <li><code>statut</code> — « en_attente », « acceptee » (nouveau métier créé), « remplacee » (un métier existant convient), « refusee »</li>
+          <li><code>propose_le</code>, <code>decide_le</code></li>
+          <li><code>metier_retenu_id</code> — le métier créé ou choisi ; vide si en attente ou refusée</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>CATEGORIE_METIER</code> n° 4 : code « maison-travaux », nom « Maison &amp; travaux », ordre 4.<br/>
+      <code>METIER</code> n° 58 : <code>categorie_id</code> = 4, code « plombier », nom « Plombier », mots-clés « plomberie, fuite, chauffagiste, sanitaire ».
+      <p class="trad"><b>Traduction :</b> « Plombier » est rangé dans le dossier « Maison &amp; travaux » ; Mme Dupont le trouve en tapant « plom », « fuite » ou « chauffagiste ».</p>
+    </div>
+    <div class="exemple">
+      <code>PROPOSITION_METIER</code> n° 3 : <code>propose_par_id</code> = 21, nom « Cerf-voliste », statut « acceptee », <code>metier_retenu_id</code> = 301, <code>decide_par_id</code> = 5.
+      <p class="trad"><b>Traduction :</b> Nadia (compte n° 21) a proposé « Cerf-voliste » ; Raphael (compte n° 5) l'a accepté, ce qui a créé le métier n° 301.</p>
+    </div>
+    <div class="exemple">
+      <code>PROPOSITION_METIER</code> n° 4 : <code>propose_par_id</code> = 22, nom « Plombier chauffagiste », statut « remplacee », <code>metier_retenu_id</code> = 58.
+      <p class="trad"><b>Traduction :</b> Tom a proposé « Plombier chauffagiste » ; Raphael a répondu que « Plombier » (n° 58) existe déjà. Un même métier peut donc être retenu pour plusieurs propositions (0,n).</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Recherche sans tenir compte des accents : la base apprend à ignorer les accents (« electricien » trouve « Électricien »). Pas dans ce lot : l'écran de choix d'un métier et l'administration des métiers (lot 2.2) ; le lien entre un prestataire et ses métiers (lot 2.3).</p>
+  </section>
+</div>
