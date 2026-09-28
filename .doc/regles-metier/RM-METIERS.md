@@ -39,6 +39,10 @@ Chaque métier est rangé dans une seule catégorie ; les mots-clés servent à 
 - **Décision de l'administrateur** : accepter (choisir le dossier : le métier est créé), remplacer par un métier existant (le nom proposé devient un de ses mots-clés), ou refuser.
 - Chaque proposition, décision, création ou modification de métier est écrite au journal des actions.
 
+## Pas de suppression, même pour un métier jamais utilisé (décidé par Raphael le 28/09/2026)
+Un métier ne se supprime jamais : on le **désactive** (bouton [Désactiver] dans Administration › Métiers ; réversible avec [Réactiver]). Il disparaît alors pour tout le monde, et de la liste d'administration tant que « Montrer les désactivés » n'est pas coché.
+**Pourquoi :** règle la plus simple et la plus sûre ; un métier créé par erreur se désactive.
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|

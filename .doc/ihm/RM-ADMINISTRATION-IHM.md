@@ -31,9 +31,9 @@ Chaque ligne : « **« Cerf-voliste »** · proposé par Nadia Leroy · le 28/09
 Erreurs du serveur affichées dans la fenêtre (ex. « Choisissez le dossier où ranger ce nouveau métier. »).
 
 ## Onglet « Métiers » (lot 2.2)
-1. Champ « Filtrer » (sans accents, sur le nom et les mots-clés) et, à droite, bouton principal [+ Nouveau métier].
+1. Champ « Filtrer » (sans accents, sur le nom et les mots-clés), case « Montrer les désactivés » (décochée : les métiers désactivés sont cachés ; ajoutée le 28/09/2026) et, à droite, bouton principal [+ Nouveau métier].
 2. Tableau (défile sur le côté sur téléphone), trié par nom. **Colonnes :** Métier · Dossier · Mots-clés (en petit) · État (badge « actif » / « désactivé ») · boutons [Modifier] (secondaire) et [Désactiver] (danger) ou [Réactiver] (secondaire) → message vert « « Cordiste » désactivé : il n'est plus proposé. » / « … réactivé : il est de nouveau proposé. » (bouton visible ajouté le 28/09/2026 à la demande de Raphael : la case « Actif » cachée dans « Modifier » n'était pas trouvable).
-3. « 12 métier(s) sur 128, triés par nom. Un métier ne se supprime jamais : on le désactive. »
+3. « 12 métier(s) affiché(s) sur 128, triés par nom. Un métier ne se supprime jamais : on le désactive (il disparaît pour tout le monde, et d'ici tant que « Montrer les désactivés » n'est pas coché). »
 
 **Fenêtre « Nouveau métier » :** Nom *, Dossier * ; [Créer] / [Annuler] → « Métier « Cordiste » créé. »
 **Fenêtre « Modifier « Plombier » » :** Nom *, Dossier *, Mots-clés (séparés par des virgules) ; [Enregistrer] / [Annuler] → « Métier « Plombier » enregistré. »

@@ -34,9 +34,15 @@ const erreur = ref('')
 const sansAccents = (texte: string) => texte.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 const nomDossier = (id: number) => dossiersAdmin.value.find((d) => d.id === id)?.nom ?? ''
 const optionsDossiers = computed(() => dossiersAdmin.value.map((d) => ({ valeur: d.id, texte: d.nom })))
+// Les métiers désactivés sont cachés, sauf si l'on coche « Montrer les désactivés »
+const montrerDesactives = ref(false)
 const metiersFiltres = computed(() => {
   const q = sansAccents(filtre.value.trim())
-  return q ? metiers.value.filter((m) => sansAccents(`${m.nom} ${m.mots_cles.join(' ')}`).includes(q)) : metiers.value
+  return metiers.value.filter(
+    (m) =>
+      (montrerDesactives.value || m.est_active) &&
+      (!q || sansAccents(`${m.nom} ${m.mots_cles.join(' ')}`).includes(q)),
+  )
 })
 
 async function charger() {
@@ -113,6 +119,10 @@ async function enregistrer() {
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <div class="flex flex-wrap items-end gap-2.5">
       <div class="min-w-[220px] flex-1"><AppChamp v-model="filtre" etiquette="Filtrer" placeholder="ex. plom" /></div>
+      <label class="flex min-h-[42px] items-center gap-2 text-sm font-medium">
+        <input v-model="montrerDesactives" type="checkbox" class="size-4 accent-primaire" />
+        Montrer les désactivés
+      </label>
       <AppBouton @click="nouveau">+ Nouveau métier</AppBouton>
     </div>
     <div class="overflow-x-auto rounded-rafals border border-bord bg-surface">
@@ -147,7 +157,8 @@ async function enregistrer() {
       </table>
     </div>
     <p class="text-[13px] text-texte-doux">
-      {{ metiersFiltres.length }} métier(s) sur {{ metiers.length }}, triés par nom. Un métier ne se supprime jamais : on le désactive.
+      {{ metiersFiltres.length }} métier(s) affiché(s) sur {{ metiers.length }}, triés par nom. Un métier ne se supprime
+      jamais : on le désactive (il disparaît pour tout le monde, et d'ici tant que « Montrer les désactivés » n'est pas coché).
     </p>
 
     <AppFenetre
