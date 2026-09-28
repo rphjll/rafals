@@ -23,17 +23,24 @@ from app.services import stockage
 # (table, colonne, marque de test au format SQL LIKE) — une ligne par table concernée.
 MARQUES: list[tuple[str, str, str]] = [
     ("compte", "email", "%@example.com"),
+    ("metier", "nom", "ZZTEST %"),
 ]
 
 # Lignes rattachées à effacer AVANT la ligne principale, dans cet ordre (la base refuse sinon).
 RATTACHEES: dict[str, list[str]] = {
     "compte": [
         "DELETE FROM journal_action WHERE auteur_id = :id OR (table_cible = 'compte' AND ligne_id = :id)"
-        " OR (table_cible = 'accord_parental' AND ligne_id IN (SELECT id FROM accord_parental WHERE compte_id = :id))",
+        " OR (table_cible = 'accord_parental' AND ligne_id IN (SELECT id FROM accord_parental WHERE compte_id = :id))"
+        " OR (table_cible = 'proposition_metier' AND ligne_id IN (SELECT id FROM proposition_metier WHERE propose_par_id = :id))",
+        "DELETE FROM proposition_metier WHERE propose_par_id = :id",
         "DELETE FROM accord_parental WHERE compte_id = :id",
         "DELETE FROM fichier WHERE depose_par_id = :id",
         "DELETE FROM session WHERE compte_id = :id",
         "DELETE FROM jeton_mail WHERE compte_id = :id",
+    ],
+    "metier": [
+        "DELETE FROM journal_action WHERE table_cible = 'metier' AND ligne_id = :id",
+        "DELETE FROM proposition_metier WHERE metier_retenu_id = :id",
     ],
 }
 

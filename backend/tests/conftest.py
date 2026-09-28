@@ -54,6 +54,13 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     for cle in stockage.lister_cles():
         stockage.supprimer(cle)
 
+    # Données de référence : la liste des métiers (la base de test ne reçoit que la structure)
+    from scripts.charger_metiers import charger
+
+    with Session(moteur) as db:
+        charger(db)
+        db.commit()
+
 
 def email_essai() -> str:
     """Adresse d'essai unique, marquée @example.com (jamais une vraie adresse)."""

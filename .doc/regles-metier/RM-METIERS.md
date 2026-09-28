@@ -30,6 +30,15 @@ Chaque métier a des mots-clés, comme dans vitrine-express : la recherche les t
 Chaque métier est rangé dans une seule catégorie ; les mots-clés servent à le retrouver par d'autres chemins.
 - Exemple : « Photographe » est dans « Événements » ; taper « photo » le trouve aussi.
 
+## Précisions prises au lot 2.1 (proposé par Claude, validé par Raphael le 28/09/2026 avec la liste)
+- **Liste de départ : 14 dossiers, 128 métiers**, dans `backend/app/donnees/metiers.json` (chargée avec `charger-metiers.bat`, relançable sans doublon). Le 14e dossier « Autre » contient le seul métier « Autre ».
+- **Écartés de vitrine-express** : restaurants et commerces (vente d'objets), lieux (salle d'escalade, location de salle…), quelques professions réglementées ou agences. Liste et raisons dans le fichier. Raphael peut les repêcher.
+- **Recherche** : dès la 1re lettre, au début du nom, d'un mot du nom ou d'un mot-clé, sans accents. Ordre : nom qui commence par le texte, puis mot du nom, puis mot-clé ; ensuite alphabétique. 10 résultats au maximum.
+  - Ex. « fuite » → Couvreur / Zingueur, Plombier (mots-clés) ; « eben » → Menuisier / Ébéniste.
+- **Proposer un métier qui existe déjà** est refusé avec son nom (« Ce métier existe déjà dans la liste : « Plombier ». »).
+- **Décision de l'administrateur** : accepter (choisir le dossier : le métier est créé), remplacer par un métier existant (le nom proposé devient un de ses mots-clés), ou refuser.
+- Chaque proposition, décision, création ou modification de métier est écrite au journal des actions.
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|
