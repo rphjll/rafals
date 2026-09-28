@@ -1,0 +1,10 @@
+# Secrets : ne jamais envoyer sur GitHub
+.env
+
+# Fichiers fabriques automatiquement
+node_modules/
+frontend/dist/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/

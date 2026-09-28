@@ -7,14 +7,14 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 0.1 — Conteneurs Docker, `.env`, `demarrer.bat`, `arreter.bat`, `sauver.bat` (Raphael : « continuer »)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. Plan du lot proposé à Raphael, fichier par fichier  ← on en est là
-  - [ ] 2. `.gitignore` et `.env` (mots de passe) + `.env.exemple`
-  - [ ] 3. `docker-compose.yml` avec `db` (le « placard » à fichiers viendra quand Raphael aura choisi sa marque)
+  - [x] 1. Plan du lot proposé à Raphael, fichier par fichier (validé le 28/09/2026 : « Oui, vas-y », étape par étape)
+  - [x] 2. `.gitignore` et `.env` (mots de passe tirés au hasard, ignoré par git : vérifié) + `.env.exemple`
+  - [ ] 3. `docker-compose.yml` avec `db` (le « placard » à fichiers viendra quand Raphael aura choisi sa marque)  ← prochaine étape
   - [ ] 4. `backend` minimal (Python + FastAPI, page « rafals démarre »)
   - [ ] 5. `frontend` minimal (Vue + Vite, page d'accueil provisoire)
   - [ ] 6. `demarrer.bat`, `arreter.bat`, `sauver.bat`
   - [ ] 7. Essai : tout démarre, la page s'ouvre ; invariants ; sauvegarde
-- **Question en attente** : validation du plan du lot 0.1 (fichier par fichier).
+- **Question en attente** : aucune (plan validé).
 - **Question reportée (à reposer à la fin du lot 0.1, au plus tard avant le lot 1.3)** : MinIO n'est plus distribué (mode maintenance depuis 12/2025, plus d'image Docker officielle) → remplacer par Garage (recommandé) ou RustFS. Raphael : « repose moi cette question a la fin car je sais pas encore ».
 - **En pause** : aucune
 
