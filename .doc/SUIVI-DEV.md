@@ -4,16 +4,14 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 1.3 — Âge (16 ans) et accord des parents, rôle administrateur, journal des actions (Raphael : « je valide continue »)
+- **Demande** : Lot 1.4 — Écrans « Mon compte » (accord des parents) et « Administration » (comptes, administrateurs, accords à vérifier) (Raphael : « Oui, je valide » le lot 1.3)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [x] 1. Choix du « placard » à fichiers : **Garage** (Raphael, 28/09/2026 ; image `dxflrs/garage:v2.3.0`)
-  - [x] 2. MLD proposé et validé le 28/09/2026 ; `db/schema_v3.sql` écrit (pas encore exécuté)
-  - [x] 3. Plan validé (« Oui, vas-y ») ; boîte `garage` + `preparer-stockage.bat` (compartiments `rafals` et `rafals-test`) ; `schema_v3.sql` exécuté le 28/09/2026
-  - [x] 4. Modèles (`fichiers.py`, `journal.py`), calculs (`stockage`, `journal`, `droits`, `accords`, `administration`), routes (`dependances`, `accords`, `administration`), `nommer-premier-administrateur.bat`
-  - [x] 5. Tests : 39 OK ; outil du 1er administrateur essayé sur la base de test (3 cas) ; essai sur la vraie base (dépôt d'un accord `@example.com`) puis nettoyage : 0 ligne, 0 fichier dans le placard ; invariants ; sauvegarde
-  - [ ] 6. Validation par Raphael (et, s'il le veut, création de son vrai compte + `nommer-premier-administrateur.bat`)  ← on en est là
-- **Question en attente** : validation du lot 1.3 par Raphael
+  - [ ] 1. Maquette cliquable validée  ← on en est là
+  - [ ] 2. Page Mon compte (infos + accord des parents)
+  - [ ] 3. Page Administration (accords à vérifier, comptes et administrateurs) + entrée de menu réservée aux administrateurs
+  - [ ] 4. `RM-*-IHM.md`, essais (données `@example.com`), nettoyage, invariants, sauvegarde
+- **Question en attente** : validation de la maquette du lot 1.4
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -42,8 +40,8 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 |---|---|---|---|---|---|
 | 1.1 | Serveur | Comptes : inscription, mail de vérification (conteneur de mails de test en local), connexion, rester connecté 30 jours, mot de passe oublié (lien 1 h), blocage après 5 erreurs | RM-COMPTES | 0.3 | ✅ |
 | 1.2 | Écrans | Pages Inscription, Connexion, Mot de passe oublié | RM-COMPTES | 1.1, 0.4 | ✅ |
-| 1.3 | Serveur | « Placard » à fichiers : Garage (choisi le 28/09/2026). Âge (16 ans) et accord des parents (document déposé), rôle administrateur (jamais retirer le dernier), journal des actions | RM-COMPTES | 1.1 | 🔎 |
-| 1.4 | Écrans | Mon compte (premiers éléments, accord des parents) ; Administration : comptes et administrateurs | RM-COMPTES | 1.3, 1.2 | ⬜ |
+| 1.3 | Serveur | « Placard » à fichiers : Garage (choisi le 28/09/2026). Âge (16 ans) et accord des parents (document déposé), rôle administrateur (jamais retirer le dernier), journal des actions | RM-COMPTES | 1.1 | ✅ |
+| 1.4 | Écrans | Mon compte (premiers éléments, accord des parents) ; Administration : comptes et administrateurs | RM-COMPTES | 1.3, 1.2 | 🟡 |
 
 ## Niveau 2 — Objets communs
 | Lot | Type | Description | Règle source | Dépend de | État |
@@ -80,3 +78,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Lot 1.2 — Maquette validée, puis pages Inscription (+ état « vérifiez votre boîte mail »), Connexion, Mot de passe oublié, Vérifier l'adresse, Nouveau mot de passe ; en-tête avec Se connecter / prénom + Se déconnecter ; bandeau orange sur l'accueil tant que l'adresse n'est pas vérifiée. Nouveaux composants communs `AppCarte`, `AppAlerte`, `AppSeparateur` (réutilisés sur les 5 pages) ; `AppBouton` gagne l'état « envoi en cours » ; `AppChamp` transmet l'autocomplétion du navigateur ; `api.ts` : un seul endroit pour appeler le serveur. Serveur inchangé. Essais : aucune faute, parcours complet (inscription → mail → lien → connexion → déconnexion) OK par les écrans ; compte d'essai de Claude nettoyé (comptage 0). Invariants : interface OK (clic → résultat visible, erreurs au-dessus du bouton, couleurs de la charte, composants uniques, `RM-*-IHM.md` écrits) ; 4 formats : à vérifier par Raphael ; données OK (0 donnée de test) ; architecture, sécurité : inchangées ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`. Limite connue : recharger la page de vérification après succès affiche « lien déjà utilisé ».
 - **28/09/2026** — Lot 1.2 validé par Raphael (« je valide continue ») après son essai ; comptage : 0 compte dans la vraie base → ✅. Lot 1.3 commencé.
 - **28/09/2026** — Lot 1.3 — Stockage : Garage 2.3.0 choisi par Raphael (MinIO abandonné par son éditeur) ; boîte `garage` sans port ouvert, secrets dans `.env`, `preparer-stockage.bat` (une fois par PC) ; compartiment `rafals-test` pour les tests, vidé à chaque lancement (garde-fou comme pour la base). `CLAUDE.md` + copie : conteneurs et ligne Fichiers mis à jour. MLD validé, `schema_v3.sql` exécuté (rubrique `est_administrateur`, tables `fichier`, `accord_parental`, `journal_action` ; journal non modifiable ni effaçable par `rafals_app`). Serveur : dépôt de l'accord (PDF/JPG/PNG, 5 Mo, contenu vérifié), décision par un administrateur (motif obligatoire si refus), nommer/retirer un administrateur (jamais le dernier, verrou pendant le calcul), journal des actions, règle « peut réserver ou publier », `nommer-premier-administrateur.bat`. Réutilisation : `routes/dependances.py` (base, heure, compte connecté, contrôle administrateur) sert à toutes les routes. Décisions : le nettoyage des données d'essai efface avec le compte administrateur de la base, y compris les lignes du journal des comptes d'essai (seule exception) et leurs fichiers dans le placard. Problème : un 1er essai d'envoi de fichier a échoué à cause du chemin `/tmp` de Git Bash (pas de rafals). Tests : 39 OK. Invariants : architecture OK (portabilité : seul `services/stockage.py` parle au stockage) ; sécurité OK (403 hors administrateur, 401 hors connexion, journal protégé) ; données OK (0 ligne, 0 fichier restant) ; tests OK (base et compartiment de test seuls) ; interface : écrans au lot 1.4 ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`, règles précisées dans `RM-COMPTES.md`. Limite connue : si la base refuse un dépôt après l'envoi du fichier au placard, le fichier reste orphelin (rare, à nettoyer plus tard).
+- **28/09/2026** — Raphael a créé son vrai compte (n° 5), vérifié son adresse et s'est nommé 1er administrateur avec `nommer-premier-administrateur.bat`. Lot 1.3 validé (« cb », confirmé par « Oui, je valide ») → ✅. Lot 1.4 commencé.
