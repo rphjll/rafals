@@ -4,7 +4,15 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- (aucun)
+- **Demande** : Lot 2.3 — Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance, pause / blocage / arrêt (suite du plan, après la retouche des métiers)
+- **Commencé le** : 28/09/2026
+- **Étapes** :
+  - [ ] 1. MLD proposé et validé  ← on en est là
+  - [ ] 2. Plan validé ; `schema_v5.sql` exécuté ; liste des communes chargée
+  - [ ] 3. Modèles, calculs, routes, tests
+  - [ ] 4. Essais, invariants, sauvegarde
+- **Question en attente** : validation du MLD du lot 2.3 (https://claude.ai/artifact/QmHag6Lt6qC6H2XjzFqoVR, fichier `.doc/mld/MLD-lot-2.3-prestataires.html`)
+- **En pause** : aucune
 
 ## Définition de « terminé »
 
@@ -40,7 +48,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 |---|---|---|---|---|---|
 | 2.1 | Serveur | Métiers et catégories : liste triée (relue par Raphael), mots-clés, recherche sans accents, propositions de métier | RM-METIERS | 1.3 | ✅ |
 | 2.2 | Écrans | Choix d'un métier (recherche par lettres, dossiers) ; Administration des métiers et des propositions | RM-METIERS | 2.1, 1.4 | ✅ |
-| 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | ⬜ |
+| 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | 🟡 |
 | 2.4 | Serveur | Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne | RM-PRESTATAIRES | 2.3 | ⬜ |
 | 2.5 | Écrans | Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage | RM-PRESTATAIRES | 2.4, 2.2 | ⬜ |
 | 2.6 | Serveur | Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans | RM-CLIENTS | 1.3 | ⬜ |
