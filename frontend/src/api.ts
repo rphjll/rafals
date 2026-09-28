@@ -11,12 +11,14 @@ export class ErreurServeur extends Error {
 }
 
 export async function appelerServeur<T>(chemin: string, donnees?: unknown, methode?: 'GET' | 'POST'): Promise<T> {
+  // Un fichier (FormData) part tel quel ; le reste part en JSON
+  const estFormulaire = donnees instanceof FormData
   let reponse: Response
   try {
     reponse = await fetch(chemin, {
       method: methode ?? (donnees === undefined ? 'GET' : 'POST'),
-      headers: donnees === undefined ? undefined : { 'Content-Type': 'application/json' },
-      body: donnees === undefined ? undefined : JSON.stringify(donnees),
+      headers: donnees === undefined || estFormulaire ? undefined : { 'Content-Type': 'application/json' },
+      body: donnees === undefined ? undefined : estFormulaire ? donnees : JSON.stringify(donnees),
       credentials: 'same-origin',
     })
   } catch {

@@ -7,11 +7,12 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 1.4 — Écrans « Mon compte » (accord des parents) et « Administration » (comptes, administrateurs, accords à vérifier) (Raphael : « Oui, je valide » le lot 1.3)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. Maquette cliquable validée  ← on en est là
-  - [ ] 2. Page Mon compte (infos + accord des parents)
-  - [ ] 3. Page Administration (accords à vérifier, comptes et administrateurs) + entrée de menu réservée aux administrateurs
-  - [ ] 4. `RM-*-IHM.md`, essais (données `@example.com`), nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 1.4 (https://claude.ai/artifact/AyTpjsZJ4kv3DxitGX9qi6, fichier `.doc/ihm/maquette-lot-1.4-compte-administration.html`)
+  - [x] 1. Maquette cliquable validée le 28/09/2026 (« Oui, vas-y »)
+  - [x] 2. Page Mon compte (infos + accord des parents), champ `AppChampFichier`, dates (`outils/dates.ts`) ; serveur : « moi » renvoie aussi téléphone et date de naissance
+  - [x] 3. Page Administration (accords à vérifier, comptes et administrateurs) + entrée de menu réservée aux administrateurs
+  - [x] 4. `RM-COMPTE-IHM.md`, `RM-ADMINISTRATION-IHM.md` + mises à jour ; aucune faute ; 39 tests OK ; parcours complet par les écrans (dépôt → vue admin → fichier → acceptation → Lucas peut réserver ; Lucas refusé en administration) ; comptes d'essai de Claude nettoyés (reste le compte n° 5 de Raphael) ; invariants ; sauvegarde
+  - [ ] 5. Essai par Raphael avec son compte administrateur  ← on en est là
+- **Question en attente** : Raphael essaie Mon compte et Administration, puis valide (ou non) le lot 1.4
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -41,7 +42,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | 1.1 | Serveur | Comptes : inscription, mail de vérification (conteneur de mails de test en local), connexion, rester connecté 30 jours, mot de passe oublié (lien 1 h), blocage après 5 erreurs | RM-COMPTES | 0.3 | ✅ |
 | 1.2 | Écrans | Pages Inscription, Connexion, Mot de passe oublié | RM-COMPTES | 1.1, 0.4 | ✅ |
 | 1.3 | Serveur | « Placard » à fichiers : Garage (choisi le 28/09/2026). Âge (16 ans) et accord des parents (document déposé), rôle administrateur (jamais retirer le dernier), journal des actions | RM-COMPTES | 1.1 | ✅ |
-| 1.4 | Écrans | Mon compte (premiers éléments, accord des parents) ; Administration : comptes et administrateurs | RM-COMPTES | 1.3, 1.2 | 🟡 |
+| 1.4 | Écrans | Mon compte (premiers éléments, accord des parents) ; Administration : comptes et administrateurs | RM-COMPTES | 1.3, 1.2 | 🔎 |
 
 ## Niveau 2 — Objets communs
 | Lot | Type | Description | Règle source | Dépend de | État |
@@ -79,3 +80,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Lot 1.2 validé par Raphael (« je valide continue ») après son essai ; comptage : 0 compte dans la vraie base → ✅. Lot 1.3 commencé.
 - **28/09/2026** — Lot 1.3 — Stockage : Garage 2.3.0 choisi par Raphael (MinIO abandonné par son éditeur) ; boîte `garage` sans port ouvert, secrets dans `.env`, `preparer-stockage.bat` (une fois par PC) ; compartiment `rafals-test` pour les tests, vidé à chaque lancement (garde-fou comme pour la base). `CLAUDE.md` + copie : conteneurs et ligne Fichiers mis à jour. MLD validé, `schema_v3.sql` exécuté (rubrique `est_administrateur`, tables `fichier`, `accord_parental`, `journal_action` ; journal non modifiable ni effaçable par `rafals_app`). Serveur : dépôt de l'accord (PDF/JPG/PNG, 5 Mo, contenu vérifié), décision par un administrateur (motif obligatoire si refus), nommer/retirer un administrateur (jamais le dernier, verrou pendant le calcul), journal des actions, règle « peut réserver ou publier », `nommer-premier-administrateur.bat`. Réutilisation : `routes/dependances.py` (base, heure, compte connecté, contrôle administrateur) sert à toutes les routes. Décisions : le nettoyage des données d'essai efface avec le compte administrateur de la base, y compris les lignes du journal des comptes d'essai (seule exception) et leurs fichiers dans le placard. Problème : un 1er essai d'envoi de fichier a échoué à cause du chemin `/tmp` de Git Bash (pas de rafals). Tests : 39 OK. Invariants : architecture OK (portabilité : seul `services/stockage.py` parle au stockage) ; sécurité OK (403 hors administrateur, 401 hors connexion, journal protégé) ; données OK (0 ligne, 0 fichier restant) ; tests OK (base et compartiment de test seuls) ; interface : écrans au lot 1.4 ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`, règles précisées dans `RM-COMPTES.md`. Limite connue : si la base refuse un dépôt après l'envoi du fichier au placard, le fichier reste orphelin (rare, à nettoyer plus tard).
 - **28/09/2026** — Raphael a créé son vrai compte (n° 5), vérifié son adresse et s'est nommé 1er administrateur avec `nommer-premier-administrateur.bat`. Lot 1.3 validé (« cb », confirmé par « Oui, je valide ») → ✅. Lot 1.4 commencé.
+- **28/09/2026** — Lot 1.4 — Maquette validée, puis pages Mon compte (informations ; accord des parents pour les 16-17 ans : dépôt, en attente, accepté, refusé avec motif) et Administration (onglets Accords à vérifier : voir le fichier, accepter, refuser avec motif ; Comptes : nommer / retirer un administrateur avec confirmation). Entrée « Administration » dans le menu seulement pour un administrateur ; page protégée aussi à l'écran. Nouveaux : `AppChampFichier` (resservira pour les photos), `outils/dates.ts` (dates à la française, heure de Paris, âge), `api.ts` accepte les fichiers. Serveur : « moi » renvoie aussi téléphone et date de naissance. Décision : tutoiement dans la partie « Accord de tes parents » (public de 16-17 ans), comme dans la maquette validée. Essais : aucune faute, 39 tests OK, parcours complet par les écrans OK, comptes d'essai nettoyés (0 fichier dans le placard ; le compte n° 5 de Raphael et sa ligne de journal restent). Invariants : interface OK (clic → résultat visible, erreurs dans la fenêtre ou au-dessus du bouton, bouton de rôle confirmé, `RM-*-IHM.md` écrits, tableau qui défile sur téléphone) ; sécurité OK (403 côté serveur, page protégée côté écran) ; données OK ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`.

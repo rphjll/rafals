@@ -47,6 +47,8 @@ class CompteVisible(BaseModel):
     email: str
     prenom: str
     nom: str
+    telephone: str
+    date_naissance: date
     email_verifie: bool
     est_administrateur: bool
     accord_parental_necessaire: bool
@@ -59,6 +61,8 @@ class CompteVisible(BaseModel):
             email=compte.email,
             prenom=compte.prenom,
             nom=compte.nom,
+            telephone=compte.telephone,
+            date_naissance=compte.date_naissance,
             email_verifie=compte.email_verifie_le is not None,
             est_administrateur=bool(compte.est_administrateur),
             accord_parental_necessaire=droits.accord_parental_necessaire(compte, moment),

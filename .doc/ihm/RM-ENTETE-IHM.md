@@ -12,6 +12,7 @@ Bandeau blanc (`surface`) collé en haut de toutes les pages, bordure fine en ba
    2. « Proposer mes services » → `/proposer`
    3. « Mes rendez-vous » → `/rendez-vous`
    4. « Mon compte » → `/compte`
+   5. « Administration » → `/administration` — **seulement pour un administrateur** (lot 1.4)
 
 3. Zone du compte, au bout du menu (affichée seulement une fois qu'on sait si quelqu'un est connecté, pour éviter un clignotement) :
    - personne n'est connecté : bouton principal [Se connecter] → `/connexion` ;

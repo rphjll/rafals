@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AccueilPage from './pages/AccueilPage.vue'
+import AdministrationPage from './pages/AdministrationPage.vue'
+import ComptePage from './pages/ComptePage.vue'
 import BientotPage from './pages/BientotPage.vue'
 import CataloguePage from './pages/CataloguePage.vue'
 import ConnexionPage from './pages/ConnexionPage.vue'
@@ -29,7 +31,8 @@ export const routeur = createRouter({
     { path: '/trouver', name: 'trouver', ...bientot('Trouver un prestataire', 'avec la recherche (niveau 4)') },
     { path: '/proposer', name: 'proposer', ...bientot('Proposer mes services', 'au lot 2.5') },
     { path: '/rendez-vous', name: 'rendez-vous', ...bientot('Mes rendez-vous', 'avec les rendez-vous (niveau 4)') },
-    { path: '/compte', name: 'compte', ...bientot('Mon compte', 'aux lots 1.2 et 1.4') },
+    { path: '/compte', name: 'compte', component: ComptePage },
+    { path: '/administration', name: 'administration', component: AdministrationPage },
     { path: '/:chemin(.*)*', name: 'introuvable', ...bientot('Page introuvable', '') },
   ],
   scrollBehavior: () => ({ top: 0 }),

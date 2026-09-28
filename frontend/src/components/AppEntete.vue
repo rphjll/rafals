@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md).
 // Sous 768 px de large, le menu se replie derrière le bouton ☰.
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { messageErreur } from '../api'
 import { useCompte } from '../composables/useCompte'
@@ -15,12 +15,14 @@ const { compte, chargementFait, seDeconnecter } = useCompte()
 const { afficherMessage } = useMessage()
 watch(() => route.fullPath, () => (menuOuvert.value = false))
 
-const liens = [
+const liens = computed(() => [
   { vers: '/trouver', texte: 'Trouver un prestataire' },
   { vers: '/proposer', texte: 'Proposer mes services' },
   { vers: '/rendez-vous', texte: 'Mes rendez-vous' },
   { vers: '/compte', texte: 'Mon compte' },
-]
+  // Visible seulement des administrateurs (lot 1.4)
+  ...(compte.value?.est_administrateur ? [{ vers: '/administration', texte: 'Administration' }] : []),
+])
 
 async function deconnexion() {
   try {

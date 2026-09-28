@@ -7,7 +7,12 @@ export interface CompteVisible {
   email: string
   prenom: string
   nom: string
+  telephone: string
+  date_naissance: string
   email_verifie: boolean
+  est_administrateur: boolean
+  accord_parental_necessaire: boolean
+  peut_reserver_ou_publier: boolean
 }
 
 const compte = ref<CompteVisible | null>(null)

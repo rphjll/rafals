@@ -45,4 +45,6 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AppCarte` — carte centrée des formulaires courts (lot 1.2).
 - `AppAlerte` — bandeau d'erreur ou d'information posé là où l'on regarde (lot 1.2).
 - `AppSeparateur` — trait avec un petit texte au milieu (lot 1.2).
+- `AppChampFichier` — zone « Choisir un fichier » (lot 1.4).
+- Dates : toujours par `frontend/src/outils/dates.ts` (« 28/09/2026 à 18 h 40 », heure de Paris ; âge).
 - Appels au serveur : toujours par `frontend/src/api.ts` (messages d'erreur du serveur montrés tels quels).
