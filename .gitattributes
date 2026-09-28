@@ -1,0 +1,5 @@
+# Fins de ligne imposees (sinon git les change selon le PC)
+# Scripts lus par Linux (dans Docker) : fins de ligne Linux
+*.sh text eol=lf
+# Fichiers de commandes Windows : fins de ligne Windows
+*.bat text eol=crlf
