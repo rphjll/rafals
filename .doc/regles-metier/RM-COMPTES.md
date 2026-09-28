@@ -43,6 +43,12 @@ Au départ, Raphael est le seul administrateur. Il pourra donner ce rôle à d'a
 ## Rester connecté (proposé par Claude, validé par Raphael le 27/09/2026)
 On reste connecté 30 jours sur son appareil, sauf si on clique « Se déconnecter ». Ex. Julie se connecte sur son téléphone le 01/10 ; le 20/10 elle ouvre rafals → toujours connectée.
 
+## Précisions prises au lot 1.1 (proposé par Claude le 28/09/2026, à valider par Raphael)
+- **Lien de vérification valable 7 jours**, utilisable une fois ; un nouveau lien peut être redemandé. Ex. Mme Dupont s'inscrit le 01/10 et clique le 09/10 → lien expiré, elle en redemande un.
+- **On peut se connecter avant d'avoir vérifié son adresse** (on ne peut simplement rien réserver ni publier, voir plus haut).
+- **Même message pour une adresse inconnue et un mauvais mot de passe** : « Adresse mail ou mot de passe incorrect. » ; et « mot de passe oublié » répond toujours la même chose. **Pourquoi :** un inconnu ne doit pas pouvoir tester si Mme Dupont a un compte sur rafals.
+- **Après un changement de mot de passe oublié, tous les appareils connectés sont déconnectés.** Ex. Julie change son mot de passe depuis son ordinateur → elle doit se reconnecter sur son téléphone. **Pourquoi :** si quelqu'un avait volé son mot de passe, il est mis dehors.
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|

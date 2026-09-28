@@ -1,0 +1,23 @@
+"""Valeurs des règles métier, à un seul endroit (jamais écrites en dur dans les calculs).
+
+Source : .doc/regles-metier/RM-COMPTES.md (validé le 27/09/2026).
+"""
+
+from datetime import timedelta
+from zoneinfo import ZoneInfo
+
+# Heure affichée aux utilisateurs (les dates sont enregistrées en UTC)
+FUSEAU_AFFICHAGE = ZoneInfo("Europe/Paris")
+
+AGE_MINIMUM = 16
+MOT_DE_PASSE_LONGUEUR_MIN = 10
+
+SESSION_DUREE = timedelta(days=30)
+LIEN_MOT_DE_PASSE_DUREE = timedelta(hours=1)
+# Non fixé par les règles : choix de Claude le 28/09/2026 (voir journal de SUIVI-DEV.md)
+LIEN_VERIFICATION_DUREE = timedelta(days=7)
+
+ECHECS_AVANT_BLOCAGE = 5
+BLOCAGE_DUREE = timedelta(minutes=15)
+
+NOM_COOKIE_SESSION = "rafals_session"

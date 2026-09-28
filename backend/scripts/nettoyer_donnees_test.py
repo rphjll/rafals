@@ -14,8 +14,14 @@ from sqlalchemy import text
 from app.db import moteur
 
 # (table, colonne, marque de test au format SQL LIKE) — une ligne par table concernée.
-# Exemple, quand la table des comptes existera : ("compte", "email", "%@example.com")
-MARQUES: list[tuple[str, str, str]] = []
+MARQUES: list[tuple[str, str, str]] = [
+    ("compte", "email", "%@example.com"),
+]
+
+# Lignes rattachées à effacer AVANT la ligne principale (la base refuse sinon) : table → [(table liée, colonne FK)]
+RATTACHEES: dict[str, list[tuple[str, str]]] = {
+    "compte": [("session", "compte_id"), ("jeton_mail", "compte_id")],
+}
 
 # Identifiants de vraies lignes à ne jamais toucher, même si elles portent une marque.
 # Exemple : {"compte": [12, 45]}
@@ -26,9 +32,6 @@ MOTS_DOUTEUX = ["%test%", "%essai%", "%zz%"]
 
 
 def main() -> None:
-    if not MARQUES:
-        print("Aucune table à nettoyer pour l'instant : 0 donnée de test.")
-        return
 
     a_effacer: list[tuple[str, str, int]] = []
     with moteur.connect() as connexion:
@@ -65,6 +68,8 @@ def main() -> None:
 
     with moteur.begin() as connexion:
         for table, _valeur, identifiant in a_effacer:
+            for table_liee, colonne in RATTACHEES.get(table, []):
+                connexion.execute(text(f"DELETE FROM {table_liee} WHERE {colonne} = :id"), {"id": identifiant})
             connexion.execute(text(f"DELETE FROM {table} WHERE id = :id"), {"id": identifiant})
     print(f"{len(a_effacer)} ligne(s) effacée(s).")
 

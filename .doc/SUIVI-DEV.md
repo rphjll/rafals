@@ -8,12 +8,12 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Commencé le** : 28/09/2026
 - **Étapes** :
   - [x] 1. MLD proposé à Raphael (Artifact) et validé le 28/09/2026 ; `db/schema_v2.sql` écrit (pas encore exécuté)
-  - [ ] 2. Plan du lot (boîte de mails de test, fichiers) validé  ← on en est là
-  - [ ] 3. `db/schema_v2.sql` exécuté avec l'accord de Raphael
-  - [ ] 4. Modèles, calculs (`services/`), routes
-  - [ ] 5. Tests (dont test de fiche du compte)
-  - [ ] 6. Essais à la main, invariants, sauvegarde
-- **Question en attente** : validation du plan du lot 1.1 (dont boîte `mailpit` et exécution de `schema_v2.sql`)
+  - [x] 2. Plan du lot (boîte de mails de test, fichiers) validé le 28/09/2026 (« Oui, vas-y »)
+  - [x] 3. `db/schema_v2.sql` exécuté le 28/09/2026 (tables `compte`, `session`, `jeton_mail`)
+  - [x] 4. Modèles (`app/modeles/`), calculs (`app/services/`), routes (`app/routes/comptes.py`), réglages (`app/reglages.py`)
+  - [x] 5. Tests : 20 OK (17 règles + test de fiche du compte + 2 de santé)
+  - [ ] 6. Essai à la main : compte d'essai `marie.dupont.essai@example.com` créé dans la vraie base, mail arrivé dans Mailpit ; Raphael le regarde puis lance `nettoyer-donnees-test.bat` ; comptage final  ← on en est là
+- **Question en attente** : Raphael regarde le mail dans Mailpit, nettoie avec `nettoyer-donnees-test.bat`, puis valide les 4 précisions ajoutées à `RM-COMPTES.md`
 - **En pause** : aucune
 
 ## Définition de « terminé »

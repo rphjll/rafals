@@ -1,12 +1,21 @@
 """Serveur de rafals."""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from app.db import moteur
+from app.routes import comptes
+from app.services.erreurs import ErreurRegle
 
 app = FastAPI(title="rafals")
+app.include_router(comptes.routeur)
+
+
+@app.exception_handler(ErreurRegle)
+def regle_non_respectee(_requete: Request, erreur: ErreurRegle) -> JSONResponse:
+    """Une règle refuse l'action : le message est montré tel quel à l'utilisateur."""
+    return JSONResponse(status_code=erreur.code_http, content={"detail": erreur.message})
 
 
 @app.get("/api/etat")

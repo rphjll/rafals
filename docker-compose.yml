@@ -36,5 +36,12 @@ services:
     depends_on:
       - backend
 
+  # Attrape tous les mails envoyes par rafals sur le PC (rien ne part pour de vrai).
+  # Page des mails : http://localhost:8025
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"
+
 volumes:
   rafals_db_data:
