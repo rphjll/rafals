@@ -7,12 +7,12 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 1.3 — Âge (16 ans) et accord des parents, rôle administrateur, journal des actions (Raphael : « je valide continue »)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. Choix du « placard » à fichiers par Raphael (reporté 2 fois, nécessaire ici : document d'accord des parents)  ← on en est là
-  - [ ] 2. MLD proposé et validé
+  - [x] 1. Choix du « placard » à fichiers : **Garage** (Raphael, 28/09/2026 ; image `dxflrs/garage:v2.3.0`)
+  - [ ] 2. MLD proposé et validé  ← on en est là
   - [ ] 3. Plan du lot validé, `schema_v3.sql` exécuté
   - [ ] 4. Modèles, calculs, routes, tests
   - [ ] 5. Essais, invariants, sauvegarde
-- **Question en attente** : marque du « placard » à fichiers (Garage recommandé, ou RustFS)
+- **Question en attente** : validation du MLD du lot 1.3 (https://claude.ai/artifact/AgKHFRfdy1cfGm3wApsaAF, fichier `.doc/mld/MLD-lot-1.3-accord-admin-journal.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -41,7 +41,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 |---|---|---|---|---|---|
 | 1.1 | Serveur | Comptes : inscription, mail de vérification (conteneur de mails de test en local), connexion, rester connecté 30 jours, mot de passe oublié (lien 1 h), blocage après 5 erreurs | RM-COMPTES | 0.3 | ✅ |
 | 1.2 | Écrans | Pages Inscription, Connexion, Mot de passe oublié | RM-COMPTES | 1.1, 0.4 | ✅ |
-| 1.3 | Serveur | ⚠️ Avant de commencer : faire choisir à Raphael le « placard » à fichiers (Garage recommandé, ou RustFS ; MinIO abandonné), reporté 2 fois (« encore plus tard », 28/09/2026). Âge (16 ans) et accord des parents (document déposé), rôle administrateur (jamais retirer le dernier), journal des actions | RM-COMPTES | 1.1 | 🟡 |
+| 1.3 | Serveur | « Placard » à fichiers : Garage (choisi le 28/09/2026). Âge (16 ans) et accord des parents (document déposé), rôle administrateur (jamais retirer le dernier), journal des actions | RM-COMPTES | 1.1 | 🟡 |
 | 1.4 | Écrans | Mon compte (premiers éléments, accord des parents) ; Administration : comptes et administrateurs | RM-COMPTES | 1.3, 1.2 | ⬜ |
 
 ## Niveau 2 — Objets communs
