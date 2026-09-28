@@ -13,7 +13,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [x] 4. Modèles (`app/modeles/`), calculs (`app/services/`), routes (`app/routes/comptes.py`), réglages (`app/reglages.py`)
   - [x] 5. Tests : 20 OK (17 règles + test de fiche du compte + 2 de santé)
   - [ ] 6. Essai à la main : compte d'essai `marie.dupont.essai@example.com` créé dans la vraie base, mail arrivé dans Mailpit ; Raphael le regarde puis lance `nettoyer-donnees-test.bat` ; comptage final  ← on en est là
-- **Question en attente** : Raphael regarde le mail dans Mailpit, nettoie avec `nettoyer-donnees-test.bat`, puis valide les 4 précisions ajoutées à `RM-COMPTES.md`
+- **Question en attente** : Raphael regarde le mail dans Mailpit, nettoie avec `nettoyer-donnees-test.bat`, (les 4 précisions de `RM-COMPTES.md` sont validées)
 - **En pause** : aucune
 
 ## Définition de « terminé »
