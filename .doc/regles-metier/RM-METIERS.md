@@ -1,6 +1,6 @@
 # Règle métier — Métiers et catégories (sujet 04)
 
-> En cours d'écriture (phase 6 du démarrage). Chaque règle est validée par Raphael au fil des questions.
+> Validé et formalisé le 28/09/2026 (phase 6 du démarrage).
 
 ## Objectif
 La grande liste des métiers de rafals, rangée dans des catégories (« dossiers »), et la façon dont clients et prestataires y trouvent un métier.
@@ -21,12 +21,12 @@ Un prestataire qui ne trouve pas son métier clique « Mon métier n'est pas dan
 - Exemple 2 : Tom propose « Plombier chauffagiste » → Raphael répond « Plombier » (existe déjà) et ajoute « chauffagiste » aux mots-clés de « Plombier ».
 **Pourquoi :** la liste s'enrichit avec les vrais besoins, sans laisser entrer des doublons ou des fautes.
 
-## Mots-clés (proposé par Claude, à valider à la relecture)
+## Mots-clés (proposé par Claude, validé par Raphael le 28/09/2026)
 Chaque métier a des mots-clés, comme dans vitrine-express : la recherche les trouve, sans tenir compte des accents.
 - Exemple 1 : taper « kine » trouve « Kinésithérapeute ».
 - Exemple 2 : taper « electricien » (sans accent) trouve « Électricien ».
 
-## Une seule catégorie par métier (proposé par Claude, à valider à la relecture)
+## Une seule catégorie par métier (proposé par Claude, validé par Raphael le 28/09/2026)
 Chaque métier est rangé dans une seule catégorie ; les mots-clés servent à le retrouver par d'autres chemins.
 - Exemple : « Photographe » est dans « Événements » ; taper « photo » le trouve aussi.
 
