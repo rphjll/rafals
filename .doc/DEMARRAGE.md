@@ -31,17 +31,17 @@
 - [x] 4. Vocabulaire → `GLOSSAIRE-METIER.md` (terminée le 27/09/2026)
 - [x] 5. Hébergeur et outils → `technique/HEBERGEMENT.md`, `CLAUDE.md` (terminée le 27/09/2026)
 - [x] 6. Règles métier (liste des sujets + niveaux 1 et 2) → `SUIVI_REGLES_METIER.md`, `RM-*.md` (terminée le 28/09/2026)
-- [ ] 7. Charte et conventions d'écran → `CHARTE-VISUELLE.md`, `CONVENTIONS-IHM.md`
+- [x] 7. Charte et conventions d'écran → `CHARTE-VISUELLE.md`, `CONVENTIONS-IHM.md` (terminée le 28/09/2026)
 - [ ] 8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
 
 ## Phase en cours
-7. Charte et conventions d'écran → `CHARTE-VISUELLE.md`, `CONVENTIONS-IHM.md`
+8. Plan → `PLAN-DEV.md`, `SUIVI-DEV.md`
 
 ## Questions en attente (posées, pas encore répondues)
-1. **Phase 7, Q3 — Conventions d'écran** (`technique/CONVENTIONS-IHM.md`, reprises de la méthode § 6.2) : A. valide ; B. à corriger.
+- (aucune)
 
 ## Prochaine action
-Phase 7 : `CHARTE-VISUELLE.md` écrit (Vert sauge, boutons arrondis) ; `CONVENTIONS-IHM.md` écrit, attend la validation de Raphael. Ensuite : cocher la phase 7, passer à la phase 8 (plan).
+Phase 8 : lire les modèles H, I (et suivants) et les étapes 8 à 11 de la méthode ; écrire `PLAN-DEV.md`, `SUIVI-DEV.md`, `INVARIANTS-TRANSVERSES.md`, `PROMPT-TYPE-LOT.md`, `MEMO.md` ; faire valider l'ordre des lots ; marquer le démarrage terminé.
 
 ## Arborescence créée (phase 2)
 `.doc/regles-metier/`, `.doc/ihm/`, `.doc/technique/` (vides, avec un fichier `.gitkeep` pour que git les garde). Les fichiers `.md` de chaque dossier sont créés dans leur phase.
@@ -110,6 +110,7 @@ Phase 7 : `CHARTE-VISUELLE.md` écrit (Vert sauge, boutons arrondis) ; `CONVENTI
 | 28/09 | 6 | Sujet 04 Métiers : relecture | Validé ; phase 6 terminée | RM-METIERS.md |
 | 28/09 | 7 | Ambiance de couleurs | B. Vert sauge (vert #2F6B4F, touche orange #D9793A) | DEMARRAGE.md (charte à écrire) |
 | 28/09 | 7 | Forme des boutons | Arrondis (10 px) | CHARTE-VISUELLE.md |
+| 28/09 | 7 | Conventions d'écran | Validées | CONVENTIONS-IHM.md |
 | 27/09 | 1 | Nom du projet (changement) | « rafals » (le dossier s'appelle toujours « rafal ») | CLAUDE.md, REGLES-PROJET.md |
 
 ## Décisions prises par Claude (« choisis pour moi »), à revoir si besoin
