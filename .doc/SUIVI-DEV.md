@@ -7,12 +7,13 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 0.3 — Squelette de tests, base `rafals_test_db`, `lancer-tests.bat`, `nettoyer-donnees-test.bat`, `restaurer_base.bat` (Raphael : « je valide le lot 0.2 », suite du plan)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. Plan du lot proposé à Raphael, fichier par fichier  ← on en est là
-  - [ ] 2. Base de test recréée à chaque lancement (même structure que la vraie) + garde-fou dans les tests
-  - [ ] 3. Premiers tests (`/health`, compte `rafals_app` sans droit de créer une table)
-  - [ ] 4. `lancer-tests.bat`, `nettoyer-donnees-test.bat`, `restaurer_base.bat`
-  - [ ] 5. Essais, invariants, sauvegarde
-- **Question en attente** : validation du plan du lot 0.3
+  - [x] 1. Plan du lot proposé à Raphael, fichier par fichier (validé le 28/09/2026 : « Oui, vas-y »)
+  - [x] 2. Base de test recréée à chaque lancement (`db/recreer_base.sh` + `db/copier_structure_vers_test.sh`) + garde-fou (`backend/tests/conftest.py`)
+  - [x] 3. Premiers tests (`/health`, compte `rafals_app` sans droit de créer une table)
+  - [x] 4. `lancer-tests.bat`, `nettoyer-donnees-test.bat` (+ `backend/scripts/nettoyer_donnees_test.py`), `restaurer_base.bat`
+  - [x] 5. Essais : 2 tests OK ; garde-fou bloque un lancement sur `rafals_db` ; nettoyage « 0 donnée de test » ; restauration annulée si pas « OUI » ; recréation testée sur une base jetable (supprimée) ; vraie base : 0 table ; invariants ; sauvegarde
+  - [ ] 6. Vérification par Raphael  ← on en est là
+- **Question en attente** : Raphael lance `lancer-tests.bat` et valide (ou non) le lot 0.3
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -33,7 +34,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 |---|---|---|---|---|---|
 | 0.1 | Serveur | Conteneurs Docker (`db`, `backend`, `frontend` ; le « placard » à fichiers plus tard), fichier `.env` (mots de passe, jamais sur GitHub), `demarrer.bat`, `arreter.bat`, `sauver.bat` | CLAUDE.md | — | ✅ |
 | 0.2 | Serveur | Connexion à la base avec les 2 comptes (`rafals_user`, `rafals_app`), adresse de contrôle `/health` | CLAUDE.md | 0.1 | ✅ |
-| 0.3 | Serveur | Squelette de tests, base `rafals_test_db`, `lancer-tests.bat`, `nettoyer-donnees-test.bat`, `restaurer_base.bat` | CLAUDE.md, méthode étape 10 | 0.2 | 🟡 |
+| 0.3 | Serveur | Squelette de tests, base `rafals_test_db`, `lancer-tests.bat`, `nettoyer-donnees-test.bat`, `restaurer_base.bat` | CLAUDE.md, méthode étape 10 | 0.2 | 🔎 |
 | 0.4 | Écrans | Squelette Vue + Tailwind avec la charte Vert sauge, en-tête + menu ☰, composants `AppBouton`, `AppChamp`, `AppFenetre`, `AppBadge`, `AppMessage` | CHARTE-VISUELLE, CONVENTIONS-IHM | 0.1 | ⬜ |
 
 ## Niveau 1 — Fondations
@@ -70,3 +71,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Lot 0.1 validé par Raphael (« je valide le lot 0.1 ») après essai de `demarrer.bat` → ✅. Lot 0.2 commencé.
 - **28/09/2026** — Lot 0.2 — `db/schema_v1.sql` exécuté (compte `rafals_app` : lire/écrire les lignes, jamais créer de table ; droits par défaut sur les futures tables de `rafals_user`). Serveur branché avec SQLAlchemy 2 + psycopg 3, toujours avec `rafals_app`. `/health` répond 503 avec « base injoignable » si la base ne répond pas (au lieu de planter). Essais : `/health` OK ; création de table refusée. Invariants : architecture OK (aucune table, aucune création automatique) ; sécurité OK (compte application sans droit de structure) ; données, interface : sans objet ; tests : au lot 0.3 ; documentation : `CLAUDE.md` inchangé, identique à `REGLES-PROJET.md`. Remarque : la base de test `rafals_test_db` recevra les mêmes droits au lot 0.3.
 - **28/09/2026** — Lot 0.2 validé par Raphael (« je valide le lot 0.2 ») → ✅. Lot 0.3 commencé.
+- **28/09/2026** — Lot 0.3 — Base `rafals_test_db` effacée et recréée à chaque `lancer-tests.bat`, avec la structure de `rafals_db` (sans données). Garde-fou vérifié deux fois (réglages + base réelle). Tests : `test_sante.py` (2 tests OK). `nettoyer-donnees-test.bat` : sauvegarde puis classement protégée / marquée / douteuse, accord « OUI » avant effacement ; liste des marques à compléter à chaque nouvelle table. `restaurer_base.bat` : copie de sécurité, « OUI » obligatoire, recrée le compte `rafals_app` si absent (PC neuf). Décisions : `httpx` remplacé par `httpx2` (avertissement d'obsolescence de Starlette) ; copies de sécurité dans `db-sync/securite/`, ignorées par git (elles restent sur le PC). Invariants : architecture OK ; sécurité OK ; tests OK (base de test seule, garde-fou) ; données : vraie base 0 table, 0 donnée de test (comptage) ; interface : sans objet ; documentation : `CLAUDE.md` inchangé et identique à `REGLES-PROJET.md`.

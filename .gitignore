@@ -1,6 +1,9 @@
 # Secrets : ne jamais envoyer sur GitHub
 .env
 
+# Copies de securite faites avant un nettoyage ou une restauration (restent sur le PC)
+db-sync/securite/
+
 # Fichiers fabriques automatiquement
 node_modules/
 frontend/dist/
