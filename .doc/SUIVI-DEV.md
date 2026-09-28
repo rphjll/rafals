@@ -15,8 +15,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [x] 6. `demarrer.bat`, `arreter.bat`, `sauver.bat` (aucun accent : vérifié)
   - [x] 7. Essai : les 3 boîtes démarrent (PostgreSQL 18.6), `/api/etat` répond en direct (port 8001) et via la page (port 5174), la page s'affiche, la copie de la base (`pg_dump`) marche ; invariants repassés ; sauvegarde
   - [ ] 8. Essai par Raphael : double-clic sur `demarrer.bat`  ← on en est là
-- **Question en attente** : aucune (plan validé).
-- **Question reportée (à reposer à la fin du lot 0.1, au plus tard avant le lot 1.3)** : MinIO n'est plus distribué (mode maintenance depuis 12/2025, plus d'image Docker officielle) → remplacer par Garage (recommandé) ou RustFS. Raphael : « repose moi cette question a la fin car je sais pas encore ».
+- **Question en attente** : Raphael essaie `demarrer.bat` et valide (ou non) le lot 0.1.
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -45,7 +44,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 |---|---|---|---|---|---|
 | 1.1 | Serveur | Comptes : inscription, mail de vérification (conteneur de mails de test en local), connexion, rester connecté 30 jours, mot de passe oublié (lien 1 h), blocage après 5 erreurs | RM-COMPTES | 0.3 | ⬜ |
 | 1.2 | Écrans | Pages Inscription, Connexion, Mot de passe oublié | RM-COMPTES | 1.1, 0.4 | ⬜ |
-| 1.3 | Serveur | Âge (16 ans) et accord des parents (document déposé), rôle administrateur (jamais retirer le dernier), journal des actions | RM-COMPTES | 1.1 | ⬜ |
+| 1.3 | Serveur | ⚠️ Avant de commencer : faire choisir à Raphael le « placard » à fichiers (Garage recommandé, ou RustFS ; MinIO abandonné), reporté 2 fois (« encore plus tard », 28/09/2026). Âge (16 ans) et accord des parents (document déposé), rôle administrateur (jamais retirer le dernier), journal des actions | RM-COMPTES | 1.1 | ⬜ |
 | 1.4 | Écrans | Mon compte (premiers éléments, accord des parents) ; Administration : comptes et administrateurs | RM-COMPTES | 1.3, 1.2 | ⬜ |
 
 ## Niveau 2 — Objets communs
