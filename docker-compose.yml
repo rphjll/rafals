@@ -1,0 +1,40 @@
+# rafals - les boites Docker (developpement sur le PC)
+# Ports cote PC : base 5433, serveur 8001, ecrans 5174 (voir CLAUDE.md)
+
+services:
+  db:
+    image: postgres:18
+    env_file: .env
+    ports:
+      - "5433:5432"
+    volumes:
+      - rafals_db_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    env_file: .env
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5174:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  rafals_db_data:
