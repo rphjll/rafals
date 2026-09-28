@@ -4,14 +4,14 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 2.3 — Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance, pause / blocage / arrêt (suite du plan, après la retouche des métiers)
+- **Demande** : Lot 2.3 — Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance, pause / blocage / arrêt. **Mode « tout seul »** : Raphael, 28/09/2026 : « oui je valide mais me pose plus de questions car je vais me coucher donc fini tout tout seul »
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. MLD proposé et validé  ← on en est là
-  - [ ] 2. Plan validé ; `schema_v5.sql` exécuté ; liste des communes chargée
+  - [x] 1. MLD proposé et validé le 28/09/2026
+  - [ ] 2. `schema_v5.sql` exécuté ; liste des communes chargée (plan décidé par Claude, mode « tout seul »)  ← on en est là
   - [ ] 3. Modèles, calculs, routes, tests
   - [ ] 4. Essais, invariants, sauvegarde
-- **Question en attente** : validation du MLD du lot 2.3 (https://claude.ai/artifact/QmHag6Lt6qC6H2XjzFqoVR, fichier `.doc/mld/MLD-lot-2.3-prestataires.html`)
+- **Question en attente** : aucune (mode « tout seul » : questions gardées pour le bilan)
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -87,3 +87,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Lot 2.2 validé par Raphael (« je valide le lot 2.2 ») → ✅. Remarque de Raphael : « je peux pas supr un metier » → question posée.
 - **28/09/2026** — Retouche hors lot (onglet Métiers) : la désactivation n'était accessible que par une case cachée dans la fenêtre « Modifier » (Raphael ne la trouvait pas, contraire à « une action = un bouton ») → boutons visibles [Désactiver] / [Réactiver] sur chaque ligne.
 - **28/09/2026** — Décision de Raphael : pas de bouton « Supprimer » pour les métiers, désactiver suffit (écrit dans `RM-METIERS.md`). Ajout de la case « Montrer les désactivés » (décochée par défaut) dans l'onglet Métiers. Retouche terminée.
+- **28/09/2026** — Lot 2.3 : MLD validé par Raphael, qui demande de finir « tout seul » (il va se coucher). Décisions notées ci-dessous au fil du lot.
