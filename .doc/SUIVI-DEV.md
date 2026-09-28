@@ -8,11 +8,11 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Commencé le** : 28/09/2026
 - **Étapes** :
   - [x] 1. Choix du « placard » à fichiers : **Garage** (Raphael, 28/09/2026 ; image `dxflrs/garage:v2.3.0`)
-  - [ ] 2. MLD proposé et validé  ← on en est là
-  - [ ] 3. Plan du lot validé, `schema_v3.sql` exécuté
+  - [x] 2. MLD proposé et validé le 28/09/2026 ; `db/schema_v3.sql` écrit (pas encore exécuté)
+  - [ ] 3. Plan du lot validé, `schema_v3.sql` exécuté  ← on en est là
   - [ ] 4. Modèles, calculs, routes, tests
   - [ ] 5. Essais, invariants, sauvegarde
-- **Question en attente** : validation du MLD du lot 1.3 (https://claude.ai/artifact/AgKHFRfdy1cfGm3wApsaAF, fichier `.doc/mld/MLD-lot-1.3-accord-admin-journal.html`)
+- **Question en attente** : validation du plan du lot 1.3 (boîte Garage, `.env`, exécution de `schema_v3.sql`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
