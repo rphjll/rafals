@@ -1,6 +1,6 @@
 # Règle métier — Prestataires (sujet 02)
 
-> En cours d'écriture (phase 6 du démarrage). Chaque règle est validée par Raphael au fil des questions.
+> Validé et formalisé le 28/09/2026 (phase 6 du démarrage).
 
 ## Objectif
 Ce qu'un prestataire renseigne sur rafals (métiers, zone, SIRET) et quand les clients peuvent le trouver.
@@ -45,7 +45,7 @@ Un prestataire est visible des clients dès qu'il publie sa première annonce, s
 **Pourquoi :** pas d'attente pour les prestataires, pas de travail quotidien obligatoire pour Raphael.
 Un prestataire sans annonce publiée n'apparaît dans aucune recherche (ex. Karim « en création », qui se fait seulement aider à se déclarer).
 
-## Contenu du profil (proposé par Claude, à valider à la relecture)
+## Contenu du profil (proposé par Claude, validé par Raphael le 28/09/2026)
 - Obligatoire : nom affiché (ex. « Julie Martin — Ménage » ou « Net & Clair »), métier principal, ville + distance.
 - Facultatif : photo ou logo, présentation (quelques lignes), métiers secondaires, SIRET.
 - Le téléphone et l'adresse mail du prestataire ne sont **pas** affichés publiquement : le client les voit seulement après avoir réservé. **Pourquoi :** éviter que les clients contournent rafals (et la commission) dès la première recherche.
@@ -58,7 +58,7 @@ Un prestataire sans annonce publiée n'apparaît dans aucune recherche (ex. Kari
 | Ajouter ou changer son SIRET | Le prestataire lui-même | Vérifié automatiquement |
 | Bloquer / débloquer un prestataire | Administrateur | — |
 
-## Désactivation / clôture / suppression (proposé par Claude, à valider à la relecture)
+## Désactivation / clôture / suppression (proposé par Claude, validé par Raphael le 28/09/2026)
 - **Mettre en pause** (réversible) : le prestataire se rend invisible (ex. Julie pendant ses congés d'août) ; ses rendez-vous déjà pris restent.
 - **Bloquer** (réversible, par l'administrateur) : invisible, ne peut plus publier ; ses rendez-vous à venir sont annulés et les clients prévenus.
 - **Arrêter son activité** (définitif) : le profil prestataire est clôturé ; ses factures restent consultables (la loi oblige à les garder 10 ans).
