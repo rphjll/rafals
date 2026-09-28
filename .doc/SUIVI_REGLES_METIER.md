@@ -16,8 +16,8 @@
 |---|---|---|---|---|---|
 | 01 | 1 — Fondations | Comptes et connexion | Inscription, connexion, mot de passe oublié, un seul compte client + prestataire, rôle administrateur | validé et formalisé (27/09/2026) | `regles-metier/RM-COMPTES.md` |
 | 02 | 2 — Objets communs | Prestataires | Profil, SIRET, « en création », visibilité, désactivation | validé et formalisé (28/09/2026) | `regles-metier/RM-PRESTATAIRES.md` |
-| 03 | 2 — Objets communs | Clients et données personnelles | Profil du particulier, ce qu'on garde, effacement (RGPD) | en cours (28/09/2026) | `regles-metier/RM-CLIENTS.md` |
-| 04 | 2 — Objets communs | Métiers et catégories | La grande liste, les dossiers, la recherche par lettres | à faire | — |
+| 03 | 2 — Objets communs | Clients et données personnelles | Profil du particulier, ce qu'on garde, effacement (RGPD) | validé et formalisé (28/09/2026) | `regles-metier/RM-CLIENTS.md` |
+| 04 | 2 — Objets communs | Métiers et catégories | La grande liste, les dossiers, la recherche par lettres | en cours (28/09/2026) | `regles-metier/RM-METIERS.md` |
 | 05 | 3 — Cœur | Annonces | Contenu, prix, ville, modes de paiement (espèces seulement sans SIRET) | à faire | — |
 | 06 | 3 — Cœur | Agenda et disponibilités | Horaires, congés, créneaux libres | à faire | — |
 | 07 | 4 — Action principale | Recherche | Métier + ville, ordre des résultats | à faire | — |

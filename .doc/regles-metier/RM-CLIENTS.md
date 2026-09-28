@@ -1,6 +1,6 @@
 # Règle métier — Clients et données personnelles (sujet 03)
 
-> En cours d'écriture (phase 6 du démarrage). Chaque règle est validée par Raphael au fil des questions.
+> Validé et formalisé le 28/09/2026 (phase 6 du démarrage).
 
 ## Objectif
 Ce que rafals demande et garde sur les clients, qui peut le voir, et ce qui se passe quand un client ferme son compte (loi sur les données personnelles, RGPD).
@@ -22,22 +22,22 @@ Quand un client ferme son compte, ses avis restent visibles, mais signés « Cli
 **Pourquoi :** Karim ne perd pas une note méritée à cause d'un départ qu'il ne contrôle pas.
 **Cas limite tranché :** si le texte de l'avis contient lui-même le nom ou le téléphone du client, l'administrateur peut l'effacer du texte.
 
-## Qui voit les informations d'un client (proposé par Claude, à valider à la relecture)
+## Qui voit les informations d'un client (proposé par Claude, validé par Raphael le 28/09/2026)
 - Le client voit et modifie toutes ses informations.
 - Un prestataire voit le nom, le téléphone et (si besoin) l'adresse d'un client **seulement pour les rendez-vous pris avec lui**, et jusqu'à 3 mois après le dernier rendez-vous.
   - Ex. Mme Dupont réserve Karim le 16/10/2026 → Karim voit son téléphone et son adresse ; il ne les voit plus à partir du 16/01/2027 (sauf nouveau rendez-vous). Ses factures, elles, gardent le nom et l'adresse (obligation légale).
 - L'administrateur voit tout, pour régler les problèmes.
 
-## Télécharger ses données (proposé par Claude, à valider à la relecture)
+## Télécharger ses données (proposé par Claude, validé par Raphael le 28/09/2026)
 Un bouton « Télécharger mes données » donne au client un fichier avec tout ce que rafals sait sur lui (profil, rendez-vous, avis, factures). **Pourquoi :** c'est un droit prévu par la loi (droit d'accès).
 
-## Fermer son compte (proposé par Claude, à valider à la relecture)
+## Fermer son compte (proposé par Claude, validé par Raphael le 28/09/2026)
 - Le client clique « Fermer mon compte » et confirme. Son nom, son mail, son téléphone et son adresse sont effacés ; ses rendez-vous passés restent, sans son nom (pour les statistiques du prestataire).
 - Exception légale : les **factures** gardent le nom et l'adresse du client pendant 10 ans (obligation comptable du prestataire).
 - Refusé tant qu'il a un rendez-vous à venir : il doit d'abord l'annuler. Ex. Mme Dupont a un ménage prévu le 05/11 → « Annulez d'abord votre rendez-vous du 05/11 ».
 - Si la personne est aussi prestataire en activité, elle doit d'abord arrêter son activité (voir `RM-PRESTATAIRES.md`).
 
-## Comptes inactifs (proposé par Claude, à valider à la relecture)
+## Comptes inactifs (proposé par Claude, validé par Raphael le 28/09/2026)
 Un compte sans aucune connexion depuis 3 ans reçoit un mail « Votre compte sera fermé dans 30 jours sauf si vous vous connectez » ; sans réponse, il est fermé comme ci-dessus. **Pourquoi :** la loi interdit de garder des données personnelles sans limite de temps (3 ans est la durée conseillée par la CNIL, le gendarme français des données personnelles).
 - Ex. dernière connexion le 10/01/2027 → mail le 10/01/2030 → fermeture le 09/02/2030.
 
