@@ -26,7 +26,16 @@
 | Erreur / annulé | `#B3261E` / `#FBE4E2` | `#F08A82` / `#3A1A18` | « Rendez-vous annulé », message d'erreur |
 | Neutre / interdit | `#8A94A3` sur `#E8ECF1` | `#6D7888` sur `#262E39` | Bouton verrouillé 🔒, « Espèces seulement » |
 
-## Polices (Google Fonts, gratuites)
+## Couleurs techniques (ajoutées au lot 0.4, 28/09/2026)
+| Nom technique | Mode clair | Mode sombre | Sert à |
+|---|---|---|---|
+| `sur-etat` | `#FFFFFF` | `#0F1A13` | Texte posé sur une couleur d'état pleine (message court vert ou rouge) |
+| `voile` | noir bleuté à 55 % | idem | Fond assombri derrière une fenêtre |
+
+Toutes les couleurs sont écrites à un seul endroit : `frontend/src/style.css`.
+
+## Polices (gratuites, installées dans rafals)
+Installées avec l'application (paquets `@fontsource-variable`), jamais chargées depuis Google : charger une police chez Google envoie l'adresse du visiteur à Google sans son accord (RGPD).
 - **Titres** : Bricolage Grotesque, graisse 600 à 700 (ex. « Électricien à Pessac », le logo).
 - **Texte** : Figtree, graisse 400 à 700 (tout le reste).
 - Chiffres alignés (`tabular-nums`) pour les prix, les notes et les heures.

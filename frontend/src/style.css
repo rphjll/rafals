@@ -1,0 +1,99 @@
+/* rafals — couleurs et formes de la charte (.doc/technique/CHARTE-VISUELLE.md).
+   C'est le SEUL endroit où une couleur est écrite : les écrans utilisent les noms
+   (bg-primaire, text-texte-doux…), jamais une valeur comme #2F6B4F. */
+@import 'tailwindcss';
+
+:root {
+  --fond: #f3f6f2;
+  --surface: #ffffff;
+  --texte: #1d2620;
+  --texte-doux: #58665c;
+  --bord: #d8e1da;
+  --primaire: #2f6b4f;
+  --primaire-texte: #ffffff;
+  --primaire-doux: #e2eee7;
+  --accent: #d9793a;
+  --ok: #2e7d4f;
+  --ok-doux: #e3f2e8;
+  --attente: #b26a00;
+  --attente-doux: #fcf0dc;
+  --erreur: #b3261e;
+  --erreur-doux: #fbe4e2;
+  --neutre: #8a94a3;
+  --neutre-doux: #e8ecf1;
+  --sur-etat: #ffffff; /* texte posé sur une couleur d'état pleine (message court) */
+  --voile: rgb(10 14 20 / 0.55); /* fond assombri derrière une fenêtre */
+  color-scheme: light;
+}
+
+/* Mode sombre : suit le réglage de l'appareil */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #121713;
+    --surface: #1a211c;
+    --texte: #e7ecf2;
+    --texte-doux: #a3aebd;
+    --bord: #2c3730;
+    --primaire: #79c49c;
+    --primaire-texte: #0f1a13;
+    --primaire-doux: #1c3024;
+    --accent: #f0955a;
+    --ok: #6cc592;
+    --ok-doux: #17301f;
+    --attente: #f0b35a;
+    --attente-doux: #33260f;
+    --erreur: #f08a82;
+    --erreur-doux: #3a1a18;
+    --neutre: #6d7888;
+    --neutre-doux: #262e39;
+    --sur-etat: #0f1a13;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-fond: var(--fond);
+  --color-surface: var(--surface);
+  --color-texte: var(--texte);
+  --color-texte-doux: var(--texte-doux);
+  --color-bord: var(--bord);
+  --color-primaire: var(--primaire);
+  --color-primaire-texte: var(--primaire-texte);
+  --color-primaire-doux: var(--primaire-doux);
+  --color-accent: var(--accent);
+  --color-ok: var(--ok);
+  --color-ok-doux: var(--ok-doux);
+  --color-attente: var(--attente);
+  --color-attente-doux: var(--attente-doux);
+  --color-erreur: var(--erreur);
+  --color-erreur-doux: var(--erreur-doux);
+  --color-neutre: var(--neutre);
+  --color-neutre-doux: var(--neutre-doux);
+  --color-sur-etat: var(--sur-etat);
+  --color-voile: var(--voile);
+
+  --font-titre: 'Bricolage Grotesque Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-corps: 'Figtree Variable', 'Segoe UI', system-ui, sans-serif;
+
+  /* Coins arrondis de 10 px (boutons, champs, cartes, fenêtres) */
+  --radius-rafals: 10px;
+}
+
+@layer base {
+  body {
+    @apply bg-fond text-texte font-corps;
+    font-size: 15px;
+    margin: 0;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-titre;
+    text-wrap: balance;
+    letter-spacing: -0.3px;
+  }
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+}

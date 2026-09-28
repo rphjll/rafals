@@ -7,12 +7,13 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 0.4 — Squelette des écrans : Tailwind avec la charte Vert sauge, en-tête + menu ☰, composants communs (Raphael : « Oui, je valide » le lot 0.3, suite du plan)
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. Plan du lot proposé à Raphael, fichier par fichier  ← on en est là
-  - [ ] 2. Tailwind + couleurs et polices de la charte (clair et sombre)
-  - [ ] 3. En-tête, menu, pages et navigation
-  - [ ] 4. Composants communs + page catalogue
-  - [ ] 5. Fichiers `RM-*-IHM.md`, essais, invariants, sauvegarde
-- **Question en attente** : validation du plan du lot 0.4
+  - [x] 1. Plan du lot proposé à Raphael, fichier par fichier (validé le 28/09/2026 : « Oui, vas-y »)
+  - [x] 2. Tailwind 4 + couleurs et polices de la charte (clair et sombre), polices installées dans rafals
+  - [x] 3. En-tête, menu ☰, pages Accueil / Catalogue / Bientôt disponible, navigation (vue-router)
+  - [x] 4. Composants `AppBouton`, `AppChamp`, `AppFenetre`, `AppBadge`, `AppMessage` + page catalogue
+  - [x] 5. `RM-ENTETE-IHM.md`, `RM-ACCUEIL-IHM.md`, `RM-CATALOGUE-IHM.md` ; essais (aucune faute vue-tsc, construction complète OK, pages 200, couleurs générées) ; invariants ; sauvegarde
+  - [ ] 6. Vérification par Raphael sur 4 formats  ← on en est là
+- **Question en attente** : Raphael vérifie l'accueil, le menu ☰ et le catalogue, puis valide (ou non) le lot 0.4
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -34,7 +35,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | 0.1 | Serveur | Conteneurs Docker (`db`, `backend`, `frontend` ; le « placard » à fichiers plus tard), fichier `.env` (mots de passe, jamais sur GitHub), `demarrer.bat`, `arreter.bat`, `sauver.bat` | CLAUDE.md | — | ✅ |
 | 0.2 | Serveur | Connexion à la base avec les 2 comptes (`rafals_user`, `rafals_app`), adresse de contrôle `/health` | CLAUDE.md | 0.1 | ✅ |
 | 0.3 | Serveur | Squelette de tests, base `rafals_test_db`, `lancer-tests.bat`, `nettoyer-donnees-test.bat`, `restaurer_base.bat` | CLAUDE.md, méthode étape 10 | 0.2 | ✅ |
-| 0.4 | Écrans | Squelette Vue + Tailwind avec la charte Vert sauge, en-tête + menu ☰, composants `AppBouton`, `AppChamp`, `AppFenetre`, `AppBadge`, `AppMessage` | CHARTE-VISUELLE, CONVENTIONS-IHM | 0.1 | 🟡 |
+| 0.4 | Écrans | Squelette Vue + Tailwind avec la charte Vert sauge, en-tête + menu ☰, composants `AppBouton`, `AppChamp`, `AppFenetre`, `AppBadge`, `AppMessage` | CHARTE-VISUELLE, CONVENTIONS-IHM | 0.1 | 🔎 |
 
 ## Niveau 1 — Fondations
 | Lot | Type | Description | Règle source | Dépend de | État |
@@ -72,3 +73,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Lot 0.2 validé par Raphael (« je valide le lot 0.2 ») → ✅. Lot 0.3 commencé.
 - **28/09/2026** — Lot 0.3 — Base `rafals_test_db` effacée et recréée à chaque `lancer-tests.bat`, avec la structure de `rafals_db` (sans données). Garde-fou vérifié deux fois (réglages + base réelle). Tests : `test_sante.py` (2 tests OK). `nettoyer-donnees-test.bat` : sauvegarde puis classement protégée / marquée / douteuse, accord « OUI » avant effacement ; liste des marques à compléter à chaque nouvelle table. `restaurer_base.bat` : copie de sécurité, « OUI » obligatoire, recrée le compte `rafals_app` si absent (PC neuf). Décisions : `httpx` remplacé par `httpx2` (avertissement d'obsolescence de Starlette) ; copies de sécurité dans `db-sync/securite/`, ignorées par git (elles restent sur le PC). Invariants : architecture OK ; sécurité OK ; tests OK (base de test seule, garde-fou) ; données : vraie base 0 table, 0 donnée de test (comptage) ; interface : sans objet ; documentation : `CLAUDE.md` inchangé et identique à `REGLES-PROJET.md`.
 - **28/09/2026** — Lot 0.3 validé par Raphael (« 2 passed » chez lui, puis « Oui, je valide ») → ✅. Lot 0.4 commencé.
+- **28/09/2026** — Lot 0.4 — Tailwind 4 (couleurs de la charte dans `frontend/src/style.css`, seul endroit où une couleur est écrite ; mode sombre selon l'appareil), polices Bricolage Grotesque et Figtree installées dans rafals (pas chez Google, RGPD), vue-router, en-tête avec menu ☰ sous 768 px, 5 composants communs, pages Accueil (provisoire), Catalogue, Bientôt disponible. `package-lock.json` créé, `npm ci` dans l'image. Décisions : 2 couleurs techniques ajoutées à la charte (`sur-etat`, `voile`) pour ne jamais écrire « blanc » ou « noir » en dur ; `AppCarteResultat` reporté au niveau 4 (recherche) ; la page Catalogue sera retirée ou réservée aux administrateurs avant la mise en ligne. Avertissement npm : script d'installation d'esbuild non lancé (sans effet : construction OK). Invariants : interface OK (chaque clic → résultat visible, couleurs de la charte seulement, composants uniques, `RM-*-IHM.md` écrits) ; 4 formats : à vérifier par Raphael ; architecture, sécurité, données, tests : sans objet (aucune table, aucune route nouvelle) ; documentation : `CLAUDE.md` inchangé et identique à `REGLES-PROJET.md`.
