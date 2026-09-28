@@ -1,0 +1,189 @@
+<title>Maquette rafals administration</title>
+<style>
+:root{
+  --fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--texte-doux:#58665C;--bord:#D8E1DA;
+  --primaire:#2F6B4F;--primaire-texte:#FFFFFF;--primaire-doux:#E2EEE7;--accent:#D9793A;
+  --ok:#2E7D4F;--ok-doux:#E3F2E8;--attente:#B26A00;--attente-doux:#FCF0DC;--erreur:#B3261E;--erreur-doux:#FBE4E2;
+  --neutre:#8A94A3;--neutre-doux:#E8ECF1;--sur-etat:#FFFFFF;--voile:rgb(10 14 20 / .55);
+  --titre:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;--corps:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--texte-doux:#A3AEBD;--bord:#2C3730;--primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;--erreur:#F08A82;--erreur-doux:#3A1A18;--neutre:#6D7888;--neutre-doux:#262E39;--sur-etat:#0F1A13}}
+:root[data-theme="dark"]{color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--texte-doux:#A3AEBD;--bord:#2C3730;--primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;--erreur:#F08A82;--erreur-doux:#3A1A18;--neutre:#6D7888;--neutre-doux:#262E39;--sur-etat:#0F1A13}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:var(--corps);font-size:15px;margin:0}
+.bandeau{background:var(--surface);border-bottom:1px dashed var(--bord);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--texte-doux)}
+.bandeau b{color:var(--texte)}
+.onglet{font:inherit;border:1px solid var(--bord);background:transparent;color:var(--texte);border-radius:8px;padding:5px 9px;cursor:pointer}
+.onglet[aria-pressed="true"]{border-color:var(--primaire);color:var(--primaire);font-weight:700}
+header{background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px}
+.entete{max-width:1080px;margin:0 auto;min-height:60px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-family:var(--titre);font-weight:700;font-size:24px;color:var(--primaire)}
+.logo span{color:var(--accent)}
+.menu{margin-left:auto;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.menu span.l{color:var(--texte-doux);padding:8px 10px;border-radius:10px;font-weight:500}
+.menu span.actif{background:var(--primaire-doux);color:var(--primaire)}
+main{padding-inline:16px;padding-block:28px 60px}
+.contenu{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-family:var(--titre);font-size:28px;margin:0;letter-spacing:-.3px}
+h2{font-family:var(--titre);font-size:20px;margin:0}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.infos{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:14.5px}
+.infos dt{color:var(--texte-doux)} .infos dd{margin:0;font-weight:500}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px}
+.b-ok{background:var(--ok-doux);color:var(--ok)} .b-att{background:var(--attente-doux);color:var(--attente)} .b-err{background:var(--erreur-doux);color:var(--erreur)} .b-neu{background:var(--neutre-doux);color:var(--texte-doux)}
+.alerte{border-radius:8px;padding:10px 12px;font-weight:500;font-size:14px}
+.a-att{background:var(--attente-doux);color:var(--attente)} .a-err{background:var(--erreur-doux);color:var(--erreur)} .a-ok{background:var(--ok-doux);color:var(--ok)}
+.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid transparent;min-height:42px;padding:9px 16px;cursor:pointer}
+.prim{background:var(--primaire);color:var(--primaire-texte);border-color:var(--primaire)}
+.sec{background:var(--surface);color:var(--primaire);border-color:var(--primaire)}
+.dan{background:var(--surface);color:var(--erreur);border-color:var(--erreur)}
+.ver{background:var(--neutre-doux);color:var(--neutre);border-color:var(--neutre-doux);cursor:not-allowed}
+.depot{border:2px dashed var(--bord);border-radius:10px;padding:18px;text-align:center;color:var(--texte-doux)}
+.depot b{color:var(--texte)}
+.onglets-page{display:flex;gap:6px;border-bottom:1px solid var(--bord);flex-wrap:wrap}
+.onglets-page button{font:inherit;font-weight:600;background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;color:var(--texte-doux);cursor:pointer}
+.onglets-page button[aria-selected="true"]{color:var(--primaire);border-bottom-color:var(--primaire)}
+.compteur{background:var(--accent);color:var(--sur-etat);border-radius:999px;font-size:12px;padding:1px 7px;margin-left:4px}
+.ligne-accord{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--bord);border-radius:10px;padding:14px;background:var(--surface)}
+@media (max-width:640px){.ligne-accord{grid-template-columns:1fr}}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.table-cadre{overflow-x:auto;border:1px solid var(--bord);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--bord);vertical-align:middle}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-doux)}
+tr:last-child td{border-bottom:0}
+.voile{position:fixed;inset:0;background:var(--voile);display:grid;place-items:center;padding:16px}
+.fenetre{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:22px;width:min(440px,100%);display:flex;flex-direction:column;gap:12px}
+.fenetre h3{margin:0;font-family:var(--titre);font-size:20px}
+.fenetre p{margin:0;color:var(--texte-doux)}
+.champ{display:flex;flex-direction:column;gap:6px}
+.champ label{font-weight:600;font-size:13px}.champ label i{color:var(--erreur);font-style:normal}
+.champ input{min-height:42px;border:1px solid var(--bord);border-radius:10px;background:var(--fond);color:var(--texte);font:inherit;padding:10px 12px}
+.pied{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--ok);color:var(--sur-etat);padding:12px 18px;border-radius:10px;font-weight:600}
+.note{font-size:13px;color:var(--texte-doux)}
+</style>
+
+<div class="bandeau"><b>Maquette lot 1.4</b> · écrans :
+  <button class="onglet" data-e="compte-lucas" aria-pressed="true">1. Mon compte (Lucas, 16 ans)</button>
+  <button class="onglet" data-e="compte-marie">2. Mon compte (Marie, 54 ans)</button>
+  <button class="onglet" data-e="admin-accords">3. Administration : accords</button>
+  <button class="onglet" data-e="admin-comptes">4. Administration : comptes</button>
+</div>
+<header><div class="entete">
+  <span class="logo">rafals<span>.</span></span>
+  <nav class="menu" id="menu"></nav>
+</div></header>
+<main><div class="contenu" id="ecran"></div></main>
+<div id="couche"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const E = {
+ 'compte-lucas': {qui:'Lucas', admin:false, actif:'compte', html:`
+  <h1>Mon compte</h1>
+  <div class="carte">
+    <h2>Mes informations</h2>
+    <dl class="infos">
+      <dt>Nom</dt><dd>Lucas Martin</dd>
+      <dt>Adresse mail</dt><dd>lucas.martin@gmail.com <span class="badge b-ok">vérifiée</span></dd>
+      <dt>Téléphone</dt><dd>06 11 22 33 44</dd>
+      <dt>Date de naissance</dt><dd>04/05/2010 (16 ans)</dd>
+    </dl>
+  </div>
+  <div class="carte">
+    <h2>Accord de tes parents</h2>
+    <div class="alerte a-att">Tu as 16 ans : pour réserver ou publier une annonce, il faut l'accord signé de tes parents, vérifié par rafals.</div>
+    <div class="alerte a-err" id="refus" hidden>Ton accord a été refusé : « Signature illisible ». Tu peux en envoyer un nouveau.</div>
+    <div class="depot"><b>Choisir un fichier</b> (PDF, JPG ou PNG, 5 Mo au maximum)<br>ex. une photo de la lettre signée par tes parents</div>
+    <div><button class="btn prim" data-toast="Accord envoyé : il attend la vérification de l'administrateur." data-e="compte-lucas-attente">Envoyer l'accord</button></div>
+    <p class="note">Autre état possible : <button class="btn sec" onclick="document.getElementById('refus').hidden=false">voir « refusé »</button></p>
+  </div>`},
+ 'compte-lucas-attente': {qui:'Lucas', admin:false, actif:'compte', html:`
+  <h1>Mon compte</h1>
+  <div class="carte"><h2>Accord de tes parents</h2>
+    <div><span class="badge b-att">En attente de vérification</span></div>
+    <p class="note">Envoyé le 28/09/2026 à 18 h 40 (accord-parents.pdf). Tu recevras la réponse ici.</p>
+  </div>
+  <div class="carte"><h2>Accord de tes parents (une fois accepté)</h2>
+    <div><span class="badge b-ok">Accepté le 29/09/2026</span></div>
+    <p class="note">Tu peux réserver et publier des annonces.</p>
+  </div>`},
+ 'compte-marie': {qui:'Marie', admin:false, actif:'compte', html:`
+  <h1>Mon compte</h1>
+  <div class="carte">
+    <h2>Mes informations</h2>
+    <dl class="infos">
+      <dt>Nom</dt><dd>Marie Dupont</dd>
+      <dt>Adresse mail</dt><dd>dupont.marie@gmail.com <span class="badge b-att">pas encore vérifiée</span> <button class="btn sec" data-toast="Si un compte non vérifié existe avec cette adresse, un nouveau lien vient d'être envoyé.">Renvoyer le lien</button></dd>
+      <dt>Téléphone</dt><dd>06 12 34 56 78</dd>
+      <dt>Date de naissance</dt><dd>12/03/1972</dd>
+    </dl>
+    <p class="note">Modifier ses informations, son adresse, fermer son compte : au lot 2.7.</p>
+  </div>
+  <p class="note">Marie a plus de 18 ans : la partie « Accord de tes parents » n'apparaît pas.</p>`},
+ 'admin-accords': {qui:'Raphael', admin:true, actif:'admin', html:`
+  <h1>Administration</h1>
+  <div class="onglets-page" role="tablist">
+    <button role="tab" aria-selected="true" data-e="admin-accords">Accords à vérifier <span class="compteur">2</span></button>
+    <button role="tab" aria-selected="false" data-e="admin-comptes">Comptes</button>
+  </div>
+  <div class="ligne-accord">
+    <div><b>Lucas Martin</b> · 16 ans · envoyé le 28/09/2026 à 18 h 40<br><span class="note">accord-parents.pdf</span></div>
+    <div class="actions">
+      <button class="btn sec" data-toast="Le fichier s'ouvre dans un nouvel onglet.">Voir le fichier</button>
+      <button class="btn prim" data-toast="Accord de Lucas Martin accepté.">Accepter</button>
+      <button class="btn dan" data-fen="refus">Refuser…</button>
+    </div>
+  </div>
+  <div class="ligne-accord">
+    <div><b>Inès Karim</b> · 17 ans · envoyé le 28/09/2026 à 19 h 05<br><span class="note">IMG_2031.jpg</span></div>
+    <div class="actions">
+      <button class="btn sec" data-toast="Le fichier s'ouvre dans un nouvel onglet.">Voir le fichier</button>
+      <button class="btn prim" data-toast="Accord d'Inès Karim accepté.">Accepter</button>
+      <button class="btn dan" data-fen="refus">Refuser…</button>
+    </div>
+  </div>
+  <p class="note">Liste vide : « Aucun accord à vérifier pour l'instant. »</p>`},
+ 'admin-comptes': {qui:'Raphael', admin:true, actif:'admin', html:`
+  <h1>Administration</h1>
+  <div class="onglets-page" role="tablist">
+    <button role="tab" aria-selected="false" data-e="admin-accords">Accords à vérifier <span class="compteur">2</span></button>
+    <button role="tab" aria-selected="true" data-e="admin-comptes">Comptes</button>
+  </div>
+  <div class="table-cadre"><table>
+    <thead><tr><th>Nom</th><th>Adresse mail</th><th>Adresse</th><th>Rôle</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Dupont Marie</td><td>dupont.marie@gmail.com</td><td><span class="badge b-att">non vérifiée</span></td><td></td><td><button class="btn sec" data-fen="nommer">Nommer administrateur</button></td></tr>
+      <tr><td>Durand Tom</td><td>tom.durand@gmail.com</td><td><span class="badge b-ok">vérifiée</span></td><td><span class="badge b-ok">administrateur</span></td><td><button class="btn dan" data-fen="retirer">Retirer le rôle</button></td></tr>
+      <tr><td>Jallu Raphael</td><td>raphael@…</td><td><span class="badge b-ok">vérifiée</span></td><td><span class="badge b-ok">administrateur</span></td><td><button class="btn dan" data-toast-err="Il doit toujours rester au moins un administrateur.">Retirer le rôle</button></td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Tri par nom. Sur téléphone, le tableau défile sur le côté. Si tu es le seul administrateur, retirer ton propre rôle est refusé avec un message.</p>`},
+};
+const F = {
+ refus: `<h3>Refuser l'accord de Lucas Martin ?</h3><p>Le motif sera montré à Lucas, qui pourra en renvoyer un.</p>
+   <div class="champ"><label>Motif du refus <i>*</i></label><input value="Signature illisible"></div>
+   <div class="pied"><button class="btn dan" data-close data-toast="Accord refusé : Lucas Martin verra le motif.">Refuser</button><button class="btn sec" data-close>Annuler</button></div>`,
+ nommer: `<h3>Nommer Marie Dupont administratrice ?</h3><p>Elle aura tous les droits : voir tous les comptes, vérifier les accords, nommer d'autres administrateurs.</p>
+   <div class="pied"><button class="btn prim" data-close data-toast="Marie Dupont est administratrice.">Nommer</button><button class="btn sec" data-close>Annuler</button></div>`,
+ retirer: `<h3>Retirer le rôle d'administrateur à Tom Durand ?</h3><p>Il gardera son compte, sans l'écran Administration.</p>
+   <div class="pied"><button class="btn dan" data-close data-toast="Tom Durand n'est plus administrateur.">Retirer</button><button class="btn sec" data-close>Annuler</button></div>`,
+};
+function menu(e){const d=E[e];document.getElementById('menu').innerHTML=
+  `<span class="l">Trouver un prestataire</span><span class="l">Proposer mes services</span><span class="l">Mes rendez-vous</span><span class="l ${d.actif==='compte'?'actif':''}">Mon compte</span>`+
+  (d.admin?`<span class="l ${d.actif==='admin'?'actif':''}">Administration</span>`:'')+
+  `<b style="padding-inline:8px">${d.qui}</b><button class="btn sec">Se déconnecter</button>`;}
+function aller(e){document.getElementById('ecran').innerHTML=E[e].html;menu(e);
+  document.querySelectorAll('.onglet').forEach(b=>b.setAttribute('aria-pressed',b.dataset.e===e||(e==='compte-lucas-attente'&&b.dataset.e==='compte-lucas')));}
+let m;function toast(t,err){const x=document.getElementById('toast');x.textContent=t;x.style.background=err?'var(--erreur)':'var(--ok)';x.hidden=false;clearTimeout(m);m=setTimeout(()=>x.hidden=true,3000);}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-e],[data-toast],[data-fen],[data-close],[data-toast-err]');if(!el)return;
+  if(el.dataset.fen){document.getElementById('couche').innerHTML=`<div class="voile"><div class="fenetre">${F[el.dataset.fen]}</div></div>`;return;}
+  if(el.hasAttribute('data-close'))document.getElementById('couche').innerHTML='';
+  if(el.dataset.e)aller(el.dataset.e);
+  if(el.dataset.toast)toast(el.dataset.toast);
+  if(el.dataset.toastErr)toast(el.dataset.toastErr,true);
+});
+aller('compte-lucas');
+</script>

@@ -11,7 +11,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 2. Page Mon compte (infos + accord des parents)
   - [ ] 3. Page Administration (accords à vérifier, comptes et administrateurs) + entrée de menu réservée aux administrateurs
   - [ ] 4. `RM-*-IHM.md`, essais (données `@example.com`), nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 1.4
+- **Question en attente** : validation de la maquette du lot 1.4 (https://claude.ai/artifact/AyTpjsZJ4kv3DxitGX9qi6, fichier `.doc/ihm/maquette-lot-1.4-compte-administration.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
