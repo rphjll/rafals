@@ -7,7 +7,9 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : remarque de Raphael après le lot 2.2 : « juste je peux pas supr un metier »
 - **Commencé le** : 28/09/2026
 - **Étapes** :
-  - [ ] 1. Expliquer la règle actuelle et demander ce qu'il veut  ← on en est là
+  - [x] 1. Règle expliquée ; Raphael : « mais y'a pas de bouton desactiver » → la désactivation était cachée dans « Modifier »
+  - [x] 2. Retouche : boutons [Désactiver] / [Réactiver] sur chaque ligne de l'onglet Métiers (case retirée de « Modifier ») ; `RM-ADMINISTRATION-IHM.md` à jour ; aucune faute
+  - [ ] 3. Reposer la question « Supprimer un métier jamais utilisé ? »  ← on en est là
 - **Question en attente** : ajouter « Supprimer » pour un métier jamais utilisé, ou garder « désactiver » seulement
 - **En pause** : aucune
 
@@ -82,3 +84,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **28/09/2026** — Lot 2.1 validé par Raphael (« je valide le lot 2.1 ») → ✅. Lot 2.2 commencé.
 - **28/09/2026** — Lot 2.2 — Maquette (avec la vraie liste) validée, puis : composant `AppChoixMetier` (recherche dès la 1re lettre avec pause de 150 ms, clavier ↑ ↓ Entrée, dossiers, « Proposer un métier » avec fenêtre, connecté ou non), page « Trouver un prestataire » provisoire, `AppSelection`. Administration découpée en `components/admin/` (un fichier par onglet ; la page ne gère plus que les onglets, l'accès et les compteurs) + onglets Propositions (accepter dans un dossier, remplacer par un métier existant via `AppChoixMetier`, refuser) et Métiers (filtre, créer, modifier, désactiver). Serveur inchangé. Problème : le shell a refusé de fabriquer la maquette en une commande → fabriquée par un petit programme dans le dossier temporaire. Essais : aucune faute ; parcours complet par les écrans ; nettoyage d'un métier « ZZTEST » vérifié. Invariants : interface OK (composant réutilisé 2 fois dès ce lot, erreurs dans les fenêtres, tableaux défilants, `RM-*-IHM.md` écrits) ; sécurité, données OK ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`.
 - **28/09/2026** — Lot 2.2 validé par Raphael (« je valide le lot 2.2 ») → ✅. Remarque de Raphael : « je peux pas supr un metier » → question posée.
+- **28/09/2026** — Retouche hors lot (onglet Métiers) : la désactivation n'était accessible que par une case cachée dans la fenêtre « Modifier » (Raphael ne la trouvait pas, contraire à « une action = un bouton ») → boutons visibles [Désactiver] / [Réactiver] sur chaque ligne.

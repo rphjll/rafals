@@ -63,6 +63,27 @@ function modifier(metier: MetierComplet) {
   erreurFenetre.value = ''
 }
 
+// Désactiver : le métier disparaît pour tout le monde (recherche, dossiers, nouvelles annonces) ; réversible
+async function basculer(metier: MetierComplet) {
+  try {
+    await appelerServeur(`/api/admin/metiers/${metier.id}`, {
+      nom: metier.nom,
+      categorie_id: metier.categorie_id,
+      mots_cles: metier.mots_cles,
+      est_active: !metier.est_active,
+    })
+    afficherMessage(
+      metier.est_active
+        ? `« ${metier.nom} » désactivé : il n'est plus proposé.`
+        : `« ${metier.nom} » réactivé : il est de nouveau proposé.`,
+    )
+    await charger()
+    await chargerDossiers(true)
+  } catch (e) {
+    afficherMessage(messageErreur(e), 'erreur')
+  }
+}
+
 async function enregistrer() {
   const f = fiche.value
   if (!f) return
@@ -95,7 +116,7 @@ async function enregistrer() {
       <AppBouton @click="nouveau">+ Nouveau métier</AppBouton>
     </div>
     <div class="overflow-x-auto rounded-rafals border border-bord bg-surface">
-      <table class="w-full min-w-[680px] border-collapse text-sm">
+      <table class="w-full min-w-[760px] border-collapse text-sm">
         <thead>
           <tr class="text-left text-xs tracking-wide text-texte-doux uppercase">
             <th class="border-b border-bord px-3 py-2.5">Métier</th>
@@ -113,7 +134,14 @@ async function enregistrer() {
             <td class="px-3 py-2.5">
               <AppBadge :etat="metier.est_active ? 'ok' : 'neutre'">{{ metier.est_active ? 'actif' : 'désactivé' }}</AppBadge>
             </td>
-            <td class="px-3 py-2.5 text-right"><AppBouton variante="secondaire" @click="modifier(metier)">Modifier</AppBouton></td>
+            <td class="px-3 py-2.5 text-right">
+              <span class="inline-flex flex-wrap justify-end gap-2">
+                <AppBouton variante="secondaire" @click="modifier(metier)">Modifier</AppBouton>
+                <AppBouton :variante="metier.est_active ? 'danger' : 'secondaire'" @click="basculer(metier)">
+                  {{ metier.est_active ? 'Désactiver' : 'Réactiver' }}
+                </AppBouton>
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -130,13 +158,7 @@ async function enregistrer() {
       <div v-if="fiche" class="flex flex-col gap-3">
         <AppChamp v-model="fiche.nom" etiquette="Nom" obligatoire placeholder="ex. Cordiste" />
         <AppSelection v-model="fiche.categorie_id" etiquette="Dossier" :options="optionsDossiers" obligatoire />
-        <template v-if="fiche.id !== null">
-          <AppChamp v-model="fiche.mots_cles" etiquette="Mots-clés (séparés par des virgules)" />
-          <label class="flex items-center gap-2 text-sm font-medium">
-            <input v-model="fiche.est_active" type="checkbox" class="size-4 accent-primaire" />
-            Actif (proposé pour les nouvelles annonces)
-          </label>
-        </template>
+        <AppChamp v-if="fiche.id !== null" v-model="fiche.mots_cles" etiquette="Mots-clés (séparés par des virgules)" />
         <AppAlerte v-if="erreurFenetre">{{ erreurFenetre }}</AppAlerte>
       </div>
       <template #pied>
