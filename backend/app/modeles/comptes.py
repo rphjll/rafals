@@ -1,4 +1,4 @@
-"""Miroir exact des tables compte, session, jeton_mail (db/schema_v2.sql, schema_v3.sql). Aucun calcul ici."""
+"""Miroir exact des tables compte, session, jeton_mail (db/schema_v2.sql, v3, v6). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -16,14 +16,16 @@ class Compte(Base):
     mot_de_passe_hache: Mapped[str] = mapped_column(Text)
     prenom: Mapped[str] = mapped_column(Text)
     nom: Mapped[str] = mapped_column(Text)
-    telephone: Mapped[str] = mapped_column(Text)
-    date_naissance: Mapped[date] = mapped_column(Date)
+    telephone: Mapped[str | None] = mapped_column(Text)  # facultatif dans la base depuis schema_v6 (effacé à la fermeture)
+    date_naissance: Mapped[date | None] = mapped_column(Date)  # idem
     email_verifie_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     echecs_connexion: Mapped[int] = mapped_column(Integer, server_default="0")
     bloque_jusqu_au: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     derniere_connexion_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     est_administrateur: Mapped[bool] = mapped_column(Boolean, server_default="false")  # schema_v3
+    ferme_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v6
+    inactivite_prevenue_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v6
 
 
 class SessionConnexion(Base):

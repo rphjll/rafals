@@ -7,8 +7,8 @@ export interface CompteVisible {
   email: string
   prenom: string
   nom: string
-  telephone: string
-  date_naissance: string
+  telephone: string | null
+  date_naissance: string | null
   email_verifie: boolean
   est_administrateur: boolean
   accord_parental_necessaire: boolean

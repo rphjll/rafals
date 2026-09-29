@@ -38,6 +38,7 @@ RATTACHEES: dict[str, list[str]] = {
         "DELETE FROM prestataire WHERE compte_id = :id",
         "DELETE FROM accord_parental WHERE compte_id = :id",
         "DELETE FROM fichier WHERE depose_par_id = :id",
+        "DELETE FROM adresse WHERE compte_id = :id",
         "DELETE FROM session WHERE compte_id = :id",
         "DELETE FROM jeton_mail WHERE compte_id = :id",
     ],

@@ -93,8 +93,10 @@ async function actualiser() {
         </dd>
         <dt class="text-texte-doux">Téléphone</dt>
         <dd class="font-medium">{{ compte.telephone }}</dd>
-        <dt class="text-texte-doux">Date de naissance</dt>
-        <dd class="font-medium">{{ formaterDate(compte.date_naissance) }} ({{ age(compte.date_naissance) }} ans)</dd>
+        <template v-if="compte.date_naissance">
+          <dt class="text-texte-doux">Date de naissance</dt>
+          <dd class="font-medium">{{ formaterDate(compte.date_naissance) }} ({{ age(compte.date_naissance) }} ans)</dd>
+        </template>
       </dl>
       <p class="text-[13px] text-texte-doux">Modifier vos informations ou fermer votre compte : bientôt disponible.</p>
     </section>
@@ -120,7 +122,7 @@ async function actualiser() {
 
       <template v-else>
         <AppAlerte etat="attente">
-          Tu as {{ age(compte.date_naissance) }} ans : pour réserver ou publier une annonce, il faut l'accord signé de
+          Tu as {{ age(compte.date_naissance ?? '') }} ans : pour réserver ou publier une annonce, il faut l'accord signé de
           tes parents, vérifié par rafals.
         </AppAlerte>
         <AppAlerte v-if="accord.statut === 'refuse'">

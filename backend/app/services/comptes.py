@@ -141,6 +141,7 @@ def connecter(db: Session, *, email: str, mot_de_passe: str, appareil: str | Non
     compte.echecs_connexion = 0
     compte.bloque_jusqu_au = None
     compte.derniere_connexion_le = maintenant
+    compte.inactivite_prevenue_le = None  # se reconnecter annule la fermeture prévue pour inactivité (RM-CLIENTS)
     clair, hache = nouveau_jeton()
     db.add(
         SessionConnexion(
@@ -164,7 +165,8 @@ def compte_connecte(db: Session, jeton: str | None, maintenant: datetime) -> Com
             SessionConnexion.expire_le > maintenant,
         )
     )
-    return None if session is None else db.get(Compte, session.compte_id)
+    compte = None if session is None else db.get(Compte, session.compte_id)
+    return None if compte is None or compte.ferme_le is not None else compte
 
 
 def deconnecter(db: Session, jeton: str | None, maintenant: datetime) -> None:

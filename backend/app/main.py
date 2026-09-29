@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 
@@ -13,36 +13,53 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.db import moteur
-from app.routes import accords, administration, comptes, metiers, prestataires
+from app.routes import accords, administration, clients, comptes, metiers, prestataires
+from app.services import clients as service_clients
 from app.services import prestataires as service_prestataires
 from app.services.erreurs import ErreurRegle
 
 journal_serveur = logging.getLogger("rafals")
 
 
-def _reverifier_sirets() -> None:
-    with Session(moteur) as db:
-        traites = service_prestataires.reverifier_sirets_en_attente(db, datetime.now(UTC))
-        db.commit()
-    if traites:
-        journal_serveur.info("SIRET revérifiés : %s", traites)
+def _dans_une_session(travail: Callable[[Session, datetime], object]) -> Callable[[], object]:
+    """Lance un travail de fond avec sa propre session de base, puis valide (commit)."""
+
+    def lancer() -> object:
+        with Session(moteur) as db:
+            resultat = travail(db, datetime.now(UTC))
+            db.commit()
+        return resultat
+
+    return lancer
 
 
-async def _boucle_sirets() -> None:
-    """Toutes les 30 minutes : nouvel essai pour les SIRET restés « à vérifier » (lot 2.4)."""
+async def _tache_periodique(nom: str, intervalle_secondes: int, travail: Callable[[], object]) -> None:
+    """Refait un travail à intervalle régulier ; une erreur est notée mais n'arrête jamais le serveur."""
     while True:
-        await asyncio.sleep(reglages.SIRET_REVERIFICATION_MINUTES * 60)
+        await asyncio.sleep(intervalle_secondes)
         try:
-            await asyncio.to_thread(_reverifier_sirets)
-        except Exception:  # une erreur ne doit jamais arrêter la boucle ni le serveur
-            journal_serveur.exception("Échec de la revérification des SIRET")
+            resultat = await asyncio.to_thread(travail)
+            journal_serveur.info("%s : %s", nom, resultat)
+        except Exception:
+            journal_serveur.exception("Échec de la tâche « %s »", nom)
 
 
 @asynccontextmanager
 async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
-    tache = asyncio.create_task(_boucle_sirets())
+    taches = [
+        # SIRET restés « à vérifier » (service de l'État en panne) : nouvel essai (lot 2.4)
+        asyncio.create_task(_tache_periodique(
+            "revérification des SIRET", reglages.SIRET_REVERIFICATION_MINUTES * 60,
+            _dans_une_session(service_prestataires.reverifier_sirets_en_attente),
+        )),
+        # Comptes inactifs depuis 3 ans : mail, puis fermeture 30 jours après (lot 2.6)
+        asyncio.create_task(_tache_periodique(
+            "comptes inactifs (prévenus, fermés)", 24 * 60 * 60, _dans_une_session(service_clients.traiter_inactifs),
+        )),
+    ]
     yield
-    tache.cancel()
+    for tache in taches:
+        tache.cancel()
 
 
 app = FastAPI(title="rafals", lifespan=cycle_de_vie)
@@ -51,6 +68,7 @@ app.include_router(accords.routeur)
 app.include_router(administration.routeur)
 app.include_router(metiers.routeur)
 app.include_router(prestataires.routeur)
+app.include_router(clients.routeur)
 
 
 @app.exception_handler(ErreurRegle)

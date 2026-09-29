@@ -12,7 +12,9 @@ from app.services.comptes import age_le
 
 
 def accord_parental_necessaire(compte: Compte, maintenant: datetime) -> bool:
-    """Vrai pour un compte de 16 ou 17 ans (entre l'âge minimum et la majorité)."""
+    """Vrai pour un compte de 16 ou 17 ans (entre l'âge minimum et la majorité). Compte fermé (date effacée) : faux."""
+    if compte.date_naissance is None:
+        return False
     return age_le(compte.date_naissance, maintenant.date()) < reglages.AGE_MAJORITE
 
 

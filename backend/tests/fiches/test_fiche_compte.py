@@ -6,7 +6,11 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.modeles.comptes import Compte, JetonMail, SessionConnexion
+from sqlalchemy import select
+
+from app.modeles.clients import Adresse
 from app.modeles.fichiers import Fichier
+from app.modeles.prestataires import Commune
 from tests.fiches.outils import relire_et_comparer, valeurs
 
 # Rubriques limitées par la base à une liste de valeurs (contrainte jeton_mail_usage_connu)
@@ -27,6 +31,12 @@ def suppression_du_compte_refusee(db: Session, compte: Compte) -> None:
 
 
 def test_fiche_compte(base: Session) -> None:
+    # Communes réelles pour l'adresse (données de référence chargées au début des tests) : Talence, Pessac
+    communes = {
+        1: base.scalar(select(Commune.id).where(Commune.code_insee == "33522")),
+        2: base.scalar(select(Commune.id).where(Commune.code_insee == "33318")),
+    }
+
     # 1. Ajout, toutes les rubriques remplies, puis relecture
     ajout = valeurs(Compte, 1)
     compte = Compte(**ajout)
@@ -44,6 +54,7 @@ def test_fiche_compte(base: Session) -> None:
         (SessionConnexion, lambda v: {"compte_id": compte.id}),
         (JetonMail, lambda v: {"compte_id": compte.id, "usage": USAGES[v]}),
         (Fichier, lambda v: {"depose_par_id": compte.id}),
+        (Adresse, lambda v: {"compte_id": compte.id, "commune_id": communes[v], "code_postal": ("33400", "33600")[v - 1]}),
     ):
         ajout_lie = valeurs(modele, 1, imposees(1))
         liee = modele(**ajout_lie)

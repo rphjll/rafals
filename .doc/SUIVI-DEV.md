@@ -8,10 +8,11 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Commencé le** : 29/09/2026
 - **Étapes** :
   - [x] 1. MLD proposé et validé le 29/09/2026 ; `db/schema_v6.sql` écrit (pas encore exécuté)
-  - [ ] 2. Plan validé, `schema_v6.sql` exécuté  ← on en est là
-  - [ ] 3. Calculs, routes, tests
-  - [ ] 4. Essais, invariants, sauvegarde
-- **Question en attente** : validation du plan du lot 2.6
+  - [x] 2. Plan validé (« Oui, vas-y »), `schema_v6.sql` exécuté le 29/09/2026
+  - [x] 3. Modèle `clients.py`, calculs `services/clients.py`, routes `routes/clients.py`, tâches de fond regroupées dans `main.py` ; 99 tests OK
+  - [x] 4. Essai sur la vraie base (adresse, export, fermeture) puis nettoyage : seul le compte de Raphael reste ; invariants ; sauvegarde
+  - [ ] 5. Validation des précisions de `RM-CLIENTS.md` et du lot par Raphael  ← on en est là
+- **Question en attente** : validation des précisions de `RM-CLIENTS.md` (lot 2.6), puis du lot
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -51,7 +52,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | ✅ |
 | 2.4 | Serveur | Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne | RM-PRESTATAIRES | 2.3 | ✅ |
 | 2.5 | Écrans | Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage | RM-PRESTATAIRES | 2.4, 2.2 | ✅ |
-| 2.6 | Serveur | Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans | RM-CLIENTS | 1.3 | 🟡 |
+| 2.6 | Serveur | Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans | RM-CLIENTS | 1.3 | 🔎 |
 | 2.7 | Écrans | Mon compte : adresse, télécharger mes données, fermer mon compte | RM-CLIENTS | 2.6, 1.4 | ⬜ |
 
 ## Niveaux 3 à 6 — à découper après l'écriture de leurs règles
@@ -106,3 +107,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **29/09/2026** — Lot 2.4 validé par Raphael (« Oui, je valide ») → ✅. Lot 2.5 commencé.
 - **29/09/2026** — Lot 2.5 — Maquette validée, puis : page `/proposer` (formulaire du profil en 3 cartes, création et modification ; fiche « Mon activité » : photo ou initiales, badges d'état et de SIRET, changer la photo, pause/reprise, arrêt avec confirmation, boutons verrouillés si bloqué), bandeaux si adresse non vérifiée ou accord des parents manquant ; menu « Mon activité » pour un prestataire ; onglet Administration › Prestataires. Réutilisation : la recherche avec propositions devient un seul composant `AppRecherche` (métiers, métiers secondaires, communes ; `AppChoixMetier` réécrit dessus), `AppElementChoisi` commun, libellés des états dans `outils/prestataires.ts`. Serveur inchangé. Problèmes : une erreur de type dans `AppRecherche` (liste des résultats mal déclarée) corrigée ; un ordre de chargement fautif dans `ProposerPage` (page qui pouvait rester vide) corrigé avant l'essai. Invariants : interface OK (clic → résultat visible, erreurs au-dessus du bouton ou dans la fenêtre, boutons verrouillés avec raison, `RM-*-IHM.md` écrits) ; réutilisation OK ; serveur, données : inchangés ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`.
 - **29/09/2026** — Lot 2.5 validé par Raphael (« je valide le lot... », confirmé « Oui, le lot 2.5 » ; base propre : seul son compte) → ✅. Lot 2.6 commencé.
+- **29/09/2026** — Lot 2.6 — MLD validé, `schema_v6.sql` exécuté (table `adresse` ; `compte` : `ferme_le`, `inactivite_prevenue_le`, `telephone` et `date_naissance` facultatifs dans la base). Serveur : adresse (code postal contrôlé avec la commune), informations, export « mes données » (sans secret), fermeture (mot de passe retapé ; refus si prestataire en activité ou seul administrateur ; effacement de tout ce qui est personnel ; déconnexion partout ; compte d'essai qui garde sa marque), comptes inactifs (mail après 3 ans, fermeture 30 jours après, reconnexion qui annule). Réutilisation : les deux tâches de fond (SIRET, inactivité) partagent une seule mécanique de tâche périodique dans `main.py`. Un compte fermé n'est plus reconnu comme connecté. Problèmes : 2 tests faux au premier lancement (ils comptaient aussi le mail de vérification) → corrigés ; un compte d'essai fermé perdait sa marque d'essai (le nettoyage ne l'aurait plus retrouvé) → corrigé avant l'essai ; accents mal envoyés par l'outil d'essai sous Windows (pas rafals). Écran « Mon compte » adapté (date de naissance possiblement vide). Tests : 99 OK. Invariants : architecture OK ; sécurité OK (mot de passe pour fermer, aucun secret dans l'export, compte fermé déconnecté) ; données OK (effacement réel, 0 donnée d'essai restante) ; tests OK ; interface : écrans au lot 2.7 ; réutilisation OK ; documentation : `RM-CLIENTS.md` précisé (à valider).

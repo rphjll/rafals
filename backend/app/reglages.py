@@ -26,6 +26,11 @@ PRESTATAIRE_PRESENTATION_MAX = 1000
 PHOTO_TYPES_ACCEPTES = {"image/jpeg", "image/png"}
 PHOTO_TAILLE_MAX_OCTETS = 5 * 1024 * 1024
 
+# Comptes inactifs (RM-CLIENTS.md, validé le 28/09/2026) : mail après 3 ans sans connexion, fermeture 30 jours après
+INACTIVITE_DUREE = timedelta(days=3 * 365)
+INACTIVITE_PREAVIS = timedelta(days=30)
+ADRESSE_LIGNE_LONGUEUR = (3, 120)
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

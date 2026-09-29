@@ -50,8 +50,8 @@ class CompteVisible(BaseModel):
     email: str
     prenom: str
     nom: str
-    telephone: str
-    date_naissance: date
+    telephone: str | None
+    date_naissance: date | None
     email_verifie: bool
     est_administrateur: bool
     accord_parental_necessaire: bool

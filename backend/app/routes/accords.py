@@ -31,7 +31,7 @@ class AccordAVerifier(BaseModel):
     compte_id: int
     prenom: str
     nom: str
-    date_naissance: date
+    date_naissance: date | None
     nom_fichier: str
 
 
