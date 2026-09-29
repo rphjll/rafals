@@ -4,16 +4,13 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 2.3 — Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance, pause / blocage / arrêt. **Mode « tout seul »** : Raphael, 28/09/2026 : « oui je valide mais me pose plus de questions car je vais me coucher donc fini tout tout seul »
-- **Commencé le** : 28/09/2026
+- **Demande** : Lot 2.4 — Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne (Raphael : « Oui, je valide » le lot 2.3)
+- **Commencé le** : 29/09/2026
 - **Étapes** :
-  - [x] 1. MLD proposé et validé le 28/09/2026
-  - [x] 2. `schema_v5.sql` exécuté ; liste officielle des communes (34 969) téléchargée, rangée dans `backend/app/donnees/communes.json.gz` et chargée (`charger-communes.bat`, relançable)
-  - [x] 3. Modèles (`prestataires.py`), calculs (`communes.py` : recherche, distance ; `prestataires.py` : profil, SIRET, photo, statuts, blocage ; `fichiers.py` : vérification et rangement regroupés), routes (`routes/prestataires.py`) ; tests : 78 OK (24 nouveaux + test de fiche du prestataire)
-  - [x] 4. Essai par les écrans sur la vraie base (profil, photo, blocage) puis nettoyage : seules les données de Raphael restent ; invariants ; sauvegarde
-  - [x] 5. Bilan à Raphael ; précisions de `RM-PRESTATAIRES.md` validées une par une le 29/09/2026 (100 km, 5 métiers secondaires, textes, photo, déblocage par l'administrateur seulement)
-  - [ ] 6. Validation du lot par Raphael  ← on en est là
-- **Question en attente** : validation du lot 2.3
+  - [ ] 1. Choisir le service de l'État et proposer le plan  ← on en est là
+  - [ ] 2. Calculs, routes, tests
+  - [ ] 3. Essais, invariants, sauvegarde
+- **Question en attente** : aucune pour l'instant
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -50,8 +47,8 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 |---|---|---|---|---|---|
 | 2.1 | Serveur | Métiers et catégories : liste triée (relue par Raphael), mots-clés, recherche sans accents, propositions de métier | RM-METIERS | 1.3 | ✅ |
 | 2.2 | Écrans | Choix d'un métier (recherche par lettres, dossiers) ; Administration des métiers et des propositions | RM-METIERS | 2.1, 1.4 | ✅ |
-| 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | 🔎 |
-| 2.4 | Serveur | Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne | RM-PRESTATAIRES | 2.3 | ⬜ |
+| 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | ✅ |
+| 2.4 | Serveur | Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne | RM-PRESTATAIRES | 2.3 | 🟡 |
 | 2.5 | Écrans | Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage | RM-PRESTATAIRES | 2.4, 2.2 | ⬜ |
 | 2.6 | Serveur | Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans | RM-CLIENTS | 1.3 | ⬜ |
 | 2.7 | Écrans | Mon compte : adresse, télécharger mes données, fermer mon compte | RM-CLIENTS | 2.6, 1.4 | ⬜ |
@@ -102,3 +99,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
   - Problèmes : l'exemple de SIRET de Julie dans les règles ne passe pas la clé de contrôle (retiré du message d'erreur, signalé dans `RM-PRESTATAIRES.md`) ; chemins `/tmp` et `/c/…` non compris par l'outil de téléchargement sous Windows (contournés, pas un défaut de rafals).
   - Invariants : architecture OK (MLD → SQL → modèles → services → routes → tests) ; sécurité OK (profil : connecté ; blocage et liste : administrateur ; coordonnées non exposées) ; données OK (0 donnée d'essai restante, vérifié) ; tests OK (78) ; interface : écrans au lot 2.5 ; réutilisation OK ; documentation : `RM-PRESTATAIRES.md` précisé (à valider), `CLAUDE.md` = `REGLES-PROJET.md`.
 - **29/09/2026** — Bilan du lot 2.3 : Raphael valide les 5 valeurs choisies en mode « tout seul » (distance 100 km, 5 métiers secondaires, nom 2-80 / présentation 1 000 caractères, photo JPG/PNG 5 Mo visible de tous, déblocage par l'administrateur seulement). Aucun changement de code nécessaire.
+- **29/09/2026** — Lot 2.3 validé par Raphael (« Oui, je valide ») → ✅. Lot 2.4 commencé.
