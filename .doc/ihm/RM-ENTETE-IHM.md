@@ -9,7 +9,7 @@ Bandeau blanc (`surface`) collé en haut de toutes les pages, bordure fine en ba
 1. Logo « rafals. » (police des titres, vert `primaire`, point orange `accent`) → lien vers l'accueil `/`.
 2. Menu principal, collé à droite :
    1. « Trouver un prestataire » → `/trouver`
-   2. « Proposer mes services » → `/proposer`
+   2. « Proposer mes services » → `/proposer` — devient « Mon activité » quand le compte a un profil de prestataire (lot 2.5)
    3. « Mes rendez-vous » → `/rendez-vous`
    4. « Mon compte » → `/compte`
    5. « Administration » → `/administration` — **seulement pour un administrateur** (lot 1.4)

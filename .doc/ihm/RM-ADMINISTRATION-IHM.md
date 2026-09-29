@@ -7,7 +7,7 @@ Entrée de menu visible seulement des administrateurs. **(pas administrateur, ou
 
 **Ordre des éléments :**
 1. Titre « Administration ».
-2. Onglets : « Accords à vérifier » · « Comptes » · « Propositions de métiers » · « Métiers ». Compteur orange du nombre en attente sur « Accords à vérifier » et « Propositions de métiers », mis à jour après chaque décision. L'onglet choisi est dans l'adresse (ex. `?onglet=metiers`).
+2. Onglets : « Accords à vérifier » · « Comptes » · « Prestataires » (lot 2.5) · « Propositions de métiers » · « Métiers ». Compteur orange du nombre en attente sur « Accords à vérifier » et « Propositions de métiers », mis à jour après chaque décision. L'onglet choisi est dans l'adresse (ex. `?onglet=metiers`).
 3. (erreur de chargement) bandeau rouge.
 
 ## Onglet « Accords à vérifier » (par défaut)
@@ -37,3 +37,13 @@ Erreurs du serveur affichées dans la fenêtre (ex. « Choisissez le dossier où
 
 **Fenêtre « Nouveau métier » :** Nom *, Dossier * ; [Créer] / [Annuler] → « Métier « Cordiste » créé. »
 **Fenêtre « Modifier « Plombier » » :** Nom *, Dossier *, Mots-clés (séparés par des virgules) ; [Enregistrer] / [Annuler] → « Métier « Plombier » enregistré. »
+
+## Onglet « Prestataires » (lot 2.5)
+Tableau (défile sur le côté sur téléphone), du plus récent au plus ancien. Vide : « Aucun prestataire pour l'instant. »
+**Colonnes :** Prestataire (nom affiché) · Métier (principal) · Ville · SIRET (badge : « SIRET vérifié », « À vérifier », « SIRET refusé », « Sans SIRET ») · État (badge : actif, en pause, bloqué, arrêté) · Compte (adresse mail) · boutons.
+**Boutons :**
+- [Valider le SIRET] (secondaire), seulement si le SIRET est « à vérifier » ou « refusé » → « SIRET de « … » validé à la main. » (à faire après avoir vu un justificatif) ;
+- [Bloquer…] (danger) → fenêtre « Bloquer « … » ? » : « Il disparaît des recherches et ne peut plus rien changer. Vous seul pourrez le débloquer. » ; [Bloquer] / [Annuler] → « « … » est bloqué. » ;
+- [Débloquer] (secondaire) si bloqué → « « … » est débloqué : il est de nouveau actif. » ;
+- aucun bouton de blocage pour un prestataire arrêté.
+Texte sous le tableau : « Du plus récent au plus ancien. « Valider le SIRET » : seulement après avoir vu un justificatif (avis de situation INSEE). »

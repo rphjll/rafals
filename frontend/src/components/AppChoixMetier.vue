@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Choix d'un métier (.doc/ihm/RM-CHOIX-METIER-IHM.md) : par les premières lettres, ou par dossier.
-// Servira aussi à « Proposer mes services » (lot 2.5) et à la recherche (niveau 4).
-import { onMounted, ref, useId, watch } from 'vue'
+// Utilisé par « Trouver un prestataire », « Proposer mes services » et la fenêtre « Remplacer » de l'Administration.
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import { useCompte } from '../composables/useCompte'
@@ -10,11 +10,14 @@ import { type Dossier, type MetierVisible, useMetiers } from '../composables/use
 import AppAlerte from './ui/AppAlerte.vue'
 import AppBouton from './ui/AppBouton.vue'
 import AppChamp from './ui/AppChamp.vue'
+import AppElementChoisi from './ui/AppElementChoisi.vue'
 import AppFenetre from './ui/AppFenetre.vue'
+import AppRecherche from './ui/AppRecherche.vue'
 
-const props = withDefaults(defineProps<{ avecDossiers?: boolean; etiquette?: string }>(), {
+const props = withDefaults(defineProps<{ avecDossiers?: boolean; etiquette?: string; obligatoire?: boolean }>(), {
   avecDossiers: true,
   etiquette: 'Tapez les premières lettres',
+  obligatoire: false,
 })
 const choisi = defineModel<MetierVisible | null>({ default: null })
 
@@ -22,41 +25,16 @@ const routeur = useRouter()
 const { compte } = useCompte()
 const { afficherMessage } = useMessage()
 const { dossiers, chargerDossiers, rechercher } = useMetiers()
-const id = useId()
-
 const texte = ref('')
-const resultats = ref<MetierVisible[]>([])
-const actif = ref(0)
 const dossierOuvert = ref<Dossier | null>(null)
-let minuteur: ReturnType<typeof setTimeout> | undefined
 
 onMounted(() => {
   if (props.avecDossiers) chargerDossiers()
 })
 
-// On attend une courte pause dans la frappe avant d'interroger le serveur
-watch(texte, (valeur) => {
-  clearTimeout(minuteur)
-  minuteur = setTimeout(async () => {
-    resultats.value = valeur.trim() ? await rechercher(valeur) : []
-    actif.value = 0
-  }, 150)
-})
-
 function choisir(metier: MetierVisible) {
   choisi.value = metier
-  texte.value = ''
-  resultats.value = []
   dossierOuvert.value = null
-}
-
-function clavier(evenement: KeyboardEvent) {
-  if (!resultats.value.length) return
-  if (evenement.key === 'ArrowDown') actif.value = Math.min(resultats.value.length - 1, actif.value + 1)
-  else if (evenement.key === 'ArrowUp') actif.value = Math.max(0, actif.value - 1)
-  else if (evenement.key === 'Enter') choisir(resultats.value[actif.value])
-  else return
-  evenement.preventDefault()
 }
 
 // ---------- Proposer un métier ----------
@@ -84,44 +62,28 @@ async function envoyerProposition() {
 
 <template>
   <div class="flex flex-col gap-3">
-    <div v-if="choisi" class="flex flex-wrap items-center gap-2.5 rounded-rafals bg-ok-doux px-3 py-2.5 font-semibold text-ok">
-      ✓ {{ choisi.nom }} <span class="text-[13px] font-medium">({{ choisi.categorie }})</span>
-      <span class="ml-auto"><AppBouton variante="secondaire" @click="choisi = null">Changer</AppBouton></span>
-    </div>
+    <AppElementChoisi v-if="choisi" :texte="choisi.nom" :detail="choisi.categorie" @changer="choisi = null" />
 
     <template v-else>
-      <div class="flex flex-col gap-1.5">
-        <label :for="id" class="text-[13px] font-semibold">{{ etiquette }}</label>
-        <input
-          :id="id"
-          v-model="texte"
-          autocomplete="off"
-          placeholder="ex. plom, fuite, coiffeuse, piano…"
-          role="combobox"
-          :aria-expanded="resultats.length > 0"
-          class="min-h-[42px] rounded-rafals border border-bord bg-fond px-3 py-2.5 text-texte outline-none focus:border-primaire focus:ring-2 focus:ring-primaire"
-          @keydown="clavier"
-        />
-        <div v-if="resultats.length" class="overflow-hidden rounded-rafals border border-bord bg-surface" role="listbox">
-          <button
-            v-for="(metier, i) in resultats"
-            :key="metier.id"
-            type="button"
-            role="option"
-            :aria-selected="i === actif"
-            class="flex w-full justify-between gap-2.5 border-t border-bord px-3 py-2.5 text-left first:border-t-0 hover:bg-primaire-doux"
-            :class="i === actif ? 'bg-primaire-doux' : ''"
-            @click="choisir(metier)"
-          >
-            {{ metier.nom }} <small class="text-texte-doux">{{ metier.categorie }}</small>
-          </button>
-        </div>
-        <p v-else-if="texte.trim()" class="flex flex-wrap items-center gap-2 text-[13px] text-texte-doux">
-          Aucun métier ne correspond.
-          <AppBouton variante="secondaire" @click="ouvrirProposition">Proposer un métier</AppBouton>
-        </p>
-        <p class="text-[13px] text-texte-doux">Flèches ↑ ↓ puis Entrée au clavier, ou un clic. Les accents ne comptent pas.</p>
-      </div>
+      <AppRecherche
+        v-model:texte="texte"
+        :etiquette="etiquette"
+        :obligatoire="obligatoire"
+        :chercher="rechercher"
+        :libelle="(m: MetierVisible) => m.nom"
+        :detail="(m: MetierVisible) => m.categorie"
+        :cle="(m: MetierVisible) => m.id"
+        placeholder="ex. plom, fuite, coiffeuse, piano…"
+        aide="Flèches ↑ ↓ puis Entrée au clavier, ou un clic. Les accents ne comptent pas."
+        @choisir="choisir"
+      >
+        <template #aucun-resultat>
+          <p class="flex flex-wrap items-center gap-2 text-[13px] text-texte-doux">
+            Aucun métier ne correspond.
+            <AppBouton variante="secondaire" @click="ouvrirProposition">Proposer un métier</AppBouton>
+          </p>
+        </template>
+      </AppRecherche>
 
       <div v-if="avecDossiers" class="flex flex-col gap-3">
         <template v-if="dossierOuvert">

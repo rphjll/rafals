@@ -29,4 +29,7 @@
 | `AppSeparateur` | Trait avec un petit texte au milieu, ex. « déjà inscrit ? » (lot 1.2) | contenu |
 | `AppChampFichier` | Zone « Choisir un fichier » (lot 1.4) | `etiquette`, `aide`, `accepte` (formats), `v-model` (le fichier) |
 | `AppSelection` | Liste déroulante (lot 2.2) | `etiquette`, `options` (valeur, texte), `obligatoire`, `v-model` |
+| `AppRecherche` | Champ de recherche avec propositions : pause de frappe, ↑ ↓ Entrée (lot 2.5 ; sert aux métiers et aux communes) | `etiquette`, `chercher`, `libelle`, `detail`, `cle`, `placeholder`, `aide`, emplacement `aucun-resultat`, évènement `choisir` |
+| `AppElementChoisi` | Bandeau vert « ✓ Pessac (33600) [Changer] » (lot 2.5) | `texte`, `detail`, évènement `changer` |
+| `AppZoneTexte` | Texte sur plusieurs lignes avec compteur « 57 / 1000 » (lot 2.5) | `etiquette`, `maximum`, `aide`, `v-model` |
 | `AppMessage` + `useMessage()` | Message court après une action, 3 secondes | `afficherMessage(texte, 'ok' \| 'erreur')` ; placé une seule fois dans `App.vue` |

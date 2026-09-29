@@ -47,6 +47,9 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AppSeparateur` — trait avec un petit texte au milieu (lot 1.2).
 - `AppChampFichier` — zone « Choisir un fichier » (lot 1.4).
 - `AppSelection` — liste déroulante (lot 2.2).
+- `AppRecherche` — champ de recherche avec propositions (un seul pour toutes les recherches), `AppElementChoisi` — élément choisi, `AppZoneTexte` — texte long avec compteur (lot 2.5).
+- `AppChoixCommune` (dans `components/`) — choix d'une commune (lot 2.5).
+- Libellés et couleurs des états du prestataire : `frontend/src/outils/prestataires.ts`.
 - `AppChoixMetier` (dans `components/`) — choix d'un métier par recherche ou par dossier, avec « Proposer un métier » (lot 2.2).
 - Écrans d'administration : un fichier par onglet dans `components/admin/`.
 - Dates : toujours par `frontend/src/outils/dates.ts` (« 28/09/2026 à 18 h 40 », heure de Paris ; âge).

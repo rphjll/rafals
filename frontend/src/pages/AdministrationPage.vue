@@ -7,6 +7,7 @@ import { appelerServeur } from '../api'
 import OngletAccords from '../components/admin/OngletAccords.vue'
 import OngletComptes from '../components/admin/OngletComptes.vue'
 import OngletMetiers from '../components/admin/OngletMetiers.vue'
+import OngletPrestataires from '../components/admin/OngletPrestataires.vue'
 import OngletPropositions from '../components/admin/OngletPropositions.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppCarte from '../components/ui/AppCarte.vue'
@@ -19,6 +20,7 @@ const { compte, chargementFait } = useCompte()
 const onglets = [
   { id: 'accords', texte: 'Accords à vérifier', composant: OngletAccords },
   { id: 'comptes', texte: 'Comptes', composant: OngletComptes },
+  { id: 'prestataires', texte: 'Prestataires', composant: OngletPrestataires },
   { id: 'propositions', texte: 'Propositions de métiers', composant: OngletPropositions },
   { id: 'metiers', texte: 'Métiers', composant: OngletMetiers },
 ] as const

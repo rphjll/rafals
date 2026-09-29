@@ -13,6 +13,7 @@ export interface CompteVisible {
   est_administrateur: boolean
   accord_parental_necessaire: boolean
   peut_reserver_ou_publier: boolean
+  prestataire_id: number | null
 }
 
 const compte = ref<CompteVisible | null>(null)

@@ -8,6 +8,7 @@ import ConnexionPage from './pages/ConnexionPage.vue'
 import InscriptionPage from './pages/InscriptionPage.vue'
 import MotDePasseOubliePage from './pages/MotDePasseOubliePage.vue'
 import NouveauMotDePassePage from './pages/NouveauMotDePassePage.vue'
+import ProposerPage from './pages/ProposerPage.vue'
 import TrouverPage from './pages/TrouverPage.vue'
 import VerifierAdressePage from './pages/VerifierAdressePage.vue'
 
@@ -30,7 +31,7 @@ export const routeur = createRouter({
     { path: '/verifier-adresse', name: 'verifier-adresse', component: VerifierAdressePage },
     { path: '/nouveau-mot-de-passe', name: 'nouveau-mot-de-passe', component: NouveauMotDePassePage },
     { path: '/trouver', name: 'trouver', component: TrouverPage },
-    { path: '/proposer', name: 'proposer', ...bientot('Proposer mes services', 'au lot 2.5') },
+    { path: '/proposer', name: 'proposer', component: ProposerPage },
     { path: '/rendez-vous', name: 'rendez-vous', ...bientot('Mes rendez-vous', 'avec les rendez-vous (niveau 4)') },
     { path: '/compte', name: 'compte', component: ComptePage },
     { path: '/administration', name: 'administration', component: AdministrationPage },

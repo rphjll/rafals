@@ -1,6 +1,6 @@
 # Choix d'un métier — Interface
 
-> Fichiers : `frontend/src/components/AppChoixMetier.vue`, `frontend/src/composables/useMetiers.ts`. Construit au lot 2.2 (28/09/2026). Règles : `RM-METIERS.md`. Maquette : `maquette-lot-2.2-metiers.html`.
+> Fichiers : `frontend/src/components/AppChoixMetier.vue` (construit sur `AppRecherche` et `AppElementChoisi` depuis le lot 2.5), `frontend/src/composables/useMetiers.ts`. Construit au lot 2.2 (28/09/2026). Règles : `RM-METIERS.md`. Maquette : `maquette-lot-2.2-metiers.html`.
 > Composant réutilisé : page « Trouver un prestataire », fenêtre « Remplacer » de l'Administration ; puis « Proposer mes services » (lot 2.5) et la recherche (niveau 4).
 
 ## Options
