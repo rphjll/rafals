@@ -7,11 +7,11 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 3.3 — Serveur de l'agenda (Raphael : « Oui, je valide » le lot 3.2)
 - **Commencé le** : 29/09/2026
 - **Étapes** :
-  - [ ] 1. MLD validé  ← on en est là
-  - [ ] 2. `schema_v8.sql` écrit et exécuté ; modèles
+  - [x] 1. MLD validé (29/09/2026, « oui je valide mais on arrete la on reprend demain »)
+  - [ ] 2. `schema_v8.sql` écrit et exécuté ; modèles  ← prochaine action
   - [ ] 3. Services (semaine type, blocages, réglages, horaires libres), routes, tests
   - [ ] 4. Nettoyage, invariants, suivi, sauvegarde
-- **Question en attente** : validation du MLD du lot 3.3 (https://claude.ai/artifact/44coEpJa26bPStAsN6rHnM, fichier `.doc/mld/MLD-lot-3.3-agenda.html`)
+- **Question en attente** : aucune (reprise demain par « continuer » : écrire `schema_v8.sql` d'après `.doc/mld/MLD-lot-3.3-agenda.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -126,3 +126,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **29/09/2026** — Lot 3.1 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 3.2 commencé.
 - **29/09/2026** — Lot 3.2 construit → 🔎 à vérifier. Écrans : « Mes annonces » (liste, retirées à part, pause / retrait / republier, 🔒 republier si métier arrêté), écrire / modifier une annonce (3 formes de prix, lieu avec 🔒 sans local, carte 🔒 sans SIRET vérifié, photos après publication), page publique d'une annonce (ville seulement, aperçu pour l'auteur, 🔒 Réserver), « Mon activité » : cartes Mes annonces, Mes métiers (dates de fin, remplaçant du principal, reprise), Mon local ; menu « Mes annonces » pour les prestataires. Serveur : `metier_arrete` ajouté à la liste des annonces. Réutilisation : `CarteAdresse` commune (adresse du client + local), `AppChoix`, `AppCase` (remplace aussi la case de l'onglet Métiers), `GardePrestataire`, `outils/annonces.ts`. Décision : les dates de fin se règlent d'abord dans « Mon activité » ; elles apparaîtront aussi dans l'agenda au lot 3.4. Essai de bout en bout par le port 5174 (compte d'essai n° 17, vérifié par le lien lu dans Mailpit : prestataire, local, annonce « les deux », photo, page publique sans la rue, refus « chez moi » sans local, refus carte sans SIRET, refus d'effacer le local, dates de fin, pause / retrait / republier) : conforme ; compte n° 17 et sa photo effacés (sauvegarde avant), comptage : 1 compte, 0 annonce, 0 fichier. Tests : 126 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude (pas de navigateur automatique) → à regarder par Raphael.
 - **29/09/2026** — Lot 3.2 validé par Raphael (« Oui, je valide ») → ✅. Compte d'essai n° 18 (essai1@example.com, créé par Raphael pour l'essai) effacé avec sa photo après sauvegarde ; comptage : 1 compte, 0 annonce, 0 fichier. Lot 3.3 commencé.
+- **29/09/2026** — MLD du lot 3.3 validé par Raphael (PLAGE_HORAIRE, BLOCAGE, 4 réglages d'agenda dans PRESTATAIRE). Pause jusqu'à demain.
