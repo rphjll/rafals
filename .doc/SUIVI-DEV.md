@@ -7,11 +7,11 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 2.6 — Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans (suite du plan, après la validation du lot 2.5)
 - **Commencé le** : 29/09/2026
 - **Étapes** :
-  - [ ] 1. MLD proposé et validé  ← on en est là
-  - [ ] 2. Plan validé, `schema_v6.sql` exécuté
+  - [x] 1. MLD proposé et validé le 29/09/2026 ; `db/schema_v6.sql` écrit (pas encore exécuté)
+  - [ ] 2. Plan validé, `schema_v6.sql` exécuté  ← on en est là
   - [ ] 3. Calculs, routes, tests
   - [ ] 4. Essais, invariants, sauvegarde
-- **Question en attente** : validation du MLD du lot 2.6 (https://claude.ai/artifact/X9ASJhiw864PhFXbD99oed, fichier `.doc/mld/MLD-lot-2.6-clients.html`)
+- **Question en attente** : validation du plan du lot 2.6
 - **En pause** : aucune
 
 ## Définition de « terminé »
