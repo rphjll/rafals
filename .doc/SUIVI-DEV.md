@@ -8,10 +8,10 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Commencé le** : 29/09/2026
 - **Étapes** :
   - [x] 1. Sujet 05 Annonces : `RM-ANNONCES.md` validé (29/09/2026)
-  - [ ] 2. Sujet 06 Agenda : questions une à une, puis `RM-AGENDA.md`  ← on en est là
-  - [ ] 3. Découpage du niveau 3 en lots dans `PLAN-DEV.md` et ici
+  - [x] 2. Sujet 06 Agenda : `RM-AGENDA.md` validé (29/09/2026)
+  - [x] 3. Découpage du niveau 3 en lots dans `PLAN-DEV.md` et ici (validé le 29/09/2026)
 - **Déjà décidé avant** : lieu et mode de paiement choisis par annonce, espèces seulement sans SIRET, visible dès la 1re annonce (RM-PRESTATAIRES, GLOSSAIRE)
-- **Question en attente** : horaires d'ouverture (agenda)
+- **Question en attente** : Raphael passe le lot 3.0 à ✅ ?
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -54,10 +54,20 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | 2.6 | Serveur | Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans | RM-CLIENTS | 1.3 | ✅ |
 | 2.7 | Écrans | Mon compte : adresse, télécharger mes données, fermer mon compte | RM-CLIENTS | 2.6, 1.4 | ✅ |
 
-## Niveaux 3 à 6 — à découper après l'écriture de leurs règles
+## Niveau 3 — Cœur
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 3.0 | Règles | Écrire les règles des sujets 05 Annonces et 06 Agenda, puis découper le niveau 3 en lots | SUIVI_REGLES_METIER | 2.7 | 🟡 |
+| 3.0 | Règles | Écrire les règles des sujets 05 Annonces et 06 Agenda, puis découper le niveau 3 en lots | SUIVI_REGLES_METIER | 2.7 | 🔎 |
+| 3.1 | Serveur | Annonces : adresse du local dans le profil ; annonce (titre, métier du profil, prix fixe / à l'heure avec heures min-max / sur devis, durée, lieu, paiement selon le SIRET, description, 5 photos) ; publier, pause, retrait, republier ; 20 en ligne au plus ; date de fin d'un métier (remplace le retrait direct d'un métier) | RM-ANNONCES | 2.7 | ⬜ |
+| 3.2 | Écrans | Mes annonces (liste, écrire / modifier, photos, pause, retrait, annonces retirées) ; adresse du local et date de fin d'un métier dans « Mon activité » ; aperçu d'une annonce telle que le client la verra | RM-ANNONCES | 3.1 | ⬜ |
+| 3.3 | Serveur | Agenda : semaine type (plusieurs plages par jour), blocages de dates, réglages (pas, pause, délais), calcul des horaires libres d'une annonce pour un jour donné | RM-AGENDA | 3.1 | ⬜ |
+| 3.4 | Écrans | Mon agenda : semaine type, calendrier (blocages, dates de fin de métier), réglages ; aperçu des horaires libres | RM-AGENDA | 3.3, 3.2 | ⬜ |
+
+L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date de fin d'un métier) sera branchée au niveau 4, quand les rendez-vous existeront.
+
+## Niveaux 4 à 6 — à découper après l'écriture de leurs règles
+| Lot | Type | Description | Règle source | Dépend de | État |
+|---|---|---|---|---|---|
 | 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | ⬜ |
 | 5.0 | Règles | Vérification juridique (sans SIRET), choix du service de paiement, sujets 10 Devis, 11 Factures, 12 Paiements, puis découper le niveau 5 | SUIVI_REGLES_METIER | niveau 4 | ⬜ |
 | 6.0 | Règles | Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6 | SUIVI_REGLES_METIER | niveau 5 | ⬜ |
@@ -110,3 +120,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **29/09/2026** — Lot 2.6 validé par Raphael (« Oui, je valide ») → ✅. Lot 2.7 commencé.
 - **29/09/2026** — Lot 2.7 construit → 🔎 à vérifier. « Mon compte » découpée en cartes (`components/compte/`) : modifier mes informations, mon adresse (code postal en liste seulement si la ville en a plusieurs), télécharger mes données, fermer mon compte (fenêtre avec mot de passe). Administration › Comptes : badge « fermé », sans bouton ; le serveur refuse de nommer administrateur un compte fermé (1 test ajouté, 100 tests au vert). Réutilisation : nouveau cadre `AppSection` (remplace 11 copies du même style dans 6 fichiers) et fonction unique « renvoyer le lien de vérification » (4 pages). Essai de bout en bout par le port 5174 avec un compte `@example.com` (inscription, informations, adresse à Marseille 13008, refus d'un code postal faux, téléchargement, refus mot de passe faux, fermeture) : tout conforme ; compte d'essai n° 16 effacé, comptage : 1 seul compte (n° 5). Invariants repassés : non vérifié sur 4 formats d'écran par Claude (pas de navigateur automatique) → à regarder par Raphael.
 - **29/09/2026** — Lot 2.7 validé par Raphael (« Oui, je valide ») → ✅. Niveau 2 terminé.
+- **29/09/2026** — Lot 3.0 → 🔎 à vérifier. `RM-ANNONCES.md` validé (prix fixe / à l'heure avec heures min-max choisies par le client / sur devis par demande écrite ; durée obligatoire sauf sur devis ; métier du profil ; description 1000 + 5 photos ; adresse du local une fois dans le profil, rue visible après réservation ; pause / retrait / republier, jamais d'effacement ; date de fin d'un métier au lieu d'un bouton supprimer ; 20 annonces en ligne au plus). `RM-AGENDA.md` validé (semaine type ; blocages de dates ; rendez-vous déjà pris : le prestataire choisit ; pas 15/30/60 min ; pause entre rendez-vous ; délais 2 h / 2 mois réglables). `RM-PRESTATAIRES.md` précisé (adresse du local). Niveau 3 découpé en lots 3.1 à 3.4 (validé).
