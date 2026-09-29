@@ -1,6 +1,6 @@
 # Mon compte — Interface
 
-> Fichiers : `frontend/src/pages/ComptePage.vue` (assemble les cartes) et une carte par fichier dans `frontend/src/components/compte/` (`CarteInformations`, `CarteAccordParental`, `CarteAdresse`, `CarteDonnees`, `CarteFermeture`) ; cadre commun `components/ui/AppSection.vue`. Construit au lot 1.4 (28/09/2026), complété au lot 2.7 (29/09/2026). Règles : `RM-COMPTES.md`, `RM-CLIENTS.md`. Maquettes : `maquette-lot-1.4-compte-administration.html`, `maquette-lot-2.7-mon-compte.html`.
+> Fichiers : `frontend/src/pages/ComptePage.vue` (assemble les cartes) et une carte par fichier dans `frontend/src/components/compte/` (`CarteInformations`, `CarteAccordParental`, `CarteDonnees`, `CarteFermeture`) ; « Mon adresse » est la carte commune `components/CarteAdresse.vue` (aussi utilisée pour le local du prestataire, lot 3.2) ; cadre commun `components/ui/AppSection.vue`. Construit au lot 1.4 (28/09/2026), complété au lot 2.7 (29/09/2026). Règles : `RM-COMPTES.md`, `RM-CLIENTS.md`. Maquettes : `maquette-lot-1.4-compte-administration.html`, `maquette-lot-2.7-mon-compte.html`.
 
 ## Page « Mon compte » (`/compte`)
 **(pas connecté)** carte « Mon compte » — « Connectez-vous pour voir votre compte. » — bouton principal [Se connecter] → `/connexion`.

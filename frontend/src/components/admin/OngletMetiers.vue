@@ -8,6 +8,7 @@ import { useMetiers } from '../../composables/useMetiers'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
+import AppCase from '../ui/AppCase.vue'
 import AppChamp from '../ui/AppChamp.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppSelection from '../ui/AppSelection.vue'
@@ -119,10 +120,7 @@ async function enregistrer() {
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <div class="flex flex-wrap items-end gap-2.5">
       <div class="min-w-[220px] flex-1"><AppChamp v-model="filtre" etiquette="Filtrer" placeholder="ex. plom" /></div>
-      <label class="flex min-h-[42px] items-center gap-2 text-sm font-medium">
-        <input v-model="montrerDesactives" type="checkbox" class="size-4 accent-primaire" />
-        Montrer les désactivés
-      </label>
+      <AppCase v-model="montrerDesactives" texte="Montrer les désactivés" />
       <AppBouton @click="nouveau">+ Nouveau métier</AppBouton>
     </div>
     <div class="overflow-x-auto rounded-rafals border border-bord bg-surface">

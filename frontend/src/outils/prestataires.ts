@@ -1,6 +1,7 @@
 // Libellés et couleurs des états du prestataire : un seul endroit pour « Mon activité » et l'Administration.
 
-type Etat = 'ok' | 'attente' | 'erreur' | 'neutre'
+export type BadgeEtat = 'ok' | 'attente' | 'erreur' | 'neutre'
+type Etat = BadgeEtat
 
 export interface CommuneVisible {
   id: number
@@ -9,12 +10,23 @@ export interface CommuneVisible {
   departement: string
 }
 
+/** Un métier du profil ; fin_le = dernier jour prévu (« 2026-11-15 »), vide = pas de fin prévue. */
+export interface MetierExerce {
+  id: number
+  nom: string
+  fin_le: string | null
+}
+
 export interface ProfilPrestataire {
   id: number
   nom_affiche: string
   presentation: string | null
-  metier_principal: { id: number; nom: string }
-  metiers_secondaires: { id: number; nom: string }[]
+  metier_principal: MetierExerce
+  /** Le métier secondaire qui deviendra principal après la date de fin du principal */
+  metier_principal_suivant: { id: number; nom: string } | null
+  metiers_secondaires: MetierExerce[]
+  /** Métiers dont la date de fin est passée (ex. Chauffagiste, arrêté depuis le 31/08) : ils peuvent être repris */
+  metiers_arretes: MetierExerce[]
   commune: CommuneVisible
   distance_km: number
   siret: string | null

@@ -49,6 +49,11 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AppSelection` — liste déroulante (lot 2.2).
 - `AppRecherche` — champ de recherche avec propositions (un seul pour toutes les recherches), `AppElementChoisi` — élément choisi, `AppZoneTexte` — texte long avec compteur (lot 2.5).
 - `AppChoixCommune` (dans `components/`) — choix d'une commune (lot 2.5).
+- `AppSection` — bloc d'une page avec titre et bouton facultatif à droite ; `danger` = bord rouge (lot 2.7).
+- `CarteAdresse` (dans `components/`) — carte d'une adresse unique (ajouter, modifier, effacer) : adresse du client, local du prestataire (lot 3.2).
+- `AppChoix` — une réponse parmi quelques-unes, en cases côte à côte, case verrouillée 🔒 possible ; `AppCase` — case à cocher, verrouillable (lot 3.2).
+- `GardePrestataire` (dans `components/prestataire/`) — pages réservées aux prestataires (lot 3.2).
+- Prix, durées, lieux et paiements des annonces : toujours par `frontend/src/outils/annonces.ts` (« 50 € · 2 h », « 40 €/h · de 1 h à 3 h ») (lot 3.2).
 - Libellés et couleurs des états du prestataire : `frontend/src/outils/prestataires.ts`.
 - `AppChoixMetier` (dans `components/`) — choix d'un métier par recherche ou par dossier, avec « Proposer un métier » (lot 2.2).
 - Écrans d'administration : un fichier par onglet dans `components/admin/`.

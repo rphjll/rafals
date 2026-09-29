@@ -1,16 +1,17 @@
 <script setup lang="ts">
-// Mon compte › Mon adresse (.doc/ihm/RM-COMPTE-IHM.md ; RM-CLIENTS.md) : une seule adresse, ajoutée, modifiée ou effacée.
+// Carte d'une adresse unique, ajoutée, modifiée ou effacée : adresse du client (Mon compte, RM-CLIENTS.md)
+// et local du prestataire (Mon activité, RM-ANNONCES.md). `chemin` : GET chemin, POST chemin, POST chemin/effacer.
 // Le code postal vient de la ville choisie ; une liste apparaît seulement si la ville en a plusieurs (ex. Marseille).
 import { computed, onMounted, ref, watch } from 'vue'
-import { appelerServeur, messageErreur } from '../../api'
-import { useMessage } from '../../composables/useMessage'
-import type { CommuneVisible } from '../../outils/prestataires'
-import AppChoixCommune from '../AppChoixCommune.vue'
-import AppAlerte from '../ui/AppAlerte.vue'
-import AppBouton from '../ui/AppBouton.vue'
-import AppChamp from '../ui/AppChamp.vue'
-import AppSection from '../ui/AppSection.vue'
-import AppSelection from '../ui/AppSelection.vue'
+import { appelerServeur, messageErreur } from '../api'
+import { useMessage } from '../composables/useMessage'
+import type { CommuneVisible } from '../outils/prestataires'
+import AppChoixCommune from './AppChoixCommune.vue'
+import AppAlerte from './ui/AppAlerte.vue'
+import AppBouton from './ui/AppBouton.vue'
+import AppChamp from './ui/AppChamp.vue'
+import AppSection from './ui/AppSection.vue'
+import AppSelection from './ui/AppSelection.vue'
 
 interface Adresse {
   ligne: string
@@ -19,6 +20,15 @@ interface Adresse {
   commune: CommuneVisible
 }
 
+const props = defineProps<{
+  titre: string
+  chemin: string
+  texteVide: string
+  texteAjouter: string
+  texteEffacer: string
+  /** Phrase montrée sous l'adresse enregistrée (facultative) */
+  note?: string
+}>()
 const { afficherMessage } = useMessage()
 const adresse = ref<Adresse | null>(null)
 const chargee = ref(false)
@@ -32,7 +42,7 @@ const envoiEnCours = ref(false)
 
 onMounted(async () => {
   try {
-    adresse.value = await appelerServeur<Adresse | null>('/api/moi/adresse')
+    adresse.value = await appelerServeur<Adresse | null>(props.chemin)
   } catch (e) {
     erreur.value = messageErreur(e)
   } finally {
@@ -73,7 +83,7 @@ async function enregistrer() {
   }
   envoiEnCours.value = true
   try {
-    adresse.value = await appelerServeur<Adresse>('/api/moi/adresse', {
+    adresse.value = await appelerServeur<Adresse>(props.chemin, {
       ligne: ligne.value,
       complement: complement.value.trim() || null,
       commune_id: commune.value.id,
@@ -89,17 +99,18 @@ async function enregistrer() {
 }
 
 async function effacer() {
+  erreur.value = ''
   try {
-    afficherMessage((await appelerServeur<{ message: string }>('/api/moi/adresse/effacer', {})).message)
+    afficherMessage((await appelerServeur<{ message: string }>(`${props.chemin}/effacer`, {})).message)
     adresse.value = null
   } catch (e) {
-    afficherMessage(messageErreur(e), 'erreur')
+    erreur.value = messageErreur(e) // ex. « Des annonces en ligne ont lieu chez vous… »
   }
 }
 </script>
 
 <template>
-  <AppSection v-if="chargee" titre="Mon adresse">
+  <AppSection v-if="chargee" :titre="titre">
     <form v-if="enModification" class="flex flex-col gap-3.5" @submit.prevent="enregistrer">
       <AppChamp v-model="ligne" etiquette="Numéro et rue" obligatoire autocomplete="address-line1" placeholder="ex. 8 allée des Pins" />
       <AppChamp v-model="complement" etiquette="Complément" autocomplete="address-line2" placeholder="Bâtiment, étage, code…" />
@@ -124,18 +135,18 @@ async function effacer() {
         <template v-if="adresse.complement">{{ adresse.complement }}<br /></template>
         {{ adresse.code_postal }} {{ adresse.commune.nom }}
       </p>
+      <p v-if="note" class="text-[13.5px] text-texte-doux">{{ note }}</p>
+      <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
       <div class="flex flex-wrap gap-2">
         <AppBouton variante="secondaire" @click="ouvrir">Modifier</AppBouton>
-        <AppBouton variante="danger" @click="effacer">Effacer mon adresse</AppBouton>
+        <AppBouton variante="danger" @click="effacer">{{ texteEffacer }}</AppBouton>
       </div>
     </template>
 
     <template v-else>
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
-      <p class="text-[13.5px] text-texte-doux">
-        Aucune adresse enregistrée : elle vous sera demandée quand vous réserverez un service à domicile.
-      </p>
-      <div><AppBouton variante="secondaire" @click="ouvrir">Ajouter mon adresse</AppBouton></div>
+      <p class="text-[13.5px] text-texte-doux">{{ texteVide }}</p>
+      <div><AppBouton variante="secondaire" @click="ouvrir">{{ texteAjouter }}</AppBouton></div>
     </template>
   </AppSection>
 </template>

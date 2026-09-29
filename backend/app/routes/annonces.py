@@ -16,6 +16,7 @@ from app.routes.prestataires import CommuneVisible, MetierCourt, commune_visible
 from app.services import annonces as service
 from app.services import stockage
 from app.services.erreurs import ErreurRegle
+from app.services.prestataires import aujourd_hui, metiers_exerces
 
 routeur = APIRouter(prefix="/api")
 
@@ -66,6 +67,7 @@ class AnnonceVisible(BaseModel):
     modes_de_paiement: list[str]
     statut: str
     raison_cachee: str | None
+    metier_arrete: bool
     nombre_photos: int
     cree_le: datetime
     modifiee_le: datetime
@@ -108,6 +110,7 @@ def visible(db: Base, annonce: Annonce, prestataire: Prestataire) -> AnnonceVisi
         paiement_carte=annonce.paiement_carte, paiement_especes=annonce.paiement_especes,
         modes_de_paiement=service.modes_de_paiement(annonce, prestataire), statut=annonce.statut,
         raison_cachee=service.raison_cachee(db, annonce, prestataire, maintenant()),
+        metier_arrete=annonce.metier_id not in metiers_exerces(db, prestataire, aujourd_hui(maintenant())),
         nombre_photos=len(service.photos_de(db, annonce)), cree_le=annonce.cree_le, modifiee_le=annonce.modifiee_le,
     )
 

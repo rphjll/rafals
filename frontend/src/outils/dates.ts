@@ -29,3 +29,8 @@ export function age(dateNaissance: string): number {
     aujourdhui.getMonth() + 1 > mois || (aujourdhui.getMonth() + 1 === mois && aujourdhui.getDate() >= jour)
   return aujourdhui.getFullYear() - annee - (anniversairePasse ? 0 : 1)
 }
+
+/** Le jour d'aujourd'hui à Paris, au format d'un champ date : « 2026-09-29 ». */
+export function aujourdhuiIso(): string {
+  return new Date().toLocaleDateString('fr-CA', { timeZone: fuseau })
+}

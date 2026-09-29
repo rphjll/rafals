@@ -18,6 +18,8 @@ watch(() => route.fullPath, () => (menuOuvert.value = false))
 const liens = computed(() => [
   { vers: '/trouver', texte: 'Trouver un prestataire' },
   { vers: '/proposer', texte: compte.value?.prestataire_id ? 'Mon activité' : 'Proposer mes services' },
+  // Visible seulement des prestataires (lot 3.2)
+  ...(compte.value?.prestataire_id ? [{ vers: '/mes-annonces', texte: 'Mes annonces' }] : []),
   { vers: '/rendez-vous', texte: 'Mes rendez-vous' },
   { vers: '/compte', texte: 'Mon compte' },
   // Visible seulement des administrateurs (lot 1.4)

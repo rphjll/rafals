@@ -1,11 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AccueilPage from './pages/AccueilPage.vue'
 import AdministrationPage from './pages/AdministrationPage.vue'
+import AnnonceFormulairePage from './pages/AnnonceFormulairePage.vue'
+import AnnoncePage from './pages/AnnoncePage.vue'
 import ComptePage from './pages/ComptePage.vue'
 import BientotPage from './pages/BientotPage.vue'
 import CataloguePage from './pages/CataloguePage.vue'
 import ConnexionPage from './pages/ConnexionPage.vue'
 import InscriptionPage from './pages/InscriptionPage.vue'
+import MesAnnoncesPage from './pages/MesAnnoncesPage.vue'
 import MotDePasseOubliePage from './pages/MotDePasseOubliePage.vue'
 import NouveauMotDePassePage from './pages/NouveauMotDePassePage.vue'
 import ProposerPage from './pages/ProposerPage.vue'
@@ -32,6 +35,10 @@ export const routeur = createRouter({
     { path: '/nouveau-mot-de-passe', name: 'nouveau-mot-de-passe', component: NouveauMotDePassePage },
     { path: '/trouver', name: 'trouver', component: TrouverPage },
     { path: '/proposer', name: 'proposer', component: ProposerPage },
+    { path: '/mes-annonces', name: 'mes-annonces', component: MesAnnoncesPage },
+    { path: '/mes-annonces/nouvelle', name: 'annonce-nouvelle', component: AnnonceFormulairePage },
+    { path: '/mes-annonces/:id(\\d+)', name: 'annonce-modifier', component: AnnonceFormulairePage },
+    { path: '/annonces/:id(\\d+)', name: 'annonce', component: AnnoncePage },
     { path: '/rendez-vous', name: 'rendez-vous', ...bientot('Mes rendez-vous', 'avec les rendez-vous (niveau 4)') },
     { path: '/compte', name: 'compte', component: ComptePage },
     { path: '/administration', name: 'administration', component: AdministrationPage },

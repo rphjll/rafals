@@ -1,14 +1,18 @@
 <script setup lang="ts">
-// Fiche « Mon activité » du prestataire (.doc/ihm/RM-PROPOSER-IHM.md) : profil, photo, pause / reprise, arrêt.
+// Fiche « Mon activité » du prestataire (.doc/ihm/RM-PROPOSER-IHM.md) : profil, photo, annonces, métiers (dates de fin),
+// local, pause / reprise, arrêt.
 import { computed, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import { type ProfilPrestataire, badgeSiret, badgeStatut, siretLisible } from '../../outils/prestataires'
+import CarteAdresse from '../CarteAdresse.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppSection from '../ui/AppSection.vue'
+import CarteMesAnnonces from './CarteMesAnnonces.vue'
+import CarteMetiers from './CarteMetiers.vue'
 
 const props = defineProps<{ profil: ProfilPrestataire }>()
 const emit = defineEmits<{ maj: [profil: ProfilPrestataire]; modifier: [] }>()
@@ -120,9 +124,22 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
       </div>
     </section>
 
+    <template v-if="profil.statut !== 'arrete'">
+      <CarteMesAnnonces />
+      <CarteMetiers :profil="profil" @maj="(p) => emit('maj', p)" />
+      <CarteAdresse
+        titre="Mon local"
+        chemin="/api/moi/local"
+        texte-vide="Pas de local : ajoutez son adresse si des clients viennent chez vous (salon, atelier…)."
+        texte-ajouter="Ajouter l'adresse de mon local"
+        texte-effacer="Effacer l'adresse"
+        note="Pour vos annonces « chez moi ». Les clients voient seulement la ville ; la rue, après avoir réservé."
+      />
+    </template>
+
     <AppSection v-if="profil.statut !== 'arrete'" titre="Visibilité">
       <p class="text-[14.5px] text-texte-doux">
-        Vous apparaîtrez dans les recherches dès que vous publierez une annonce (bientôt disponible).
+        Vous apparaissez dans les recherches tant que votre activité est active et qu'une annonce est en ligne.
       </p>
       <div class="flex flex-wrap gap-2 pt-8 sm:pt-0">
         <AppBouton v-if="bloque" variante="verrouille" :raison-verrou="raisonBlocage">Mettre en pause</AppBouton>
