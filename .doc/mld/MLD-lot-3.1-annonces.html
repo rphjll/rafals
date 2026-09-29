@@ -1,0 +1,155 @@
+<title>MLD rafals annonces</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 3.1 « Annonces »</h1>
+    <p class="sous">rafals · proposé le 29/09/2026 · source : <code>.doc/regles-metier/RM-ANNONCES.md</code> · 3 tables nouvelles, 2 rubriques ajoutées dans PRESTATAIRE, 1 dans METIER_SECONDAIRE</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)<br/>metier_principal_suivant_id (FK)"]
+  LOCAL["<b>LOCAL</b><br/>id (PK)<br/>prestataire_id (FK)<br/>commune_id (FK)"]
+  COMMUNE["<b>COMMUNE</b><br/>id (PK)"]
+  ANNONCE["<b>ANNONCE</b><br/>id (PK)<br/>prestataire_id (FK)<br/>metier_id (FK)"]
+  METIER["<b>METIER</b><br/>id (PK)"]
+  PHOTO_ANNONCE["<b>PHOTO_ANNONCE</b><br/>id (PK)<br/>annonce_id (FK)<br/>fichier_id (FK)"]
+  FICHIER["<b>FICHIER</b><br/>id (PK)"]
+  METIER_SECONDAIRE["<b>METIER_SECONDAIRE</b><br/>id (PK)<br/>prestataire_id (FK)<br/>metier_id (FK)"]
+  PRESTATAIRE -- "reçoit dans · (0,1) —— (1,1)" --- LOCAL
+  COMMUNE -- "contient · (0,n) —— (1,1)" --- LOCAL
+  PRESTATAIRE -- "publie · (0,n) —— (1,1)" --- ANNONCE
+  METIER -- "range · (0,n) —— (1,1)" --- ANNONCE
+  ANNONCE -- "montre · (0,n) —— (1,1)" --- PHOTO_ANNONCE
+  FICHIER -- "sert de · (0,1) —— (1,1)" --- PHOTO_ANNONCE
+  PRESTATAIRE -- "exerce aussi · (0,n) —— (1,1)" --- METIER_SECONDAIRE
+  METIER -- "est exercé · (0,n) —— (1,1)" --- METIER_SECONDAIRE
+  METIER -- "deviendra principal · (0,n) —— (0,1)" --- PRESTATAIRE
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>la 1re cardinalité est du côté de la table de gauche. Ex. « publie · (0,n) —— (1,1) » : un prestataire publie zéro, une ou plusieurs annonces ; une annonce appartient à un et un seul prestataire.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>ANNONCE <span class="nouveau">nouvelle</span></h3>
+        <ul>
+          <li><code>titre</code> — ex. « Ménage 2 h » (3 à 80 caractères, proposé)</li>
+          <li><code>description</code> — facultative, 1000 caractères au plus</li>
+          <li><code>forme_prix</code> — « fixe », « heure » ou « devis »</li>
+          <li><code>prix_centimes</code> — ex. 5000 pour 50,00 € ; prix de l'heure si « heure » ; vide si « devis »</li>
+          <li><code>duree_minutes</code> — ex. 120 ; seulement si « fixe »</li>
+          <li><code>heures_min</code>, <code>heures_max</code> — ex. 2 et 4 ; seulement si « heure »</li>
+          <li><code>lieu</code> — « chez_client », « chez_moi » ou « les_deux »</li>
+          <li><code>paiement_carte</code>, <code>paiement_especes</code> — oui / non, au moins un des deux</li>
+          <li><code>statut</code> — « en_ligne », « en_pause » ou « retiree »</li>
+          <li><code>statut_change_le</code>, <code>cree_le</code>, <code>modifiee_le</code></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PHOTO_ANNONCE <span class="nouveau">nouvelle</span></h3>
+        <ul>
+          <li><code>ordre</code> — 1 à 5 : la photo n° 1 est montrée en premier</li>
+        </ul>
+        <p class="note" style="margin-top:6px">Le fichier lui-même est rangé dans le stockage, comme la photo du profil (table FICHIER, déjà là).</p>
+      </div>
+      <div class="carte">
+        <h3>LOCAL <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">L'adresse du salon ou de l'atelier, écrite une seule fois ; mêmes rubriques que l'ADRESSE d'un client.</p>
+        <ul>
+          <li><code>ligne</code> — ex. « 12 rue des Lilas »</li>
+          <li><code>complement</code> — facultatif</li>
+          <li><code>code_postal</code> — ex. « 33700 »</li>
+          <li><code>modifie_le</code></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PRESTATAIRE <span class="nouveau">2 rubriques ajoutées</span></h3>
+        <ul>
+          <li><code>metier_principal_fin_le</code> — date de fin du métier principal ; vide = pas de fin prévue</li>
+          <li><code>metier_principal_suivant_id</code> — le métier secondaire qui deviendra principal à cette date ; vide s'il n'y en a pas</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>METIER_SECONDAIRE <span class="nouveau">1 rubrique ajoutée</span></h3>
+        <ul>
+          <li><code>fin_le</code> — date de fin de ce métier ; vide = pas de fin prévue</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Deux choix techniques expliqués</h2>
+    <p class="note"><b>Prix en centimes.</b> Un ordinateur calcule mal certains nombres à virgule : 0,10 + 0,20 donne 0,30000000000000004. En comptant en centimes entiers (50 € = 5000), les additions tombent toujours juste : 3 h à 25 € = 3 × 2500 = 7500, soit 75,00 €.</p>
+    <p class="note" style="margin-top:8px"><b>Carte : un souhait, pas une promesse.</b> <code>paiement_carte</code> garde le choix du prestataire. La carte n'est vraiment proposée au client que si le SIRET est vérifié <i>au moment de la réservation</i>. Si le SIRET de Julie devient « refusé », ses annonces passent seules en « espèces », et reviennent à « carte ou espèces » quand il est de nouveau vérifié, sans qu'elle ait à tout ressaisir.</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>ANNONCE</code> n° 1 : prestataire = Julie, métier = Femme de ménage, titre « Ménage 2 h », forme « fixe », prix 5000, durée 120, lieu « chez_client », carte oui, espèces oui, statut « en_ligne » ; 1 <code>PHOTO_ANNONCE</code> (ordre 1).
+      <p class="trad"><b>Traduction :</b> Julie propose un ménage de 2 h chez le client pour 50 €, payable par carte ou en espèces, avec la photo d'une cuisine qu'elle a nettoyée.</p>
+    </div>
+    <div class="exemple">
+      <code>ANNONCE</code> n° 2 : prestataire = Sonia, titre « Ménage à l'heure », forme « heure », prix 2500, heures 2 à 4, durée vide, lieu « chez_client », carte non, espèces oui.
+      <p class="trad"><b>Traduction :</b> Sonia demande 25 € de l'heure, de 2 h à 4 h au choix du client, en espèces. Mme Dupont choisira 3 h et verra 75 €.</p>
+    </div>
+    <div class="exemple">
+      <code>ANNONCE</code> n° 3 : prestataire = Paul, métier = Maçon, titre « Muret de jardin », forme « devis », prix vide, durée vide.
+      <p class="trad"><b>Traduction :</b> Paul fait des murets sur devis : le client lui écrira sa demande (niveau 5), sans rendez-vous.</p>
+    </div>
+    <div class="exemple">
+      <code>LOCAL</code> n° 1 : prestataire = Léa, commune = Mérignac, ligne « 12 rue des Lilas », code postal « 33700 ».
+      <p class="trad"><b>Traduction :</b> le salon de Léa ; ses 4 annonces « au salon » l'utilisent. Les clients voient « Mérignac », et la rue seulement après avoir réservé.</p>
+    </div>
+    <div class="exemple">
+      <code>PRESTATAIRE</code> Karim : métier principal = Plombier, <code>metier_principal_fin_le</code> = 15/11/2026, <code>metier_principal_suivant_id</code> = Chauffagiste.
+      <p class="trad"><b>Traduction :</b> Karim arrête la plomberie après le 15/11 ; le 16/11, Chauffagiste devient son métier principal tout seul, et ses annonces de plomberie sont cachées (pas effacées).</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Pas dans ce lot : les écrans (lot 3.2) et l'agenda (lot 3.3). Aucune annonce n'est jamais effacée : il n'y a donc pas de suppression à prévoir.</p>
+  </section>
+</div>
