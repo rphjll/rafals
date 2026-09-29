@@ -81,7 +81,7 @@ Un prestataire a au plus **20 annonces en ligne** en même temps (réglage modif
 - Exemple 2 : un tricheur essaie d'en publier une 21e → « Vous avez déjà 20 annonces en ligne : mettez-en une en pause pour publier celle-ci. »
 **Pourquoi :** empêcher qu'un seul compte remplisse les recherches.
 
-## Précisions prises au lot 3.1 (proposées par Claude, à valider par Raphael)
+## Précisions prises au lot 3.1 (proposées par Claude, validées par Raphael le 29/09/2026)
 - **Pas de brouillon** : une annonce écrite est aussitôt en ligne. Titre de 3 à 80 caractères.
 - **Carte** : cochée seulement si le SIRET est vérifié au moment d'écrire l'annonce (« Le paiement par carte demande un SIRET vérifié : sans lui, espèces seulement. »). Si le SIRET est perdu plus tard, l'annonce passe seule en espèces et revient à la carte quand il est de nouveau vérifié.
 - **Ville montrée** : pour « chez moi », la ville du local ; sinon, la ville du prestataire.

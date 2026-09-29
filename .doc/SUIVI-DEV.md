@@ -4,14 +4,13 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 3.1 — Serveur des annonces (Raphael : « Oui, je valide » le lot 3.0)
+- **Demande** : Lot 3.2 — Écrans des annonces (Raphael : « Oui, je valide » le lot 3.1)
 - **Commencé le** : 29/09/2026
 - **Étapes** :
-  - [x] 1. MLD validé (29/09/2026)
-  - [x] 2. `schema_v7.sql` écrit et exécuté ; modèles
-  - [x] 3. Services, routes, tests (dont tests de fiche « local » et « annonce »)
-  - [x] 4. Nettoyage, invariants, suivi, sauvegarde
-- **Question en attente** : Raphael valide les précisions du lot 3.1 (RM-ANNONCES) et le lot
+  - [ ] 1. Maquette cliquable validée  ← on en est là
+  - [ ] 2. Écrans : Mes annonces, écrire / modifier, photos ; local et dates de fin dans « Mon activité » ; aperçu
+  - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
+- **Question en attente** : validation de la maquette du lot 3.2
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -58,8 +57,8 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
 | 3.0 | Règles | Écrire les règles des sujets 05 Annonces et 06 Agenda, puis découper le niveau 3 en lots | SUIVI_REGLES_METIER | 2.7 | ✅ |
-| 3.1 | Serveur | Annonces : adresse du local dans le profil ; annonce (titre, métier du profil, prix fixe / à l'heure avec heures min-max / sur devis, durée, lieu, paiement selon le SIRET, description, 5 photos) ; publier, pause, retrait, republier ; 20 en ligne au plus ; date de fin d'un métier (remplace le retrait direct d'un métier) | RM-ANNONCES | 2.7 | 🔎 |
-| 3.2 | Écrans | Mes annonces (liste, écrire / modifier, photos, pause, retrait, annonces retirées) ; adresse du local et date de fin d'un métier dans « Mon activité » ; aperçu d'une annonce telle que le client la verra | RM-ANNONCES | 3.1 | ⬜ |
+| 3.1 | Serveur | Annonces : adresse du local dans le profil ; annonce (titre, métier du profil, prix fixe / à l'heure avec heures min-max / sur devis, durée, lieu, paiement selon le SIRET, description, 5 photos) ; publier, pause, retrait, republier ; 20 en ligne au plus ; date de fin d'un métier (remplace le retrait direct d'un métier) | RM-ANNONCES | 2.7 | ✅ |
+| 3.2 | Écrans | Mes annonces (liste, écrire / modifier, photos, pause, retrait, annonces retirées) ; adresse du local et date de fin d'un métier dans « Mon activité » ; aperçu d'une annonce telle que le client la verra | RM-ANNONCES | 3.1 | 🟡 |
 | 3.3 | Serveur | Agenda : semaine type (plusieurs plages par jour), blocages de dates, réglages (pas, pause, délais), calcul des horaires libres d'une annonce pour un jour donné | RM-AGENDA | 3.1 | ⬜ |
 | 3.4 | Écrans | Mon agenda : semaine type, calendrier (blocages, dates de fin de métier), réglages ; aperçu des horaires libres | RM-AGENDA | 3.3, 3.2 | ⬜ |
 
@@ -123,3 +122,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **29/09/2026** — Lot 3.0 → 🔎 à vérifier. `RM-ANNONCES.md` validé (prix fixe / à l'heure avec heures min-max choisies par le client / sur devis par demande écrite ; durée obligatoire sauf sur devis ; métier du profil ; description 1000 + 5 photos ; adresse du local une fois dans le profil, rue visible après réservation ; pause / retrait / republier, jamais d'effacement ; date de fin d'un métier au lieu d'un bouton supprimer ; 20 annonces en ligne au plus). `RM-AGENDA.md` validé (semaine type ; blocages de dates ; rendez-vous déjà pris : le prestataire choisit ; pas 15/30/60 min ; pause entre rendez-vous ; délais 2 h / 2 mois réglables). `RM-PRESTATAIRES.md` précisé (adresse du local). Niveau 3 découpé en lots 3.1 à 3.4 (validé).
 - **29/09/2026** — Lot 3.0 validé par Raphael (« Oui, je valide ») → ✅. Lot 3.1 commencé.
 - **29/09/2026** — Lot 3.1 construit → 🔎 à vérifier. Au passage, Raphael a tranché 2 cas (RM-ANNONCES) : métier principal arrêté → un secondaire devient principal automatiquement (s'il y en a plusieurs, il choisit, le 1er ajouté proposé) ; seul métier arrêté → le profil reste affiché, sans annonce. MLD validé, `schema_v7.sql` exécuté (tables `local`, `annonce`, `photo_annonce` ; `prestataire.metier_principal_fin_le` et `metier_principal_suivant_id` ; `metier_secondaire.fin_le`). Serveur : local, annonces (3 formes de prix, durée, heures min-max, lieu, carte seulement avec SIRET vérifié, 20 en ligne au plus, 5 photos), pause / retrait / republier, annonce publique (ville seulement), dates de fin de métier + tâche toutes les heures (annonces du métier arrêté mises en pause, remplacement du métier principal). Le formulaire du profil ne peut plus retirer un métier qui a des annonces. Réutilisation : contrôle d'adresse commun (`communes.controler_adresse`) pour le client et le local ; `compte_facultatif` pour les pages ouvertes à tous. Export RGPD et nettoyage des essais complétés. Tests : 126 OK (24 nouveaux). Vraie base : 0 donnée d'essai ; 2 lignes de journal nouvelles = actions de Raphael lui-même (adresse, informations, pendant son essai du lot 2.7), non touchées. Invariants : architecture OK ; sécurité OK (chacun ses annonces : 404 sur celle d'un autre ; annonce cachée = 404 pour les clients) ; données OK (prix en centimes, rue du local jamais publique) ; tests OK ; interface : écrans au lot 3.2 ; documentation : précisions notées dans `RM-ANNONCES.md` (à valider).
+- **29/09/2026** — Lot 3.1 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 3.2 commencé.
