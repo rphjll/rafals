@@ -11,7 +11,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 2. Composants (choix de commune, zone de texte) + pages Proposer mes services / Mon activité
   - [ ] 3. Administration › Prestataires
   - [ ] 4. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 2.5
+- **Question en attente** : validation de la maquette du lot 2.5 (https://claude.ai/artifact/Ty2va9b9TM2qkztZ5eA3Zg, fichier `.doc/ihm/maquette-lot-2.5-prestataire.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »

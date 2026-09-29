@@ -1,0 +1,133 @@
+<title>Maquette rafals prestataire</title>
+<style>
+:root{--fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;--prim:#2F6B4F;--prim-t:#FFFFFF;--prim-doux:#E2EEE7;--accent:#D9793A;--ok:#2E7D4F;--ok-doux:#E3F2E8;--att:#B26A00;--att-doux:#FCF0DC;--err:#B3261E;--err-doux:#FBE4E2;--neu:#8A94A3;--neu-doux:#E8ECF1;--sur:#FFFFFF;--voile:rgb(10 14 20 / .55)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#6D7888;--neu-doux:#262E39;--sur:#0F1A13}}
+:root[data-theme="dark"]{color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#6D7888;--neu-doux:#262E39;--sur:#0F1A13}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:"Segoe UI",system-ui,sans-serif;font-size:15px;margin:0}
+.bandeau{background:var(--surface);border-bottom:1px dashed var(--bord);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--doux)}
+.bandeau b{color:var(--texte)}
+.onglet{font:inherit;border:1px solid var(--bord);background:transparent;color:var(--texte);border-radius:8px;padding:5px 9px;cursor:pointer}
+.onglet[aria-pressed="true"]{border-color:var(--prim);color:var(--prim);font-weight:700}
+header{background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px}
+.entete{max-width:1080px;margin:0 auto;min-height:60px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-weight:700;font-size:24px;color:var(--prim)} .logo span{color:var(--accent)}
+.menu{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap} .menu span{padding:8px 10px;border-radius:10px;color:var(--doux);font-weight:500} .menu .actif{background:var(--prim-doux);color:var(--prim)}
+main{padding-inline:16px;padding-block:28px 60px}
+.contenu{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.etroit{max-width:720px}
+h1{font-size:28px;margin:0;letter-spacing:-.3px} h2{font-size:20px;margin:0}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.champ{display:flex;flex-direction:column;gap:6px}
+.champ label{font-weight:600;font-size:13px} .champ label i{color:var(--err);font-style:normal}
+input,textarea,select{min-height:42px;border:1px solid var(--bord);border-radius:10px;background:var(--fond);color:var(--texte);font:inherit;padding:10px 12px;width:100%}
+textarea{min-height:110px;resize:vertical}
+.aide{font-size:13px;color:var(--doux);margin:0}
+.deux{display:grid;grid-template-columns:2fr 1fr;gap:12px} @media (max-width:560px){.deux{grid-template-columns:1fr}}
+.choisi{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--ok-doux);color:var(--ok);border-radius:10px;padding:9px 12px;font-weight:600}
+.puces{display:flex;flex-wrap:wrap;gap:8px}
+.puce{display:inline-flex;gap:8px;align-items:center;background:var(--prim-doux);color:var(--prim);border-radius:999px;padding:5px 6px 5px 12px;font-weight:600;font-size:14px}
+.puce button{border:0;background:var(--surface);color:var(--prim);border-radius:999px;width:24px;height:24px;cursor:pointer;font-weight:700}
+.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid transparent;min-height:42px;padding:9px 16px;cursor:pointer}
+.prim{background:var(--prim);color:var(--prim-t);border-color:var(--prim)} .sec{background:var(--surface);color:var(--prim);border-color:var(--prim)} .dan{background:var(--surface);color:var(--err);border-color:var(--err)}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px}
+.b-ok{background:var(--ok-doux);color:var(--ok)} .b-att{background:var(--att-doux);color:var(--att)} .b-err{background:var(--err-doux);color:var(--err)} .b-neu{background:var(--neu-doux);color:var(--doux)}
+.alerte{border-radius:8px;padding:10px 12px;font-weight:500;font-size:14px}
+.a-att{background:var(--att-doux);color:var(--att)} .a-err{background:var(--err-doux);color:var(--err)} .a-ok{background:var(--ok-doux);color:var(--ok)}
+.profil{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:start} @media (max-width:520px){.profil{grid-template-columns:1fr}}
+.photo{width:96px;height:96px;border-radius:50%;background:var(--prim-doux);color:var(--prim);display:grid;place-items:center;font-size:32px;font-weight:700}
+.infos{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14.5px} .infos dt{color:var(--doux)} .infos dd{margin:0;font-weight:500}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.onglets-page{display:flex;gap:6px;border-bottom:1px solid var(--bord);flex-wrap:wrap}
+.onglets-page span{font-weight:600;border-bottom:3px solid transparent;padding:10px 12px;color:var(--doux)} .onglets-page .sel{color:var(--prim);border-bottom-color:var(--prim)}
+.cadre{overflow-x:auto;border:1px solid var(--bord);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:820px;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--bord);vertical-align:middle} th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--doux)}
+.voile{position:fixed;inset:0;background:var(--voile);display:grid;place-items:center;padding:16px}
+.fenetre{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:22px;width:min(460px,100%);display:flex;flex-direction:column;gap:12px}
+.fenetre h3{margin:0;font-size:20px} .pied{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--ok);color:var(--sur);padding:12px 18px;border-radius:10px;font-weight:600}
+.note{font-size:13px;color:var(--doux);margin:0}
+</style>
+
+<div class="bandeau"><b>Maquette lot 2.5</b> · écrans :
+  <button class="onglet" data-e="proposer" aria-pressed="true">1. Proposer mes services</button>
+  <button class="onglet" data-e="activite">2. Mon activité (Karim)</button>
+  <button class="onglet" data-e="activite-julie">3. Mon activité (Julie, en pause)</button>
+  <button class="onglet" data-e="admin">4. Admin : prestataires</button>
+</div>
+<header><div class="entete"><span class="logo">rafals<span>.</span></span><nav class="menu" id="menu"></nav></div></header>
+<main><div class="contenu" id="ecran"></div></main>
+<div id="couche"></div><div class="toast" id="toast" hidden></div>
+
+<script>
+const menu = (actif, prest, admin) =>
+  '<span>Trouver un prestataire</span><span class="' + (actif === 'p' ? 'actif' : '') + '">' + (prest ? 'Mon activité' : 'Proposer mes services') + '</span>' +
+  '<span>Mes rendez-vous</span><span>Mon compte</span>' + (admin ? '<span class="' + (actif === 'a' ? 'actif' : '') + '">Administration</span>' : '');
+
+const E = {
+  proposer: { m: menu('p', false, false), h:
+    '<div class="contenu etroit" style="margin:0"><h1>Proposer mes services</h1>' +
+    '<p class="note" style="font-size:15px">Créez votre profil de prestataire : les clients vous trouveront dès que vous publierez votre première annonce.</p>' +
+    '<div class="carte"><h2>Votre activité</h2>' +
+    '<div class="champ"><label>Nom affiché <i>*</i></label><input value="Karim Benali — Plomberie"><p class="aide">Ce que les clients verront, ex. « Julie Martin — Ménage » ou « Net &amp; Clair ».</p></div>' +
+    '<div class="champ"><label>Métier principal <i>*</i></label><div class="choisi">✓ Plombier <span style="font-weight:500;font-size:13px">(Maison &amp; travaux)</span><button class="btn sec" style="margin-left:auto">Changer</button></div></div>' +
+    '<div class="champ"><label>Métiers secondaires (5 au plus)</label><div class="puces"><span class="puce">Électricien <button aria-label="Retirer">×</button></span><span class="puce">Chauffagiste <button aria-label="Retirer">×</button></span></div>' +
+    '<input placeholder="Ajouter un métier : tapez les premières lettres…"><p class="aide">Vous apparaîtrez aussi dans ces recherches, après les spécialistes.</p></div></div>' +
+    '<div class="carte"><h2>Où intervenez-vous ?</h2><div class="deux">' +
+    '<div class="champ"><label>Ville de départ <i>*</i></label><div class="choisi">✓ Pessac (33600)<button class="btn sec" style="margin-left:auto">Changer</button></div></div>' +
+    '<div class="champ"><label>Jusqu\'à (km) <i>*</i></label><input type="number" value="15"><p class="aide">De 1 à 100 km, à vol d\'oiseau.</p></div></div></div>' +
+    '<div class="carte"><h2>Présentation et SIRET</h2>' +
+    '<div class="champ"><label>Présentation</label><textarea>Dépannages rapides, devis gratuit, 10 ans d\'expérience.</textarea><p class="aide">1 000 caractères au plus.</p></div>' +
+    '<div class="champ"><label>SIRET (facultatif)</label><input placeholder="14 chiffres, ex. 443 061 841 00047"><p class="aide">Sans SIRET, vos clients ne pourront vous payer qu\'en espèces. Avec un SIRET vérifié par l\'État, la carte bancaire devient possible.</p></div>' +
+    '<div class="alerte a-err" id="err" hidden>Ce SIRET appartient à « GOOGLE FRANCE » : il ne semble pas être le vôtre. Si c\'est une erreur, contactez l\'administrateur de rafals.</div>' +
+    '<div><button class="btn prim" data-e="activite" data-toast="Votre profil de prestataire est créé.">Proposer mes services</button></div></div>' +
+    '<p class="note">Erreur du serveur en rouge au-dessus du bouton. <button class="btn sec" onclick="document.getElementById(\'err\').hidden=false">Voir un exemple</button> · Adresse non vérifiée, ou 16-17 ans sans accord : un bandeau orange remplace le formulaire.</p></div>' },
+  activite: { m: menu('p', true, false), h:
+    '<div class="contenu etroit" style="margin:0"><h1>Mon activité</h1>' +
+    '<div class="carte"><div class="profil"><div class="photo">KB</div><div style="display:flex;flex-direction:column;gap:10px">' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><h2>Karim Benali — Plomberie</h2><span class="badge b-ok">actif</span></div>' +
+    '<dl class="infos"><dt>Métier</dt><dd>Plombier · aussi Électricien, Chauffagiste</dd><dt>Zone</dt><dd>Pessac (33600), jusqu\'à 15 km</dd>' +
+    '<dt>SIRET</dt><dd><span class="badge b-att">Sans SIRET</span> <span class="note">espèces seulement</span></dd><dt>Présentation</dt><dd>Dépannages rapides, devis gratuit, 10 ans d\'expérience.</dd></dl>' +
+    '<div class="actions"><button class="btn sec" data-toast="(ouvre le même formulaire, prérempli)">Modifier mon profil</button><button class="btn sec" data-toast="(choisir une photo JPG ou PNG, 5 Mo au plus)">Changer ma photo</button></div></div></div></div>' +
+    '<div class="carte"><h2>Visibilité</h2><p class="note" style="font-size:14.5px">Vous apparaîtrez dans les recherches dès que vous publierez une annonce (bientôt disponible).</p>' +
+    '<div class="actions"><button class="btn sec" data-e="activite-julie" data-toast="Profil en pause : vous n\'apparaissez plus dans les recherches.">Mettre en pause</button><button class="btn dan" data-fen="arret">Arrêter mon activité…</button></div></div>' +
+    '<p class="note">SIRET : badge vert « SIRET vérifié », orange « À vérifier » (le répertoire de l\'État n\'a pas répondu : nouvel essai automatique) ou « Sans SIRET ».</p></div>' },
+  'activite-julie': { m: menu('p', true, false), h:
+    '<div class="contenu etroit" style="margin:0"><h1>Mon activité</h1>' +
+    '<div class="alerte a-att">Votre profil est en pause : vous n\'apparaissez plus dans les recherches. Vos rendez-vous déjà pris restent.</div>' +
+    '<div class="carte"><div class="profil"><div class="photo">JM</div><div style="display:flex;flex-direction:column;gap:10px">' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><h2>Julie Martin — Ménage</h2><span class="badge b-neu">en pause</span></div>' +
+    '<dl class="infos"><dt>Métier</dt><dd>Femme / Homme de ménage</dd><dt>Zone</dt><dd>Nantes (44000), jusqu\'à 10 km</dd><dt>SIRET</dt><dd><span class="badge b-ok">SIRET vérifié</span> 443 061 841 00047</dd></dl></div></div></div>' +
+    '<div class="carte"><h2>Visibilité</h2><div class="actions"><button class="btn prim" data-e="activite" data-toast="Profil de nouveau actif.">Reprendre mon activité</button><button class="btn dan" data-fen="arret">Arrêter mon activité…</button></div></div>' +
+    '<p class="note">Profil bloqué par l\'administrateur : bandeau rouge « Votre profil est bloqué par l\'administrateur de rafals : contactez-le. », boutons grisés 🔒.</p></div>' },
+  admin: { m: menu('a', false, true), h:
+    '<h1>Administration</h1><div class="onglets-page"><span>Accords à vérifier</span><span>Comptes</span><span class="sel">Prestataires</span><span>Propositions de métiers</span><span>Métiers</span></div>' +
+    '<div class="cadre"><table><thead><tr><th>Prestataire</th><th>Métier</th><th>Ville</th><th>SIRET</th><th>État</th><th>Compte</th><th></th></tr></thead><tbody>' +
+    '<tr><td>Karim Benali — Plomberie</td><td>Plombier</td><td>Pessac</td><td><span class="badge b-att">Sans SIRET</span></td><td><span class="badge b-ok">actif</span></td><td>karim.b@gmail.com</td><td class="actions"><button class="btn dan" data-fen="bloquer">Bloquer…</button></td></tr>' +
+    '<tr><td>Julie Martin — Ménage</td><td>Femme / Homme de ménage</td><td>Nantes</td><td><span class="badge b-att">À vérifier</span></td><td><span class="badge b-neu">en pause</span></td><td>julie.m@gmail.com</td><td class="actions"><button class="btn sec" data-toast="SIRET de Julie Martin validé à la main.">Valider le SIRET</button><button class="btn dan" data-fen="bloquer">Bloquer…</button></td></tr>' +
+    '<tr><td>Plombier pas cher</td><td>Plombier</td><td>Bordeaux</td><td><span class="badge b-att">Sans SIRET</span></td><td><span class="badge b-err">bloqué</span></td><td>xx@yopmail.com</td><td class="actions"><button class="btn sec" data-toast="Prestataire débloqué : il est de nouveau actif.">Débloquer</button></td></tr>' +
+    '</tbody></table></div><p class="note">Du plus récent au plus ancien. « Valider le SIRET » n\'apparaît que pour un SIRET « à vérifier » : à faire après avoir vu un justificatif.</p>' },
+};
+const F = {
+  arret: '<h3>Arrêter votre activité ?</h3><p class="note" style="font-size:14.5px">C\'est définitif : votre profil ne sera plus visible ni modifiable. Vos factures restent consultables. Pour une absence, choisissez plutôt « Mettre en pause ».</p>' +
+    '<div class="pied"><button class="btn dan" data-close data-toast="Votre activité est arrêtée.">Arrêter définitivement</button><button class="btn sec" data-close>Annuler</button></div>',
+  bloquer: '<h3>Bloquer ce prestataire ?</h3><p class="note" style="font-size:14.5px">Il disparaît des recherches et ne peut plus rien changer. Vous seul pourrez le débloquer.</p>' +
+    '<div class="pied"><button class="btn dan" data-close data-toast="Prestataire bloqué.">Bloquer</button><button class="btn sec" data-close>Annuler</button></div>',
+};
+let etat = 'proposer', minuteur;
+function rendre() {
+  document.getElementById('ecran').innerHTML = E[etat].h;
+  document.getElementById('menu').innerHTML = E[etat].m;
+  document.querySelectorAll('.onglet').forEach(b => b.setAttribute('aria-pressed', b.dataset.e === etat));
+}
+function toast(t) { const x = document.getElementById('toast'); x.textContent = t; x.hidden = false; clearTimeout(minuteur); minuteur = setTimeout(() => x.hidden = true, 3000); }
+document.addEventListener('click', ev => {
+  const el = ev.target.closest('[data-e],[data-fen],[data-close],[data-toast]'); if (!el) return;
+  if (el.dataset.fen) { document.getElementById('couche').innerHTML = '<div class="voile"><div class="fenetre">' + F[el.dataset.fen] + '</div></div>'; return; }
+  if (el.hasAttribute('data-close')) document.getElementById('couche').innerHTML = '';
+  if (el.dataset.e) { etat = el.dataset.e; rendre(); }
+  if (el.dataset.toast) toast(el.dataset.toast);
+});
+rendre();
+</script>
