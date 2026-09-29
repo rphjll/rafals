@@ -10,8 +10,9 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [x] 1. Service choisi (« Recherche d'entreprises » de l'État, sans clé) ; décision de Raphael : nom caché → accepté d'office ; plan validé (« Oui, vas-y »)
   - [x] 2. `services/siret.py`, contrôle à l'enregistrement, nouvel essai toutes les 30 minutes (tâche de fond du serveur), validation à la main par l'administrateur ; 87 tests OK (9 nouveaux, réponses de l'État simulées)
   - [x] 3. Essai réel : bloqué par l'antivirus Avast du PC (voir journal) ; invariants ; sauvegarde
-  - [ ] 4. Question à Raphael sur Avast, puis validation du lot  ← on en est là
-- **Question en attente** : comment traiter l'interception HTTPS d'Avast sur le PC (touche à son ordinateur), puis validation du lot 2.4
+  - [x] 4. Avast : décision de Raphael « Rien » (sur son PC, SIRET « à vérifier » puis validation à la main ; en ligne, pas d'Avast)
+  - [ ] 5. Validation du lot par Raphael  ← on en est là
+- **Question en attente** : validation du lot 2.4
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -102,3 +103,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **29/09/2026** — Bilan du lot 2.3 : Raphael valide les 5 valeurs choisies en mode « tout seul » (distance 100 km, 5 métiers secondaires, nom 2-80 / présentation 1 000 caractères, photo JPG/PNG 5 Mo visible de tous, déblocage par l'administrateur seulement). Aucun changement de code nécessaire.
 - **29/09/2026** — Lot 2.3 validé par Raphael (« Oui, je valide ») → ✅. Lot 2.4 commencé.
 - **29/09/2026** — Lot 2.4 — Vérification du SIRET par le service « Recherche d'entreprises » de l'État (gratuit, sans clé). Vérifié : SIRET existant, ouvert, nom de famille du compte dans le nom officiel ou parmi les dirigeants ; nom caché → accepté (décision de Raphael). Refus immédiat avec la raison (SIRET non enregistré) ; service injoignable → « à vérifier » + nouvel essai toutes les 30 minutes (tâche de fond dans `main.py`, s'arrête au premier « toujours en panne », écrit au journal) ; validation à la main par l'administrateur (`/api/admin/prestataires/{id}/siret-valide`). Aucune table changée. Tests : 87 OK (réponses de l'État simulées par défaut « en panne » : aucun test ne dépend d'internet). Problème : Docker Desktop arrêté au matin (redémarrage du PC) → relancé par Claude. Problème : l'essai réel échoue par erreur de certificat HTTPS ; diagnostic : le site envoie un certificat signé par « Avast Web/Mail Shield Root » → l'antivirus Avast du PC intercepte les connexions sécurisées ; Windows lui fait confiance, pas la boîte Docker. Le code réagit correctement (« à vérifier »). En ligne (OVH), pas d'Avast. Question posée à Raphael (son ordinateur). Invariants : architecture OK (aucune table ; `services/siret.py` seul à parler au service de l'État) ; sécurité OK (vérification des certificats jamais désactivée ; validation à la main réservée à l'administrateur) ; données OK (aucune donnée écrite pendant l'essai réel) ; tests OK ; documentation : `RM-PRESTATAIRES.md` précisé.
+- **29/09/2026** — Avast : Raphael choisit de ne rien changer (sur son PC, les SIRET restent « à vérifier » et se valident à la main ; les tests simulés couvrent tous les cas ; en ligne, pas d'antivirus au milieu).

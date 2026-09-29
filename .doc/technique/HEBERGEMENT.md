@@ -29,3 +29,6 @@ Sources : [Next, hausse des VPS OVHcloud 2026](https://next.ink/225720/ovhcloud-
 ## Pouvoir changer d'hébergeur (règle de portabilité)
 rafals n'utilise que des briques standards, acceptées par tous les hébergeurs : Docker, PostgreSQL, stockage de fichiers S3. Changer d'hébergeur = louer un autre serveur, y copier les données et les fichiers, faire pointer `rafals.fr` vers la nouvelle adresse. Aucun code à réécrire.
 Interdit donc : tout service propre à OVH (base de données « maison », outils OVH dans le code).
+
+## Remarque : antivirus du PC de développement (29/09/2026)
+L'antivirus Avast du PC de Raphael intercepte les connexions HTTPS (« bouclier web ») : depuis Docker, rafals refuse ces connexions (certificat « Avast Web/Mail Shield Root » inconnu). Conséquence locale : la vérification du SIRET auprès de l'État reste « à vérifier ». Décision de Raphael : ne rien changer. Sur le serveur OVH, pas d'antivirus au milieu : rien à faire.
