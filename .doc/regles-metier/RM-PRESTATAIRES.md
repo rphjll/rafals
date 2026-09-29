@@ -50,13 +50,13 @@ Un prestataire sans annonce publiée n'apparaît dans aucune recherche (ex. Kari
 - Facultatif : photo ou logo, présentation (quelques lignes), métiers secondaires, SIRET.
 - Le téléphone et l'adresse mail du prestataire ne sont **pas** affichés publiquement : le client les voit seulement après avoir réservé. **Pourquoi :** éviter que les clients contournent rafals (et la commission) dès la première recherche.
 
-## Précisions prises au lot 2.3 (proposé par Claude le 28/09/2026 en mode « tout seul », À VALIDER par Raphael)
-- **Distance** : de 1 à **100 km**. Distances réelles calculées sur la liste officielle des communes : Pessac → Talence 7,4 km, Pessac → Libourne 38 km.
-- **Au plus 5 métiers secondaires** ; le métier principal ne peut pas être aussi secondaire.
-- **Nom affiché** : 2 à 80 caractères. **Présentation** : 1 000 caractères au plus.
+## Précisions prises au lot 2.3 (proposé par Claude le 28/09/2026 en mode « tout seul », validé par Raphael le 29/09/2026 point par point)
+- **Distance** : de 1 à **100 km** (validé par Raphael le 29/09/2026). Distances réelles calculées sur la liste officielle des communes : Pessac → Talence 7,4 km, Pessac → Libourne 38 km.
+- **Au plus 5 métiers secondaires** (validé par Raphael le 29/09/2026) ; le métier principal ne peut pas être aussi secondaire.
+- **Nom affiché** : 2 à 80 caractères. **Présentation** : 1 000 caractères au plus (validé par Raphael le 29/09/2026).
 - **SIRET** : on peut le taper avec des espaces ; rafals vérifie tout de suite qu'il a 14 chiffres **et la bonne clé de contrôle** (le dernier chiffre se calcule à partir des autres). Un SIRET nouveau ou changé passe « à vérifier » (vérification auprès de l'État au lot 2.4) ; le retirer = « absent ». ⚠️ L'exemple de Julie (912 345 678 00014) est inventé et ne passe pas la clé : il reste un exemple de lecture, pas un vrai numéro.
-- **Photo** : JPG ou PNG, 5 Mo au plus (même vérification que l'accord des parents). Elle est visible de tous (elle sera montrée sur les annonces).
-- **Statuts** : pause ↔ reprise par le prestataire ; arrêt (définitif : plus aucune modification) ; blocage et déblocage par l'administrateur seulement. Un prestataire bloqué ne peut ni reprendre ni se mettre en pause ; débloquer le remet « actif ». Un prestataire arrêté ne peut plus être bloqué ni débloqué.
+- **Photo** : JPG ou PNG, 5 Mo au plus (même vérification que l'accord des parents). Elle est visible de tous (elle sera montrée sur les annonces) (validé par Raphael le 29/09/2026).
+- **Statuts** : pause ↔ reprise par le prestataire ; arrêt (définitif : plus aucune modification) ; blocage et déblocage par l'administrateur seulement. Un prestataire bloqué ne peut ni reprendre ni se mettre en pause ; seul l'administrateur le débloque, ce qui le remet « actif » (validé par Raphael le 29/09/2026 : pas de déblocage automatique). Un prestataire arrêté ne peut plus être bloqué ni débloqué.
 - **Devenir prestataire** exige l'adresse vérifiée et, avant 18 ans, l'accord des parents accepté (règle de `RM-COMPTES.md`), sinon message clair.
 - Toute création, modification, photo et changement de statut est écrit au journal des actions.
 
