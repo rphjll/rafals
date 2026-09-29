@@ -11,7 +11,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 2. Plan validé, `schema_v6.sql` exécuté
   - [ ] 3. Calculs, routes, tests
   - [ ] 4. Essais, invariants, sauvegarde
-- **Question en attente** : validation du MLD du lot 2.6
+- **Question en attente** : validation du MLD du lot 2.6 (https://claude.ai/artifact/X9ASJhiw864PhFXbD99oed, fichier `.doc/mld/MLD-lot-2.6-clients.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »

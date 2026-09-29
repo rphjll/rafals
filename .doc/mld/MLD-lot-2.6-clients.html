@@ -1,0 +1,107 @@
+<title>MLD rafals clients</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 2.6 « Données du client »</h1>
+    <p class="sous">rafals · proposé le 29/09/2026 · source : <code>.doc/regles-metier/RM-CLIENTS.md</code> · 1 table nouvelle, 2 rubriques ajoutées et 2 rubriques rendues facultatives dans COMPTE</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  ADRESSE["<b>ADRESSE</b><br/>id (PK)<br/>compte_id (FK)<br/>commune_id (FK)"]
+  COMMUNE["<b>COMMUNE</b><br/>id (PK)"]
+  COMPTE -- "habite · (0,1) —— (1,1)" --- ADRESSE
+  COMMUNE -- "contient · (0,n) —— (1,1)" --- ADRESSE
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>la 1re cardinalité est du côté de la table de gauche. Ex. « habite · (0,1) —— (1,1) » : un compte a zéro ou une adresse (elle n'est demandée qu'au besoin) ; une adresse appartient à un et un seul compte.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>ADRESSE <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Demandée seulement pour un service « chez le client », puis gardée. Le client peut la modifier ou l'effacer.</p>
+        <ul>
+          <li><code>ligne</code> — ex. « 8 allée des Pins »</li>
+          <li><code>complement</code> — facultatif, ex. « Bâtiment B, 2e étage, code 1234 »</li>
+          <li><code>code_postal</code> — ex. « 33400 » (une commune peut en avoir plusieurs)</li>
+          <li><code>modifiee_le</code></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>COMPTE <span class="nouveau">2 rubriques ajoutées</span></h3>
+        <ul>
+          <li><code>ferme_le</code> — date de fermeture du compte ; vide = compte ouvert</li>
+          <li><code>inactivite_prevenue_le</code> — date du mail « votre compte sera fermé dans 30 jours » (3 ans sans connexion) ; vide = pas prévenu</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>COMPTE <span class="nouveau">2 rubriques facultatives</span></h3>
+        <ul>
+          <li><code>telephone</code> et <code>date_naissance</code> deviennent facultatives dans la base, pour pouvoir être <b>effacées</b> quand le compte est fermé (la loi l'exige). À l'inscription, elles restent obligatoires (contrôlé par le serveur).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>ADRESSE</code> n° 4 : <code>compte_id</code> = 1, <code>commune_id</code> = Talence, ligne « 8 allée des Pins », complément vide, code postal « 33400 ».
+      <p class="trad"><b>Traduction :</b> Mme Dupont habite 8 allée des Pins à Talence ; à sa prochaine réservation à domicile (Julie, ménage), l'adresse sera déjà remplie.</p>
+    </div>
+    <div class="exemple">
+      <code>COMPTE</code> n° 9 : email « compte-ferme-9@rafals.invalid », prénom « Compte », nom « fermé », téléphone vide, date de naissance vide, <code>ferme_le</code> = 02/03/2027 ; plus d'ADRESSE.
+      <p class="trad"><b>Traduction :</b> ce client a fermé son compte le 02/03/2027 : son nom, son mail, son téléphone, sa date de naissance et son adresse sont effacés. La ligne reste (sans rien de personnel) pour que l'historique tienne debout (journal, et plus tard ses rendez-vous passés et avis « Client ayant quitté rafals »).</p>
+    </div>
+    <div class="exemple">
+      <code>COMPTE</code> n° 3 : dernière connexion le 10/01/2027, <code>inactivite_prevenue_le</code> = 10/01/2030.
+      <p class="trad"><b>Traduction :</b> ce compte n'a pas servi depuis 3 ans : il a été prévenu par mail le 10/01/2030 ; s'il ne se reconnecte pas, il sera fermé le 09/02/2030.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Pas dans ce lot : les écrans « Mon compte » (adresse, télécharger mes données, fermer mon compte) au lot 2.7. « Télécharger mes données » ne demande aucune table : le serveur rassemble ce qui existe déjà.</p>
+  </section>
+</div>
