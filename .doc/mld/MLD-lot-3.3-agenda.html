@@ -1,0 +1,122 @@
+<title>MLD rafals agenda</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 3.3 « Agenda »</h1>
+    <p class="sous">rafals · proposé le 29/09/2026 · source : <code>.doc/regles-metier/RM-AGENDA.md</code> · 2 tables nouvelles, 4 rubriques ajoutées dans PRESTATAIRE</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  PLAGE_HORAIRE["<b>PLAGE_HORAIRE</b><br/>id (PK)<br/>prestataire_id (FK)"]
+  BLOCAGE["<b>BLOCAGE</b><br/>id (PK)<br/>prestataire_id (FK)"]
+  PRESTATAIRE -- "travaille · (0,n) —— (1,1)" --- PLAGE_HORAIRE
+  PRESTATAIRE -- "bloque · (0,n) —— (1,1)" --- BLOCAGE
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>la 1re cardinalité est du côté de la table de gauche. Ex. « travaille · (0,n) —— (1,1) » : un prestataire a zéro, une ou plusieurs plages dans sa semaine type ; une plage appartient à un et un seul prestataire.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>PLAGE_HORAIRE <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">La semaine type : plusieurs plages possibles par jour, répétées chaque semaine. Heures de Paris.</p>
+        <ul>
+          <li><code>jour_semaine</code> — 1 = lundi … 7 = dimanche</li>
+          <li><code>debut</code> — ex. 09:00</li>
+          <li><code>fin</code> — ex. 12:00 (après le début)</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>BLOCAGE <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Congés ou absence : des jours entiers ou quelques heures, plus réservables.</p>
+        <ul>
+          <li><code>debut</code> — date et heure, ex. 04/08/2026 à 0 h</li>
+          <li><code>fin</code> — date et heure, ex. 25/08/2026 à 0 h (après le début)</li>
+          <li><code>motif</code> — facultatif, ex. « Congés » ; vu seulement par le prestataire, jamais par les clients</li>
+          <li><code>cree_le</code></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PRESTATAIRE <span class="nouveau">4 rubriques ajoutées</span></h3>
+        <p class="note" style="margin-bottom:6px">Ses réglages d'agenda (valeurs au départ entre parenthèses).</p>
+        <ul>
+          <li><code>agenda_pas_minutes</code> — écart entre deux heures de début proposées : 15, 30 ou 60 (15)</li>
+          <li><code>agenda_pause_minutes</code> — pause après chaque rendez-vous (0)</li>
+          <li><code>reservation_delai_min_minutes</code> — « au plus tôt X avant » (120, soit 2 h)</li>
+          <li><code>reservation_delai_max_mois</code> — « au plus tard Y à l'avance » (2 mois)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Un choix technique expliqué</h2>
+    <p class="note"><b>Deux façons d'écrire l'heure.</b> La semaine type garde une heure « de pendule » (9 h 00 le mardi, été comme hiver) : elle se répète chaque semaine. Un blocage garde un vrai moment, comme toutes les dates de rafals (enregistré en temps universel, affiché à l'heure de Paris). Ainsi, au passage à l'heure d'hiver, Léa ouvre toujours à 9 h 00, et ses congés du 04/08 au 24/08 ne bougent pas.</p>
+    <p class="note" style="margin-top:8px"><b>Pas de table des horaires libres.</b> « Mardi 14/10 : 9 h 00, 9 h 15… » est <i>calculé</i> à chaque demande à partir de la semaine type, des blocages, des réglages et, au niveau 4, des rendez-vous. Rien à tenir à jour.</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>PLAGE_HORAIRE</code> n° 1 : prestataire = Léa, jour 2, 09:00 → 12:00 ; n° 2 : Léa, jour 2, 14:00 → 19:00 ; n° 3 : Léa, jour 6, 09:00 → 12:00.
+      <p class="trad"><b>Traduction :</b> Léa travaille le mardi de 9 h à 12 h et de 14 h à 19 h, et le samedi matin (les autres jours, pas de ligne : fermé).</p>
+    </div>
+    <div class="exemple">
+      <code>BLOCAGE</code> n° 1 : prestataire = Léa, du 04/08/2026 0 h au 25/08/2026 0 h, motif « Congés ».
+      <p class="trad"><b>Traduction :</b> Léa est en congés du 04/08 au 24/08 inclus : aucun horaire n'est proposé ces jours-là. Les clients ne voient pas le mot « Congés ».</p>
+    </div>
+    <div class="exemple">
+      <code>BLOCAGE</code> n° 2 : prestataire = Karim, du 14/10/2026 14 h au 14/10/2026 16 h, motif vide.
+      <p class="trad"><b>Traduction :</b> Karim est chez le dentiste mardi 14/10 de 14 h à 16 h.</p>
+    </div>
+    <div class="exemple">
+      <code>PRESTATAIRE</code> Julie : pas 30, pause 30, délai min 120, délai max 2.
+      <p class="trad"><b>Traduction :</b> Julie propose des débuts toutes les demi-heures, garde 30 min de trajet après chaque ménage, et se réserve de 2 h à l'avance jusqu'à 2 mois.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Pas dans ce lot : les écrans « Mon agenda » (lot 3.4) et les rendez-vous (niveau 4). Le choix « annuler ou garder les rendez-vous déjà pris » lors d'un blocage sera branché quand les rendez-vous existeront.</p>
+  </section>
+</div>
