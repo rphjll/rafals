@@ -1,0 +1,85 @@
+<title>Maquette rafals mon compte</title>
+<style>
+:root{--fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;--prim:#2F6B4F;--prim-t:#FFFFFF;--prim-doux:#E2EEE7;--accent:#D9793A;--ok:#2E7D4F;--ok-doux:#E3F2E8;--att:#B26A00;--att-doux:#FCF0DC;--err:#B3261E;--err-doux:#FBE4E2;--neu-doux:#E8ECF1;--sur:#FFFFFF;--voile:rgb(10 14 20 / .55)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu-doux:#262E39;--sur:#0F1A13}}
+:root[data-theme="dark"]{color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu-doux:#262E39;--sur:#0F1A13}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:"Segoe UI",system-ui,sans-serif;font-size:15px;margin:0}
+.bandeau{background:var(--surface);border-bottom:1px dashed var(--bord);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--doux)}
+.bandeau b{color:var(--texte)}
+.onglet{font:inherit;border:1px solid var(--bord);background:transparent;color:var(--texte);border-radius:8px;padding:5px 9px;cursor:pointer}
+.onglet[aria-pressed="true"]{border-color:var(--prim);color:var(--prim);font-weight:700}
+header{background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px}
+.entete{max-width:1080px;margin:0 auto;height:60px;display:flex;align-items:center}
+.logo{font-weight:700;font-size:24px;color:var(--prim)} .logo span{color:var(--accent)}
+main{padding-inline:16px;padding-block:28px 60px}
+.contenu{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:28px;margin:0;letter-spacing:-.3px} h2{font-size:20px;margin:0}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.danger{border-color:var(--err)}
+.infos{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:14.5px} .infos dt{color:var(--doux)} .infos dd{margin:0;font-weight:500}
+.champ{display:flex;flex-direction:column;gap:6px} .champ label{font-weight:600;font-size:13px} .champ label i{color:var(--err);font-style:normal}
+input{min-height:42px;border:1px solid var(--bord);border-radius:10px;background:var(--fond);color:var(--texte);font:inherit;padding:10px 12px;width:100%}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:12px} @media (max-width:520px){.deux{grid-template-columns:1fr}}
+.choisi{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--ok-doux);color:var(--ok);border-radius:10px;padding:9px 12px;font-weight:600}
+.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid transparent;min-height:42px;padding:9px 16px;cursor:pointer}
+.prim{background:var(--prim);color:var(--prim-t);border-color:var(--prim)} .sec{background:var(--surface);color:var(--prim);border-color:var(--prim)} .dan{background:var(--surface);color:var(--err);border-color:var(--err)}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px} .b-ok{background:var(--ok-doux);color:var(--ok)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.note{font-size:13.5px;color:var(--doux);margin:0}
+.alerte{border-radius:8px;padding:10px 12px;font-weight:500;font-size:14px} .a-err{background:var(--err-doux);color:var(--err)}
+.voile{position:fixed;inset:0;background:var(--voile);display:grid;place-items:center;padding:16px}
+.fenetre{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:22px;width:min(460px,100%);display:flex;flex-direction:column;gap:12px}
+.fenetre h3{margin:0;font-size:20px} .pied{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--ok);color:var(--sur);padding:12px 18px;border-radius:10px;font-weight:600}
+</style>
+
+<div class="bandeau"><b>Maquette lot 2.7</b> · écrans :
+  <button class="onglet" data-e="vue" aria-pressed="true">1. Mon compte</button>
+  <button class="onglet" data-e="infos">2. Modifier mes informations</button>
+  <button class="onglet" data-e="adresse">3. Ajouter / modifier l'adresse</button>
+</div>
+<header><div class="entete"><span class="logo">rafals<span>.</span></span></div></header>
+<main><div class="contenu" id="ecran"></div></main>
+<div id="couche"></div><div class="toast" id="toast" hidden></div>
+
+<script>
+const carteInfos = '<div class="carte"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><h2>Mes informations</h2><button class="btn sec" data-e="infos">Modifier</button></div>' +
+  '<dl class="infos"><dt>Nom</dt><dd>Marie Dupont</dd><dt>Adresse mail</dt><dd>dupont.marie@gmail.com <span class="badge b-ok">vérifiée</span></dd><dt>Téléphone</dt><dd>06 12 34 56 78</dd><dt>Date de naissance</dt><dd>12/03/1972 (54 ans)</dd></dl>' +
+  '<p class="note">Changer d\'adresse mail : bientôt disponible.</p></div>';
+const carteAdresse = avec => '<div class="carte"><h2>Mon adresse</h2>' + (avec
+  ? '<p style="margin:0;font-weight:500">8 allée des Pins<br>Bâtiment B, 2e étage<br>33400 Talence</p><div class="actions"><button class="btn sec" data-e="adresse">Modifier</button><button class="btn dan" data-e="vue-sans" data-toast="Votre adresse est effacée.">Effacer mon adresse</button></div>'
+  : '<p class="note">Aucune adresse enregistrée : elle vous sera demandée quand vous réserverez un service à domicile.</p><div><button class="btn sec" data-e="adresse">Ajouter mon adresse</button></div>') + '</div>';
+const carteDonnees = '<div class="carte"><h2>Mes données</h2><p class="note">Un fichier avec tout ce que rafals sait sur vous (compte, adresse, profil de prestataire, historique de vos actions). C\'est un droit prévu par la loi.</p><div><button class="btn sec" data-toast="Téléchargement de « mes-donnees-rafals.json »…">Télécharger mes données</button></div></div>';
+const carteFermer = '<div class="carte danger"><h2>Fermer mon compte</h2><p class="note">Vos informations personnelles seront effacées. C\'est définitif.</p><div><button class="btn dan" data-fen="fermer">Fermer mon compte…</button></div></div>';
+const E = {
+  vue: '<h1>Mon compte</h1>' + carteInfos + carteAdresse(true) + carteDonnees + carteFermer,
+  'vue-sans': '<h1>Mon compte</h1>' + carteInfos + carteAdresse(false) + carteDonnees + carteFermer,
+  infos: '<h1>Mon compte</h1><div class="carte"><h2>Modifier mes informations</h2><div class="deux"><div class="champ"><label>Prénom <i>*</i></label><input value="Marie"></div><div class="champ"><label>Nom <i>*</i></label><input value="Dupont"></div></div>' +
+    '<div class="champ"><label>Téléphone <i>*</i></label><input value="07 00 00 00 00"></div><div class="actions"><button class="btn prim" data-e="vue" data-toast="Vos informations sont enregistrées.">Enregistrer</button><button class="btn sec" data-e="vue">Annuler</button></div></div>' + carteAdresse(true) + carteDonnees + carteFermer,
+  adresse: '<h1>Mon compte</h1>' + carteInfos + '<div class="carte"><h2>Mon adresse</h2><div class="champ"><label>Numéro et rue <i>*</i></label><input value="8 allée des Pins"></div>' +
+    '<div class="champ"><label>Complément</label><input value="Bâtiment B, 2e étage" placeholder="Bâtiment, étage, code…"></div>' +
+    '<div class="champ"><label>Ville <i>*</i></label><div class="choisi">✓ Talence (33400)<button class="btn sec" style="margin-left:auto">Changer</button></div></div>' +
+    '<p class="note">Le code postal est pris dans la ville choisie ; si la ville en a plusieurs (ex. Marseille), une liste permet de choisir.</p>' +
+    '<div class="alerte a-err" id="err" hidden>Le code postal 33600 ne correspond pas à Talence (33400).</div>' +
+    '<div class="actions"><button class="btn prim" data-e="vue" data-toast="Adresse enregistrée.">Enregistrer</button><button class="btn sec" data-e="vue">Annuler</button></div></div>' + carteDonnees + carteFermer,
+};
+const F = {
+  fermer: '<h3>Fermer votre compte ?</h3><p class="note" style="font-size:14.5px">Votre nom, votre adresse mail, votre téléphone, votre date de naissance et votre adresse seront effacés, et vous serez déconnecté. C\'est définitif.</p>' +
+    '<div class="champ"><label>Votre mot de passe <i>*</i></label><input type="password" value="MaisonBleue44"></div>' +
+    '<div class="alerte a-err" id="errf" hidden>Arrêtez d\'abord votre activité de prestataire (page « Mon activité »), puis fermez votre compte.</div>' +
+    '<div class="pied"><button class="btn dan" data-close data-toast="Votre compte est fermé et vos informations personnelles sont effacées.">Fermer définitivement</button><button class="btn sec" data-close>Annuler</button></div>' +
+    '<p class="note">Refus possible (en rouge dans la fenêtre) : mot de passe incorrect, prestataire encore en activité, seul administrateur. <button class="btn sec" onclick="document.getElementById(\'errf\').hidden=false">Voir un exemple</button></p>',
+};
+let etat = 'vue', m;
+function rendre() { document.getElementById('ecran').innerHTML = E[etat]; document.querySelectorAll('.onglet').forEach(b => b.setAttribute('aria-pressed', b.dataset.e === etat || (etat === 'vue-sans' && b.dataset.e === 'vue'))); }
+function toast(t) { const x = document.getElementById('toast'); x.textContent = t; x.hidden = false; clearTimeout(m); m = setTimeout(() => x.hidden = true, 3000); }
+document.addEventListener('click', ev => {
+  const el = ev.target.closest('[data-e],[data-fen],[data-close],[data-toast]'); if (!el) return;
+  if (el.dataset.fen) { document.getElementById('couche').innerHTML = '<div class="voile"><div class="fenetre">' + F[el.dataset.fen] + '</div></div>'; return; }
+  if (el.hasAttribute('data-close')) document.getElementById('couche').innerHTML = '';
+  if (el.dataset.e) { etat = el.dataset.e; rendre(); }
+  if (el.dataset.toast) toast(el.dataset.toast);
+});
+rendre();
+</script>

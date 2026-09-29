@@ -10,7 +10,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 1. Maquette cliquable validée  ← on en est là
   - [ ] 2. Page « Mon compte » complétée ; Administration › Comptes (comptes fermés)
   - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 2.7
+- **Question en attente** : validation de la maquette du lot 2.7 (https://claude.ai/artifact/1NEkrXLHXEa33P3DCahc83, fichier `.doc/ihm/maquette-lot-2.7-mon-compte.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
