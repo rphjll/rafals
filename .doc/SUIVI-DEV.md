@@ -4,15 +4,14 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 2.5 — Écrans : Proposer mes services / mon profil prestataire / SIRET ; Administration › Prestataires (Raphael : « Oui, je valide » le lot 2.4)
+- **Demande** : Lot 2.6 — Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans (suite du plan, après la validation du lot 2.5)
 - **Commencé le** : 29/09/2026
 - **Étapes** :
-  - [x] 1. Maquette cliquable validée le 29/09/2026 (« Oui, vas-y »)
-  - [x] 2. `AppRecherche` (recherche commune aux métiers et communes : `AppChoixMetier` réécrit dessus), `AppElementChoisi`, `AppZoneTexte`, `AppChoixCommune` ; page `/proposer` : formulaire (création/modification) et fiche « Mon activité » (photo, pause/reprise, arrêt)
-  - [x] 3. Administration › Prestataires (bloquer, débloquer, valider un SIRET) ; menu « Mon activité » pour un prestataire
-  - [x] 4. `RM-PROPOSER-IHM.md` + mises à jour ; aucune faute ; écrans chargés ; invariants ; sauvegarde
-  - [ ] 5. Essai par Raphael dans son navigateur  ← on en est là
-- **Question en attente** : Raphael essaie « Proposer mes services », « Mon activité » et Administration › Prestataires, puis valide (ou non) le lot 2.5
+  - [ ] 1. MLD proposé et validé  ← on en est là
+  - [ ] 2. Plan validé, `schema_v6.sql` exécuté
+  - [ ] 3. Calculs, routes, tests
+  - [ ] 4. Essais, invariants, sauvegarde
+- **Question en attente** : validation du MLD du lot 2.6
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -51,8 +50,8 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | 2.2 | Écrans | Choix d'un métier (recherche par lettres, dossiers) ; Administration des métiers et des propositions | RM-METIERS | 2.1, 1.4 | ✅ |
 | 2.3 | Serveur | Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt | RM-PRESTATAIRES | 2.1 | ✅ |
 | 2.4 | Serveur | Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne | RM-PRESTATAIRES | 2.3 | ✅ |
-| 2.5 | Écrans | Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage | RM-PRESTATAIRES | 2.4, 2.2 | 🔎 |
-| 2.6 | Serveur | Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans | RM-CLIENTS | 1.3 | ⬜ |
+| 2.5 | Écrans | Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage | RM-PRESTATAIRES | 2.4, 2.2 | ✅ |
+| 2.6 | Serveur | Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans | RM-CLIENTS | 1.3 | 🟡 |
 | 2.7 | Écrans | Mon compte : adresse, télécharger mes données, fermer mon compte | RM-CLIENTS | 2.6, 1.4 | ⬜ |
 
 ## Niveaux 3 à 6 — à découper après l'écriture de leurs règles
@@ -106,3 +105,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **29/09/2026** — Avast : Raphael choisit de ne rien changer (sur son PC, les SIRET restent « à vérifier » et se valident à la main ; les tests simulés couvrent tous les cas ; en ligne, pas d'antivirus au milieu).
 - **29/09/2026** — Lot 2.4 validé par Raphael (« Oui, je valide ») → ✅. Lot 2.5 commencé.
 - **29/09/2026** — Lot 2.5 — Maquette validée, puis : page `/proposer` (formulaire du profil en 3 cartes, création et modification ; fiche « Mon activité » : photo ou initiales, badges d'état et de SIRET, changer la photo, pause/reprise, arrêt avec confirmation, boutons verrouillés si bloqué), bandeaux si adresse non vérifiée ou accord des parents manquant ; menu « Mon activité » pour un prestataire ; onglet Administration › Prestataires. Réutilisation : la recherche avec propositions devient un seul composant `AppRecherche` (métiers, métiers secondaires, communes ; `AppChoixMetier` réécrit dessus), `AppElementChoisi` commun, libellés des états dans `outils/prestataires.ts`. Serveur inchangé. Problèmes : une erreur de type dans `AppRecherche` (liste des résultats mal déclarée) corrigée ; un ordre de chargement fautif dans `ProposerPage` (page qui pouvait rester vide) corrigé avant l'essai. Invariants : interface OK (clic → résultat visible, erreurs au-dessus du bouton ou dans la fenêtre, boutons verrouillés avec raison, `RM-*-IHM.md` écrits) ; réutilisation OK ; serveur, données : inchangés ; documentation : `CLAUDE.md` = `REGLES-PROJET.md`.
+- **29/09/2026** — Lot 2.5 validé par Raphael (« je valide le lot... », confirmé « Oui, le lot 2.5 » ; base propre : seul son compte) → ✅. Lot 2.6 commencé.
