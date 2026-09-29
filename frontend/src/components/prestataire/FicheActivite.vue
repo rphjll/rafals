@@ -8,6 +8,7 @@ import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
+import AppSection from '../ui/AppSection.vue'
 
 const props = defineProps<{ profil: ProfilPrestataire }>()
 const emit = defineEmits<{ maj: [profil: ProfilPrestataire]; modifier: [] }>()
@@ -119,8 +120,7 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
       </div>
     </section>
 
-    <section v-if="profil.statut !== 'arrete'" class="flex flex-col gap-3 rounded-rafals border border-bord bg-surface p-5">
-      <h2 class="text-xl font-bold">Visibilité</h2>
+    <AppSection v-if="profil.statut !== 'arrete'" titre="Visibilité">
       <p class="text-[14.5px] text-texte-doux">
         Vous apparaîtrez dans les recherches dès que vous publierez une annonce (bientôt disponible).
       </p>
@@ -131,7 +131,7 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
         <AppBouton v-if="bloque" variante="verrouille" :raison-verrou="raisonBlocage">Arrêter mon activité…</AppBouton>
         <AppBouton v-else variante="danger" @click="fenetreArret = true">Arrêter mon activité…</AppBouton>
       </div>
-    </section>
+    </AppSection>
 
     <AppFenetre :ouverte="fenetreArret" titre="Arrêter votre activité ?" @fermer="fenetreArret = false">
       C'est définitif : votre profil ne sera plus visible ni modifiable. Vos factures restent consultables. Pour une

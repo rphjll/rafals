@@ -20,6 +20,7 @@ class CompteAdministre(BaseModel):
     nom: str
     email_verifie: bool
     est_administrateur: bool
+    ferme: bool
     cree_le: datetime
 
 
@@ -35,6 +36,7 @@ def visible(compte: Compte) -> CompteAdministre:
         nom=compte.nom,
         email_verifie=compte.email_verifie_le is not None,
         est_administrateur=compte.est_administrateur,
+        ferme=compte.ferme_le is not None,
         cree_le=compte.cree_le,
     )
 

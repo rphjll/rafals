@@ -13,6 +13,7 @@ import AppBouton from '../ui/AppBouton.vue'
 import AppChamp from '../ui/AppChamp.vue'
 import AppRecherche from '../ui/AppRecherche.vue'
 import AppZoneTexte from '../ui/AppZoneTexte.vue'
+import AppSection from '../ui/AppSection.vue'
 
 const SECONDAIRES_MAX = 5
 const PRESENTATION_MAX = 1000
@@ -68,8 +69,7 @@ async function enregistrer() {
 
 <template>
   <form class="flex flex-col gap-4" @submit.prevent="enregistrer">
-    <section class="flex flex-col gap-3.5 rounded-rafals border border-bord bg-surface p-5">
-      <h2 class="text-xl font-bold">Votre activité</h2>
+    <AppSection titre="Votre activité">
       <AppChamp
         v-model="nomAffiche"
         etiquette="Nom affiché"
@@ -108,10 +108,9 @@ async function enregistrer() {
         />
         <p v-else class="text-[13px] text-texte-doux">{{ SECONDAIRES_MAX }} métiers secondaires : c'est le maximum.</p>
       </div>
-    </section>
+    </AppSection>
 
-    <section class="flex flex-col gap-3.5 rounded-rafals border border-bord bg-surface p-5">
-      <h2 class="text-xl font-bold">Où intervenez-vous ?</h2>
+    <AppSection titre="Où intervenez-vous ?">
       <div class="grid gap-3 sm:grid-cols-[2fr_1fr]">
         <AppChoixCommune v-model="commune" etiquette="Ville de départ" obligatoire />
         <AppChamp
@@ -124,10 +123,9 @@ async function enregistrer() {
           aide="De 1 à 100 km, à vol d'oiseau."
         />
       </div>
-    </section>
+    </AppSection>
 
-    <section class="flex flex-col gap-3.5 rounded-rafals border border-bord bg-surface p-5">
-      <h2 class="text-xl font-bold">Présentation et SIRET</h2>
+    <AppSection titre="Présentation et SIRET">
       <AppZoneTexte v-model="presentation" etiquette="Présentation" :maximum="PRESENTATION_MAX" aide="Facultatif." />
       <AppChamp
         v-model="siret"
@@ -141,6 +139,6 @@ async function enregistrer() {
         <AppBouton type="submit" :occupe="envoiEnCours">{{ e ? 'Enregistrer' : 'Proposer mes services' }}</AppBouton>
         <AppBouton v-if="e" variante="secondaire" @click="emit('annuler')">Annuler</AppBouton>
       </div>
-    </section>
+    </AppSection>
   </form>
 </template>

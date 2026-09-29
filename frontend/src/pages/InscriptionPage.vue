@@ -8,10 +8,12 @@ import AppBouton from '../components/ui/AppBouton.vue'
 import AppCarte from '../components/ui/AppCarte.vue'
 import AppChamp from '../components/ui/AppChamp.vue'
 import AppSeparateur from '../components/ui/AppSeparateur.vue'
+import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 
 const routeur = useRouter()
 const { afficherMessage } = useMessage()
+const { renvoyerLienVerification } = useCompte()
 const formulaire = reactive({ prenom: '', nom: '', email: '', telephone: '', date_naissance: '', mot_de_passe: '' })
 const erreur = ref('')
 const envoiEnCours = ref(false)
@@ -32,10 +34,7 @@ async function creerCompte() {
 
 async function renvoyerLien() {
   try {
-    const reponse = await appelerServeur<{ message: string }>('/api/comptes/verification/renvoi', {
-      email: adresseInscrite.value,
-    })
-    afficherMessage(reponse.message)
+    afficherMessage(await renvoyerLienVerification(adresseInscrite.value))
   } catch (e) {
     afficherMessage(messageErreur(e), 'erreur')
   }

@@ -16,6 +16,7 @@ interface CompteAdministre {
   nom: string
   email_verifie: boolean
   est_administrateur: boolean
+  ferme: boolean
 }
 
 const { chargerCompte } = useCompte()
@@ -77,9 +78,16 @@ async function changerRole() {
             <td class="px-3 py-2.5">
               <AppBadge :etat="ligne.email_verifie ? 'ok' : 'attente'">{{ ligne.email_verifie ? 'vérifiée' : 'non vérifiée' }}</AppBadge>
             </td>
-            <td class="px-3 py-2.5"><AppBadge v-if="ligne.est_administrateur" etat="ok">administrateur</AppBadge></td>
+            <td class="px-3 py-2.5">
+              <AppBadge v-if="ligne.ferme" etat="neutre">fermé</AppBadge>
+              <AppBadge v-else-if="ligne.est_administrateur" etat="ok">administrateur</AppBadge>
+            </td>
             <td class="px-3 py-2.5 text-right">
-              <AppBouton :variante="ligne.est_administrateur ? 'danger' : 'secondaire'" @click="ouvrir(ligne)">
+              <AppBouton
+                v-if="!ligne.ferme"
+                :variante="ligne.est_administrateur ? 'danger' : 'secondaire'"
+                @click="ouvrir(ligne)"
+              >
                 {{ ligne.est_administrateur ? 'Retirer le rôle' : 'Nommer administrateur' }}
               </AppBouton>
             </td>

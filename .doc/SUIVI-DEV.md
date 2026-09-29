@@ -7,10 +7,10 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 2.7 — Écrans « Mon compte » : adresse, modifier mes informations, télécharger mes données, fermer mon compte (Raphael : « Oui, je valide » le lot 2.6)
 - **Commencé le** : 29/09/2026
 - **Étapes** :
-  - [ ] 1. Maquette cliquable validée  ← on en est là
-  - [ ] 2. Page « Mon compte » complétée ; Administration › Comptes (comptes fermés)
-  - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 2.7 (https://claude.ai/artifact/1NEkrXLHXEa33P3DCahc83, fichier `.doc/ihm/maquette-lot-2.7-mon-compte.html`)
+  - [x] 1. Maquette cliquable validée (29/09/2026, « Oui, vas-y »)
+  - [x] 2. Page « Mon compte » complétée ; Administration › Comptes (comptes fermés)
+  - [x] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
+- **Question en attente** : Raphael essaie la page « Mon compte » et valide le lot 2.7
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -51,7 +51,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | 2.4 | Serveur | Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne | RM-PRESTATAIRES | 2.3 | ✅ |
 | 2.5 | Écrans | Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage | RM-PRESTATAIRES | 2.4, 2.2 | ✅ |
 | 2.6 | Serveur | Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans | RM-CLIENTS | 1.3 | ✅ |
-| 2.7 | Écrans | Mon compte : adresse, télécharger mes données, fermer mon compte | RM-CLIENTS | 2.6, 1.4 | 🟡 |
+| 2.7 | Écrans | Mon compte : adresse, télécharger mes données, fermer mon compte | RM-CLIENTS | 2.6, 1.4 | 🔎 |
 
 ## Niveaux 3 à 6 — à découper après l'écriture de leurs règles
 | Lot | Type | Description | Règle source | Dépend de | État |
@@ -107,3 +107,4 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 - **29/09/2026** — Lot 2.5 validé par Raphael (« je valide le lot... », confirmé « Oui, le lot 2.5 » ; base propre : seul son compte) → ✅. Lot 2.6 commencé.
 - **29/09/2026** — Lot 2.6 — MLD validé, `schema_v6.sql` exécuté (table `adresse` ; `compte` : `ferme_le`, `inactivite_prevenue_le`, `telephone` et `date_naissance` facultatifs dans la base). Serveur : adresse (code postal contrôlé avec la commune), informations, export « mes données » (sans secret), fermeture (mot de passe retapé ; refus si prestataire en activité ou seul administrateur ; effacement de tout ce qui est personnel ; déconnexion partout ; compte d'essai qui garde sa marque), comptes inactifs (mail après 3 ans, fermeture 30 jours après, reconnexion qui annule). Réutilisation : les deux tâches de fond (SIRET, inactivité) partagent une seule mécanique de tâche périodique dans `main.py`. Un compte fermé n'est plus reconnu comme connecté. Problèmes : 2 tests faux au premier lancement (ils comptaient aussi le mail de vérification) → corrigés ; un compte d'essai fermé perdait sa marque d'essai (le nettoyage ne l'aurait plus retrouvé) → corrigé avant l'essai ; accents mal envoyés par l'outil d'essai sous Windows (pas rafals). Écran « Mon compte » adapté (date de naissance possiblement vide). Tests : 99 OK. Invariants : architecture OK ; sécurité OK (mot de passe pour fermer, aucun secret dans l'export, compte fermé déconnecté) ; données OK (effacement réel, 0 donnée d'essai restante) ; tests OK ; interface : écrans au lot 2.7 ; réutilisation OK ; documentation : `RM-CLIENTS.md` précisé (à valider).
 - **29/09/2026** — Lot 2.6 validé par Raphael (« Oui, je valide ») → ✅. Lot 2.7 commencé.
+- **29/09/2026** — Lot 2.7 construit → 🔎 à vérifier. « Mon compte » découpée en cartes (`components/compte/`) : modifier mes informations, mon adresse (code postal en liste seulement si la ville en a plusieurs), télécharger mes données, fermer mon compte (fenêtre avec mot de passe). Administration › Comptes : badge « fermé », sans bouton ; le serveur refuse de nommer administrateur un compte fermé (1 test ajouté, 100 tests au vert). Réutilisation : nouveau cadre `AppSection` (remplace 11 copies du même style dans 6 fichiers) et fonction unique « renvoyer le lien de vérification » (4 pages). Essai de bout en bout par le port 5174 avec un compte `@example.com` (inscription, informations, adresse à Marseille 13008, refus d'un code postal faux, téléchargement, refus mot de passe faux, fermeture) : tout conforme ; compte d'essai n° 16 effacé, comptage : 1 seul compte (n° 5). Invariants repassés : non vérifié sur 4 formats d'écran par Claude (pas de navigateur automatique) → à regarder par Raphael.

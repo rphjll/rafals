@@ -13,7 +13,7 @@ import { useMessage } from '../composables/useMessage'
 
 const route = useRoute()
 const routeur = useRouter()
-const { chargerCompte } = useCompte()
+const { chargerCompte, renvoyerLienVerification } = useCompte()
 const { afficherMessage } = useMessage()
 const etat = ref<'en-cours' | 'ok' | 'erreur'>('en-cours')
 const erreur = ref('')
@@ -32,7 +32,7 @@ onMounted(async () => {
 
 async function nouveauLien() {
   try {
-    afficherMessage((await appelerServeur<{ message: string }>('/api/comptes/verification/renvoi', { email: email.value })).message)
+    afficherMessage(await renvoyerLienVerification(email.value))
   } catch (e) {
     afficherMessage(messageErreur(e), 'erreur')
   }

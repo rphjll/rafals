@@ -5,6 +5,8 @@ from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.orm import Session
 
+from tests.conftest import MOT_DE_PASSE_TEST
+
 
 def role(client, compte_id: int, est_administrateur: bool):
     return client.post(f"/api/admin/comptes/{compte_id}/administrateur", json={"est_administrateur": est_administrateur})
@@ -69,6 +71,18 @@ def test_l_administrateur_voit_la_liste_des_comptes(fabrique_compte) -> None:
     emails = [c["email"] for c in raphael.client.get("/api/admin/comptes").json()]
 
     assert marie.email in emails
+
+
+def test_un_compte_ferme_apparait_ferme_et_ne_devient_pas_administrateur(fabrique_compte) -> None:
+    raphael = fabrique_compte(administrateur=True)
+    marie = fabrique_compte()
+    marie.client.post("/api/moi/fermer", json={"mot_de_passe": MOT_DE_PASSE_TEST})
+
+    ligne = next(c for c in raphael.client.get("/api/admin/comptes").json() if c["id"] == marie.id)
+    refus = role(raphael.client, marie.id, True)
+
+    assert ligne["ferme"] is True and ligne["nom"] == "fermé"
+    assert refus.status_code == 400 and "fermé" in refus.json()["detail"]
 
 
 def test_le_journal_ne_se_modifie_ni_ne_s_efface(fabrique_compte, base: Session) -> None:

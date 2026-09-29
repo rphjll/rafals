@@ -10,7 +10,7 @@ import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 
 const routeur = useRouter()
-const { compte } = useCompte()
+const { compte, renvoyerLienVerification } = useCompte()
 const { afficherMessage } = useMessage()
 const etatServeur = ref('Vérification du serveur…')
 const serveurOk = ref<boolean | null>(null)
@@ -27,10 +27,7 @@ onMounted(async () => {
 
 async function renvoyerLien() {
   try {
-    const reponse = await appelerServeur<{ message: string }>('/api/comptes/verification/renvoi', {
-      email: compte.value?.email,
-    })
-    afficherMessage(reponse.message)
+    afficherMessage(await renvoyerLienVerification(compte.value?.email ?? ''))
   } catch (e) {
     afficherMessage(messageErreur(e), 'erreur')
   }

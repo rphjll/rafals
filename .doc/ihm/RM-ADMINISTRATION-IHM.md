@@ -21,6 +21,7 @@ Chaque ligne : « **Prénom Nom** · 16 ans · envoyé le 28/09/2026 à 18 h 40 
 Tableau (défile sur le côté sur téléphone), trié par nom puis prénom.
 **Colonnes, dans cet ordre :** Nom (« Dupont Marie ») · Adresse mail · Adresse (badge « vérifiée » / « non vérifiée ») · Rôle (badge « administrateur ») · bouton.
 **Bouton :** [Nommer administrateur] (secondaire) ou [Retirer le rôle] (danger) → fenêtre de confirmation (« Nommer Marie Dupont administrateur ? » / « Retirer le rôle d'administrateur à Tom Durand ? »), [Nommer]/[Retirer] à gauche, [Annuler] à droite. Refus du serveur affiché dans la fenêtre, ex. « Il doit toujours rester au moins un administrateur. » Si l'on retire son propre rôle, le menu perd l'entrée « Administration ».
+**Compte fermé (lot 2.7) :** il reste dans la liste sous le nom « fermé Compte », adresse `compte-ferme-12@rafals.invalid`, badge gris « fermé » dans la colonne Rôle, **aucun bouton** (le serveur refuse aussi : « Ce compte est fermé : il ne peut pas devenir administrateur. »).
 
 ## Onglet « Propositions de métiers » (lot 2.2)
 Liste des propositions en attente, de la plus ancienne à la plus récente. Vide : « Aucune proposition de métier pour l'instant. »

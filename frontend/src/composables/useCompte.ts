@@ -39,5 +39,10 @@ export function useCompte() {
     compte.value = null
   }
 
-  return { compte, chargementFait, chargerCompte, seConnecter, seDeconnecter }
+  /** Renvoie le lien de vérification d'adresse ; renvoie le message du serveur à afficher. */
+  async function renvoyerLienVerification(email: string): Promise<string> {
+    return (await appelerServeur<{ message: string }>('/api/comptes/verification/renvoi', { email })).message
+  }
+
+  return { compte, chargementFait, chargerCompte, seConnecter, seDeconnecter, renvoyerLienVerification }
 }

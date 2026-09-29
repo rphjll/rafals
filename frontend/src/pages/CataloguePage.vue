@@ -6,6 +6,7 @@ import AppBadge from '../components/ui/AppBadge.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppChamp from '../components/ui/AppChamp.vue'
 import AppFenetre from '../components/ui/AppFenetre.vue'
+import AppSection from '../components/ui/AppSection.vue'
 import { useMessage } from '../composables/useMessage'
 
 const { afficherMessage } = useMessage()
@@ -26,8 +27,7 @@ function confirmer() {
       <p class="text-texte-doux">Les briques communes de tous les écrans de rafals. Tout est cliquable.</p>
     </header>
 
-    <section class="flex flex-col gap-3 rounded-rafals border border-bord bg-surface p-5">
-      <h2 class="text-xl font-bold">Boutons</h2>
+    <AppSection titre="Boutons">
       <div class="flex flex-wrap gap-3 pt-10">
         <AppBouton @click="afficherMessage('Bouton principal cliqué')">Réserver mardi 14/10 à 10 h 00</AppBouton>
         <AppBouton variante="secondaire" @click="afficherMessage('Bouton secondaire cliqué')">Demander un devis</AppBouton>
@@ -42,10 +42,9 @@ function confirmer() {
         </AppBouton>
       </div>
       <p class="text-[13px] text-texte-doux">Clique sur « 🔒 Payer par carte » : une bulle explique pourquoi il est bloqué.</p>
-    </section>
+    </AppSection>
 
-    <section class="flex flex-col gap-3 rounded-rafals border border-bord bg-surface p-5">
-      <h2 class="text-xl font-bold">Champs</h2>
+    <AppSection titre="Champs">
       <div class="grid gap-4 sm:grid-cols-2">
         <AppChamp v-model="email" etiquette="Adresse mail" type="email" obligatoire aide="Exemple de donnée d'essai : @example.com" />
         <AppChamp
@@ -56,23 +55,21 @@ function confirmer() {
           :erreur="motDePasse.length < 10 ? 'Au moins 10 caractères (ex. MaisonBleue44).' : ''"
         />
       </div>
-    </section>
+    </AppSection>
 
-    <section class="flex flex-col gap-3 rounded-rafals border border-bord bg-surface p-5">
-      <h2 class="text-xl font-bold">Badges</h2>
+    <AppSection titre="Badges">
       <div class="flex flex-wrap gap-2">
         <AppBadge etat="ok">SIRET vérifié</AppBadge>
         <AppBadge etat="attente">Sans SIRET</AppBadge>
         <AppBadge etat="erreur">Rendez-vous annulé</AppBadge>
         <AppBadge etat="neutre">Espèces seulement</AppBadge>
       </div>
-    </section>
+    </AppSection>
 
-    <section class="flex flex-col items-start gap-3 rounded-rafals border border-bord bg-surface p-5">
-      <h2 class="text-xl font-bold">Fenêtre et message</h2>
+    <AppSection titre="Fenêtre et message">
       <AppBouton @click="fenetreOuverte = true">Ouvrir la fenêtre de confirmation</AppBouton>
       <p class="text-[13px] text-texte-doux">« Confirmer » ferme la fenêtre et affiche un message en bas de l'écran pendant 3 secondes.</p>
-    </section>
+    </AppSection>
 
     <AppFenetre :ouverte="fenetreOuverte" titre="Confirmer le rendez-vous ?" @fermer="fenetreOuverte = false">
       Karim Benali · Petits travaux électriques<br />
