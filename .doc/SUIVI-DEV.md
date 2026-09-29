@@ -11,8 +11,9 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [x] 2. Plan validé (« Oui, vas-y »), `schema_v6.sql` exécuté le 29/09/2026
   - [x] 3. Modèle `clients.py`, calculs `services/clients.py`, routes `routes/clients.py`, tâches de fond regroupées dans `main.py` ; 99 tests OK
   - [x] 4. Essai sur la vraie base (adresse, export, fermeture) puis nettoyage : seul le compte de Raphael reste ; invariants ; sauvegarde
-  - [ ] 5. Validation des précisions de `RM-CLIENTS.md` et du lot par Raphael  ← on en est là
-- **Question en attente** : validation des précisions de `RM-CLIENTS.md` (lot 2.6), puis du lot
+  - [x] 5. Précisions de `RM-CLIENTS.md` validées par Raphael le 29/09/2026 (mot de passe pour fermer, seul administrateur, changement de mail plus tard)
+  - [ ] 6. Validation du lot par Raphael  ← on en est là
+- **Question en attente** : validation du lot 2.6
 - **En pause** : aucune
 
 ## Définition de « terminé »

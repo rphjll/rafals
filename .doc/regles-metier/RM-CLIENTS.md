@@ -41,7 +41,7 @@ Un bouton « Télécharger mes données » donne au client un fichier avec tout 
 Un compte sans aucune connexion depuis 3 ans reçoit un mail « Votre compte sera fermé dans 30 jours sauf si vous vous connectez » ; sans réponse, il est fermé comme ci-dessus. **Pourquoi :** la loi interdit de garder des données personnelles sans limite de temps (3 ans est la durée conseillée par la CNIL, le gendarme français des données personnelles).
 - Ex. dernière connexion le 10/01/2027 → mail le 10/01/2030 → fermeture le 09/02/2030.
 
-## Précisions prises au lot 2.6 (proposé par Claude le 29/09/2026, à valider par Raphael)
+## Précisions prises au lot 2.6 (proposé par Claude, validé par Raphael le 29/09/2026)
 - **Adresse** : une seule par compte ; rue de 3 à 120 caractères, complément facultatif ; le **code postal doit appartenir à la commune choisie** (ex. Talence + 33600 → refusé : 33600 est le code de Pessac).
 - **Modifier ses informations** : prénom, nom, téléphone. Changer d'adresse mail demandera une nouvelle vérification : **plus tard**.
 - **Télécharger mes données** : fichier `mes-donnees-rafals.json` (compte, adresse, appareils connectés, profil prestataire, accords déposés, fichiers déposés, propositions de métier, journal de ses actions), **sans aucun secret** (ni mot de passe ni jeton).
