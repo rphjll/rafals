@@ -1,8 +1,8 @@
-"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql). Aucun calcul ici."""
+"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7). Aucun calcul ici."""
 
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import BigInteger, DateTime, Float, ForeignKey, Identity, Integer, Text, func
+from sqlalchemy import BigInteger, Date, DateTime, Float, ForeignKey, Identity, Integer, Text, func
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -38,6 +38,8 @@ class Prestataire(Base):
     statut: Mapped[str] = mapped_column(Text, server_default="actif")
     statut_change_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    metier_principal_fin_le: Mapped[date | None] = mapped_column(Date)
+    metier_principal_suivant_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("metier.id"))
 
 
 class MetierSecondaire(Base):
@@ -46,3 +48,4 @@ class MetierSecondaire(Base):
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
     metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
+    fin_le: Mapped[date | None] = mapped_column(Date)

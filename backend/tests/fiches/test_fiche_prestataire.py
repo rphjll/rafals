@@ -25,9 +25,11 @@ def test_fiche_prestataire(base: Session) -> None:
 
     # Valeurs imposées par les contraintes de la base (formats, listes de statuts, cohérence SIRET)
     liens_1 = {"compte_id": compte.id, "metier_principal_id": plombier.id, "commune_id": pessac.id, "photo_id": None,
-               "siret": "44306184100047", "siret_statut": "a_verifier", "statut": "en_pause"}
+               "siret": "44306184100047", "siret_statut": "a_verifier", "statut": "en_pause",
+               "metier_principal_suivant_id": electricien.id}
     liens_2 = {"compte_id": compte.id, "metier_principal_id": electricien.id, "commune_id": talence.id, "photo_id": None,
-               "siret": None, "siret_statut": "absent", "statut": "actif"}
+               "siret": None, "siret_statut": "absent", "statut": "actif",
+               "metier_principal_suivant_id": None}
 
     # 1. Ajout, puis relecture
     ajout = valeurs(Prestataire, 1, liens_1)

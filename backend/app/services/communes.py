@@ -2,11 +2,14 @@
 Règle : RM-PRESTATAIRES.md (zone d'intervention : distance à vol d'oiseau entre les centres des villes)."""
 
 import math
+from dataclasses import dataclass
 
 from sqlalchemy import case, func, or_, select
 from sqlalchemy.orm import Session
 
+from app import reglages
 from app.modeles.prestataires import Commune
+from app.services.erreurs import ErreurRegle
 from app.services.metiers import sans_accents
 
 RAYON_TERRE_KM = 6371.0
@@ -40,3 +43,28 @@ def rechercher(db: Session, texte: str, limite: int = 10) -> list[Commune]:
         condition = or_(*(nom.like(v + "%", escape="\\") for v in variantes))
         rang = func.length(Commune.nom)  # à début égal, la commune au nom le plus court d'abord (Pessac avant Pessac-sur-Dordogne)
     return list(db.scalars(select(Commune).where(condition).order_by(rang, Commune.nom).limit(limite)))
+
+
+@dataclass
+class AdresseControlee:
+    ligne: str
+    complement: str | None
+    commune: Commune
+    code_postal: str
+
+
+def controler_adresse(db: Session, *, ligne: str, complement: str | None, commune_id: int, code_postal: str) -> AdresseControlee:
+    """Adresse d'un client ou local d'un prestataire. Ex. « 8 allée des Pins », Talence, 33400 → acceptée ;
+    Talence avec 33600 (code de Pessac) → refusée."""
+    ligne = " ".join(ligne.split())
+    mini, maxi = reglages.ADRESSE_LIGNE_LONGUEUR
+    if not mini <= len(ligne) <= maxi:
+        raise ErreurRegle(f"L'adresse doit faire entre {mini} et {maxi} caractères (ex. « 8 allée des Pins »).")
+    commune = db.get(Commune, commune_id)
+    if commune is None:
+        raise ErreurRegle("Choisissez la ville dans la liste.")
+    code_postal = code_postal.strip()
+    if code_postal not in commune.codes_postaux:
+        codes = ", ".join(commune.codes_postaux)
+        raise ErreurRegle(f"Le code postal {code_postal} ne correspond pas à {commune.nom} ({codes}).")
+    return AdresseControlee(ligne, (complement or "").strip()[:maxi] or None, commune, code_postal)

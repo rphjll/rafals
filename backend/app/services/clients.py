@@ -9,13 +9,14 @@ from sqlalchemy import or_, select, update
 from sqlalchemy.orm import Session
 
 from app import reglages
+from app.modeles.annonces import Annonce, Local
 from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte, SessionConnexion
 from app.modeles.fichiers import AccordParental, Fichier
 from app.modeles.journal import JournalAction
 from app.modeles.metiers import Metier, PropositionMetier
 from app.modeles.prestataires import Commune, MetierSecondaire, Prestataire
-from app.services import journal, mails
+from app.services import communes, journal, mails
 from app.services.erreurs import ErreurRegle
 from app.services.securite import hacher_mot_de_passe, mot_de_passe_correct
 
@@ -30,18 +31,8 @@ def enregistrer_adresse(
     db: Session, compte: Compte, *, ligne: str, complement: str | None, commune_id: int, code_postal: str, maintenant: datetime
 ) -> Adresse:
     """Ex. « 8 allée des Pins », Talence, 33400 → accepté ; Talence avec 33600 (code de Pessac) → refusé."""
-    ligne = " ".join(ligne.split())
-    mini, maxi = reglages.ADRESSE_LIGNE_LONGUEUR
-    if not mini <= len(ligne) <= maxi:
-        raise ErreurRegle(f"L'adresse doit faire entre {mini} et {maxi} caractères (ex. « 8 allée des Pins »).")
-    commune = db.get(Commune, commune_id)
-    if commune is None:
-        raise ErreurRegle("Choisissez votre ville dans la liste.")
-    code_postal = code_postal.strip()
-    if code_postal not in commune.codes_postaux:
-        codes = ", ".join(commune.codes_postaux)
-        raise ErreurRegle(f"Le code postal {code_postal} ne correspond pas à {commune.nom} ({codes}).")
-    complement = (complement or "").strip()[:maxi] or None
+    controle = communes.controler_adresse(db, ligne=ligne, complement=complement, commune_id=commune_id, code_postal=code_postal)
+    ligne, complement, commune, code_postal = controle.ligne, controle.complement, controle.commune, controle.code_postal
 
     adresse = adresse_de(db, compte)
     avant = None if adresse is None else {"ligne": adresse.ligne, "commune_id": adresse.commune_id}
@@ -148,6 +139,18 @@ def exporter(db: Session, compte: Compte, maintenant: datetime) -> dict[str, Any
             "ville": db.get_one(Commune, prestataire.commune_id).nom, "distance_km": prestataire.distance_km,
             "siret": prestataire.siret, "siret_statut": prestataire.siret_statut, "statut": prestataire.statut,
             "cree_le": _date(prestataire.cree_le),
+            "local": [
+                {"ligne": local.ligne, "complement": local.complement, "code_postal": local.code_postal,
+                 "commune": db.get_one(Commune, local.commune_id).nom}
+                for local in db.scalars(select(Local).where(Local.prestataire_id == prestataire.id))
+            ],
+            "annonces": [
+                {"titre": a.titre, "metier": db.get_one(Metier, a.metier_id).nom, "description": a.description,
+                 "forme_prix": a.forme_prix, "prix_centimes": a.prix_centimes, "duree_minutes": a.duree_minutes,
+                 "heures_min": a.heures_min, "heures_max": a.heures_max, "lieu": a.lieu, "statut": a.statut,
+                 "cree_le": _date(a.cree_le)}
+                for a in db.scalars(select(Annonce).where(Annonce.prestataire_id == prestataire.id).order_by(Annonce.cree_le))
+            ],
         }
     journal.noter(
         db, auteur_id=compte.id, action="telecharger_mes_donnees", table_cible="compte", ligne_id=compte.id, maintenant=maintenant
@@ -163,6 +166,11 @@ def _effacer_donnees_personnelles(db: Session, compte: Compte, maintenant: datet
     adresse = adresse_de(db, compte)
     if adresse is not None:
         db.delete(adresse)
+    # L'adresse du local d'un ancien prestataire peut être son domicile : effacée aussi (ses annonces restent, sans adresse)
+    prestataire = db.scalar(select(Prestataire).where(Prestataire.compte_id == compte.id))
+    if prestataire is not None:
+        for local in db.scalars(select(Local).where(Local.prestataire_id == prestataire.id)):
+            db.delete(local)
     # Un compte d'essai garde sa marque @example.com : le nettoyage des données d'essai le retrouvera
     domaine = "example.com" if compte.email.endswith("@example.com") else "rafals.invalid"
     compte.email = f"compte-ferme-{compte.id}@{domaine}"

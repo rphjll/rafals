@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.db import moteur
-from app.routes import accords, administration, clients, comptes, metiers, prestataires
+from app.routes import accords, administration, annonces, clients, comptes, metiers, prestataires
 from app.services import clients as service_clients
 from app.services import prestataires as service_prestataires
 from app.services.erreurs import ErreurRegle
@@ -56,6 +56,10 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
         asyncio.create_task(_tache_periodique(
             "comptes inactifs (prévenus, fermés)", 24 * 60 * 60, _dans_une_session(service_clients.traiter_inactifs),
         )),
+        # Métier principal arrivé à sa date de fin : un métier secondaire devient principal (lot 3.1)
+        asyncio.create_task(_tache_periodique(
+            "fins de métier", 60 * 60, _dans_une_session(service_prestataires.appliquer_fins_de_metier),
+        )),
     ]
     yield
     for tache in taches:
@@ -68,6 +72,7 @@ app.include_router(accords.routeur)
 app.include_router(administration.routeur)
 app.include_router(metiers.routeur)
 app.include_router(prestataires.routeur)
+app.include_router(annonces.routeur)
 app.include_router(clients.routeur)
 
 

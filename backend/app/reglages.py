@@ -31,6 +31,12 @@ INACTIVITE_DUREE = timedelta(days=3 * 365)
 INACTIVITE_PREAVIS = timedelta(days=30)
 ADRESSE_LIGNE_LONGUEUR = (3, 120)
 
+# Annonces (RM-ANNONCES.md, validé le 29/09/2026 ; longueur du titre proposée par Claude dans le MLD du lot 3.1)
+ANNONCE_TITRE_LONGUEUR = (3, 80)
+ANNONCE_DESCRIPTION_MAX = 1000
+ANNONCE_PHOTOS_MAX = 5
+ANNONCES_EN_LIGNE_MAX = 20
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

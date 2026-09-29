@@ -81,6 +81,16 @@ Un prestataire a au plus **20 annonces en ligne** en même temps (réglage modif
 - Exemple 2 : un tricheur essaie d'en publier une 21e → « Vous avez déjà 20 annonces en ligne : mettez-en une en pause pour publier celle-ci. »
 **Pourquoi :** empêcher qu'un seul compte remplisse les recherches.
 
+## Précisions prises au lot 3.1 (proposées par Claude, à valider par Raphael)
+- **Pas de brouillon** : une annonce écrite est aussitôt en ligne. Titre de 3 à 80 caractères.
+- **Carte** : cochée seulement si le SIRET est vérifié au moment d'écrire l'annonce (« Le paiement par carte demande un SIRET vérifié : sans lui, espèces seulement. »). Si le SIRET est perdu plus tard, l'annonce passe seule en espèces et revient à la carte quand il est de nouveau vérifié.
+- **Ville montrée** : pour « chez moi », la ville du local ; sinon, la ville du prestataire.
+- **Local** : impossible à effacer tant qu'une annonce « chez moi » ou « les deux » est en ligne ; effacé quand le compte est fermé (ce peut être le domicile).
+- **Retirer un métier depuis le formulaire du profil** : accepté seulement s'il n'a jamais eu d'annonce (ex. ajouté par erreur) ; sinon « mettez-lui une date de fin dans votre calendrier ».
+- **À la date de fin** : une tâche automatique (toutes les heures) met « en pause » les annonces en ligne du métier arrêté ; c'est pour cela que Karim, en mars, clique [Republier]. Republier est refusé tant que le métier n'est pas repris.
+- **Métier principal remplacé** : si le métier choisi pour le remplacer est lui-même arrêté entre-temps, c'est le 1er métier secondaire encore exercé qui le remplace. L'ancien principal reste dans le profil comme « métier arrêté ».
+- « Télécharger mes données » contient maintenant les annonces et le local.
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|

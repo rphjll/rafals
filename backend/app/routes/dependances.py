@@ -28,6 +28,11 @@ def compte_requis(db: Base, jeton: CookieSession = None) -> Compte:
     return compte
 
 
+def compte_facultatif(db: Base, jeton: CookieSession = None) -> Compte | None:
+    """Pour les pages ouvertes à tous : la personne connectée, ou None (pas d'erreur)."""
+    return service_comptes.compte_connecte(db, jeton, maintenant())
+
+
 def administrateur_requis(compte: Annotated[Compte, Depends(compte_requis)]) -> Compte:
     """Toute route qui en dépend refuse (403) une personne qui n'est pas administrateur."""
     if not compte.est_administrateur:
@@ -36,4 +41,5 @@ def administrateur_requis(compte: Annotated[Compte, Depends(compte_requis)]) -> 
 
 
 CompteConnecte = Annotated[Compte, Depends(compte_requis)]
+CompteOuPersonne = Annotated[Compte | None, Depends(compte_facultatif)]
 Administrateur = Annotated[Compte, Depends(administrateur_requis)]

@@ -1,6 +1,6 @@
 """Adresses du profil prestataire, des communes et de l'administration des prestataires (écrans au lot 2.5)."""
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 
 from fastapi import APIRouter, Response, UploadFile
@@ -42,12 +42,20 @@ class MetierCourt(BaseModel):
     nom: str
 
 
+class MetierExerce(BaseModel):
+    id: int
+    nom: str
+    fin_le: date | None = None
+
+
 class ProfilVisible(BaseModel):
     id: int
     nom_affiche: str
     presentation: str | None
-    metier_principal: MetierCourt
-    metiers_secondaires: list[MetierCourt]
+    metier_principal: MetierExerce
+    metier_principal_suivant: MetierCourt | None
+    metiers_secondaires: list[MetierExerce]
+    metiers_arretes: list[MetierExerce]
     commune: CommuneVisible
     distance_km: int
     siret: str | None
@@ -55,6 +63,12 @@ class ProfilVisible(BaseModel):
     statut: str
     a_une_photo: bool
     cree_le: datetime
+
+
+class FinMetier(BaseModel):
+    metier_id: int
+    fin_le: date | None = None
+    suivant_id: int | None = None
 
 
 class ActionStatut(BaseModel):
@@ -81,14 +95,23 @@ def commune_visible(commune: Commune) -> CommuneVisible:
 
 
 def visible(db: Base, prestataire: Prestataire) -> ProfilVisible:
+    """Métiers secondaires encore exercés (avec leur date de fin éventuelle) et métiers arrêtés (date de fin passée)."""
+    jour = service.aujourd_hui(maintenant())
     principal = db.get_one(Metier, prestataire.metier_principal_id)
-    secondaires = [db.get_one(Metier, i) for i in service.metiers_secondaires(db, prestataire)]
+    suivant = db.get(Metier, prestataire.metier_principal_suivant_id) if prestataire.metier_principal_suivant_id else None
+    lignes = [(ligne, db.get_one(Metier, ligne.metier_id)) for ligne in service.lignes_secondaires(db, prestataire)]
     return ProfilVisible(
         id=prestataire.id,
         nom_affiche=prestataire.nom_affiche,
         presentation=prestataire.presentation,
-        metier_principal=MetierCourt(id=principal.id, nom=principal.nom),
-        metiers_secondaires=[MetierCourt(id=m.id, nom=m.nom) for m in secondaires],
+        metier_principal=MetierExerce(id=principal.id, nom=principal.nom, fin_le=prestataire.metier_principal_fin_le),
+        metier_principal_suivant=MetierCourt(id=suivant.id, nom=suivant.nom) if suivant else None,
+        metiers_secondaires=[
+            MetierExerce(id=m.id, nom=m.nom, fin_le=ligne.fin_le) for ligne, m in lignes if service.en_cours(ligne.fin_le, jour)
+        ],
+        metiers_arretes=[
+            MetierExerce(id=m.id, nom=m.nom, fin_le=ligne.fin_le) for ligne, m in lignes if not service.en_cours(ligne.fin_le, jour)
+        ],
         commune=commune_visible(db.get_one(Commune, prestataire.commune_id)),
         distance_km=prestataire.distance_km,
         siret=prestataire.siret,
@@ -142,6 +165,16 @@ async def photo(fichier: UploadFile, db: Base, compte: CompteConnecte) -> Profil
         db, compte, mon_profil_ou_404(db, compte),
         nom_fichier=fichier.filename or "photo", type_mime=fichier.content_type or "",
         contenu=await fichier.read(), maintenant=maintenant(),
+    )
+    db.commit()
+    return visible(db, prestataire)
+
+
+@routeur.post("/moi/prestataire/metiers/fin")
+def fin_metier(donnees: FinMetier, db: Base, compte: CompteConnecte) -> ProfilVisible:
+    """Date de fin d'un métier (vide = l'enlever, ou reprendre un métier arrêté) : RM-ANNONCES."""
+    prestataire = service.fixer_fin_metier(
+        db, mon_profil_ou_404(db, compte), donnees.metier_id, donnees.fin_le, donnees.suivant_id, maintenant()
     )
     db.commit()
     return visible(db, prestataire)

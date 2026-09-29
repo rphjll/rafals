@@ -32,8 +32,16 @@ RATTACHEES: dict[str, list[str]] = {
         "DELETE FROM journal_action WHERE auteur_id = :id OR (table_cible = 'compte' AND ligne_id = :id)"
         " OR (table_cible = 'accord_parental' AND ligne_id IN (SELECT id FROM accord_parental WHERE compte_id = :id))"
         " OR (table_cible = 'proposition_metier' AND ligne_id IN (SELECT id FROM proposition_metier WHERE propose_par_id = :id))"
-        " OR (table_cible = 'prestataire' AND ligne_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",
+        " OR (table_cible = 'prestataire' AND ligne_id IN (SELECT id FROM prestataire WHERE compte_id = :id))"
+        " OR (table_cible = 'annonce' AND ligne_id IN (SELECT a.id FROM annonce a JOIN prestataire p ON p.id = a.prestataire_id"
+        " WHERE p.compte_id = :id))"
+        " OR (table_cible = 'local' AND ligne_id IN (SELECT l.id FROM local l JOIN prestataire p ON p.id = l.prestataire_id"
+        " WHERE p.compte_id = :id))",
         "DELETE FROM proposition_metier WHERE propose_par_id = :id",
+        "DELETE FROM photo_annonce WHERE annonce_id IN (SELECT a.id FROM annonce a JOIN prestataire p ON p.id = a.prestataire_id"
+        " WHERE p.compte_id = :id)",
+        "DELETE FROM annonce WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
+        "DELETE FROM local WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM metier_secondaire WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM prestataire WHERE compte_id = :id",
         "DELETE FROM accord_parental WHERE compte_id = :id",
