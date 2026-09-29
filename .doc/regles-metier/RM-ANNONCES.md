@@ -1,0 +1,99 @@
+# Règle métier — Annonces (sujet 05)
+
+> Validé et formalisé le 29/09/2026 (lot 3.0).
+
+## Objectif
+Ce qu'un prestataire met en ligne pour être trouvé et réservé : nom du service, prix, lieu, modes de paiement.
+
+## Déjà décidé (sujets 02 et glossaire, 27-28/09/2026)
+- On dit **annonce** partout, jamais « publication » ni « prestation ».
+- **Lieu**, pour chaque annonce : « chez le client », « chez moi / dans mon local » (adresse du local prise dans le profil, voir plus bas), ou « les deux » (voir `RM-PRESTATAIRES.md`).
+- **Paiement**, pour chaque annonce : un prestataire avec SIRET vérifié choisit « carte sur le site » et/ou « espèces » ; sans SIRET : espèces seulement (⚠️ à vérifier juridiquement).
+- Le prestataire devient visible des clients dès sa **première annonce publiée**.
+
+## Contenu d'une annonce (décidé le 29/09/2026)
+Titre, métier, prix, durée (sauf « sur devis »), lieu, modes de paiement, plus :
+- une **description** de 1000 caractères au plus (comme la présentation du profil) ;
+- jusqu'à **5 photos** JPG ou PNG, 5 Mo chacune (même vérification que la photo du profil).
+- Exemple : Julie, « Ménage 2 h — 50 € », description « Produits fournis, repassage non compris », 1 photo d'une cuisine qu'elle a nettoyée.
+**Pourquoi :** le client se fait une idée avant de réserver.
+
+## Adresse du lieu « chez moi » : la ville pour tous, la rue après réservation (décidé le 29/09/2026)
+- Tout le monde voit la ville (ex. « Mérignac ») ; le client voit la rue (« 12 rue des Lilas ») seulement après avoir réservé, comme le téléphone du prestataire.
+- Exemple : Léa, « Coupe femme — au salon ». Avant de réserver, Mme Dupont voit « Mérignac » ; après, « 12 rue des Lilas, 33700 Mérignac ».
+**Pourquoi :** protège un prestataire qui reçoit chez lui, et évite qu'on contourne rafals.
+- **Une seule adresse de local, dans le profil** (décidé le 29/09/2026) : Léa écrit « 12 rue des Lilas » une fois dans « Mon activité » ; ses 4 annonces « au salon » l'utilisent ; si elle déménage, elle la change une fois. Une annonce « chez moi » est refusée tant que le profil n'a pas d'adresse de local. (Précise `RM-PRESTATAIRES.md`, qui disait « avec l'adresse » pour chaque annonce.)
+
+## Forme du prix (décidé le 29/09/2026)
+Au choix, pour chaque annonce :
+- **prix fixe** : ex. Julie, « Ménage 2 h — 50 € » ;
+- **prix à l'heure** : ex. Karim, « Dépannage fuite — 40 € de l'heure » ;
+- **sur devis** : ex. un maçon, « Muret de jardin — prix sur devis » (il vient d'abord voir ; les devis arrivent au niveau 5).
+**Pourquoi :** certains métiers ne peuvent pas connaître le prix à l'avance.
+
+## Durée obligatoire (décidé le 29/09/2026)
+Chaque annonce à prix fixe ou à l'heure a une durée (ex. 30 min, 2 h), qui bloque l'agenda du prestataire (pas de durée pour « sur devis », voir plus bas).
+- Exemple : Julie, « Ménage — 2 h ». Mme Dupont réserve mardi à 9 h : Julie est occupée de 9 h à 11 h, et le client suivant ne peut réserver qu'à partir de 11 h.
+**Pourquoi :** rafals ne propose que des horaires vraiment libres, donc jamais deux clients en même temps.
+
+## Prix à l'heure : le client choisit le nombre d'heures, dans des limites (décidé le 29/09/2026)
+Pour une annonce à l'heure, le prestataire fixe un nombre d'heures minimum et maximum ; le client choisit en réservant, voit le prix total avant de confirmer, et l'agenda est bloqué pour ce temps.
+- Exemple 1 : Sonia, « Ménage — 25 €/h, de 2 h à 4 h ». Mme Dupont choisit 3 h → elle voit « 75 € » ; Sonia est occupée 3 h.
+- Exemple 2 : Karim fixe « de 1 h à 1 h » → le client ne choisit rien (1 h, 40 €).
+**Pourquoi :** le client connaît le montant avant de réserver.
+
+## Sur devis : le client envoie une demande écrite (décidé le 29/09/2026)
+Pour une annonce « sur devis », il n'y a pas de rendez-vous : le client décrit son besoin (et peut ajouter des photos), puis le prestataire répond par un devis.
+- Exemple : Mme Dupont écrit à Paul, maçon : « Muret de 5 mètres au fond du jardin », avec 2 photos. Paul répond par un devis (niveau 5).
+**Conséquence :** une annonce « sur devis » n'a **pas de durée** (l'agenda n'est pas utilisé) ; la durée reste obligatoire pour les prix fixes et à l'heure. La demande écrite et le devis seront précisés avec le sujet 10 (Devis).
+
+## Valeurs figées (invariant du projet)
+Le titre, le prix et la durée sont recopiés sur le rendez-vous au moment de la réservation.
+- Exemple : Mme Dupont réserve « Ménage 2 h — 50 € » le 01/10 pour le 14/10 ; le 05/10, Julie passe l'annonce à 55 € → Mme Dupont paie toujours 50 € ; les réservations suivantes, 55 €.
+
+## Chaque annonce est rangée dans un des métiers du prestataire (décidé le 29/09/2026)
+Le prestataire choisit, pour chaque annonce, un métier parmi ceux de son profil (principal ou secondaires).
+- Exemple 1 : Karim (Plombier + Chauffagiste) range « Dépannage fuite » dans Plombier et « Entretien chaudière » dans Chauffagiste. Un client qui cherche « chauffagiste » voit directement « Entretien chaudière ».
+- Exemple 2 : Karim ne peut pas publier dans « Coiffeur » sans ajouter d'abord ce métier à son profil.
+**Pourquoi :** le profil correspond toujours à ce que le prestataire propose, et la recherche montre la bonne annonce.
+
+## Pause et retrait, jamais d'effacement (décidé le 29/09/2026)
+- **[Mettre en pause]** : l'annonce est cachée des clients et reste dans « Mes annonces » ; **[Republier]** la remet en ligne. Ex. Julie met « Repassage — 20 € » en pause pendant août.
+- **[Retirer]** : Julie ne veut plus la proposer ; l'annonce est rangée dans « Annonces retirées », hors de sa liste principale ; elle peut la **republier** depuis là telle quelle (confirmé le 29/09/2026 ; ex. retirée en juin, republiée en décembre).
+- Une annonce n'est **jamais effacée**, pour garder l'historique des rendez-vous et des factures.
+- Les rendez-vous déjà pris restent dans les deux cas.
+
+## Arrêter un métier : une date de fin dans le calendrier, pas un bouton « supprimer » (décidé le 29/09/2026)
+Réponse de Raphael, mot pour mot : « au lieux d'un bouton suprimer ce metier je veux que dans le calendrier il puisse choisir une date de cloturations donc si il dis demain par exemple toute les reservations apres seront annulés et il n'execrcera plus ce metier mais si il veut reprendre faut quand meme faire en sorte qu'il puisse ».
+- Le prestataire choisit dans son calendrier une **date de fin** pour un de ses métiers.
+- Les réservations de ce métier **après** cette date sont annulées ; après cette date, il n'exerce plus ce métier.
+- Il peut **reprendre** ce métier plus tard.
+- Précision de Raphael, mot pour mot : « quans il cloture a partir d'une date apres c bloqué pour tout lesreste de sa vie il peut plus faire d'annonces sur ce metier ou quoi sauf si il re met ce metier dans se compétences » → après la date de fin, le métier sort de son profil ; pour reprendre, il le remet dans ses métiers.
+- Exemple : le 01/11, Karim met la date de fin « 15/11 » sur Chauffagiste. Le rendez-vous « Entretien chaudière » de Mme Dupont le 10/11 reste ; celui de M. Petit le 20/11 est annulé.
+- **Ses annonces de ce métier sont cachées, pas effacées** (décidé le 29/09/2026) : du 16/11 à mars, aucun client ne voit « Entretien chaudière » ; en mars, Karim remet Chauffagiste dans ses métiers, retrouve l'annonce dans « Mes annonces » et clique [Republier], sans rien réécrire.
+- ⚠️ Change l'écran actuel « Mon activité » (lot 2.5), qui permet de retirer directement un métier secondaire : à reprendre au niveau 3.
+
+## 20 annonces en ligne au plus (décidé le 29/09/2026)
+Un prestataire a au plus **20 annonces en ligne** en même temps (réglage modifiable sans toucher au code) ; les annonces en pause ou retirées ne comptent pas.
+- Exemple 1 : Julie en a 3 → aucun souci.
+- Exemple 2 : un tricheur essaie d'en publier une 21e → « Vous avez déjà 20 annonces en ligne : mettez-en une en pause pour publier celle-ci. »
+**Pourquoi :** empêcher qu'un seul compte remplisse les recherches.
+
+## Qui peut faire quoi
+| Action | Qui | Condition |
+|---|---|---|
+| Publier une annonce | Le prestataire | Peut réserver ou publier (adresse vérifiée, accord des parents avant 18 ans — `RM-COMPTES.md`) ; activité ni en pause, ni arrêtée, ni bloquée ; métier de son profil ; moins de 20 annonces en ligne |
+| Modifier, mettre en pause, retirer, republier | Le prestataire | Ses propres annonces seulement |
+| Voir une annonce en ligne | Tout le monde, même sans compte | La rue du local seulement après réservation |
+| Cacher une annonce | L'administrateur | Bloquer le prestataire cache toutes ses annonces (`RM-PRESTATAIRES.md`) ; modération fine : sujet 16 |
+
+## Désactivation / clôture / suppression
+- Pause (réversible) et retrait : voir plus haut.
+- Prestataire en pause, arrêté ou bloqué : toutes ses annonces sont cachées, sans être modifiées.
+- Suppression : jamais.
+
+## Questions ouvertes
+- (aucune pour l'instant ; ⚠️ espèces sans SIRET toujours à faire vérifier juridiquement)
+
+## Références
+- `GLOSSAIRE-METIER.md`, `RM-PRESTATAIRES.md`, `RM-METIERS.md`

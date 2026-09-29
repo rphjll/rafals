@@ -4,7 +4,15 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- (aucun)
+- **Demande** : Lot 3.0 — Écrire les règles des sujets 05 Annonces et 06 Agenda, puis découper le niveau 3 en lots (Raphael : « Oui, on commence »)
+- **Commencé le** : 29/09/2026
+- **Étapes** :
+  - [x] 1. Sujet 05 Annonces : `RM-ANNONCES.md` validé (29/09/2026)
+  - [ ] 2. Sujet 06 Agenda : questions une à une, puis `RM-AGENDA.md`  ← on en est là
+  - [ ] 3. Découpage du niveau 3 en lots dans `PLAN-DEV.md` et ici
+- **Déjà décidé avant** : lieu et mode de paiement choisis par annonce, espèces seulement sans SIRET, visible dès la 1re annonce (RM-PRESTATAIRES, GLOSSAIRE)
+- **Question en attente** : horaires d'ouverture (agenda)
+- **En pause** : aucune
 
 ## Définition de « terminé »
 
@@ -49,7 +57,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 ## Niveaux 3 à 6 — à découper après l'écriture de leurs règles
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 3.0 | Règles | Écrire les règles des sujets 05 Annonces et 06 Agenda, puis découper le niveau 3 en lots | SUIVI_REGLES_METIER | 2.7 | ⬜ |
+| 3.0 | Règles | Écrire les règles des sujets 05 Annonces et 06 Agenda, puis découper le niveau 3 en lots | SUIVI_REGLES_METIER | 2.7 | 🟡 |
 | 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | ⬜ |
 | 5.0 | Règles | Vérification juridique (sans SIRET), choix du service de paiement, sujets 10 Devis, 11 Factures, 12 Paiements, puis découper le niveau 5 | SUIVI_REGLES_METIER | niveau 4 | ⬜ |
 | 6.0 | Règles | Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6 | SUIVI_REGLES_METIER | niveau 5 | ⬜ |
