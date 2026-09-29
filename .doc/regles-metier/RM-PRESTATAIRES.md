@@ -60,6 +60,15 @@ Un prestataire sans annonce publiée n'apparaît dans aucune recherche (ex. Kari
 - **Devenir prestataire** exige l'adresse vérifiée et, avant 18 ans, l'accord des parents accepté (règle de `RM-COMPTES.md`), sinon message clair.
 - Toute création, modification, photo et changement de statut est écrit au journal des actions.
 
+## Vérification du SIRET auprès de l'État : précisions du lot 2.4 (validé par Raphael le 29/09/2026)
+- Service utilisé : **« Recherche d'entreprises »** de l'État (recherche-entreprises.api.gouv.fr), gratuit, sans inscription.
+- **Vérifié** si le SIRET existe, que l'établissement est **ouvert**, et que le **nom de famille du compte** apparaît dans le nom officiel ou parmi les **dirigeants**.
+  - Ex. Julie Martin, auto-entrepreneuse, nom officiel « JULIE MARTIN » → vérifié. Julie gérante de « NET ET CLAIR » (dirigeante) → vérifié.
+- **Nom caché par l'État** (« non diffusible », fréquent chez les auto-entrepreneurs) : **accepté d'office** si le SIRET existe et est ouvert (décision de Raphael du 29/09/2026).
+- **Refusé tout de suite, avec la raison** (le SIRET n'est pas enregistré) : introuvable ; établissement fermé ; SIRET d'une autre entreprise (« Ce SIRET appartient à « GOOGLE FRANCE » : il ne semble pas être le vôtre… »).
+- **Service injoignable** : SIRET enregistré « à vérifier » (espèces seulement), nouvel essai automatique **toutes les 30 minutes**, écrit au journal.
+- **Cas particulier** (ex. salarié qui n'est pas dirigeant) : l'administrateur peut **valider le SIRET à la main**, après avoir vu un justificatif.
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|

@@ -11,6 +11,7 @@ from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, MetierSecondaire, Prestataire
 from app.services import droits, fichiers, journal
+from app.services import siret as service_siret
 from app.services.erreurs import ErreurRegle
 
 
@@ -47,6 +48,54 @@ def siret_valide(siret: str) -> bool:
         valeur = int(chiffre) * (2 if rang % 2 else 1)
         total += valeur - 9 if valeur > 9 else valeur
     return total % 10 == 0
+
+
+def _controler_siret(siret: str | None, compte: Compte, maintenant: datetime) -> tuple[str, datetime | None]:
+    """Renvoie (état du SIRET, date de vérification). Un SIRET refusé par l'État n'est pas enregistré :
+    la personne voit tout de suite la raison. Service de l'État en panne : « à vérifier » (nouvel essai plus tard)."""
+    if siret is None:
+        return "absent", None
+    resultat = service_siret.verifier(siret, compte)
+    if resultat.statut == "refuse":
+        raise ErreurRegle(resultat.message)
+    return resultat.statut, (maintenant if resultat.statut == "verifie" else None)
+
+
+def reverifier_sirets_en_attente(db: Session, maintenant: datetime) -> int:
+    """Nouvel essai pour les SIRET restés « à vérifier » (service de l'État en panne au moment de l'envoi).
+    Lancé toutes les 30 minutes par le serveur. S'arrête au premier « toujours en panne ». Renvoie le nombre traité."""
+    traites = 0
+    for prestataire in db.scalars(select(Prestataire).where(Prestataire.siret_statut == "a_verifier")).all():
+        compte = db.get_one(Compte, prestataire.compte_id)
+        resultat = service_siret.verifier(prestataire.siret or "", compte)
+        if resultat.statut == "a_verifier":
+            break
+        prestataire.siret_statut = resultat.statut
+        prestataire.siret_verifie_le = maintenant if resultat.statut == "verifie" else None
+        journal.noter(
+            db, auteur_id=None, action="reverifier_siret", table_cible="prestataire", ligne_id=prestataire.id,
+            avant={"siret_statut": "a_verifier"}, apres={"siret_statut": resultat.statut, "message": resultat.message},
+            maintenant=maintenant,
+        )
+        traites += 1
+    return traites
+
+
+def valider_siret_a_la_main(db: Session, administrateur: Compte, prestataire_id: int, maintenant: datetime) -> Prestataire:
+    """Par un administrateur, pour un cas particulier (ex. salarié qui n'est pas dirigeant, après avoir vu un justificatif)."""
+    prestataire = db.get(Prestataire, prestataire_id)
+    if prestataire is None:
+        raise ErreurRegle("Ce prestataire n'existe pas.", 404)
+    if prestataire.siret is None:
+        raise ErreurRegle("Ce prestataire n'a pas indiqué de SIRET.")
+    avant = prestataire.siret_statut
+    prestataire.siret_statut = "verifie"
+    prestataire.siret_verifie_le = maintenant
+    journal.noter(
+        db, auteur_id=administrateur.id, action="valider_siret_a_la_main", table_cible="prestataire", ligne_id=prestataire.id,
+        avant={"siret_statut": avant}, apres={"siret_statut": "verifie"}, maintenant=maintenant,
+    )
+    return prestataire
 
 
 # ---------- Création et modification ----------
@@ -123,6 +172,7 @@ def devenir_prestataire(db: Session, compte: Compte, profil: Profil, maintenant:
         raise ErreurRegle("Vous proposez déjà vos services : modifiez votre profil de prestataire.", 409)
 
     p = _verifier(db, profil)
+    siret_statut, siret_verifie_le = _controler_siret(p.siret, compte, maintenant)
     prestataire = Prestataire(
         compte_id=compte.id,
         metier_principal_id=p.metier_principal_id,
@@ -131,7 +181,8 @@ def devenir_prestataire(db: Session, compte: Compte, profil: Profil, maintenant:
         presentation=p.presentation,
         distance_km=p.distance_km,
         siret=p.siret,
-        siret_statut="a_verifier" if p.siret else "absent",
+        siret_statut=siret_statut,
+        siret_verifie_le=siret_verifie_le,
         statut="actif",
         statut_change_le=maintenant,
         cree_le=maintenant,
@@ -152,10 +203,10 @@ def modifier_profil(db: Session, prestataire: Prestataire, profil: Profil, maint
     avant = _etat(prestataire, metiers_secondaires(db, prestataire))
     p = _verifier(db, profil)
     if p.siret != prestataire.siret:
-        # Un SIRET changé repart à vérifier (lot 2.4) ; le retirer = « absent »
+        # Un SIRET nouveau ou changé est vérifié tout de suite auprès de l'État ; le retirer = « absent »
+        compte = db.get_one(Compte, prestataire.compte_id)
+        prestataire.siret_statut, prestataire.siret_verifie_le = _controler_siret(p.siret, compte, maintenant)
         prestataire.siret = p.siret
-        prestataire.siret_statut = "a_verifier" if p.siret else "absent"
-        prestataire.siret_verifie_le = None
     prestataire.nom_affiche = p.nom_affiche
     prestataire.presentation = p.presentation
     prestataire.metier_principal_id = p.metier_principal_id

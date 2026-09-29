@@ -26,6 +26,9 @@ PRESTATAIRE_PRESENTATION_MAX = 1000
 PHOTO_TYPES_ACCEPTES = {"image/jpeg", "image/png"}
 PHOTO_TAILLE_MAX_OCTETS = 5 * 1024 * 1024
 
+# SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
+SIRET_REVERIFICATION_MINUTES = 30
+
 SESSION_DUREE = timedelta(days=30)
 LIEN_MOT_DE_PASSE_DUREE = timedelta(hours=1)
 # Non fixé par les règles : choix de Claude le 28/09/2026 (voir journal de SUIVI-DEV.md)

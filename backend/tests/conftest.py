@@ -130,6 +130,23 @@ def fabrique_compte(mails_envoyes, base: Session) -> Callable[..., CompteEssai]:
     return fabriquer
 
 
+@pytest.fixture(autouse=True)
+def repertoire_de_l_etat(monkeypatch: pytest.MonkeyPatch) -> dict[str, list]:
+    """Les tests n'appellent jamais le vrai service de l'État (internet) : par défaut il est « en panne » ;
+    un test y met la réponse voulue : repertoire_de_l_etat["reponse"] = [ {entreprise…} ]."""
+    from app.services import siret
+
+    faux: dict[str, list] = {}
+
+    def interroger(_siret: str) -> list:
+        if "reponse" not in faux:
+            raise siret.ServiceIndisponible("service de l'État simulé en panne")
+        return faux["reponse"]
+
+    monkeypatch.setattr(siret, "interroger", interroger)
+    return faux
+
+
 @pytest.fixture
 def mails_envoyes(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     """Remplace l'envoi réel : les mails sont gardés dans une liste que le test peut lire."""

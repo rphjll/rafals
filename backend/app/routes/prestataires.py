@@ -187,6 +187,13 @@ def prestataires(db: Base, _admin: Administrateur) -> list[PrestataireAdministre
     ]
 
 
+@routeur.post("/admin/prestataires/{prestataire_id}/siret-valide")
+def valider_siret(prestataire_id: int, db: Base, admin: Administrateur) -> dict[str, str]:
+    prestataire = service.valider_siret_a_la_main(db, admin, prestataire_id, maintenant())
+    db.commit()
+    return {"siret_statut": prestataire.siret_statut}
+
+
 @routeur.post("/admin/prestataires/{prestataire_id}/blocage")
 def blocage(prestataire_id: int, donnees: Blocage, db: Base, admin: Administrateur) -> dict[str, str]:
     prestataire = service.bloquer(db, admin, prestataire_id, bloque=donnees.bloque, maintenant=maintenant())
