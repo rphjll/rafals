@@ -20,7 +20,7 @@ Règles validées → MLD validé → SQL → modèles → calculs (services) �
 
 **Niveau 3 — Cœur** : annonces (prix fixe / à l'heure / sur devis, durée, lieu, modes de paiement ; espèces seulement sans SIRET), agenda et disponibilités. → `RM-ANNONCES.md`, `RM-AGENDA.md` (validées le 29/09/2026) ; lots 3.1 à 3.4 dans `SUIVI-DEV.md`.
 
-**Niveau 4 — Action principale** : recherche (métier + ville, classement), rendez-vous (réservation, annulation), avis. → règles à écrire : sujets 07, 08, 09.
+**Niveau 4 — Action principale** : recherche (métier + ville, classement), rendez-vous (réservation, annulation, absences), avis. → `RM-RECHERCHE.md`, `RM-RENDEZ-VOUS.md`, `RM-AVIS.md` (validées le 30/09/2026) ; lots 4.1 à 4.8 dans `SUIVI-DEV.md`.
 
 **Niveau 5 — Argent** : devis, factures (numérotation, facture électronique / e-reporting), paiements par carte et commission. → règles à écrire : sujets 10, 11, 12. ⚠️ Avant ce niveau : vérification juridique des prestataires sans SIRET ; choix du service de paiement ; pourcentage de la commission.
 

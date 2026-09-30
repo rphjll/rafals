@@ -9,10 +9,10 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Étapes** :
   - [x] 1. Sujet 07 Recherche : `RM-RECHERCHE.md` validé (30/09/2026)
   - [x] 2. Sujet 08 Rendez-vous : `RM-RENDEZ-VOUS.md` validé (30/09/2026)
-  - [ ] 3. Sujet 09 Avis : `RM-AVIS.md`  ← on en est là
-  - [ ] 4. Découpage du niveau 4 en lots
+  - [x] 3. Sujet 09 Avis : `RM-AVIS.md` validé (30/09/2026)
+  - [x] 4. Découpage du niveau 4 en lots 4.1 à 4.8
 - **Déjà décidé avant** : rayon du prestataire ; métier principal avant secondaire, puis mieux notés (RM-PRESTATAIRES) ; avis 1 à 5 ★ seulement après un vrai rendez-vous (GLOSSAIRE) ; avis gardés sans nom si le client ferme son compte (RM-CLIENTS) ; coordonnées visibles après réservation
-- **Question en attente** : délai pour laisser un avis (sujet 09)
+- **Question en attente** : validation du découpage du niveau 4 et du lot 4.0
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -66,10 +66,22 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 
 L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date de fin d'un métier) sera branchée au niveau 4, quand les rendez-vous existeront.
 
-## Niveaux 4 à 6 — à découper après l'écriture de leurs règles
+## Niveau 4 — Action principale
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | 🟡 |
+| 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | 🔎 |
+| 4.1 | Serveur | Recherche : métier + ville dans le rayon, métier principal d'abord, note pondérée, badge « Nouveau », distance, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat ; page publique d'un prestataire | RM-RECHERCHE | 3.4 | ⬜ |
+| 4.2 | Écrans | « Trouver un prestataire » : résultats (une carte par prestataire), filtres, tri ; page publique d'un prestataire (profil + annonces) | RM-RECHERCHE | 4.1 | ⬜ |
+| 4.3 | Serveur | Rendez-vous : réserver (horaire libre, adresse si chez le client, valeurs recopiées), confirmation automatique ou « j'accepte chaque demande », expiration 24 h, refuser, annuler et déplacer (délai du prestataire), annulation par le prestataire avec motif, rappels par mail ; les rendez-vous pris (+ pause) retirés des horaires libres | RM-RENDEZ-VOUS | 4.1 | ⬜ |
+| 4.4 | Écrans | Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation | RM-RENDEZ-VOUS | 4.3, 4.2 | ⬜ |
+| 4.5 | Serveur | Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder » | RM-RENDEZ-VOUS, RM-AGENDA | 4.3 | ⬜ |
+| 4.6 | Écrans | Boutons [Client absent] / [N'est pas venu] / [Je suis venu] ; compteurs (Mon compte, page publique) ; Administration › contestations ; fenêtre « annuler ou garder » dans l'agenda | RM-RENDEZ-VOUS | 4.5, 4.4 | ⬜ |
+| 4.7 | Serveur | Avis : 30 jours avec rappel, réponse du prestataire, filtre de gros mots (liste modifiable), signalement, avis caché par l'administrateur ; note pondérée et badge « Nouveau » branchés dans la recherche | RM-AVIS | 4.5 | ⬜ |
+| 4.8 | Écrans | Laisser / modifier / retirer un avis ; avis sur la page publique ; Administration › avis signalés et liste des gros mots | RM-AVIS | 4.7, 4.6 | ⬜ |
+
+## Niveaux 5 et 6 — à découper après l'écriture de leurs règles
+| Lot | Type | Description | Règle source | Dépend de | État |
+|---|---|---|---|---|---|
 | 5.0 | Règles | Vérification juridique (sans SIRET), choix du service de paiement, sujets 10 Devis, 11 Factures, 12 Paiements, puis découper le niveau 5 | SUIVI_REGLES_METIER | niveau 4 | ⬜ |
 | 6.0 | Règles | Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6 | SUIVI_REGLES_METIER | niveau 5 | ⬜ |
 
@@ -132,3 +144,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **30/09/2026** — Lot 3.3 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 3.4 commencé.
 - **30/09/2026** — Lot 3.4 construit → 🔎 à vérifier. Page « Mon agenda » (menu, prestataires seulement) en 4 onglets : Calendrier (mois en couleurs ouvert / fermé / bloqué, « fin <métier> » en rouge, détail du jour, bloquer un jour ou quelques heures, périodes à venir avec [Débloquer], dates de fin de métier), Semaine type (plages par jour, ajout / retrait), Réglages (écart, pause, délais), Horaires libres (annonce + jour → pastilles). Réutilisation : composant commun `AppOnglets` (Administration et Mon agenda, onglet dans l'adresse), `outils/agenda.ts`. Essai de bout en bout par le port 5174 (compte d'essai n° 19 : semaine type, 10 horaires de 9 h 00 à 11 h 15, jour bloqué → 0 horaire, réglages, déblocage, pas de 30 min) : conforme ; compte n° 19 effacé après sauvegarde ; comptage : 1 compte, 0 prestataire, 0 plage, 0 blocage. Tests : 148 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude → à regarder par Raphael.
 - **30/09/2026** — Lot 3.4 validé par Raphael (« Oui, je valide ») → ✅. **Niveau 3 terminé.** Compte d'essai n° 20 (essai1@example.com, créé par Raphael pour l'essai) effacé après sauvegarde ; comptage : 1 compte, 0 prestataire, 0 annonce, 0 plage, 0 blocage, 0 fichier.
+- **30/09/2026** — Lot 4.0 → 🔎 à vérifier. `RM-RECHERCHE.md` (note pondérée, badge « Nouveau », distance affichée, une carte par prestataire, 4 filtres), `RM-RENDEZ-VOUS.md` (confirmation au choix, 24 h pour répondre, annulation / déplacement dans le délai du prestataire, absences des deux côtés visibles et contestables, annulation par le prestataire avec motif) et `RM-AVIS.md` (30 jours, réponse, filtre de gros mots, signalement, « Marie D. ») validés par Raphael. Niveau 4 découpé en lots 4.1 à 4.8 (à valider).

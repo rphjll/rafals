@@ -22,7 +22,7 @@
 | 06 | 3 — Cœur | Agenda et disponibilités | Horaires, congés, créneaux libres | validé et formalisé (29/09/2026) | `regles-metier/RM-AGENDA.md` |
 | 07 | 4 — Action principale | Recherche | Métier + ville, ordre des résultats | validé et formalisé (30/09/2026) | `regles-metier/RM-RECHERCHE.md` |
 | 08 | 4 — Action principale | Rendez-vous | Réservation, confirmation, annulation, absence | validé et formalisé (30/09/2026) | `regles-metier/RM-RENDEZ-VOUS.md` |
-| 09 | 4 — Action principale | Avis | Qui note, quand, modération | à faire | — |
+| 09 | 4 — Action principale | Avis | Qui note, quand, modération | validé et formalisé (30/09/2026) | `regles-metier/RM-AVIS.md` |
 | 10 | 5 — Argent | Devis | Création, acceptation, passage en facture | à faire | — |
 | 11 | 5 — Argent | Factures | Numérotation, mentions obligatoires, facture électronique / e-reporting | à faire | — |
 | 12 | 5 — Argent | Paiements et commission | Carte sur le site, espèces, pourcentage de rafals, remboursements | à faire | — |
