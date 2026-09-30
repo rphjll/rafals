@@ -4,7 +4,16 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- (aucun)
+- **Demande** : Lot 4.0 — Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 (Raphael : « Oui, on commence »)
+- **Commencé le** : 30/09/2026
+- **Étapes** :
+  - [x] 1. Sujet 07 Recherche : `RM-RECHERCHE.md` validé (30/09/2026)
+  - [ ] 2. Sujet 08 Rendez-vous : `RM-RENDEZ-VOUS.md`  ← on en est là
+  - [ ] 3. Sujet 09 Avis : `RM-AVIS.md`
+  - [ ] 4. Découpage du niveau 4 en lots
+- **Déjà décidé avant** : rayon du prestataire ; métier principal avant secondaire, puis mieux notés (RM-PRESTATAIRES) ; avis 1 à 5 ★ seulement après un vrai rendez-vous (GLOSSAIRE) ; avis gardés sans nom si le client ferme son compte (RM-CLIENTS) ; coordonnées visibles après réservation
+- **Question en attente** : confirmation d'un rendez-vous par le prestataire (sujet 08)
+- **En pause** : aucune
 
 ## Définition de « terminé »
 
@@ -60,7 +69,7 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 ## Niveaux 4 à 6 — à découper après l'écriture de leurs règles
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | ⬜ |
+| 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | 🟡 |
 | 5.0 | Règles | Vérification juridique (sans SIRET), choix du service de paiement, sujets 10 Devis, 11 Factures, 12 Paiements, puis découper le niveau 5 | SUIVI_REGLES_METIER | niveau 4 | ⬜ |
 | 6.0 | Règles | Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6 | SUIVI_REGLES_METIER | niveau 5 | ⬜ |
 
