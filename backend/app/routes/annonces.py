@@ -214,6 +214,11 @@ def annonce_visible_ou_404(db: Base, annonce_id: int, compte: Compte | None) -> 
 @routeur.get("/annonces/{annonce_id}")
 def voir(annonce_id: int, db: Base, compte: CompteOuPersonne) -> AnnoncePublique:
     annonce, prestataire = annonce_visible_ou_404(db, annonce_id, compte)
+    return annonce_publique(db, annonce, prestataire)
+
+
+def annonce_publique(db: Base, annonce: Annonce, prestataire: Prestataire) -> AnnoncePublique:
+    """Une annonce telle que la voit un client (aussi sur la page publique du prestataire)."""
     metier = db.get_one(Metier, annonce.metier_id)
     local = service.local_de(db, prestataire)
     commune_id = local.commune_id if annonce.lieu == "chez_moi" and local else prestataire.commune_id

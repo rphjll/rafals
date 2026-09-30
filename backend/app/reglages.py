@@ -48,6 +48,12 @@ AGENDA_PAUSE_MAX_MINUTES = 180
 RESERVATION_DELAI_MIN_MAX_MINUTES = 7 * 24 * 60
 RESERVATION_DELAI_MAX_MAX_MOIS = 12
 
+# Recherche (RM-RECHERCHE.md, validé le 30/09/2026) : note pondérée = (somme + 5 × 4 ★) ÷ (nombre d'avis + 5)
+RECHERCHE_AVIS_FICTIFS = 5
+RECHERCHE_NOTE_FICTIVE = 4
+RECHERCHE_RESULTATS_PAR_PAGE = 30
+RECHERCHE_METIERS_VOISINS = 5
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

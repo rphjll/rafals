@@ -4,15 +4,14 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 4.0 — Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 (Raphael : « Oui, on commence »)
+- **Demande** : Lot 4.1 — Serveur de la recherche (Raphael : « Oui, je valide les deux » : découpage du niveau 4 et lot 4.0)
 - **Commencé le** : 30/09/2026
 - **Étapes** :
-  - [x] 1. Sujet 07 Recherche : `RM-RECHERCHE.md` validé (30/09/2026)
-  - [x] 2. Sujet 08 Rendez-vous : `RM-RENDEZ-VOUS.md` validé (30/09/2026)
-  - [x] 3. Sujet 09 Avis : `RM-AVIS.md` validé (30/09/2026)
-  - [x] 4. Découpage du niveau 4 en lots 4.1 à 4.8
-- **Déjà décidé avant** : rayon du prestataire ; métier principal avant secondaire, puis mieux notés (RM-PRESTATAIRES) ; avis 1 à 5 ★ seulement après un vrai rendez-vous (GLOSSAIRE) ; avis gardés sans nom si le client ferme son compte (RM-CLIENTS) ; coordonnées visibles après réservation
-- **Question en attente** : validation du découpage du niveau 4 et du lot 4.0
+  - [x] 1. Pas de MLD : aucune nouvelle table (tout se calcule à partir des prestataires, annonces, communes, agenda)
+  - [x] 2. Service de recherche (rayon, ordre, note pondérée, filtres, pages, métiers voisins) et page publique d'un prestataire
+  - [x] 3. Routes, tests
+  - [x] 4. Nettoyage, invariants, suivi, sauvegarde
+- **Question en attente** : Raphael valide les précisions du lot 4.1 (RM-RECHERCHE) et le lot
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -69,8 +68,8 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 ## Niveau 4 — Action principale
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | 🔎 |
-| 4.1 | Serveur | Recherche : métier + ville dans le rayon, métier principal d'abord, note pondérée, badge « Nouveau », distance, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat ; page publique d'un prestataire | RM-RECHERCHE | 3.4 | ⬜ |
+| 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | ✅ |
+| 4.1 | Serveur | Recherche : métier + ville dans le rayon, métier principal d'abord, note pondérée, badge « Nouveau », distance, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat ; page publique d'un prestataire | RM-RECHERCHE | 3.4 | 🔎 |
 | 4.2 | Écrans | « Trouver un prestataire » : résultats (une carte par prestataire), filtres, tri ; page publique d'un prestataire (profil + annonces) | RM-RECHERCHE | 4.1 | ⬜ |
 | 4.3 | Serveur | Rendez-vous : réserver (horaire libre, adresse si chez le client, valeurs recopiées), confirmation automatique ou « j'accepte chaque demande », expiration 24 h, refuser, annuler et déplacer (délai du prestataire), annulation par le prestataire avec motif, rappels par mail ; les rendez-vous pris (+ pause) retirés des horaires libres | RM-RENDEZ-VOUS | 4.1 | ⬜ |
 | 4.4 | Écrans | Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation | RM-RENDEZ-VOUS | 4.3, 4.2 | ⬜ |
@@ -145,3 +144,5 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **30/09/2026** — Lot 3.4 construit → 🔎 à vérifier. Page « Mon agenda » (menu, prestataires seulement) en 4 onglets : Calendrier (mois en couleurs ouvert / fermé / bloqué, « fin <métier> » en rouge, détail du jour, bloquer un jour ou quelques heures, périodes à venir avec [Débloquer], dates de fin de métier), Semaine type (plages par jour, ajout / retrait), Réglages (écart, pause, délais), Horaires libres (annonce + jour → pastilles). Réutilisation : composant commun `AppOnglets` (Administration et Mon agenda, onglet dans l'adresse), `outils/agenda.ts`. Essai de bout en bout par le port 5174 (compte d'essai n° 19 : semaine type, 10 horaires de 9 h 00 à 11 h 15, jour bloqué → 0 horaire, réglages, déblocage, pas de 30 min) : conforme ; compte n° 19 effacé après sauvegarde ; comptage : 1 compte, 0 prestataire, 0 plage, 0 blocage. Tests : 148 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude → à regarder par Raphael.
 - **30/09/2026** — Lot 3.4 validé par Raphael (« Oui, je valide ») → ✅. **Niveau 3 terminé.** Compte d'essai n° 20 (essai1@example.com, créé par Raphael pour l'essai) effacé après sauvegarde ; comptage : 1 compte, 0 prestataire, 0 annonce, 0 plage, 0 blocage, 0 fichier.
 - **30/09/2026** — Lot 4.0 → 🔎 à vérifier. `RM-RECHERCHE.md` (note pondérée, badge « Nouveau », distance affichée, une carte par prestataire, 4 filtres), `RM-RENDEZ-VOUS.md` (confirmation au choix, 24 h pour répondre, annulation / déplacement dans le délai du prestataire, absences des deux côtés visibles et contestables, annulation par le prestataire avec motif) et `RM-AVIS.md` (30 jours, réponse, filtre de gros mots, signalement, « Marie D. ») validés par Raphael. Niveau 4 découpé en lots 4.1 à 4.8 (à valider).
+- **30/09/2026** — Lot 4.0 et découpage du niveau 4 validés par Raphael → ✅. Lot 4.1 commencé (sans MLD : aucune nouvelle table).
+- **30/09/2026** — Lot 4.1 construit → 🔎 à vérifier. Sans nouvelle table. Serveur : `/api/recherche` (métier + ville dans le rayon, annonce en ligne du métier, métier arrêté exclu, métier principal d'abord, note pondérée prête pour les avis du lot 4.7 — pour l'instant tous « Nouveau » —, à égalité le plus proche puis le plus ancien, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat) ; page publique d'un prestataire `/api/prestataires/12`. Réutilisation : `annonce_publique()` partagée entre la page d'une annonce et la page du prestataire. Tests : 165 OK (17 nouveaux ; ils reconnaissent les prestataires par leur numéro, la base de test contenant ceux des autres tests). Vraie base : 0 donnée d'essai. Invariants : sécurité OK (recherche et page publique sans téléphone, mail ni rue ; page cachée si l'activité n'est pas active) ; réglages dans `reglages.py` ; interface au lot 4.2 ; précisions notées dans `RM-RECHERCHE.md` (à valider).
