@@ -1,0 +1,91 @@
+<title>Maquette rafals recherche</title>
+<style>
+:root{--fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;--prim:#2F6B4F;--prim-t:#FFFFFF;--prim-doux:#E2EEE7;--accent:#D9793A;--ok:#2E7D4F;--ok-doux:#E3F2E8;--att:#B26A00;--att-doux:#FCF0DC;--err:#B3261E;--neu:#5B6573;--neu-doux:#E8ECF1;--sur:#FFFFFF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}}
+:root[data-theme="dark"]{color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:"Segoe UI",system-ui,sans-serif;font-size:15px;margin:0}
+.bandeau{background:var(--surface);border-bottom:1px dashed var(--bord);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--doux)}
+.bandeau b{color:var(--texte)}
+.onglet{font:inherit;border:1px solid var(--bord);background:transparent;color:var(--texte);border-radius:8px;padding:5px 9px;cursor:pointer}
+.onglet[aria-pressed="true"]{border-color:var(--prim);color:var(--prim);font-weight:700}
+header{background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px}
+.entete{max-width:1080px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-weight:700;font-size:24px;color:var(--prim)} .logo span{color:var(--accent)}
+.menu{display:flex;gap:14px;font-size:14px;color:var(--doux);flex-wrap:wrap} .menu b{color:var(--prim)}
+main{padding-inline:16px;padding-block:28px 60px}
+.contenu{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:28px;margin:0;letter-spacing:-.3px} h2{font-size:20px;margin:0} h3{margin:0;font-size:17px}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.deux{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end} @media (max-width:640px){.deux{grid-template-columns:1fr}}
+.choisi{display:flex;align-items:center;gap:10px;background:var(--ok-doux);color:var(--ok);border-radius:10px;padding:9px 12px;font-weight:600;min-height:42px}
+.choisi button{margin-left:auto}
+.leg{font-weight:600;font-size:13px;display:block;margin-bottom:6px}
+.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid transparent;min-height:42px;padding:9px 16px;cursor:pointer}
+.petit{min-height:34px;padding:5px 10px;font-size:14px}
+.prim{background:var(--prim);color:var(--prim-t);border-color:var(--prim)} .sec{background:var(--surface);color:var(--prim);border-color:var(--prim)} .ver{background:var(--neu-doux);color:var(--neu);border-color:var(--neu-doux)}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap} .b-ok{background:var(--ok-doux);color:var(--ok)} .b-acc{background:var(--att-doux);color:var(--att)} .b-neu{background:var(--neu-doux);color:var(--neu)}
+.note{font-size:13.5px;color:var(--doux);margin:0}
+.barre{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.tri{display:inline-flex;border:1px solid var(--bord);border-radius:10px;overflow:hidden} .tri button{font:inherit;border:0;background:var(--surface);color:var(--doux);padding:8px 12px;cursor:pointer;min-height:40px;font-weight:600} .tri button[aria-pressed="true"]{background:var(--prim-doux);color:var(--prim)}
+.filtres{display:flex;gap:6px 16px;flex-wrap:wrap;align-items:center}
+.filtres label{display:flex;gap:8px;align-items:center;min-height:40px;font-size:14px;font-weight:500;cursor:pointer} .filtres input[type=checkbox]{width:18px;height:18px;accent-color:var(--prim)}
+.prixmax{display:flex;gap:6px;align-items:center} .prixmax input{width:80px;min-height:38px;border:1px solid var(--bord);border-radius:10px;background:var(--fond);color:var(--texte);font:inherit;padding:6px 10px}
+.resultat{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:14px 16px;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.resultat:hover{border-color:var(--prim)} @media (max-width:560px){.resultat{grid-template-columns:52px 1fr}.resultat .prixr{grid-column:2}}
+.avatar{width:64px;height:64px;border-radius:999px;background:var(--prim-doux);color:var(--prim);display:grid;place-items:center;font-weight:700;font-size:20px} @media (max-width:560px){.avatar{width:52px;height:52px}}
+.infos{display:flex;flex-direction:column;gap:4px}
+.ligne1{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.etoiles{color:var(--accent);font-weight:700}
+.prixr{text-align:right} .prixr b{color:var(--prim);font-size:17px;display:block}
+.pages{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.pastilles{display:flex;gap:8px;flex-wrap:wrap}
+.ariane{font-size:13.5px;color:var(--doux)}
+.profil{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:start} @media (max-width:520px){.profil{grid-template-columns:1fr}}
+.gros{width:96px;height:96px;font-size:30px}
+.annonce{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--bord);padding-top:12px}
+.annonce:first-of-type{border-top:0;padding-top:0}
+</style>
+
+<div class="bandeau"><b>Maquette lot 4.2</b> · écrans :
+  <button class="onglet" data-e="resultats" aria-pressed="true">1. Trouver : résultats</button>
+  <button class="onglet" data-e="vide">2. Aucun résultat</button>
+  <button class="onglet" data-e="profil">3. Page publique d'un prestataire</button>
+</div>
+<header><div class="entete"><span class="logo">rafals<span>.</span></span><nav class="menu"><b>Trouver un prestataire</b><span>Proposer mes services</span><span>Mes rendez-vous</span><span>Mon compte</span></nav></div></header>
+<main><div class="contenu" id="ecran"></div></main>
+
+<script>
+const recherche = (ville) => '<h1>Trouver un prestataire</h1><div class="carte"><div class="deux"><div><span class="leg">Quel métier ? *</span><div class="choisi">✓ Plombier<button class="btn sec petit">Changer</button></div></div><div><span class="leg">Votre ville *</span><div class="choisi">✓ ' + ville + '<button class="btn sec petit">Changer</button></div></div><button class="btn prim">Chercher</button></div><p class="note">Métier : par les premières lettres ou par dossier ; ville : par le nom ou le code postal.</p></div>';
+const res = (ini, nom, etoiles, metier, lieu, prix, extra) => '<button class="resultat" data-e="profil"><div class="avatar">' + ini + '</div><div class="infos"><div class="ligne1"><h3>' + nom + '</h3>' + etoiles + '</div><span class="note">' + metier + ' · ' + lieu + '</span><div class="ligne1">' + extra + '</div></div><div class="prixr">' + prix + '</div></button>';
+const nouveau = '<span class="badge b-acc">Nouveau sur rafals</span>';
+const note = (n, a) => '<span class="etoiles">★ ' + n + '</span><span class="note">(' + a + ' avis)</span>';
+const E = {};
+E.resultats = recherche('Talence (33400)') +
+  '<div class="barre"><h2>12 plombiers pour Talence</h2><div class="tri"><button aria-pressed="true">Les mieux notés</button><button aria-pressed="false">Les plus proches</button></div></div>' +
+  '<div class="filtres"><label><input type="checkbox"> Vient chez moi</label><label><input type="checkbox"> Paiement par carte</label><label><input type="checkbox"> Libre dans les 7 jours</label><span class="prixmax">Prix maximum <input inputmode="decimal" placeholder="ex. 60"> €</span></div>' +
+  res('SM', 'Sophie Martin', note('4,8', 40), 'Plombier', 'Bordeaux · à 25 km', '<span class="note">à partir de</span><b>45 €</b><span class="note">3 annonces</span>', '<span class="badge b-ok">vient chez vous</span><span class="badge b-neu">carte acceptée</span>') +
+  res('MR', 'Marc Roux', note('4,2', 30), 'Plombier', 'Pessac · à 5 km', '<span class="note">à partir de</span><b>40 €/h</b><span class="note">2 annonces</span>', '<span class="badge b-ok">vient chez vous</span>') +
+  res('KB', 'Karim Benali', nouveau, 'Plombier', 'Pessac · à 6 km', '<b>Sur devis</b><span class="note">1 annonce</span>', '<span class="badge b-ok">vient chez vous</span>') +
+  res('JL', 'Julie Leroy', note('4,9', 12), 'aussi plombier (métier principal : chauffagiste)', 'Talence · à 1 km', '<span class="note">à partir de</span><b>60 €</b><span class="note">1 annonce</span>', '<span class="badge b-ok">vient chez vous</span>') +
+  '<div class="pages"><button class="btn sec petit">‹</button><button class="btn prim petit">1</button><button class="btn sec petit">2</button><button class="btn sec petit">›</button></div>' +
+  '<p class="note">Ordre : métier principal d\'abord (Julie, chauffagiste, passe après), puis les mieux notés (note tenant compte du nombre d\'avis), puis les nouveaux. L\'adresse de la page garde la recherche : un lien partagé montre les mêmes résultats.</p>';
+E.vide = recherche('Libourne (33500)') +
+  '<div class="carte"><h2>Aucun plombier ne vient à Libourne pour l\'instant.</h2><p class="note">Essayez un métier voisin :</p><div class="pastilles"><button class="btn sec petit">Chauffagiste</button><button class="btn sec petit">Électricien</button><button class="btn sec petit">Maçon</button><button class="btn sec petit">Menuisier</button><button class="btn sec petit">Peintre</button></div><p class="note">Avec des filtres cochés : « Aucun résultat avec ces filtres. » + [Enlever les filtres].</p></div>';
+E.profil = '<p class="ariane">Trouver › Plombier › Talence › Marc Roux</p>' +
+  '<div class="carte"><div class="profil"><div class="avatar gros">MR</div><div style="display:flex;flex-direction:column;gap:8px"><div class="ligne1"><h1 style="font-size:26px">Marc Roux</h1><span class="badge b-ok">SIRET vérifié</span></div>' + '<div class="ligne1">' + note('4,2', 30) + '</div>' +
+  '<p class="note">Plombier · aussi Chauffagiste</p><p class="note">Part de Pessac, se déplace jusqu\'à 20 km</p><p style="margin:0">Plombier depuis 15 ans, dépannages rapides sur Pessac et alentours. Devis gratuit.</p></div></div></div>' +
+  '<div class="carte"><h2>Ses annonces</h2>' +
+  '<div class="annonce"><div><b>Dépannage fuite</b><p class="note">50 € · 2 h · chez vous · carte ou espèces</p></div><button class="btn sec">Voir l\'annonce</button></div>' +
+  '<div class="annonce"><div><b>Dépannage à l\'heure</b><p class="note">40 €/h · de 1 h à 3 h · chez vous · espèces</p></div><button class="btn sec">Voir l\'annonce</button></div>' +
+  '<p class="note">Aucune annonce : « Marc n\'a pas d\'annonce en ligne pour l\'instant. »</p></div>' +
+  '<div class="carte"><h2>Avis</h2><p class="note">Les avis arrivent bientôt (lot 4.8).</p></div>' +
+  '<p class="note">Jamais le téléphone, le mail ni la rue : ils sont donnés après une réservation.</p>';
+let etat = 'resultats';
+function rendre() { document.getElementById('ecran').innerHTML = E[etat]; document.querySelectorAll('.onglet').forEach(b => b.setAttribute('aria-pressed', b.dataset.e === etat)); window.scrollTo(0, 0); }
+document.addEventListener('click', ev => {
+  const t = ev.target.closest('.tri button'); if (t) { t.parentElement.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b === t)); return; }
+  const el = ev.target.closest('[data-e]'); if (!el) return; etat = el.dataset.e; rendre();
+});
+rendre();
+</script>
