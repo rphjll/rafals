@@ -1,0 +1,119 @@
+<title>MLD rafals rendez-vous</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 4.3 « Rendez-vous »</h1>
+    <p class="sous">rafals · proposé le 30/09/2026 · source : <code>.doc/regles-metier/RM-RENDEZ-VOUS.md</code> · 1 table nouvelle, 2 rubriques ajoutées dans PRESTATAIRE</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  ANNONCE["<b>ANNONCE</b><br/>id (PK)"]
+  COMMUNE["<b>COMMUNE</b><br/>id (PK)"]
+  RENDEZ_VOUS["<b>RENDEZ_VOUS</b><br/>id (PK)<br/>client_id (FK)<br/>prestataire_id (FK)<br/>annonce_id (FK)<br/>commune_id (FK)<br/>remplace_id (FK)"]
+  COMPTE -- "réserve · (0,n) —— (1,1)" --- RENDEZ_VOUS
+  PRESTATAIRE -- "reçoit · (0,n) —— (1,1)" --- RENDEZ_VOUS
+  ANNONCE -- "est réservée · (0,n) —— (1,1)" --- RENDEZ_VOUS
+  COMMUNE -- "a lieu à · (0,n) —— (0,1)" --- RENDEZ_VOUS
+  RENDEZ_VOUS -- "est déplacé en · (0,1) —— (0,1)" --- RENDEZ_VOUS
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table (ou de la même, pour <code>remplace_id</code>).</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>la 1re cardinalité est du côté de la table de gauche. Ex. « réserve · (0,n) —— (1,1) » : un compte réserve zéro, un ou plusieurs rendez-vous ; un rendez-vous a un et un seul client.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>RENDEZ_VOUS <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Jamais effacé. Le titre, le prix, la durée et l'adresse sont <b>recopiés</b> au moment de la réservation.</p>
+        <ul>
+          <li><code>debut</code>, <code>fin</code> — ex. 14/10/2026 10 h 00 → 10 h 45</li>
+          <li><code>titre</code> — recopié de l'annonce, ex. « Coupe femme »</li>
+          <li><code>prix_centimes</code> — le total, ex. 3500 ; à l'heure : prix × heures (3 h à 25 € → 7500) ; vide si « sur devis » (impossible ici)</li>
+          <li><code>heures</code> — à l'heure seulement : les heures choisies (ex. 3)</li>
+          <li><code>lieu</code> — « chez_client » ou « chez_moi »</li>
+          <li><code>adresse_ligne</code>, <code>adresse_complement</code>, <code>code_postal</code> — recopiés : l'adresse du client (chez le client) ou du local (chez le prestataire)</li>
+          <li><code>mode_paiement</code> — « especes » ou « carte » (la carte arrive au niveau 5)</li>
+          <li><code>statut</code> — « en_attente », « confirme », « refuse », « expire », « annule_client », « annule_prestataire », « deplace »</li>
+          <li><code>motif</code> — raison d'un refus (facultative) ou d'une annulation par le prestataire (obligatoire)</li>
+          <li><code>cree_le</code>, <code>reponse_avant</code> (fin des 24 h pour accepter), <code>statut_change_le</code>, <code>rappel_envoye_le</code></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PRESTATAIRE <span class="nouveau">2 rubriques ajoutées</span></h3>
+        <ul>
+          <li><code>confirmation_automatique</code> — oui : l'horaire est réservé aussitôt ; non : « j'accepte chaque demande » (oui au départ)</li>
+          <li><code>annulation_delai_heures</code> — « annulation gratuite jusqu'à X avant » : 2, 12, 24 ou 48 (24 au départ)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Deux choix techniques expliqués</h2>
+    <p class="note"><b>Tout est recopié.</b> Si Léa change le prix de sa coupe, ou si Mme Dupont change d'adresse après avoir réservé, le rendez-vous garde ce qui était vrai au moment de la réservation. C'est la règle des « valeurs figées ».</p>
+    <p class="note" style="margin-top:8px"><b>Un déplacement crée un nouveau rendez-vous.</b> L'ancien passe « deplace » et le nouveau pointe vers lui (<code>remplace_id</code>). Chez Karim, qui accepte chaque demande, l'ancien horaire reste valable tant que Karim n'a pas accepté le nouveau. Et on garde l'historique : « déplacé du mardi 10 h au jeudi 14 h ».</p>
+    <p class="note" style="margin-top:8px"><b>« Passé » n'est pas un état.</b> Un rendez-vous confirmé dont l'heure est dépassée est « passé » : c'est calculé, rien à tenir à jour. Les absences (lot 4.5) ajouteront leurs propres rubriques.</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>RENDEZ_VOUS</code> n° 1 : client = Mme Dupont, prestataire = Léa, annonce = « Coupe femme », 14/10/2026 10 h 00 → 10 h 45, prix 3500, lieu « chez_moi », « 12 rue des Lilas », 33700 Mérignac, espèces, statut « confirme ».
+      <p class="trad"><b>Traduction :</b> Mme Dupont a réservé une coupe à 35 € chez Léa, mardi à 10 h, payable en espèces. Léa est en confirmation automatique : c'est confirmé tout de suite.</p>
+    </div>
+    <div class="exemple">
+      <code>RENDEZ_VOUS</code> n° 2 : client = M. Petit, prestataire = Karim, 16/10/2026 9 h → 12 h, heures 3, prix 12000, lieu « chez_client », « 3 rue du Moulin », 33600 Pessac, statut « en_attente », <code>reponse_avant</code> = 14/10/2026 18 h.
+      <p class="trad"><b>Traduction :</b> M. Petit demande 3 h de dépannage à 40 €/h (120 €) chez lui ; Karim accepte chaque demande et a jusqu'au 14/10 à 18 h pour répondre, sinon la demande expire.</p>
+    </div>
+    <div class="exemple">
+      <code>RENDEZ_VOUS</code> n° 3 : même client et annonce que le n° 1, 16/10/2026 14 h 00, statut « confirme », <code>remplace_id</code> = 1 ; le n° 1 passe « deplace ».
+      <p class="trad"><b>Traduction :</b> Mme Dupont a déplacé sa coupe du mardi 10 h au jeudi 14 h ; le mardi 10 h est de nouveau libre.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Pas dans ce lot : les écrans (lot 4.4), les absences et contestations (lot 4.5), le paiement par carte (niveau 5).</p>
+  </section>
+</div>
