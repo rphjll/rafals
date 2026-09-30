@@ -1,4 +1,4 @@
-"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7). Aucun calcul ici."""
+"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -40,6 +40,10 @@ class Prestataire(Base):
     cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     metier_principal_fin_le: Mapped[date | None] = mapped_column(Date)
     metier_principal_suivant_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("metier.id"))
+    agenda_pas_minutes: Mapped[int] = mapped_column(Integer, server_default="15")
+    agenda_pause_minutes: Mapped[int] = mapped_column(Integer, server_default="0")
+    reservation_delai_min_minutes: Mapped[int] = mapped_column(Integer, server_default="120")
+    reservation_delai_max_mois: Mapped[int] = mapped_column(Integer, server_default="2")
 
 
 class MetierSecondaire(Base):

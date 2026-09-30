@@ -9,6 +9,7 @@ from sqlalchemy import or_, select, update
 from sqlalchemy.orm import Session
 
 from app import reglages
+from app.modeles.agenda import Blocage, PlageHoraire
 from app.modeles.annonces import Annonce, Local
 from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte, SessionConnexion
@@ -151,6 +152,19 @@ def exporter(db: Session, compte: Compte, maintenant: datetime) -> dict[str, Any
                  "cree_le": _date(a.cree_le)}
                 for a in db.scalars(select(Annonce).where(Annonce.prestataire_id == prestataire.id).order_by(Annonce.cree_le))
             ],
+            "agenda": {
+                "semaine_type": [
+                    {"jour": p.jour_semaine, "debut": p.debut.isoformat(), "fin": p.fin.isoformat()}
+                    for p in db.scalars(select(PlageHoraire).where(PlageHoraire.prestataire_id == prestataire.id))
+                ],
+                "periodes_bloquees": [
+                    {"debut": _date(b.debut), "fin": _date(b.fin), "motif": b.motif}
+                    for b in db.scalars(select(Blocage).where(Blocage.prestataire_id == prestataire.id))
+                ],
+                "pas_minutes": prestataire.agenda_pas_minutes, "pause_minutes": prestataire.agenda_pause_minutes,
+                "delai_min_minutes": prestataire.reservation_delai_min_minutes,
+                "delai_max_mois": prestataire.reservation_delai_max_mois,
+            },
         }
     journal.noter(
         db, auteur_id=compte.id, action="telecharger_mes_donnees", table_cible="compte", ligne_id=compte.id, maintenant=maintenant

@@ -199,7 +199,7 @@ def retirer_photo(annonce_id: int, ordre: int, db: Base, compte: CompteConnecte)
 # ---------- Une annonce, pour tous (même sans compte) ----------
 
 
-def _annonce_visible_ou_404(db: Base, annonce_id: int, compte: Compte | None) -> tuple[Annonce, Prestataire]:
+def annonce_visible_ou_404(db: Base, annonce_id: int, compte: Compte | None) -> tuple[Annonce, Prestataire]:
     """Une annonce cachée n'existe pas pour les clients ; son auteur la voit quand même (aperçu)."""
     annonce = db.get(Annonce, annonce_id)
     if annonce is None:
@@ -213,7 +213,7 @@ def _annonce_visible_ou_404(db: Base, annonce_id: int, compte: Compte | None) ->
 
 @routeur.get("/annonces/{annonce_id}")
 def voir(annonce_id: int, db: Base, compte: CompteOuPersonne) -> AnnoncePublique:
-    annonce, prestataire = _annonce_visible_ou_404(db, annonce_id, compte)
+    annonce, prestataire = annonce_visible_ou_404(db, annonce_id, compte)
     metier = db.get_one(Metier, annonce.metier_id)
     local = service.local_de(db, prestataire)
     commune_id = local.commune_id if annonce.lieu == "chez_moi" and local else prestataire.commune_id
@@ -230,7 +230,7 @@ def voir(annonce_id: int, db: Base, compte: CompteOuPersonne) -> AnnoncePublique
 
 @routeur.get("/annonces/{annonce_id}/photos/{ordre}")
 def voir_photo(annonce_id: int, ordre: int, db: Base, compte: CompteOuPersonne) -> Response:
-    annonce, _ = _annonce_visible_ou_404(db, annonce_id, compte)
+    annonce, _ = annonce_visible_ou_404(db, annonce_id, compte)
     photo = next((p for p in service.photos_de(db, annonce) if p.ordre == ordre), None)
     if photo is None:
         raise ErreurRegle("Pas de photo.", 404)

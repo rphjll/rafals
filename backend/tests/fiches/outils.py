@@ -1,11 +1,11 @@
 """Outils communs des tests de fiche : les rubriques sont LUES dans le modèle, jamais listées à la main.
 Une rubrique ajoutée plus tard à une table entre donc toute seule dans le test."""
 
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from typing import Any
 from uuid import uuid4
 
-from sqlalchemy import ARRAY, Boolean, Date, DateTime, Float, Integer, Text, inspect
+from sqlalchemy import ARRAY, Boolean, Date, DateTime, Float, Integer, Text, Time, inspect
 from sqlalchemy.orm import Session
 
 
@@ -30,6 +30,8 @@ def valeurs(modele: type, variante: int, imposees: dict[str, Any] | None = None)
             resultat[colonne.key] = f"zztest.{colonne.key}.{variante}.{suffixe}@example.com"
         elif isinstance(colonne.type, DateTime):
             resultat[colonne.key] = datetime(2026, 1, 1, 9, 0, tzinfo=UTC) + timedelta(days=variante)
+        elif isinstance(colonne.type, Time):
+            resultat[colonne.key] = time(8 + variante, 30)
         elif isinstance(colonne.type, Date):
             resultat[colonne.key] = date(1990, 1, 1) + timedelta(days=variante)
         elif isinstance(colonne.type, ARRAY):

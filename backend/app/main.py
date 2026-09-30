@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.db import moteur
-from app.routes import accords, administration, annonces, clients, comptes, metiers, prestataires
+from app.routes import accords, administration, agenda, annonces, clients, comptes, metiers, prestataires
 from app.services import clients as service_clients
 from app.services import prestataires as service_prestataires
 from app.services.erreurs import ErreurRegle
@@ -73,6 +73,7 @@ app.include_router(administration.routeur)
 app.include_router(metiers.routeur)
 app.include_router(prestataires.routeur)
 app.include_router(annonces.routeur)
+app.include_router(agenda.routeur)
 app.include_router(clients.routeur)
 
 

@@ -37,6 +37,17 @@ ANNONCE_DESCRIPTION_MAX = 1000
 ANNONCE_PHOTOS_MAX = 5
 ANNONCES_EN_LIGNE_MAX = 20
 
+# Agenda (RM-AGENDA.md, validé le 29/09/2026). Valeurs au départ : aussi dans db/schema_v8.sql (DEFAULT)
+AGENDA_PAS_CHOIX = (15, 30, 60)
+AGENDA_PAS_DEFAUT = 15
+AGENDA_PAUSE_DEFAUT = 0
+RESERVATION_DELAI_MIN_DEFAUT_MINUTES = 120
+RESERVATION_DELAI_MAX_DEFAUT_MOIS = 2
+# Bornes des réglages (proposées par Claude au lot 3.3, à valider)
+AGENDA_PAUSE_MAX_MINUTES = 180
+RESERVATION_DELAI_MIN_MAX_MINUTES = 7 * 24 * 60
+RESERVATION_DELAI_MAX_MAX_MOIS = 12
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

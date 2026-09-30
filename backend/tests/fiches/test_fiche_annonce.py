@@ -35,7 +35,7 @@ def decor(base: Session):
     assert plombier and electricien and pessac and talence
     prestataire = Prestataire(**valeurs(Prestataire, 1, {
         "compte_id": compte.id, "metier_principal_id": plombier.id, "commune_id": pessac.id, "photo_id": None,
-        "siret": None, "siret_statut": "absent", "statut": "actif", "metier_principal_suivant_id": None,
+        "siret": None, "siret_statut": "absent", "statut": "actif", "metier_principal_suivant_id": None, "agenda_pas_minutes": 15,
     }))
     base.add(prestataire)
     base.commit()

@@ -8,10 +8,10 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Commencé le** : 29/09/2026
 - **Étapes** :
   - [x] 1. MLD validé (29/09/2026, « oui je valide mais on arrete la on reprend demain »)
-  - [ ] 2. `schema_v8.sql` écrit et exécuté ; modèles  ← prochaine action
-  - [ ] 3. Services (semaine type, blocages, réglages, horaires libres), routes, tests
-  - [ ] 4. Nettoyage, invariants, suivi, sauvegarde
-- **Question en attente** : aucune (reprise demain par « continuer » : écrire `schema_v8.sql` d'après `.doc/mld/MLD-lot-3.3-agenda.html`)
+  - [x] 2. `schema_v8.sql` écrit et exécuté ; modèles
+  - [x] 3. Services (semaine type, blocages, réglages, horaires libres), routes, tests
+  - [x] 4. Nettoyage, invariants, suivi, sauvegarde
+- **Question en attente** : Raphael valide les précisions du lot 3.3 (RM-AGENDA) et le lot
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -60,7 +60,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | 3.0 | Règles | Écrire les règles des sujets 05 Annonces et 06 Agenda, puis découper le niveau 3 en lots | SUIVI_REGLES_METIER | 2.7 | ✅ |
 | 3.1 | Serveur | Annonces : adresse du local dans le profil ; annonce (titre, métier du profil, prix fixe / à l'heure avec heures min-max / sur devis, durée, lieu, paiement selon le SIRET, description, 5 photos) ; publier, pause, retrait, republier ; 20 en ligne au plus ; date de fin d'un métier (remplace le retrait direct d'un métier) | RM-ANNONCES | 2.7 | ✅ |
 | 3.2 | Écrans | Mes annonces (liste, écrire / modifier, photos, pause, retrait, annonces retirées) ; adresse du local et date de fin d'un métier dans « Mon activité » ; aperçu d'une annonce telle que le client la verra | RM-ANNONCES | 3.1 | ✅ |
-| 3.3 | Serveur | Agenda : semaine type (plusieurs plages par jour), blocages de dates, réglages (pas, pause, délais), calcul des horaires libres d'une annonce pour un jour donné | RM-AGENDA | 3.1 | 🟡 |
+| 3.3 | Serveur | Agenda : semaine type (plusieurs plages par jour), blocages de dates, réglages (pas, pause, délais), calcul des horaires libres d'une annonce pour un jour donné | RM-AGENDA | 3.1 | 🔎 |
 | 3.4 | Écrans | Mon agenda : semaine type, calendrier (blocages, dates de fin de métier), réglages ; aperçu des horaires libres | RM-AGENDA | 3.3, 3.2 | ⬜ |
 
 L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date de fin d'un métier) sera branchée au niveau 4, quand les rendez-vous existeront.
@@ -127,3 +127,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **29/09/2026** — Lot 3.2 construit → 🔎 à vérifier. Écrans : « Mes annonces » (liste, retirées à part, pause / retrait / republier, 🔒 republier si métier arrêté), écrire / modifier une annonce (3 formes de prix, lieu avec 🔒 sans local, carte 🔒 sans SIRET vérifié, photos après publication), page publique d'une annonce (ville seulement, aperçu pour l'auteur, 🔒 Réserver), « Mon activité » : cartes Mes annonces, Mes métiers (dates de fin, remplaçant du principal, reprise), Mon local ; menu « Mes annonces » pour les prestataires. Serveur : `metier_arrete` ajouté à la liste des annonces. Réutilisation : `CarteAdresse` commune (adresse du client + local), `AppChoix`, `AppCase` (remplace aussi la case de l'onglet Métiers), `GardePrestataire`, `outils/annonces.ts`. Décision : les dates de fin se règlent d'abord dans « Mon activité » ; elles apparaîtront aussi dans l'agenda au lot 3.4. Essai de bout en bout par le port 5174 (compte d'essai n° 17, vérifié par le lien lu dans Mailpit : prestataire, local, annonce « les deux », photo, page publique sans la rue, refus « chez moi » sans local, refus carte sans SIRET, refus d'effacer le local, dates de fin, pause / retrait / republier) : conforme ; compte n° 17 et sa photo effacés (sauvegarde avant), comptage : 1 compte, 0 annonce, 0 fichier. Tests : 126 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude (pas de navigateur automatique) → à regarder par Raphael.
 - **29/09/2026** — Lot 3.2 validé par Raphael (« Oui, je valide ») → ✅. Compte d'essai n° 18 (essai1@example.com, créé par Raphael pour l'essai) effacé avec sa photo après sauvegarde ; comptage : 1 compte, 0 annonce, 0 fichier. Lot 3.3 commencé.
 - **29/09/2026** — MLD du lot 3.3 validé par Raphael (PLAGE_HORAIRE, BLOCAGE, 4 réglages d'agenda dans PRESTATAIRE). Pause jusqu'à demain.
+- **30/09/2026** — Lot 3.3 construit → 🔎 à vérifier. `schema_v8.sql` exécuté (tables `plage_horaire`, `blocage` ; 4 réglages d'agenda dans `prestataire`, valeurs au départ 15 min / 0 min / 2 h / 2 mois). Serveur : semaine type (enregistrée en entier, chevauchements refusés), blocages (heure de Paris, motif jamais montré), réglages avec bornes, calcul des horaires libres d'une annonce pour un jour (`/api/annonces/12/horaires?jour=…&heures=…`), en tenant compte du pas, des délais, des blocages, du métier arrêté, de la pause de l'activité. Réutilisation : contrôle « annonce visible » partagé entre annonces et horaires. Export RGPD et nettoyage des essais complétés ; outils des tests de fiche : type « heure » ajouté. Tests : 148 OK (22 nouveaux). Vraie base : 0 donnée d'essai. Invariants : architecture OK ; sécurité OK (chacun son agenda : 404 sur le blocage d'un autre ; aucun motif ni rendez-vous visible des clients) ; données OK (semaine type en heure de Paris, blocages en UTC) ; interface : écrans au lot 3.4 ; documentation : précisions notées dans `RM-AGENDA.md` (à valider).
