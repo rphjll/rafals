@@ -2,7 +2,7 @@
 // Administration (.doc/ihm/RM-ADMINISTRATION-IHM.md) : les onglets et le contrôle d'accès.
 // Chaque onglet est un fichier de components/admin/.
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { appelerServeur } from '../api'
 import OngletAccords from '../components/admin/OngletAccords.vue'
 import OngletComptes from '../components/admin/OngletComptes.vue'
@@ -11,9 +11,9 @@ import OngletPrestataires from '../components/admin/OngletPrestataires.vue'
 import OngletPropositions from '../components/admin/OngletPropositions.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppCarte from '../components/ui/AppCarte.vue'
+import AppOnglets from '../components/ui/AppOnglets.vue'
 import { useCompte } from '../composables/useCompte'
 
-const route = useRoute()
 const routeur = useRouter()
 const { compte, chargementFait } = useCompte()
 
@@ -24,7 +24,8 @@ const onglets = [
   { id: 'propositions', texte: 'Propositions de métiers', composant: OngletPropositions },
   { id: 'metiers', texte: 'Métiers', composant: OngletMetiers },
 ] as const
-const onglet = computed(() => onglets.find((o) => o.id === route.query.onglet) ?? onglets[0])
+const ongletActif = ref('accords')
+const onglet = computed(() => onglets.find((o) => o.id === ongletActif.value) ?? onglets[0])
 
 // Compteurs orange des choses qui attendent une décision
 const enAttente = ref<Record<string, number>>({})
@@ -52,23 +53,7 @@ watch(compte, compter)
   <div v-else-if="compte" class="flex flex-col gap-5">
     <h1 class="text-[28px] font-bold">Administration</h1>
 
-    <div class="flex flex-wrap gap-1.5 border-b border-bord" role="tablist">
-      <button
-        v-for="o in onglets"
-        :key="o.id"
-        type="button"
-        role="tab"
-        :aria-selected="onglet.id === o.id"
-        class="-mb-px border-b-[3px] px-3 py-2.5 font-semibold"
-        :class="onglet.id === o.id ? 'border-primaire text-primaire' : 'border-transparent text-texte-doux'"
-        @click="routeur.replace({ query: o.id === 'accords' ? {} : { onglet: o.id } })"
-      >
-        {{ o.texte }}
-        <span v-if="enAttente[o.id]" class="ml-1 rounded-full bg-accent px-[7px] py-px text-xs text-sur-etat">
-          {{ enAttente[o.id] }}
-        </span>
-      </button>
-    </div>
+    <AppOnglets v-model="ongletActif" :onglets="onglets" :compteurs="enAttente" />
 
     <component :is="onglet.composant" :key="onglet.id" @maj="compter" />
   </div>

@@ -7,10 +7,10 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 3.4 — Écrans de l'agenda (Raphael : « Oui, je valide » le lot 3.3)
 - **Commencé le** : 30/09/2026
 - **Étapes** :
-  - [ ] 1. Maquette cliquable validée  ← on en est là
-  - [ ] 2. Écrans : semaine type, calendrier (blocages, dates de fin de métier), réglages, aperçu des horaires libres
-  - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 3.4 (https://claude.ai/artifact/8vMtR33NB844Qrwb1G5XrE, fichier `.doc/ihm/maquette-lot-3.4-agenda.html`)
+  - [x] 1. Maquette cliquable validée (30/09/2026, « Oui, vas-y »)
+  - [x] 2. Écrans : semaine type, calendrier (blocages, dates de fin de métier), réglages, aperçu des horaires libres
+  - [x] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
+- **Question en attente** : Raphael essaie « Mon agenda » et valide le lot 3.4 (dernier lot du niveau 3)
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -60,7 +60,7 @@ Toute modification visible par l'utilisateur met à jour le `RM-<ECRAN>-IHM.md` 
 | 3.1 | Serveur | Annonces : adresse du local dans le profil ; annonce (titre, métier du profil, prix fixe / à l'heure avec heures min-max / sur devis, durée, lieu, paiement selon le SIRET, description, 5 photos) ; publier, pause, retrait, republier ; 20 en ligne au plus ; date de fin d'un métier (remplace le retrait direct d'un métier) | RM-ANNONCES | 2.7 | ✅ |
 | 3.2 | Écrans | Mes annonces (liste, écrire / modifier, photos, pause, retrait, annonces retirées) ; adresse du local et date de fin d'un métier dans « Mon activité » ; aperçu d'une annonce telle que le client la verra | RM-ANNONCES | 3.1 | ✅ |
 | 3.3 | Serveur | Agenda : semaine type (plusieurs plages par jour), blocages de dates, réglages (pas, pause, délais), calcul des horaires libres d'une annonce pour un jour donné | RM-AGENDA | 3.1 | ✅ |
-| 3.4 | Écrans | Mon agenda : semaine type, calendrier (blocages, dates de fin de métier), réglages ; aperçu des horaires libres | RM-AGENDA | 3.3, 3.2 | 🟡 |
+| 3.4 | Écrans | Mon agenda : semaine type, calendrier (blocages, dates de fin de métier), réglages ; aperçu des horaires libres | RM-AGENDA | 3.3, 3.2 | 🔎 |
 
 L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date de fin d'un métier) sera branchée au niveau 4, quand les rendez-vous existeront.
 
@@ -128,3 +128,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **29/09/2026** — MLD du lot 3.3 validé par Raphael (PLAGE_HORAIRE, BLOCAGE, 4 réglages d'agenda dans PRESTATAIRE). Pause jusqu'à demain.
 - **30/09/2026** — Lot 3.3 construit → 🔎 à vérifier. `schema_v8.sql` exécuté (tables `plage_horaire`, `blocage` ; 4 réglages d'agenda dans `prestataire`, valeurs au départ 15 min / 0 min / 2 h / 2 mois). Serveur : semaine type (enregistrée en entier, chevauchements refusés), blocages (heure de Paris, motif jamais montré), réglages avec bornes, calcul des horaires libres d'une annonce pour un jour (`/api/annonces/12/horaires?jour=…&heures=…`), en tenant compte du pas, des délais, des blocages, du métier arrêté, de la pause de l'activité. Réutilisation : contrôle « annonce visible » partagé entre annonces et horaires. Export RGPD et nettoyage des essais complétés ; outils des tests de fiche : type « heure » ajouté. Tests : 148 OK (22 nouveaux). Vraie base : 0 donnée d'essai. Invariants : architecture OK ; sécurité OK (chacun son agenda : 404 sur le blocage d'un autre ; aucun motif ni rendez-vous visible des clients) ; données OK (semaine type en heure de Paris, blocages en UTC) ; interface : écrans au lot 3.4 ; documentation : précisions notées dans `RM-AGENDA.md` (à valider).
 - **30/09/2026** — Lot 3.3 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 3.4 commencé.
+- **30/09/2026** — Lot 3.4 construit → 🔎 à vérifier. Page « Mon agenda » (menu, prestataires seulement) en 4 onglets : Calendrier (mois en couleurs ouvert / fermé / bloqué, « fin <métier> » en rouge, détail du jour, bloquer un jour ou quelques heures, périodes à venir avec [Débloquer], dates de fin de métier), Semaine type (plages par jour, ajout / retrait), Réglages (écart, pause, délais), Horaires libres (annonce + jour → pastilles). Réutilisation : composant commun `AppOnglets` (Administration et Mon agenda, onglet dans l'adresse), `outils/agenda.ts`. Essai de bout en bout par le port 5174 (compte d'essai n° 19 : semaine type, 10 horaires de 9 h 00 à 11 h 15, jour bloqué → 0 horaire, réglages, déblocage, pas de 30 min) : conforme ; compte n° 19 effacé après sauvegarde ; comptage : 1 compte, 0 prestataire, 0 plage, 0 blocage. Tests : 148 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude → à regarder par Raphael.

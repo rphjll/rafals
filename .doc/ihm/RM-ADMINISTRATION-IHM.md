@@ -1,6 +1,6 @@
 # Administration — Interface
 
-> Fichiers : `frontend/src/pages/AdministrationPage.vue` (onglets et accès) et un fichier par onglet dans `frontend/src/components/admin/`. Construit au lot 1.4, onglets des métiers au lot 2.2 (28/09/2026). Règles : `RM-COMPTES.md`. Maquette : `maquette-lot-1.4-compte-administration.html`.
+> Fichiers : `frontend/src/pages/AdministrationPage.vue` (onglets, par le composant commun `AppOnglets` depuis le lot 3.4, et accès) et un fichier par onglet dans `frontend/src/components/admin/`. Construit au lot 1.4, onglets des métiers au lot 2.2 (28/09/2026). Règles : `RM-COMPTES.md`. Maquette : `maquette-lot-1.4-compte-administration.html`.
 
 ## Page « Administration » (`/administration`)
 Entrée de menu visible seulement des administrateurs. **(pas administrateur, ou pas connecté)** carte « Réservé aux administrateurs » — « Cette page n'est accessible qu'aux administrateurs de rafals. » — bouton [Retour à l'accueil]. (Le serveur refuse de toute façon : 403.)

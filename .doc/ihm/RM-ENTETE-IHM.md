@@ -11,9 +11,10 @@ Bandeau blanc (`surface`) collé en haut de toutes les pages, bordure fine en ba
    1. « Trouver un prestataire » → `/trouver`
    2. « Proposer mes services » → `/proposer` — devient « Mon activité » quand le compte a un profil de prestataire (lot 2.5)
    3. « Mes annonces » → `/mes-annonces` — **seulement pour un prestataire** (lot 3.2)
-   4. « Mes rendez-vous » → `/rendez-vous`
-   5. « Mon compte » → `/compte`
-   6. « Administration » → `/administration` — **seulement pour un administrateur** (lot 1.4)
+   4. « Mon agenda » → `/mon-agenda` — **seulement pour un prestataire** (lot 3.4)
+   5. « Mes rendez-vous » → `/rendez-vous`
+   6. « Mon compte » → `/compte`
+   7. « Administration » → `/administration` — **seulement pour un administrateur** (lot 1.4)
 
 3. Zone du compte, au bout du menu (affichée seulement une fois qu'on sait si quelqu'un est connecté, pour éviter un clignotement) :
    - personne n'est connecté : bouton principal [Se connecter] → `/connexion` ;

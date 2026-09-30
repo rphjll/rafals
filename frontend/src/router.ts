@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AccueilPage from './pages/AccueilPage.vue'
 import AdministrationPage from './pages/AdministrationPage.vue'
+import AgendaPage from './pages/AgendaPage.vue'
 import AnnonceFormulairePage from './pages/AnnonceFormulairePage.vue'
 import AnnoncePage from './pages/AnnoncePage.vue'
 import ComptePage from './pages/ComptePage.vue'
@@ -36,6 +37,7 @@ export const routeur = createRouter({
     { path: '/trouver', name: 'trouver', component: TrouverPage },
     { path: '/proposer', name: 'proposer', component: ProposerPage },
     { path: '/mes-annonces', name: 'mes-annonces', component: MesAnnoncesPage },
+    { path: '/mon-agenda', name: 'mon-agenda', component: AgendaPage },
     { path: '/mes-annonces/nouvelle', name: 'annonce-nouvelle', component: AnnonceFormulairePage },
     { path: '/mes-annonces/:id(\\d+)', name: 'annonce-modifier', component: AnnonceFormulairePage },
     { path: '/annonces/:id(\\d+)', name: 'annonce', component: AnnoncePage },
