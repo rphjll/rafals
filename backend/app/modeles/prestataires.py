@@ -1,8 +1,8 @@
-"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8). Aucun calcul ici."""
+"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8, v9). Aucun calcul ici."""
 
 from datetime import date, datetime
 
-from sqlalchemy import BigInteger, Date, DateTime, Float, ForeignKey, Identity, Integer, Text, func
+from sqlalchemy import BigInteger, Boolean, Date, DateTime, Float, ForeignKey, Identity, Integer, Text, func
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -44,6 +44,8 @@ class Prestataire(Base):
     agenda_pause_minutes: Mapped[int] = mapped_column(Integer, server_default="0")
     reservation_delai_min_minutes: Mapped[int] = mapped_column(Integer, server_default="120")
     reservation_delai_max_mois: Mapped[int] = mapped_column(Integer, server_default="2")
+    confirmation_automatique: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    annulation_delai_heures: Mapped[int] = mapped_column(Integer, server_default="24")
 
 
 class MetierSecondaire(Base):

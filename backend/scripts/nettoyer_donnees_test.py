@@ -38,7 +38,15 @@ RATTACHEES: dict[str, list[str]] = {
         " OR (table_cible = 'local' AND ligne_id IN (SELECT l.id FROM local l JOIN prestataire p ON p.id = l.prestataire_id"
         " WHERE p.compte_id = :id))"
         " OR (table_cible = 'blocage' AND ligne_id IN (SELECT b.id FROM blocage b JOIN prestataire p ON p.id = b.prestataire_id"
-        " WHERE p.compte_id = :id))",
+        " WHERE p.compte_id = :id))"
+        " OR (table_cible = 'rendez_vous' AND ligne_id IN (SELECT r.id FROM rendez_vous r WHERE r.client_id = :id"
+        " OR r.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))",
+        # Rendez-vous du compte (comme client ou comme prestataire) : d'abord les liens « déplacé en », puis les lignes
+        "UPDATE rendez_vous SET remplace_id = NULL WHERE client_id = :id"
+        " OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)"
+        " OR remplace_id IN (SELECT r.id FROM rendez_vous r WHERE r.client_id = :id"
+        " OR r.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",
+        "DELETE FROM rendez_vous WHERE client_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM proposition_metier WHERE propose_par_id = :id",
         "DELETE FROM photo_annonce WHERE annonce_id IN (SELECT a.id FROM annonce a JOIN prestataire p ON p.id = a.prestataire_id"
         " WHERE p.compte_id = :id)",

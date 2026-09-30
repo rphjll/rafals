@@ -64,6 +64,15 @@ Le prestataire peut annuler un rendez-vous à tout moment, avec un **motif oblig
 - **Chevauchement côté client** : autorisé (Mme Dupont peut avoir la coiffeuse et le plombier à la même heure, chez elle) ; rafals affiche seulement un avertissement.
 - **Délais et compteurs** (réglages) : 24 h de réponse ; 3 absences en 6 mois → 1 mois sans réserver ; 7 jours pour contester.
 
+## Précisions prises au lot 4.3 (proposées par Claude, à valider par Raphael)
+- **Paiement** : pour l'instant, espèces seulement ; « carte » répond « Le paiement par carte sur rafals arrive bientôt » (niveau 5).
+- **Demande en attente** : elle garde l'horaire ; le client peut l'annuler à tout moment ; elle expire à la fin des 24 h, ou à l'heure du rendez-vous si c'est plus tôt.
+- **Déplacer** : seulement un rendez-vous confirmé, un déplacement en attente à la fois ; son propre ancien horaire ne le gêne pas (ex. 10 h 00 → 10 h 15).
+- **Pause du prestataire** : autour de chaque rendez-vous, avant et après (ex. pause 30 min, rendez-vous 10 h-10 h 45 : pas de nouveau début avant 11 h 15, et un rendez-vous précédent doit finir avant 9 h 30).
+- **Coordonnées** : le client voit le téléphone du prestataire (et la rue du local) une fois le rendez-vous **confirmé** ; le prestataire voit le nom, le téléphone et l'adresse du client dès la demande (pour décider), puis jusqu'à 3 mois après le dernier rendez-vous (RM-CLIENTS).
+- **Annulation par le prestataire** : impossible une fois le rendez-vous terminé.
+- **Tâche automatique** toutes les 5 minutes : demandes expirées, rappels.
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|

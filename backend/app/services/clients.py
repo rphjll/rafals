@@ -17,6 +17,7 @@ from app.modeles.fichiers import AccordParental, Fichier
 from app.modeles.journal import JournalAction
 from app.modeles.metiers import Metier, PropositionMetier
 from app.modeles.prestataires import Commune, MetierSecondaire, Prestataire
+from app.modeles.rendez_vous import RendezVous
 from app.services import communes, journal, mails
 from app.services.erreurs import ErreurRegle
 from app.services.securite import hacher_mot_de_passe, mot_de_passe_correct
@@ -120,6 +121,11 @@ def exporter(db: Session, compte: Compte, maintenant: datetime) -> dict[str, Any
         "propositions_de_metier": [
             {"nom": p.nom_propose, "statut": p.statut, "propose_le": _date(p.propose_le)}
             for p in db.scalars(select(PropositionMetier).where(PropositionMetier.propose_par_id == compte.id))
+        ],
+        "mes_rendez_vous": [
+            {"titre": r.titre, "debut": _date(r.debut), "fin": _date(r.fin), "prix_centimes": r.prix_centimes,
+             "statut": r.statut, "adresse": r.adresse_ligne}
+            for r in db.scalars(select(RendezVous).where(RendezVous.client_id == compte.id).order_by(RendezVous.debut))
         ],
         "journal_de_mes_actions": [
             {"action": j.action, "le": _date(j.fait_le), "avant": j.avant, "apres": j.apres}

@@ -14,18 +14,13 @@ from app import reglages
 from app.modeles.agenda import Blocage, PlageHoraire
 from app.modeles.annonces import Annonce
 from app.modeles.prestataires import Prestataire
+from app.modeles.rendez_vous import RendezVous
 from app.services import journal
+from app.services.annonces import verifier_modifiable
 from app.services.erreurs import ErreurRegle
 from app.services.prestataires import aujourd_hui, metiers_exerces
 
 PARIS = reglages.FUSEAU_AFFICHAGE
-
-
-def _modifiable(prestataire: Prestataire) -> None:
-    if prestataire.statut == "arrete":
-        raise ErreurRegle("Votre activité est arrêtée : ce profil ne peut plus être modifié.")
-    if prestataire.statut == "bloque":
-        raise ErreurRegle("Votre profil est bloqué par l'administrateur de rafals : contactez-le.", 403)
 
 
 def a_paris(jour: date, heure: time) -> datetime:
@@ -65,7 +60,7 @@ def plages_de(db: Session, prestataire: Prestataire) -> list[PlageHoraire]:
 def remplacer_semaine(db: Session, prestataire: Prestataire, plages: list[Plage], maintenant: datetime) -> list[PlageHoraire]:
     """Toute la semaine type d'un coup (l'écran l'envoie en entier). Ex. Léa : mardi 9 h-12 h et 14 h-19 h, samedi 9 h-12 h.
     (Rendez-vous déjà pris hors des nouveaux horaires : « annuler ou garder », branché au niveau 4.)"""
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     triees = sorted(plages, key=lambda p: (p.jour_semaine, p.debut))
     for rang, plage in enumerate(triees):
         if not 1 <= plage.jour_semaine <= 7:
@@ -114,7 +109,7 @@ def bloquer(
 ) -> Blocage:
     """Ex. Léa, congés du 04/08 au 24/08 inclus : du 04/08 0 h au 25/08 0 h. Karim, dentiste : 14/10 de 14 h à 16 h.
     Une date sans fuseau est lue à l'heure de Paris. (Rendez-vous déjà pris pendant la période : niveau 4.)"""
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     debut, fin = (d if d.tzinfo else d.replace(tzinfo=PARIS) for d in (debut, fin))
     if fin <= debut:
         raise ErreurRegle("La fin doit être après le début.")
@@ -133,7 +128,7 @@ def bloquer(
 
 def debloquer(db: Session, prestataire: Prestataire, blocage_id: int, maintenant: datetime) -> None:
     """Ex. Léa annule ses congés : les horaires redeviennent réservables. Seulement ses propres blocages."""
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     blocage = db.get(Blocage, blocage_id)
     if blocage is None or blocage.prestataire_id != prestataire.id:
         raise ErreurRegle("Cette période n'existe pas.", 404)
@@ -151,7 +146,7 @@ def modifier_reglages(
     db: Session, prestataire: Prestataire, *, pas_minutes: int, pause_minutes: int, delai_min_minutes: int, delai_max_mois: int,
     maintenant: datetime,
 ) -> Prestataire:
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     if pas_minutes not in reglages.AGENDA_PAS_CHOIX:
         raise ErreurRegle("Choisissez l'écart entre deux heures de début : 15 min, 30 min ou 1 h.")
     if not 0 <= pause_minutes <= reglages.AGENDA_PAUSE_MAX_MINUTES:
@@ -191,8 +186,12 @@ def duree_reservee(annonce: Annonce, heures: int | None) -> timedelta:
     return timedelta(minutes=annonce.duree_minutes or 0)
 
 
+OCCUPENT_L_AGENDA = ("en_attente", "confirme")  # une demande en attente garde l'horaire (RM-RENDEZ-VOUS)
+
+
 def horaires_libres(
-    db: Session, prestataire: Prestataire, annonce: Annonce, jour: date, maintenant: datetime, heures: int | None = None
+    db: Session, prestataire: Prestataire, annonce: Annonce, jour: date, maintenant: datetime, heures: int | None = None,
+    ignorer_rendez_vous_id: int | None = None,
 ) -> list[datetime]:
     """Heures de début réservables ce jour-là. Ex. Léa, mardi 9 h-12 h, coupe de 45 min, pas de 15 min →
     9 h 00, 9 h 15 … 11 h 15 (la dernière finit à 12 h). Sont retirés : ce qui est trop tôt (« au plus tôt 2 h avant »),
@@ -213,7 +212,15 @@ def horaires_libres(
             Blocage.prestataire_id == prestataire.id, Blocage.debut < fin_jour, Blocage.fin > debut_jour
         ))
     ]
-    occupes = blocages  # au niveau 4 : + rendez-vous pris, chacun suivi de la pause (agenda_pause_minutes)
+    # Rendez-vous pris (et demandes en attente), avec la pause du prestataire avant et après : un nouveau rendez-vous
+    # ne peut ni commencer pendant la pause qui suit, ni finir moins d'une pause avant le suivant.
+    # (ignorer_rendez_vous_id : pour déplacer un rendez-vous, son propre horaire ne compte pas.)
+    pause = timedelta(minutes=prestataire.agenda_pause_minutes)
+    pris = db.scalars(select(RendezVous).where(
+        RendezVous.prestataire_id == prestataire.id, RendezVous.statut.in_(OCCUPENT_L_AGENDA),
+        RendezVous.debut < fin_jour + pause, RendezVous.fin > debut_jour - pause,
+    ))
+    occupes = blocages + [(r.debut - pause, r.fin + pause) for r in pris if r.id != ignorer_rendez_vous_id]
 
     libres: list[datetime] = []
     for plage in plages:

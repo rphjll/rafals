@@ -30,7 +30,7 @@ def enregistrer_local(
     maintenant: datetime,
 ) -> Local:
     """Ex. Léa : « 12 rue des Lilas », Mérignac, 33700 ; ses annonces « au salon » l'utilisent toutes."""
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     controle = communes.controler_adresse(db, ligne=ligne, complement=complement, commune_id=commune_id, code_postal=code_postal)
     local = local_de(db, prestataire)
     avant = None if local is None else {"ligne": local.ligne, "commune_id": local.commune_id}
@@ -52,7 +52,7 @@ def enregistrer_local(
 
 def effacer_local(db: Session, prestataire: Prestataire, maintenant: datetime) -> None:
     """Refusé tant qu'une annonce en ligne a lieu « chez moi » (elle n'aurait plus d'adresse)."""
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     local = local_de(db, prestataire)
     if local is None:
         return
@@ -88,7 +88,7 @@ class DonneesAnnonce:
     paiement_especes: bool = True
 
 
-def _modifiable(prestataire: Prestataire) -> None:
+def verifier_modifiable(prestataire: Prestataire) -> None:
     if prestataire.statut == "arrete":
         raise ErreurRegle("Votre activité est arrêtée : ce profil ne peut plus être modifié.")
     if prestataire.statut == "bloque":
@@ -172,7 +172,7 @@ def _remplir(annonce: Annonce, d: DonneesAnnonce) -> None:
 
 def publier(db: Session, prestataire: Prestataire, donnees: DonneesAnnonce, maintenant: datetime) -> Annonce:
     """Une annonce écrite est aussitôt en ligne (le prestataire devient visible dès sa 1re annonce : RM-PRESTATAIRES)."""
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     d = _verifier(db, prestataire, donnees, maintenant)
     _peut_mettre_en_ligne(db, prestataire, None, maintenant)
     annonce = Annonce(prestataire_id=prestataire.id, statut="en_ligne", statut_change_le=maintenant,
@@ -197,7 +197,7 @@ def annonce_de(db: Session, prestataire: Prestataire, annonce_id: int) -> Annonc
 
 def modifier(db: Session, prestataire: Prestataire, annonce: Annonce, donnees: DonneesAnnonce, maintenant: datetime) -> Annonce:
     """Les rendez-vous déjà pris gardent l'ancien prix (valeurs recopiées à la réservation, niveau 4)."""
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     avant = _etat(annonce)
     _remplir(annonce, _verifier(db, prestataire, donnees, maintenant))
     annonce.modifiee_le = maintenant
@@ -219,7 +219,7 @@ _TRANSITIONS_ANNONCE = {
 
 
 def changer_statut(db: Session, prestataire: Prestataire, annonce: Annonce, action: str, maintenant: datetime) -> Annonce:
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     if action not in _TRANSITIONS_ANNONCE:
         raise ErreurRegle("Action inconnue.")
     departs, arrivee = _TRANSITIONS_ANNONCE[action]
@@ -256,7 +256,7 @@ def ajouter_photo(
     db: Session, compte: Compte, prestataire: Prestataire, annonce: Annonce, *, nom_fichier: str, type_mime: str,
     contenu: bytes, maintenant: datetime,
 ) -> PhotoAnnonce:
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     deja = photos_de(db, annonce)
     if len(deja) >= reglages.ANNONCE_PHOTOS_MAX:
         raise ErreurRegle(f"Au plus {reglages.ANNONCE_PHOTOS_MAX} photos par annonce : retirez-en une d'abord.")
@@ -277,7 +277,7 @@ def ajouter_photo(
 def retirer_photo(db: Session, prestataire: Prestataire, annonce: Annonce, ordre: int, maintenant: datetime) -> None:
     """Les photos suivantes remontent d'un rang (ex. on retire la n° 2 : la n° 3 devient la n° 2).
     Le fichier reste rangé (comme l'ancienne photo d'un profil)."""
-    _modifiable(prestataire)
+    verifier_modifiable(prestataire)
     photos = photos_de(db, annonce)
     photo = next((p for p in photos if p.ordre == ordre), None)
     if photo is None:

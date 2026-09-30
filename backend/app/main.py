@@ -13,9 +13,12 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.db import moteur
-from app.routes import accords, administration, agenda, annonces, clients, comptes, metiers, prestataires, recherche
+from app.routes import (
+    accords, administration, agenda, annonces, clients, comptes, metiers, prestataires, recherche, rendez_vous,
+)
 from app.services import clients as service_clients
 from app.services import prestataires as service_prestataires
+from app.services import rendez_vous as service_rendez_vous
 from app.services.erreurs import ErreurRegle
 
 journal_serveur = logging.getLogger("rafals")
@@ -60,6 +63,11 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
         asyncio.create_task(_tache_periodique(
             "fins de métier", 60 * 60, _dans_une_session(service_prestataires.appliquer_fins_de_metier),
         )),
+        # Demandes sans réponse après 24 h, rappels (lot 4.3)
+        asyncio.create_task(_tache_periodique(
+            "rendez-vous (expirations, rappels)", reglages.TACHE_RENDEZ_VOUS_MINUTES * 60,
+            _dans_une_session(service_rendez_vous.traiter),
+        )),
     ]
     yield
     for tache in taches:
@@ -75,6 +83,7 @@ app.include_router(prestataires.routeur)
 app.include_router(annonces.routeur)
 app.include_router(agenda.routeur)
 app.include_router(recherche.routeur)
+app.include_router(rendez_vous.routeur)
 app.include_router(clients.routeur)
 
 

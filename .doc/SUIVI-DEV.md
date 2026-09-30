@@ -7,11 +7,11 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 4.3 — Serveur des rendez-vous (Raphael : « Oui, je valide » le lot 4.2)
 - **Commencé le** : 30/09/2026
 - **Étapes** :
-  - [ ] 1. MLD validé  ← on en est là
-  - [ ] 2. `schema_v9.sql` écrit et exécuté ; modèles
-  - [ ] 3. Services, routes, tests (réserver, accepter / refuser / expirer, annuler, déplacer, rappels, horaires libres)
-  - [ ] 4. Nettoyage, invariants, suivi, sauvegarde
-- **Question en attente** : validation du MLD du lot 4.3 (https://claude.ai/artifact/2BeKxmSpq6RqJtqSa6kCGB, fichier `.doc/mld/MLD-lot-4.3-rendez-vous.html`)
+  - [x] 1. MLD validé (30/09/2026)
+  - [x] 2. `schema_v9.sql` écrit et exécuté ; modèles
+  - [x] 3. Services, routes, tests (réserver, accepter / refuser / expirer, annuler, déplacer, rappels, horaires libres)
+  - [x] 4. Nettoyage, invariants, suivi, sauvegarde
+- **Question en attente** : Raphael valide les précisions du lot 4.3 (RM-RENDEZ-VOUS) et le lot
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -71,7 +71,7 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 | 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | ✅ |
 | 4.1 | Serveur | Recherche : métier + ville dans le rayon, métier principal d'abord, note pondérée, badge « Nouveau », distance, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat ; page publique d'un prestataire | RM-RECHERCHE | 3.4 | ✅ |
 | 4.2 | Écrans | « Trouver un prestataire » : résultats (une carte par prestataire), filtres, tri ; page publique d'un prestataire (profil + annonces) | RM-RECHERCHE | 4.1 | ✅ |
-| 4.3 | Serveur | Rendez-vous : réserver (horaire libre, adresse si chez le client, valeurs recopiées), confirmation automatique ou « j'accepte chaque demande », expiration 24 h, refuser, annuler et déplacer (délai du prestataire), annulation par le prestataire avec motif, rappels par mail ; les rendez-vous pris (+ pause) retirés des horaires libres | RM-RENDEZ-VOUS | 4.1 | 🟡 |
+| 4.3 | Serveur | Rendez-vous : réserver (horaire libre, adresse si chez le client, valeurs recopiées), confirmation automatique ou « j'accepte chaque demande », expiration 24 h, refuser, annuler et déplacer (délai du prestataire), annulation par le prestataire avec motif, rappels par mail ; les rendez-vous pris (+ pause) retirés des horaires libres | RM-RENDEZ-VOUS | 4.1 | 🔎 |
 | 4.4 | Écrans | Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation | RM-RENDEZ-VOUS | 4.3, 4.2 | ⬜ |
 | 4.5 | Serveur | Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder » | RM-RENDEZ-VOUS, RM-AGENDA | 4.3 | ⬜ |
 | 4.6 | Écrans | Boutons [Client absent] / [N'est pas venu] / [Je suis venu] ; compteurs (Mon compte, page publique) ; Administration › contestations ; fenêtre « annuler ou garder » dans l'agenda | RM-RENDEZ-VOUS | 4.5, 4.4 | ⬜ |
@@ -149,3 +149,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **30/09/2026** — Lot 4.1 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 4.2 commencé.
 - **30/09/2026** — Lot 4.2 construit → 🔎 à vérifier. Page « Trouver » (métier + ville, résultats en cartes, tri, 4 filtres, pages, aucun résultat avec métiers voisins ; toute la recherche dans l'adresse), page publique d'un prestataire (`/prestataires/12`), lien depuis la page d'une annonce. Serveur : la ville complète renvoyée avec les résultats. Réutilisation : `AvatarPrestataire` (Mon activité, résultats, page publique), `outils/recherche.ts`. Essai de bout en bout par le port 5174 (comptes d'essai n° 21 et 22 : 2 plombiers « Nouveau », ordre par distance à égalité, prix max 42 € → 1 seul, page publique sans téléphone) : conforme ; comptes effacés après sauvegarde ; comptage : 1 compte, 0 prestataire, 0 annonce. Tests : 165 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude → à regarder par Raphael.
 - **30/09/2026** — Lot 4.2 validé par Raphael (« Oui, je valide ») → ✅. Aucun compte d'essai à effacer (vérifié : 1 compte, 0 prestataire, 0 annonce). Lot 4.3 commencé.
+- **30/09/2026** — Lot 4.3 construit → 🔎 à vérifier. `schema_v9.sql` exécuté (table `rendez_vous` ; réglages `confirmation_automatique`, `annulation_delai_heures`). Serveur : réserver (horaire libre vérifié sous verrou, adresse recopiée, prix × heures, espèces pour l'instant), confirmation automatique ou demande (24 h), accepter / refuser, annuler (client dans le délai, prestataire avec motif), déplacer (nouveau rendez-vous lié à l'ancien), rappels (2 h avant la fin des 24 h, la veille à 18 h), tâche toutes les 5 minutes ; horaires libres tenant compte des rendez-vous et de la pause ; coordonnées selon RM-CLIENTS ; mails à chaque étape. Réutilisation : `verifier_modifiable()` partagé (annonces, agenda, rendez-vous). Export RGPD, nettoyage des essais et tests de fiche complétés. Tests : 189 OK (24 nouveaux). Vraie base : 0 donnée d'essai. Invariants : sécurité OK (chacun ses rendez-vous : 404 sinon) ; données OK (valeurs recopiées, jamais d'effacement) ; journal à chaque étape ; précisions notées dans `RM-RENDEZ-VOUS.md` (à valider).

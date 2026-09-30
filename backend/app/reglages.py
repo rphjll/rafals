@@ -54,6 +54,15 @@ RECHERCHE_NOTE_FICTIVE = 4
 RECHERCHE_RESULTATS_PAR_PAGE = 30
 RECHERCHE_METIERS_VOISINS = 5
 
+# Rendez-vous (RM-RENDEZ-VOUS.md, validé le 30/09/2026). Valeurs au départ : aussi dans db/schema_v9.sql (DEFAULT)
+ANNULATION_DELAI_CHOIX_HEURES = (2, 12, 24, 48)
+DEMANDE_REPONSE_DELAI = timedelta(hours=24)
+DEMANDE_RAPPEL_AVANT_FIN = timedelta(hours=2)
+RAPPEL_VEILLE_HEURE = 18  # la veille à 18 h (heure de Paris)
+RAPPEL_JOUR_MEME_AVANT = timedelta(hours=2)
+COORDONNEES_CLIENT_VISIBLES = 3  # mois après le dernier rendez-vous (RM-CLIENTS)
+TACHE_RENDEZ_VOUS_MINUTES = 5
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 
