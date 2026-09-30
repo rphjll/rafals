@@ -43,7 +43,7 @@ AGENDA_PAS_DEFAUT = 15
 AGENDA_PAUSE_DEFAUT = 0
 RESERVATION_DELAI_MIN_DEFAUT_MINUTES = 120
 RESERVATION_DELAI_MAX_DEFAUT_MOIS = 2
-# Bornes des réglages (proposées par Claude au lot 3.3, à valider)
+# Bornes des réglages (proposées par Claude au lot 3.3, validées par Raphael le 30/09/2026)
 AGENDA_PAUSE_MAX_MINUTES = 180
 RESERVATION_DELAI_MIN_MAX_MINUTES = 7 * 24 * 60
 RESERVATION_DELAI_MAX_MAX_MOIS = 12

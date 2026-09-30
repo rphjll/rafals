@@ -51,7 +51,7 @@ Qu'elle vienne d'un blocage, d'un changement d'horaires ou de la date de fin d'u
 Seulement les horaires libres, jamais les autres rendez-vous ni le nom des autres clients, ni la raison d'un blocage (appliqué d'office : règle des données personnelles, `RM-CLIENTS.md`).
 - Exemple : Mme Dupont voit « mardi 14/10 : 9 h 00, 9 h 15, 11 h 00… » ; elle ne sait pas que 9 h 30-10 h 45 est pris par M. Petit.
 
-## Précisions prises au lot 3.3 (proposées par Claude, à valider par Raphael)
+## Précisions prises au lot 3.3 (proposées par Claude, validées par Raphael le 30/09/2026)
 - **Semaine type** : enregistrée en entier d'un coup ; deux plages qui se chevauchent le même jour sont refusées (ex. mardi 9 h-12 h et 11 h-13 h) ; une plage doit finir après son début.
 - **Bornes des réglages** : pause de 0 à 3 h ; « au plus tôt » de 0 à 7 jours ; « au plus tard » de 1 à 12 mois (modifiables sans toucher au code).
 - **Blocage** : refusé s'il est déjà entièrement passé ; motif facultatif de 120 caractères au plus, jamais montré aux clients. Des congés « du 04/08 au 24/08 inclus » vont du 04/08 0 h au 25/08 0 h. Plusieurs blocages peuvent se chevaucher.
