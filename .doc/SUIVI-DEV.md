@@ -7,10 +7,10 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 4.2 — Écrans de la recherche (Raphael : « Oui, je valide » le lot 4.1)
 - **Commencé le** : 30/09/2026
 - **Étapes** :
-  - [ ] 1. Maquette cliquable validée  ← on en est là
-  - [ ] 2. Écrans : Trouver (résultats, filtres, tri, pages), page publique d'un prestataire
-  - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 4.2 (https://claude.ai/artifact/WZBXchmzZZEbdxXETyWVjr, fichier `.doc/ihm/maquette-lot-4.2-recherche.html`)
+  - [x] 1. Maquette cliquable validée (30/09/2026, « Oui, vas-y »)
+  - [x] 2. Écrans : Trouver (résultats, filtres, tri, pages), page publique d'un prestataire
+  - [x] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
+- **Question en attente** : Raphael essaie la recherche et valide le lot 4.2
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -69,7 +69,7 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 |---|---|---|---|---|---|
 | 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | ✅ |
 | 4.1 | Serveur | Recherche : métier + ville dans le rayon, métier principal d'abord, note pondérée, badge « Nouveau », distance, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat ; page publique d'un prestataire | RM-RECHERCHE | 3.4 | ✅ |
-| 4.2 | Écrans | « Trouver un prestataire » : résultats (une carte par prestataire), filtres, tri ; page publique d'un prestataire (profil + annonces) | RM-RECHERCHE | 4.1 | 🟡 |
+| 4.2 | Écrans | « Trouver un prestataire » : résultats (une carte par prestataire), filtres, tri ; page publique d'un prestataire (profil + annonces) | RM-RECHERCHE | 4.1 | 🔎 |
 | 4.3 | Serveur | Rendez-vous : réserver (horaire libre, adresse si chez le client, valeurs recopiées), confirmation automatique ou « j'accepte chaque demande », expiration 24 h, refuser, annuler et déplacer (délai du prestataire), annulation par le prestataire avec motif, rappels par mail ; les rendez-vous pris (+ pause) retirés des horaires libres | RM-RENDEZ-VOUS | 4.1 | ⬜ |
 | 4.4 | Écrans | Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation | RM-RENDEZ-VOUS | 4.3, 4.2 | ⬜ |
 | 4.5 | Serveur | Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder » | RM-RENDEZ-VOUS, RM-AGENDA | 4.3 | ⬜ |
@@ -146,3 +146,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **30/09/2026** — Lot 4.0 et découpage du niveau 4 validés par Raphael → ✅. Lot 4.1 commencé (sans MLD : aucune nouvelle table).
 - **30/09/2026** — Lot 4.1 construit → 🔎 à vérifier. Sans nouvelle table. Serveur : `/api/recherche` (métier + ville dans le rayon, annonce en ligne du métier, métier arrêté exclu, métier principal d'abord, note pondérée prête pour les avis du lot 4.7 — pour l'instant tous « Nouveau » —, à égalité le plus proche puis le plus ancien, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat) ; page publique d'un prestataire `/api/prestataires/12`. Réutilisation : `annonce_publique()` partagée entre la page d'une annonce et la page du prestataire. Tests : 165 OK (17 nouveaux ; ils reconnaissent les prestataires par leur numéro, la base de test contenant ceux des autres tests). Vraie base : 0 donnée d'essai. Invariants : sécurité OK (recherche et page publique sans téléphone, mail ni rue ; page cachée si l'activité n'est pas active) ; réglages dans `reglages.py` ; interface au lot 4.2 ; précisions notées dans `RM-RECHERCHE.md` (à valider).
 - **30/09/2026** — Lot 4.1 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 4.2 commencé.
+- **30/09/2026** — Lot 4.2 construit → 🔎 à vérifier. Page « Trouver » (métier + ville, résultats en cartes, tri, 4 filtres, pages, aucun résultat avec métiers voisins ; toute la recherche dans l'adresse), page publique d'un prestataire (`/prestataires/12`), lien depuis la page d'une annonce. Serveur : la ville complète renvoyée avec les résultats. Réutilisation : `AvatarPrestataire` (Mon activité, résultats, page publique), `outils/recherche.ts`. Essai de bout en bout par le port 5174 (comptes d'essai n° 21 et 22 : 2 plombiers « Nouveau », ordre par distance à égalité, prix max 42 € → 1 seul, page publique sans téléphone) : conforme ; comptes effacés après sauvegarde ; comptage : 1 compte, 0 prestataire, 0 annonce. Tests : 165 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude → à regarder par Raphael.

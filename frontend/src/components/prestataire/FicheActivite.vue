@@ -11,6 +11,7 @@ import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppSection from '../ui/AppSection.vue'
+import AvatarPrestataire from './AvatarPrestataire.vue'
 import CarteMesAnnonces from './CarteMesAnnonces.vue'
 import CarteMetiers from './CarteMetiers.vue'
 
@@ -21,13 +22,6 @@ const { afficherMessage } = useMessage()
 const bloque = computed(() => props.profil.statut === 'bloque')
 const raisonBlocage = "Votre profil est bloqué par l'administrateur de rafals : contactez-le."
 const versionPhoto = ref(Date.now()) // change après un envoi, pour afficher la nouvelle photo
-const initiales = computed(() =>
-  props.profil.nom_affiche
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((mot) => mot[0]?.toUpperCase() ?? '')
-    .join(''),
-)
 
 // ---------- Photo ----------
 const champPhoto = ref<HTMLInputElement | null>(null)
@@ -76,15 +70,13 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
     </AppAlerte>
 
     <section class="grid items-start gap-4 rounded-rafals border border-bord bg-surface p-5 sm:grid-cols-[96px_1fr]">
-      <img
-        v-if="profil.a_une_photo"
-        :src="`/api/prestataires/${profil.id}/photo?v=${versionPhoto}`"
-        :alt="`Photo de ${profil.nom_affiche}`"
-        class="size-24 rounded-full object-cover"
+      <AvatarPrestataire
+        :id="profil.id"
+        :nom="profil.nom_affiche"
+        :a-une-photo="profil.a_une_photo"
+        taille="grande"
+        :version="versionPhoto"
       />
-      <div v-else class="grid size-24 place-items-center rounded-full bg-primaire-doux text-3xl font-bold text-primaire">
-        {{ initiales }}
-      </div>
 
       <div class="flex flex-col gap-2.5">
         <div class="flex flex-wrap items-center gap-2">

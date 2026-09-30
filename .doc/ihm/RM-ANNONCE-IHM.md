@@ -7,7 +7,7 @@ Ouverte à tous, même sans compte. Une annonce cachée (en pause, retirée, mé
 
 1. (auteur) bandeau orange « Aperçu de votre annonce, telle que les clients la voient. » + lien [Modifier].
 2. Photos (s'il y en a) : la grande photo, puis les vignettes numérotées (clic = la montrer en grand).
-3. Carte : titre + prix à droite (« 50 € », « 40 € de l'heure », « Sur devis ») ; « par **Karim Benali** · Plombier » ; puis
+3. Carte : titre + prix à droite (« 50 € », « 40 € de l'heure », « Sur devis ») ; « par **Karim Benali** · Plombier » (le nom mène à sa page publique `/prestataires/12`, lot 4.2) ; puis
    - Durée : « 2 h » (prix fixe) ou « au choix, de 1 h à 3 h » (à l'heure) ; rien pour « sur devis » ;
    - Où : « Chez vous (Karim Benali vient de Pessac) » ; « Chez Léa, à Mérignac (adresse donnée après réservation) » ; « Chez vous, ou chez Léa à Mérignac » — **jamais la rue** ;
    - Paiement : « Carte bancaire ou espèces » / « Espèces » (la carte seulement si le SIRET est vérifié en ce moment) ;

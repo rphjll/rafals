@@ -54,6 +54,7 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AppChoix` — une réponse parmi quelques-unes, en cases côte à côte, case verrouillée 🔒 possible ; `AppCase` — case à cocher, verrouillable (lot 3.2).
 - `AppOnglets` — onglets d'une page, l'onglet choisi est dans l'adresse (`?onglet=…`) : Administration, Mon agenda (lot 3.4).
 - Heures, jours et périodes de l'agenda : toujours par `frontend/src/outils/agenda.ts` (« 9 h 00 », « Du 20/10/2026 au 24/10/2026 ») (lot 3.4).
+- `AvatarPrestataire` (dans `components/prestataire/`) — photo ronde ou initiales d'un prestataire ; `CarteResultat` (dans `components/recherche/`) — carte d'un prestataire dans les résultats (remplace l'`AppCarteResultat` prévu) ; textes de la recherche : `frontend/src/outils/recherche.ts` (lot 4.2).
 - `GardePrestataire` (dans `components/prestataire/`) — pages réservées aux prestataires (lot 3.2).
 - Prix, durées, lieux et paiements des annonces : toujours par `frontend/src/outils/annonces.ts` (« 50 € · 2 h », « 40 €/h · de 1 h à 3 h ») (lot 3.2).
 - Libellés et couleurs des états du prestataire : `frontend/src/outils/prestataires.ts`.

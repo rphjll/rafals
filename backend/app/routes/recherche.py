@@ -9,7 +9,7 @@ from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
 from app.routes.annonces import AnnoncePublique, annonce_publique
 from app.routes.dependances import Base, CompteOuPersonne, maintenant
-from app.routes.prestataires import MetierCourt
+from app.routes.prestataires import CommuneVisible, MetierCourt, commune_visible
 from app.services import recherche as service
 from app.services.annonces import modes_de_paiement, raison_cachee
 from app.services.erreurs import ErreurRegle
@@ -39,7 +39,7 @@ class CarteResultat(BaseModel):
 
 class PageResultats(BaseModel):
     metier: MetierCourt
-    ville: str
+    ville: CommuneVisible
     total: int
     page: int
     pages: int
@@ -88,7 +88,8 @@ def rechercher(
     )
     metier = db.get_one(Metier, metier_id)
     return PageResultats(
-        metier=MetierCourt(id=metier.id, nom=metier.nom), ville=db.get_one(Commune, commune_id).nom, total=resultat.total,
+        metier=MetierCourt(id=metier.id, nom=metier.nom), ville=commune_visible(db.get_one(Commune, commune_id)),
+        total=resultat.total,
         page=resultat.page, pages=resultat.pages, resultats=[carte(r) for r in resultat.resultats],
         metiers_voisins=[MetierCourt(id=m.id, nom=m.nom) for m in resultat.metiers_voisins],
     )

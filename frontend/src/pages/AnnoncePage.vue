@@ -72,7 +72,11 @@ const prix = computed(() => {
           <span class="text-[22px] font-bold text-primaire">{{ prix }}</span>
         </div>
         <p class="text-[14.5px] text-texte-doux">
-          par <b class="text-texte">{{ annonce.prestataire.nom_affiche }}</b> · {{ annonce.metier.nom }}
+          par
+          <RouterLink :to="`/prestataires/${annonce.prestataire.id}`" class="font-bold text-texte underline hover:text-primaire">
+            {{ annonce.prestataire.nom_affiche }}
+          </RouterLink>
+          · {{ annonce.metier.nom }}
         </p>
         <dl class="grid grid-cols-[auto_1fr] gap-x-[18px] gap-y-2 text-[14.5px]">
           <template v-if="annonce.forme_prix === 'fixe' && annonce.duree_minutes">
