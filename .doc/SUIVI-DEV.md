@@ -8,11 +8,11 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Commencé le** : 30/09/2026
 - **Étapes** :
   - [x] 1. Sujet 07 Recherche : `RM-RECHERCHE.md` validé (30/09/2026)
-  - [ ] 2. Sujet 08 Rendez-vous : `RM-RENDEZ-VOUS.md`  ← on en est là
-  - [ ] 3. Sujet 09 Avis : `RM-AVIS.md`
+  - [x] 2. Sujet 08 Rendez-vous : `RM-RENDEZ-VOUS.md` validé (30/09/2026)
+  - [ ] 3. Sujet 09 Avis : `RM-AVIS.md`  ← on en est là
   - [ ] 4. Découpage du niveau 4 en lots
 - **Déjà décidé avant** : rayon du prestataire ; métier principal avant secondaire, puis mieux notés (RM-PRESTATAIRES) ; avis 1 à 5 ★ seulement après un vrai rendez-vous (GLOSSAIRE) ; avis gardés sans nom si le client ferme son compte (RM-CLIENTS) ; coordonnées visibles après réservation
-- **Question en attente** : confirmation d'un rendez-vous par le prestataire (sujet 08)
+- **Question en attente** : délai pour laisser un avis (sujet 09)
 - **En pause** : aucune
 
 ## Définition de « terminé »
