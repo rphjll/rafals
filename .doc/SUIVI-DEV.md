@@ -4,14 +4,13 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 4.1 — Serveur de la recherche (Raphael : « Oui, je valide les deux » : découpage du niveau 4 et lot 4.0)
+- **Demande** : Lot 4.2 — Écrans de la recherche (Raphael : « Oui, je valide » le lot 4.1)
 - **Commencé le** : 30/09/2026
 - **Étapes** :
-  - [x] 1. Pas de MLD : aucune nouvelle table (tout se calcule à partir des prestataires, annonces, communes, agenda)
-  - [x] 2. Service de recherche (rayon, ordre, note pondérée, filtres, pages, métiers voisins) et page publique d'un prestataire
-  - [x] 3. Routes, tests
-  - [x] 4. Nettoyage, invariants, suivi, sauvegarde
-- **Question en attente** : Raphael valide les précisions du lot 4.1 (RM-RECHERCHE) et le lot
+  - [ ] 1. Maquette cliquable validée  ← on en est là
+  - [ ] 2. Écrans : Trouver (résultats, filtres, tri, pages), page publique d'un prestataire
+  - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
+- **Question en attente** : validation de la maquette du lot 4.2
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -69,8 +68,8 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
 | 4.0 | Règles | Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4 | SUIVI_REGLES_METIER | niveau 3 | ✅ |
-| 4.1 | Serveur | Recherche : métier + ville dans le rayon, métier principal d'abord, note pondérée, badge « Nouveau », distance, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat ; page publique d'un prestataire | RM-RECHERCHE | 3.4 | 🔎 |
-| 4.2 | Écrans | « Trouver un prestataire » : résultats (une carte par prestataire), filtres, tri ; page publique d'un prestataire (profil + annonces) | RM-RECHERCHE | 4.1 | ⬜ |
+| 4.1 | Serveur | Recherche : métier + ville dans le rayon, métier principal d'abord, note pondérée, badge « Nouveau », distance, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat ; page publique d'un prestataire | RM-RECHERCHE | 3.4 | ✅ |
+| 4.2 | Écrans | « Trouver un prestataire » : résultats (une carte par prestataire), filtres, tri ; page publique d'un prestataire (profil + annonces) | RM-RECHERCHE | 4.1 | 🟡 |
 | 4.3 | Serveur | Rendez-vous : réserver (horaire libre, adresse si chez le client, valeurs recopiées), confirmation automatique ou « j'accepte chaque demande », expiration 24 h, refuser, annuler et déplacer (délai du prestataire), annulation par le prestataire avec motif, rappels par mail ; les rendez-vous pris (+ pause) retirés des horaires libres | RM-RENDEZ-VOUS | 4.1 | ⬜ |
 | 4.4 | Écrans | Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation | RM-RENDEZ-VOUS | 4.3, 4.2 | ⬜ |
 | 4.5 | Serveur | Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder » | RM-RENDEZ-VOUS, RM-AGENDA | 4.3 | ⬜ |
@@ -146,3 +145,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **30/09/2026** — Lot 4.0 → 🔎 à vérifier. `RM-RECHERCHE.md` (note pondérée, badge « Nouveau », distance affichée, une carte par prestataire, 4 filtres), `RM-RENDEZ-VOUS.md` (confirmation au choix, 24 h pour répondre, annulation / déplacement dans le délai du prestataire, absences des deux côtés visibles et contestables, annulation par le prestataire avec motif) et `RM-AVIS.md` (30 jours, réponse, filtre de gros mots, signalement, « Marie D. ») validés par Raphael. Niveau 4 découpé en lots 4.1 à 4.8 (à valider).
 - **30/09/2026** — Lot 4.0 et découpage du niveau 4 validés par Raphael → ✅. Lot 4.1 commencé (sans MLD : aucune nouvelle table).
 - **30/09/2026** — Lot 4.1 construit → 🔎 à vérifier. Sans nouvelle table. Serveur : `/api/recherche` (métier + ville dans le rayon, annonce en ligne du métier, métier arrêté exclu, métier principal d'abord, note pondérée prête pour les avis du lot 4.7 — pour l'instant tous « Nouveau » —, à égalité le plus proche puis le plus ancien, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat) ; page publique d'un prestataire `/api/prestataires/12`. Réutilisation : `annonce_publique()` partagée entre la page d'une annonce et la page du prestataire. Tests : 165 OK (17 nouveaux ; ils reconnaissent les prestataires par leur numéro, la base de test contenant ceux des autres tests). Vraie base : 0 donnée d'essai. Invariants : sécurité OK (recherche et page publique sans téléphone, mail ni rue ; page cachée si l'activité n'est pas active) ; réglages dans `reglages.py` ; interface au lot 4.2 ; précisions notées dans `RM-RECHERCHE.md` (à valider).
+- **30/09/2026** — Lot 4.1 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 4.2 commencé.

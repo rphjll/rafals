@@ -48,7 +48,7 @@ Cases à cocher au-dessus des résultats ; chacune cache ceux qui ne conviennent
 - Au-delà de 30 résultats : pages de 30 (CONVENTIONS-IHM).
 - À note de classement égale : le plus proche d'abord, puis le plus ancien sur rafals.
 
-## Précisions prises au lot 4.1 (proposées par Claude, à valider par Raphael)
+## Précisions prises au lot 4.1 (proposées par Claude, validées par Raphael le 30/09/2026)
 - **Page publique d'un prestataire** (`/prestataires/12`) : nom, photo, présentation, ville et rayon, métiers exercés, badge « SIRET vérifié », annonces en ligne (comme la page d'une annonce : jamais la rue ni le téléphone). Visible seulement si l'activité est active ; son auteur la voit toujours (aperçu).
 - **Carte d'un résultat** : nom, photo, ville de départ, distance arrondie au km, « Nouveau » ou la note et le nombre d'avis, « à partir de 40 €/h » ou « à partir de 50 € » (ou « Sur devis »), nombre d'annonces, « vient chez vous » et « carte bancaire acceptée » si c'est le cas.
 - **« Libre dans les 7 jours »** : aujourd'hui et les 6 jours suivants, en tenant compte des délais « au plus tôt / au plus tard » du prestataire.
