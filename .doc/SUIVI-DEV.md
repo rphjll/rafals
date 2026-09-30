@@ -10,7 +10,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 1. Maquette cliquable validée  ← on en est là
   - [ ] 2. Écrans : semaine type, calendrier (blocages, dates de fin de métier), réglages, aperçu des horaires libres
   - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 3.4
+- **Question en attente** : validation de la maquette du lot 3.4 (https://claude.ai/artifact/8vMtR33NB844Qrwb1G5XrE, fichier `.doc/ihm/maquette-lot-3.4-agenda.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
