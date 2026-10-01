@@ -11,7 +11,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 2. `schema_v10.sql` écrit et exécuté ; modèles
   - [ ] 3. Services, routes, tests (absences, contestation, compteurs, 1 mois sans réserver, « annuler ou garder », fermeture de compte, blocage par l'administrateur)
   - [ ] 4. Nettoyage, invariants, suivi, sauvegarde
-- **Question en attente** : validation du MLD du lot 4.5
+- **Question en attente** : validation du MLD du lot 4.5 (https://claude.ai/artifact/VzQM4EfXmiEGtRpCezDhCZ, fichier `.doc/mld/MLD-lot-4.5-absences.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »

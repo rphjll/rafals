@@ -1,0 +1,97 @@
+<title>MLD rafals absences</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 4.5 « Absences »</h1>
+    <p class="sous">rafals · proposé le 01/10/2026 · source : <code>.doc/regles-metier/RM-RENDEZ-VOUS.md</code> (absences, contestation) · aucune table nouvelle, 7 rubriques ajoutées dans RENDEZ_VOUS</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  RENDEZ_VOUS["<b>RENDEZ_VOUS</b><br/>id (PK)<br/>client_id (FK)<br/>prestataire_id (FK)<br/>annonce_id (FK)<br/>commune_id (FK)<br/>remplace_id (FK)<br/>absence_decide_par_id (FK)"]
+  COMPTE -- "réserve · (0,n) —— (1,1)" --- RENDEZ_VOUS
+  COMPTE -- "tranche une absence · (0,n) —— (0,1)" --- RENDEZ_VOUS
+</pre>
+    </div>
+    <p class="note" style="margin-top:8px">Seul le nouveau lien est dessiné : l'administrateur (un COMPTE) qui tranche une contestation. Les autres liens de RENDEZ_VOUS ne changent pas (MLD du lot 4.3).</p>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>« tranche une absence · (0,n) —— (0,1) » : un administrateur tranche zéro, une ou plusieurs contestations ; un rendez-vous est tranché par zéro ou un administrateur.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les rubriques ajoutées</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>RENDEZ_VOUS <span class="nouveau">7 rubriques ajoutées</span></h3>
+        <ul>
+          <li><code>absent</code> — qui n'est pas venu : « client » ou « prestataire » ; vide = personne</li>
+          <li><code>absence_signalee_le</code> — quand l'autre a cliqué [Client absent] ou [N'est pas venu]</li>
+          <li><code>contestation</code> — l'explication de la personne marquée absente (« Je suis venu à 10 h, personne n'a ouvert »)</li>
+          <li><code>contestee_le</code> — quand elle a cliqué [Je suis venu] (dans les 7 jours)</li>
+          <li><code>absence_decision</code> — décision de l'administrateur : « compte » ou « ne_compte_pas » ; vide = pas encore tranché</li>
+          <li><code>absence_decide_par_id</code>, <code>absence_decide_le</code> — qui a tranché, et quand</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pas de compteur enregistré : il est calculé</h2>
+    <p class="note">Une absence <b>compte</b> si : elle n'a pas été contestée et 7 jours sont passés, ou l'administrateur a décidé qu'elle compte. Le compteur « 2 absences sans prévenir en 6 mois » et la règle « 3 absences → 1 mois sans réserver » se calculent à partir de ces rubriques, à chaque fois. Rien à tenir à jour, et une décision de l'administrateur change tout de suite le compteur.</p>
+    <p class="note" style="margin-top:8px"><b>Les annulations laissées en attente au niveau 3</b> (congés, changement de semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) n'ont besoin d'aucune rubrique : elles utilisent l'état « annule_prestataire » avec un motif écrit par rafals (ex. « Le prestataire a bloqué cette période »).</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>RENDEZ_VOUS</code> n° 1 : client = Mme Dupont, chez Léa, 14/10/2026 10 h, <code>absent</code> = « client », <code>absence_signalee_le</code> = 14/10/2026 10 h 40, pas de contestation.
+      <p class="trad"><b>Traduction :</b> Mme Dupont n'est pas venue ; Léa l'a signalé. Si Mme Dupont ne conteste pas avant le 21/10 à 10 h 40, l'absence compte : elle voit « 1 absence sans prévenir en 6 mois ».</p>
+    </div>
+    <div class="exemple">
+      <code>RENDEZ_VOUS</code> n° 2 : chez Karim, <code>absent</code> = « prestataire », <code>contestation</code> = « Je suis venu à 10 h, personne n'a ouvert », <code>contestee_le</code> = 15/10, <code>absence_decision</code> = « ne_compte_pas », <code>absence_decide_par_id</code> = Raphael.
+      <p class="trad"><b>Traduction :</b> la cliente a dit que Karim n'était pas venu ; Karim a contesté ; l'administrateur a tranché : l'absence ne compte pas, rien n'est affiché sur la page de Karim.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Pas dans ce lot : les écrans (lot 4.6).</p>
+  </section>
+</div>
