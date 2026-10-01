@@ -38,7 +38,7 @@ En plus du filtre, le prestataire peut cliquer [Signaler cet avis] avec une rais
 - **Où** : sur la page publique du prestataire (les plus récents d'abord) et, en résumé, dans les résultats de recherche (« 4,5 ★ · 8 avis ») ; la note moyenne compte tous les avis du prestataire, tous métiers confondus.
 - La **liste des gros mots** de départ est écrite par Claude et relue par Raphael avant la mise en ligne.
 
-## Précisions prises au lot 4.7 (proposées par Claude, à valider par Raphael)
+## Précisions prises au lot 4.7 (proposées par Claude, validées par Raphael le 01/10/2026)
 - **Filtre** : un mot interdit compte seulement s'il est entier, sans tenir compte des accents ni des majuscules (« Connard » refusé ; « conserve », « concours » acceptés). Il s'applique aussi à la réponse du prestataire. Liste de départ : 50 injures courantes (`backend/app/donnees/mots_interdits.json`, `charger-mots-interdits.bat`), **à relire par Raphael avant la mise en ligne**.
 - **Pas d'avis** sur un rendez-vous où une absence a été signalée.
 - **Signaler** : une fois par avis, avec une raison d'au moins 5 caractères ; l'administrateur le **laisse** (le signalement est traité) ou le **cache** avec un motif d'au moins 5 caractères envoyé au client.
