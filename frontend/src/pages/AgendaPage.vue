@@ -53,6 +53,10 @@ async function charger() {
     erreur.value = messageErreur(e)
   }
 }
+async function apresChangement(a: AgendaVisible) {
+  agenda.value = a
+  rendezVous.value = await appelerServeur<RendezVousVisible[]>('/api/moi/prestataire/rendez-vous')
+}
 onMounted(charger)
 watch(compte, charger)
 </script>
@@ -68,10 +72,10 @@ watch(compte, charger)
         :agenda="agenda"
         :profil="profil"
         :rendez-vous="rendezVous"
-        @maj="(a) => (agenda = a)"
+        @maj="apresChangement"
       />
       <OngletRendezVous v-else-if="ongletActif === 'rendez-vous'" :rendez-vous="rendezVous" @maj="charger" />
-      <OngletSemaine v-else-if="ongletActif === 'semaine'" :agenda="agenda" @maj="(a) => (agenda = a)" />
+      <OngletSemaine v-else-if="ongletActif === 'semaine'" :agenda="agenda" @maj="apresChangement" />
       <OngletReglages v-else-if="ongletActif === 'reglages'" :agenda="agenda" @maj="(a) => (agenda = a)" />
       <OngletHoraires v-else :annonces="annonces" />
     </template>

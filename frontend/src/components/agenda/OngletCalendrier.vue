@@ -2,7 +2,7 @@
 // Mon agenda › Calendrier (.doc/ihm/RM-AGENDA-IHM.md) : le mois en couleurs (ouvert, fermé, bloqué, fin d'un métier),
 // le détail d'un jour, les périodes bloquées à venir, et la fenêtre « Bloquer une période ».
 import { computed, ref } from 'vue'
-import { appelerServeur, messageErreur } from '../../api'
+import { ErreurServeur, appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import {
   type AgendaVisible,
@@ -109,16 +109,19 @@ const de = ref('14:00')
 const a = ref('16:00')
 const motif = ref('')
 const erreur = ref('')
+// Des rendez-vous tombent pendant la période (RM-AGENDA) : le serveur refuse (409) et liste ; le prestataire choisit
+const conflit = ref('')
 
 function ouvrir(jour: string, heures: boolean) {
   du.value = au.value = le.value = jour
   quelquesHeures.value = heures
   motif.value = ''
   erreur.value = ''
+  conflit.value = ''
   fenetre.value = true
 }
 
-async function bloquer() {
+async function bloquer(rendezVous: 'annuler' | 'garder' | null = null) {
   erreur.value = ''
   // Des jours entiers « du 20/10 au 24/10 inclus » : du 20/10 0 h au 25/10 0 h (heure de Paris)
   const [debut, fin] = quelquesHeures.value
@@ -129,13 +132,17 @@ async function bloquer() {
     return
   }
   try {
-    const agenda = await appelerServeur<AgendaVisible>('/api/moi/agenda/blocages', { debut, fin, motif: motif.value })
+    const agenda = await appelerServeur<AgendaVisible>('/api/moi/agenda/blocages', {
+      debut, fin, motif: motif.value, rendez_vous: rendezVous,
+    })
     emit('maj', agenda)
     fenetre.value = false
     const nouveau = agenda.blocages.find((b) => !props.agenda.blocages.some((ancien) => ancien.id === b.id))
-    afficherMessage(`Période bloquée : ${nouveau ? periodeLisible(nouveau).toLowerCase() : ''}.`)
+    const suite = rendezVous === 'annuler' ? ' Les rendez-vous de la période sont annulés.' : ''
+    afficherMessage(`Période bloquée : ${nouveau ? periodeLisible(nouveau).toLowerCase() : ''}.${suite}`)
   } catch (e) {
-    erreur.value = messageErreur(e)
+    if (e instanceof ErreurServeur && e.statut === 409) conflit.value = e.message
+    else erreur.value = messageErreur(e)
   }
 }
 
@@ -246,7 +253,7 @@ async function debloquer(blocage: Blocage) {
   </AppSection>
 
   <AppFenetre :ouverte="fenetre" titre="Bloquer une période" @fermer="fenetre = false">
-    <form class="flex flex-col gap-3" @submit.prevent="bloquer">
+    <form class="flex flex-col gap-3" @submit.prevent="bloquer()">
       <AppCase v-model="quelquesHeures" texte="Seulement quelques heures" />
       <div v-if="quelquesHeures" class="flex flex-col gap-3">
         <AppChamp v-model="le" etiquette="Le" type="date" :min="aujourdhui" obligatoire />
@@ -261,13 +268,20 @@ async function debloquer(blocage: Blocage) {
       </div>
       <AppChamp v-model="motif" etiquette="Motif (pour vous seul)" maxlength="120" placeholder="ex. Congés, dentiste…" />
       <p class="text-[13.5px]">
-        Les clients ne verront plus d'horaires pendant cette période. (Rendez-vous déjà pris : vous choisirez de les annuler
-        ou de les garder, quand les rendez-vous existeront.)
+        Les clients ne verront plus d'horaires pendant cette période. Si des rendez-vous y tombent, vous choisirez de
+        les annuler ou de les garder.
       </p>
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+      <AppAlerte v-if="conflit" etat="attente">
+        {{ conflit }} Annuler : chaque client est prévenu par mail. Garder : tout le reste de la période est bloqué.
+      </AppAlerte>
     </form>
     <template #pied>
-      <AppBouton @click="bloquer">Bloquer</AppBouton>
+      <template v-if="conflit">
+        <AppBouton variante="danger" @click="bloquer('annuler')">Annuler ces rendez-vous et bloquer</AppBouton>
+        <AppBouton variante="secondaire" @click="bloquer('garder')">Bloquer autour</AppBouton>
+      </template>
+      <AppBouton v-else @click="bloquer()">Bloquer</AppBouton>
       <AppBouton variante="secondaire" @click="fenetre = false">Annuler</AppBouton>
     </template>
   </AppFenetre>

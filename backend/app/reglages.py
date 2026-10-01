@@ -65,6 +65,8 @@ TACHE_RENDEZ_VOUS_MINUTES = 5
 
 # Absences (RM-RENDEZ-VOUS.md, validé le 30/09/2026)
 ABSENCE_CONTESTATION_DELAI = timedelta(days=7)
+ABSENCE_SIGNALEMENT_DELAI = timedelta(days=7)  # après la fin du rendez-vous (validé par Raphael le 01/10/2026)
+ANNULATION_TARDIVE = timedelta(hours=24)
 ABSENCES_FENETRE_MOIS = 6
 ABSENCES_AVANT_SUSPENSION = 3
 SUSPENSION_MOIS = 1

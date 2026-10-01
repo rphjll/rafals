@@ -82,6 +82,10 @@ Le prestataire peut annuler un rendez-vous à tout moment, avec un **motif oblig
 - **Arrêter son activité** (définitif) : refusé tant qu'il reste des rendez-vous à venir (« annulez-les d'abord »), comme la fermeture de compte d'un client (RM-CLIENTS).
 - **Fermer son compte** (client) : refusé avec un rendez-vous à venir : « Annulez d'abord votre rendez-vous du 05/11/2026 (page « Mes rendez-vous »). » ; un compte inactif dans ce cas n'est pas fermé automatiquement.
 
+## Précisions prises au lot 4.6 (validées par Raphael le 01/10/2026, avec la maquette)
+- **Signaler une absence** : possible de l'heure de début jusqu'à 7 jours après la fin du rendez-vous ; après : « Le délai de 7 jours pour signaler une absence est passé. »
+- **Annulations de dernière minute** (par le prestataire, moins de 24 h avant) : listées dans « Administration › Absences contestées », par prestataire, sur 6 mois (ex. « Léa Martin · 2 »).
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|

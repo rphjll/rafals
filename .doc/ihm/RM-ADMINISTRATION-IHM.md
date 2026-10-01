@@ -7,7 +7,7 @@ Entrée de menu visible seulement des administrateurs. **(pas administrateur, ou
 
 **Ordre des éléments :**
 1. Titre « Administration ».
-2. Onglets : « Accords à vérifier » · « Comptes » · « Prestataires » (lot 2.5) · « Propositions de métiers » · « Métiers ». Compteur orange du nombre en attente sur « Accords à vérifier » et « Propositions de métiers », mis à jour après chaque décision. L'onglet choisi est dans l'adresse (ex. `?onglet=metiers`).
+2. Onglets : « Accords à vérifier » · « Comptes » · « Prestataires » (lot 2.5) · « Absences contestées » (lot 4.6, compteur orange) · « Propositions de métiers » · « Métiers ». Compteur orange du nombre en attente sur « Accords à vérifier » et « Propositions de métiers », mis à jour après chaque décision. L'onglet choisi est dans l'adresse (ex. `?onglet=metiers`).
 3. (erreur de chargement) bandeau rouge.
 
 ## Onglet « Accords à vérifier » (par défaut)
@@ -48,3 +48,7 @@ Tableau (défile sur le côté sur téléphone), du plus récent au plus ancien.
 - [Débloquer] (secondaire) si bloqué → « « … » est débloqué : il est de nouveau actif. » ;
 - aucun bouton de blocage pour un prestataire arrêté.
 Texte sous le tableau : « Du plus récent au plus ancien. « Valider le SIRET » : seulement après avoir vu un justificatif (avis de situation INSEE). »
+
+## Onglet « Absences contestées » (lot 4.6)
+Une carte par contestation à trancher, la plus ancienne d'abord : titre « Dépannage fuite · 13/10/2026 à 10 h 00 » + badge « à trancher » ; deux encadrés côte à côte (l'un sous l'autre sur téléphone) : « **Marie Dupont (client)** a signalé : « Karim Benali n'est pas venu ». » et « **Karim Benali (prestataire)** a contesté le 14/10/2026 à 9 h 12 : « … » » ; [L'absence compte] (danger) / [Elle ne compte pas] → « Décision enregistrée : l'absence compte. Les deux sont prévenus. » Vide : « Aucune absence contestée. »
+Plus bas, carte « Annulations de dernière minute (6 mois) » : « Rendez-vous annulés par le prestataire moins de 24 h avant. », une ligne par prestataire (lien vers sa page) · nombre, les plus nombreux d'abord ; vide : « Aucune. »

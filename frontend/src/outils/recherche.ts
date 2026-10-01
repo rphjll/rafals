@@ -42,6 +42,7 @@ export interface PrestatairePublic {
   siret_verifie: boolean
   note: number | null
   nombre_avis: number
+  absences: number
   annonces: AnnoncePublique[]
 }
 

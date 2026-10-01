@@ -1,11 +1,30 @@
 <script setup lang="ts">
 // Un rendez-vous dans une liste (.doc/ihm/RM-RENDEZ-VOUS-IHM.md) : titre, état, plage horaire, l'autre personne
 // (et son téléphone quand c'est permis), lieu, prix ; les boutons viennent de la page (slot « actions »).
+import { computed } from 'vue'
 import { euros } from '../../outils/annonces'
-import { type RendezVousVisible, badgeRendezVous, plage } from '../../outils/rendez_vous'
+import { type RendezVousVisible, badgeRendezVous, momentCourt, plage } from '../../outils/rendez_vous'
+import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 
-defineProps<{ rdv: RendezVousVisible; libelleAutre: 'Avec' | 'Client' }>()
+const props = defineProps<{ rdv: RendezVousVisible; libelleAutre: 'Avec' | 'Client' }>()
+
+// L'absence vue par chacun (RM-RENDEZ-VOUS) : « moi » = celui qui regarde
+const moi = computed(() => (props.libelleAutre === 'Avec' ? 'client' : 'prestataire'))
+const absence = computed(() => {
+  const a = props.rdv.absence
+  if (!a) return null
+  const visee = a.absent === moi.value
+  const signalement = visee
+    ? `${props.libelleAutre === 'Avec' ? props.rdv.autre.nom : 'Le client'} indique que vous n'êtes pas venu.`
+    : `Vous avez signalé : ${props.rdv.autre.nom} n'est pas venu.`
+  let suite = ''
+  if (a.decision) suite = a.decision === 'compte' ? "Décision de rafals : l'absence compte." : "Décision de rafals : l'absence ne compte pas."
+  else if (a.contestee_le) suite = `Contestée : « ${a.contestation} ». rafals va trancher.`
+  else if (visee) suite = `Si c'est faux, contestez avant le ${momentCourt(a.contestable_jusqu_au)}.`
+  else suite = `Elle comptera le ${momentCourt(a.contestable_jusqu_au)}, sauf contestation.`
+  return { visee, texte: `${signalement} ${suite}` }
+})
 </script>
 
 <template>
@@ -29,6 +48,9 @@ defineProps<{ rdv: RendezVousVisible; libelleAutre: 'Avec' | 'Client' }>()
         </RouterLink>
         <template v-else>{{ rdv.autre.nom }}</template>
         <template v-if="rdv.autre.telephone"> · {{ rdv.autre.telephone }}</template>
+        <AppBadge v-if="rdv.autre.absences" etat="erreur" class="ml-1.5">
+          {{ rdv.autre.absences }} absence{{ rdv.autre.absences > 1 ? 's' : '' }} en 6 mois
+        </AppBadge>
       </dd>
       <template v-if="rdv.adresse">
         <dt class="text-texte-doux">Où</dt>
@@ -43,6 +65,7 @@ defineProps<{ rdv: RendezVousVisible; libelleAutre: 'Avec' | 'Client' }>()
         <dd class="font-medium">« {{ rdv.motif }} »</dd>
       </template>
     </dl>
+    <AppAlerte v-if="absence" :etat="absence.visee ? 'attente' : 'ok'">{{ absence.texte }}</AppAlerte>
     <div class="flex flex-wrap items-center gap-2 pt-1 empty:hidden">
       <slot name="actions" />
     </div>

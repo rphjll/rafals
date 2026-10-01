@@ -4,6 +4,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur } from '../api'
+import OngletAbsences from '../components/admin/OngletAbsences.vue'
 import OngletAccords from '../components/admin/OngletAccords.vue'
 import OngletComptes from '../components/admin/OngletComptes.vue'
 import OngletMetiers from '../components/admin/OngletMetiers.vue'
@@ -21,6 +22,7 @@ const onglets = [
   { id: 'accords', texte: 'Accords à vérifier', composant: OngletAccords },
   { id: 'comptes', texte: 'Comptes', composant: OngletComptes },
   { id: 'prestataires', texte: 'Prestataires', composant: OngletPrestataires },
+  { id: 'absences', texte: 'Absences contestées', composant: OngletAbsences },
   { id: 'propositions', texte: 'Propositions de métiers', composant: OngletPropositions },
   { id: 'metiers', texte: 'Métiers', composant: OngletMetiers },
 ] as const
@@ -31,11 +33,12 @@ const onglet = computed(() => onglets.find((o) => o.id === ongletActif.value) ??
 const enAttente = ref<Record<string, number>>({})
 async function compter() {
   if (!compte.value?.est_administrateur) return
-  const [accords, propositions] = await Promise.all([
+  const [accords, propositions, contestations] = await Promise.all([
     appelerServeur<unknown[]>('/api/admin/accords'),
     appelerServeur<unknown[]>('/api/admin/propositions'),
+    appelerServeur<unknown[]>('/api/admin/contestations'),
   ])
-  enAttente.value = { accords: accords.length, propositions: propositions.length }
+  enAttente.value = { accords: accords.length, propositions: propositions.length, absences: contestations.length }
 }
 onMounted(compter)
 watch(compte, compter)

@@ -2,7 +2,7 @@
 // Mon agenda › Semaine type (.doc/ihm/RM-AGENDA-IHM.md) : les 7 jours, plusieurs plages possibles par jour,
 // enregistrés ensemble. Un jour sans plage est fermé.
 import { ref, watch } from 'vue'
-import { appelerServeur, messageErreur } from '../../api'
+import { ErreurServeur, appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import { type AgendaVisible, JOURS } from '../../outils/agenda'
 import AppAlerte from '../ui/AppAlerte.vue'
@@ -26,6 +26,7 @@ function remplir() {
 watch(() => props.agenda, remplir, { immediate: true })
 
 const erreur = ref('')
+const conflit = ref('') // des rendez-vous tombent hors des nouveaux horaires : annuler ou garder (RM-AGENDA)
 const envoiEnCours = ref(false)
 
 function ajouter(rang: number) {
@@ -36,17 +37,19 @@ function ajouter(rang: number) {
   jour.push(derniere && derniere.fin < '14:00' ? { debut: '14:00', fin: '19:00' } : { debut: '09:00', fin: '12:00' })
 }
 
-async function enregistrer() {
+async function enregistrer(rendezVous: 'annuler' | 'garder' | null = null) {
   erreur.value = ''
+  conflit.value = ''
   envoiEnCours.value = true
   try {
     const plages = semaine.value.flatMap((jour, rang) =>
       jour.map((p) => ({ jour_semaine: rang + 1, debut: p.debut, fin: p.fin })),
     )
-    emit('maj', await appelerServeur<AgendaVisible>('/api/moi/agenda/semaine', { plages }))
+    emit('maj', await appelerServeur<AgendaVisible>('/api/moi/agenda/semaine', { plages, rendez_vous: rendezVous }))
     afficherMessage('Semaine type enregistrée.')
   } catch (e) {
-    erreur.value = messageErreur(e)
+    if (e instanceof ErreurServeur && e.statut === 409) conflit.value = e.message
+    else erreur.value = messageErreur(e)
   } finally {
     envoiEnCours.value = false
   }
@@ -81,13 +84,20 @@ async function enregistrer() {
       </div>
     </div>
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+    <template v-if="conflit">
+      <AppAlerte etat="attente">{{ conflit }} Annuler : chaque client est prévenu par mail.</AppAlerte>
+      <div class="flex flex-wrap gap-2">
+        <AppBouton variante="danger" @click="enregistrer('annuler')">Annuler ces rendez-vous</AppBouton>
+        <AppBouton variante="secondaire" @click="enregistrer('garder')">Les garder</AppBouton>
+      </div>
+    </template>
     <div class="flex flex-wrap gap-2">
-      <AppBouton :occupe="envoiEnCours" @click="enregistrer">Enregistrer la semaine</AppBouton>
+      <AppBouton :occupe="envoiEnCours" @click="enregistrer()">Enregistrer la semaine</AppBouton>
       <AppBouton variante="secondaire" @click="remplir">Annuler</AppBouton>
     </div>
     <p class="text-[13px] text-texte-doux">
-      Rendez-vous déjà pris hors des nouveaux horaires : vous pourrez choisir de les annuler ou de les garder (quand les
-      rendez-vous existeront).
+      Rendez-vous déjà pris hors des nouveaux horaires : vous choisirez de les annuler (clients prévenus) ou de les
+      garder.
     </p>
   </AppSection>
 </template>

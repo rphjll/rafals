@@ -2,6 +2,7 @@
 // Mon compte (.doc/ihm/RM-COMPTE-IHM.md) : une carte par sujet, chacune dans components/compte/.
 import { useRouter } from 'vue-router'
 import CarteAdresse from '../components/CarteAdresse.vue'
+import CarteAbsences from '../components/compte/CarteAbsences.vue'
 import CarteAccordParental from '../components/compte/CarteAccordParental.vue'
 import CarteDonnees from '../components/compte/CarteDonnees.vue'
 import CarteFermeture from '../components/compte/CarteFermeture.vue'
@@ -30,6 +31,7 @@ const { compte, chargementFait } = useCompte()
       texte-ajouter="Ajouter mon adresse"
       texte-effacer="Effacer mon adresse"
     />
+    <CarteAbsences />
     <CarteDonnees />
     <CarteFermeture />
   </div>

@@ -16,8 +16,9 @@ from tests.test_rendez_vous import a, dupont, reserver, statut  # noqa: F401 (fi
 
 def passe(base: Session, rdv_id: int, jours: int = 1) -> None:
     """Fait comme si le rendez-vous avait eu lieu il y a quelques jours (l'heure du rendez-vous est passée)."""
-    base.execute(text("UPDATE rendez_vous SET debut = debut - make_interval(days => :j + 30), fin = fin - make_interval(days => :j + 30)"
-                      " WHERE id = :id"), {"j": jours, "id": rdv_id})
+    base.execute(text("UPDATE rendez_vous SET debut = now() - make_interval(days => :j, hours => 2),"
+                      " fin = now() - make_interval(days => :j, hours => 2) + (fin - debut) WHERE id = :id"),
+                 {"j": jours, "id": rdv_id})
     base.commit()
 
 
@@ -206,3 +207,26 @@ def test_moment_ou_une_absence_compte() -> None:
 
     assert absences.moment_ou_elle_compte(sans) == signale + timedelta(days=7)
     assert absences.moment_ou_elle_compte(contestee) is None
+
+
+def test_signaler_seulement_dans_les_7_jours(lea, dupont, rdv_passe, base: Session) -> None:
+    passe(base, rdv_passe, jours=8)  # le rendez-vous a eu lieu il y a plus de 7 jours
+
+    reponse = lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv_passe}/absent")
+
+    assert reponse.status_code == 400 and "7 jours pour signaler" in reponse.json()["detail"]
+
+
+def test_annulations_de_derniere_minute_vues_par_l_administrateur(lea, dupont, base: Session, fabrique_compte) -> None:
+    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    # Le rendez-vous a lieu dans 3 h : l'annulation est « de dernière minute »
+    base.execute(text("UPDATE rendez_vous SET debut = now() + interval '3 hours', fin = now() + interval '4 hours' WHERE id = :id"),
+                 {"id": rdv["id"]})
+    base.commit()
+    lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv['id']}/annuler", json={"motif": "Malade, désolée"})
+    raphael = fabrique_compte(administrateur=True)
+    prestataire_id = lea.client.get("/api/moi/prestataire").json()["id"]
+
+    ligne = next(x for x in raphael.client.get("/api/admin/annulations-tardives").json() if x["prestataire_id"] == prestataire_id)
+
+    assert ligne["nombre"] == 1

@@ -79,6 +79,8 @@ def _apres_le_debut(rdv: RendezVous, maintenant: datetime) -> None:
         raise ErreurRegle("Vous pourrez signaler une absence après l'heure du rendez-vous.")
     if rdv.absent is not None:
         raise ErreurRegle("Une absence est déjà signalée pour ce rendez-vous.")
+    if maintenant > rdv.fin + reglages.ABSENCE_SIGNALEMENT_DELAI:
+        raise ErreurRegle("Le délai de 7 jours pour signaler une absence est passé.")
 
 
 def signaler_client_absent(db: Session, prestataire: Prestataire, rdv: RendezVous, maintenant: datetime) -> RendezVous:
@@ -145,6 +147,22 @@ def contestations_a_trancher(db: Session) -> list[RendezVous]:
     return list(db.scalars(select(RendezVous).where(
         RendezVous.contestee_le.is_not(None), RendezVous.absence_decision.is_(None)
     ).order_by(RendezVous.contestee_le)))
+
+
+# ---------- Annulations de dernière minute par les prestataires (vues par l'administrateur) ----------
+
+
+def annulations_tardives(db: Session, maintenant: datetime) -> list[tuple[Prestataire, int]]:
+    """Rendez-vous annulés par le prestataire moins de 24 h avant, sur 6 mois ; les plus nombreux d'abord.
+    Ex. Léa Martin · 2."""
+    lignes = db.scalars(select(RendezVous).where(
+        RendezVous.statut == "annule_prestataire", RendezVous.debut >= _il_y_a_6_mois(maintenant)
+    ))
+    par_prestataire: dict[int, int] = {}
+    for rdv in lignes:
+        if rdv.debut - rdv.statut_change_le < reglages.ANNULATION_TARDIVE:
+            par_prestataire[rdv.prestataire_id] = par_prestataire.get(rdv.prestataire_id, 0) + 1
+    return sorted(((db.get_one(Prestataire, i), n) for i, n in par_prestataire.items()), key=lambda c: -c[1])
 
 
 # ---------- Compteurs montrés ----------

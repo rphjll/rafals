@@ -7,7 +7,7 @@ Ouverte à tous, même sans compte. Visible seulement si l'activité du prestata
 
 1. [‹ Retour] : la page d'avant (les résultats) ; ouverte directement par un lien : la recherche.
 2. (auteur) bandeau orange « Votre page, telle que les clients la voient. » + lien « Mon activité ».
-3. Carte du profil : grande photo ronde (ou initiales) ; nom + badge vert « SIRET vérifié » ; « ★ 4,5 (8 avis) » ou badge « Nouveau sur rafals » ; « Plombier · aussi Électricien » (métiers exercés) ; « Part de Pessac, se déplace jusqu'à 20 km » ; présentation.
+3. Carte du profil : grande photo ronde (ou initiales) ; nom + badge vert « SIRET vérifié » ; « ★ 4,5 (8 avis) » ou badge « Nouveau sur rafals » ; « Plombier · aussi Électricien » (métiers exercés) ; « Part de Pessac, se déplace jusqu'à 20 km » ; (s'il y en a, lot 4.6) bandeau orange « 1 absence sans prévenir ces 6 derniers mois » ; présentation.
 4. Carte « Ses annonces » : une ligne par annonce en ligne — titre, « **50 € · 2 h** · Chez vous (Marc vient de Pessac) · carte bancaire ou espèces », [Voir l'annonce] → `/annonces/12` ; aucune : « Marc n'a pas d'annonce en ligne pour l'instant. »
 5. Carte « Avis » : « Les avis arrivent bientôt. » (lot 4.8).
 6. « Le téléphone et l'adresse sont donnés après une réservation. » — jamais de téléphone, de mail ni de rue sur cette page.

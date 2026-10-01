@@ -109,7 +109,7 @@ function enregistrer() {
     </div>
     <p class="text-[13px] text-texte-doux">
       Ajouter un métier : [Modifier mon profil]. Après la date de fin, les annonces du métier sont mises en pause (gardées),
-      et les rendez-vous pris après cette date seront annulés (quand les rendez-vous existeront).
+      et les rendez-vous de ce métier pris après cette date sont annulés (clients prévenus).
     </p>
   </AppSection>
 

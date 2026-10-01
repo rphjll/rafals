@@ -28,8 +28,32 @@ export interface RendezVousVisible {
   motif: string | null
   reponse_avant: string | null
   annulable_jusqu_au: string | null
-  /** Le prestataire (vu par le client) ou le client (vu par le prestataire) ; téléphone seulement quand c'est permis */
-  autre: { nom: string; telephone: string | null; prestataire_id?: number; client_id?: number }
+  absence: Absence | null
+  /** Le prestataire (vu par le client) ou le client (vu par le prestataire) ; téléphone seulement quand c'est permis ;
+   *  « absences » : celles du client en 6 mois, montrées au prestataire */
+  autre: { nom: string; telephone: string | null; prestataire_id?: number; client_id?: number; absences?: number }
+}
+
+/** Absence sur un rendez-vous (lot 4.5) */
+export interface Absence {
+  absent: 'client' | 'prestataire'
+  signalee_le: string
+  contestable_jusqu_au: string
+  contestation: string | null
+  contestee_le: string | null
+  decision: 'compte' | 'ne_compte_pas' | null
+  compte: boolean
+}
+
+/** On peut signaler une absence après le début, et jusqu'à 7 jours après la fin (RM-RENDEZ-VOUS) */
+export function absenceSignalable(r: RendezVousVisible, maintenant = new Date()): boolean {
+  const septJours = 7 * 24 * 3600 * 1000
+  return r.statut === 'confirme' && !r.absence && new Date(r.debut) <= maintenant && maintenant.getTime() <= new Date(r.fin).getTime() + septJours
+}
+
+/** La personne marquée absente peut contester dans les 7 jours, une seule fois */
+export function contestable(a: Absence | null, moi: 'client' | 'prestataire', maintenant = new Date()): boolean {
+  return !!a && a.absent === moi && !a.contestee_le && maintenant < new Date(a.contestable_jusqu_au)
 }
 
 export interface ReglagesReservation {
@@ -45,6 +69,7 @@ export function aVenir(r: RendezVousVisible, maintenant = new Date()): boolean {
 }
 
 export function badgeRendezVous(r: RendezVousVisible): { etat: BadgeEtat; texte: string } {
+  if (r.absence) return { etat: 'erreur', texte: r.absence.absent === 'client' ? 'client absent' : 'prestataire absent' }
   if (r.statut === 'confirme') return new Date(r.fin) > new Date() ? { etat: 'ok', texte: 'confirmé' } : { etat: 'neutre', texte: 'passé' }
   return (
     {

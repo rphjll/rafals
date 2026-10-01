@@ -71,6 +71,12 @@ class ContestationAdministree(BaseModel):
     contestee_le: datetime
 
 
+class AnnulationsTardives(BaseModel):
+    prestataire_id: int
+    nom: str
+    nombre: int
+
+
 class ReglagesRendezVous(BaseModel):
     confirmation_automatique: bool
     annulation_delai_heures: int
@@ -297,3 +303,10 @@ def trancher(rdv_id: int, donnees: Decision, db: Base, admin: Administrateur) ->
     rdv = absences.trancher(db, admin, rdv_id, donnees.compte, maintenant())
     db.commit()
     return {"decision": rdv.absence_decision or ""}
+
+
+@routeur.get("/admin/annulations-tardives")
+def annulations_tardives(db: Base, _admin: Administrateur) -> list[AnnulationsTardives]:
+    """Annulations par les prestataires moins de 24 h avant, sur 6 mois (RM-RENDEZ-VOUS)."""
+    return [AnnulationsTardives(prestataire_id=p.id, nom=p.nom_affiche, nombre=n)
+            for p, n in absences.annulations_tardives(db, maintenant())]

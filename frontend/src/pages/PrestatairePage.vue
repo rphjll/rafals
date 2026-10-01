@@ -77,6 +77,9 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
             <p class="text-[14px] text-texte-doux">
               Part de {{ prestataire.ville }}, se déplace jusqu'à {{ prestataire.distance_km }} km
             </p>
+            <AppAlerte v-if="prestataire.absences" etat="attente">
+              {{ prestataire.absences }} absence{{ prestataire.absences > 1 ? 's' : '' }} sans prévenir ces 6 derniers mois
+            </AppAlerte>
             <p v-if="prestataire.presentation" class="whitespace-pre-line">{{ prestataire.presentation }}</p>
           </div>
         </div>

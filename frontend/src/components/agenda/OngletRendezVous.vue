@@ -3,7 +3,8 @@
 import { computed, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
-import { type RendezVousVisible, aVenir, momentCourt, plage } from '../../outils/rendez_vous'
+import { type RendezVousVisible, absenceSignalable, aVenir, contestable, momentCourt, plage } from '../../outils/rendez_vous'
+import FenetreContestation from '../rendez-vous/FenetreContestation.vue'
 import LigneRendezVous from '../rendez-vous/LigneRendezVous.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
@@ -23,6 +24,18 @@ async function accepter(r: RendezVousVisible) {
   try {
     await appelerServeur(`/api/moi/prestataire/rendez-vous/${r.id}/accepter`, {})
     afficherMessage(`Rendez-vous accepté : ${r.autre.nom} est prévenu.`)
+    emit('maj')
+  } catch (e) {
+    afficherMessage(messageErreur(e), 'erreur')
+  }
+}
+
+// Absences (lot 4.6) : « Client absent » après l'heure ; « Je suis venu » si le client l'a signalé absent
+const aContester = ref<string | null>(null)
+async function clientAbsent(r: RendezVousVisible) {
+  try {
+    await appelerServeur(`/api/moi/prestataire/rendez-vous/${r.id}/absent`, {})
+    afficherMessage(`Absence signalée : ${r.autre.nom} a 7 jours pour contester.`)
     emit('maj')
   } catch (e) {
     afficherMessage(messageErreur(e), 'erreur')
@@ -82,10 +95,21 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
     </div>
   </AppSection>
 
-  <details v-if="passes.length" class="rounded-rafals border border-bord bg-surface p-5">
+  <details v-if="passes.length" class="rounded-rafals border border-bord bg-surface p-5" :open="passes.some((r) => absenceSignalable(r) || contestable(r.absence, 'prestataire'))">
     <summary class="min-h-[28px] cursor-pointer font-bold">Passés et annulés ({{ passes.length }})</summary>
     <div class="flex flex-col divide-y divide-bord">
-      <LigneRendezVous v-for="r in passes" :key="r.id" :rdv="r" libelle-autre="Client" />
+      <LigneRendezVous v-for="r in passes" :key="r.id" :rdv="r" libelle-autre="Client">
+        <template #actions>
+          <AppBouton v-if="absenceSignalable(r)" variante="danger" @click="clientAbsent(r)">Client absent</AppBouton>
+          <AppBouton
+            v-if="contestable(r.absence, 'prestataire')"
+            variante="secondaire"
+            @click="aContester = `/api/moi/prestataire/rendez-vous/${r.id}/contester`"
+          >
+            Je suis venu…
+          </AppBouton>
+        </template>
+      </LigneRendezVous>
     </div>
   </details>
 
@@ -112,4 +136,5 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
       <AppBouton variante="secondaire" @click="cible = null">{{ cible?.action === 'refuser' ? 'Revenir' : 'Garder' }}</AppBouton>
     </template>
   </AppFenetre>
+  <FenetreContestation :chemin="aContester" @fermer="aContester = null" @conteste="(aContester = null), emit('maj')" />
 </template>

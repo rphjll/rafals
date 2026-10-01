@@ -5,6 +5,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import ChoixHoraire from '../components/rendez-vous/ChoixHoraire.vue'
+import FenetreContestation from '../components/rendez-vous/FenetreContestation.vue'
 import LigneRendezVous from '../components/rendez-vous/LigneRendezVous.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
@@ -15,7 +16,7 @@ import AppSection from '../components/ui/AppSection.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 import { aParis, heure, jourCourt } from '../outils/agenda'
-import { type RendezVousVisible, aVenir, momentCourt, plage } from '../outils/rendez_vous'
+import { type RendezVousVisible, absenceSignalable, aVenir, contestable, momentCourt, plage } from '../outils/rendez_vous'
 
 const routeur = useRouter()
 const { compte, chargementFait } = useCompte()
@@ -55,6 +56,23 @@ async function annuler() {
   } catch (e) {
     aAnnuler.value = null
     afficherMessage(messageErreur(e), 'erreur')
+  }
+}
+
+// ---------- Absences (lot 4.6) ----------
+const pasVenu = ref<RendezVousVisible | null>(null)
+const aContester = ref<string | null>(null)
+async function signalerPasVenu() {
+  const r = pasVenu.value
+  if (!r) return
+  try {
+    await appelerServeur(`/api/moi/rendez-vous/${r.id}/absent`, {})
+    afficherMessage(`Absence signalée : ${r.autre.nom} a 7 jours pour contester.`)
+    await charger()
+  } catch (e) {
+    afficherMessage(messageErreur(e), 'erreur')
+  } finally {
+    pasVenu.value = null
   }
 }
 
@@ -128,7 +146,14 @@ async function deplacer(debut: string) {
       <AppSection v-else>
         <p v-if="!passes.length" class="text-texte-doux">Aucun rendez-vous passé ou annulé.</p>
         <div class="flex flex-col divide-y divide-bord">
-          <LigneRendezVous v-for="r in passes" :key="r.id" :rdv="r" libelle-autre="Avec" />
+          <LigneRendezVous v-for="r in passes" :key="r.id" :rdv="r" libelle-autre="Avec">
+            <template #actions>
+              <AppBouton v-if="absenceSignalable(r)" variante="danger" @click="pasVenu = r">{{ r.autre.nom }} n'est pas venu…</AppBouton>
+              <AppBouton v-if="contestable(r.absence, 'client')" variante="secondaire" @click="aContester = `/api/moi/rendez-vous/${r.id}/contester`">
+                Je suis venu…
+              </AppBouton>
+            </template>
+          </LigneRendezVous>
         </div>
       </AppSection>
     </template>
@@ -143,6 +168,18 @@ async function deplacer(debut: string) {
         <AppBouton variante="secondaire" @click="aAnnuler = null">Garder</AppBouton>
       </template>
     </AppFenetre>
+
+    <AppFenetre :ouverte="pasVenu !== null" :titre="`${pasVenu?.autre.nom} n'est pas venu ?`" @fermer="pasVenu = null">
+      <template v-if="pasVenu">
+        {{ pasVenu.titre }}, {{ plage(pasVenu).toLowerCase() }}. {{ pasVenu.autre.nom }} est prévenu et a 7 jours pour
+        contester ; sinon, l'absence apparaîtra sur sa page.
+      </template>
+      <template #pied>
+        <AppBouton variante="danger" @click="signalerPasVenu">Signaler l'absence</AppBouton>
+        <AppBouton variante="secondaire" @click="pasVenu = null">Annuler</AppBouton>
+      </template>
+    </AppFenetre>
+    <FenetreContestation :chemin="aContester" @fermer="aContester = null" @conteste="(aContester = null), charger()" />
 
     <AppFenetre :ouverte="aDeplacer !== null" :titre="`Déplacer « ${aDeplacer?.titre} »`" @fermer="aDeplacer = null">
       <div v-if="aDeplacer" class="flex flex-col gap-3 text-texte">
