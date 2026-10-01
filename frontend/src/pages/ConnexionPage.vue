@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Connexion (.doc/ihm/RM-CONNEXION-IHM.md). Règles : RM-COMPTES.md.
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { messageErreur } from '../api'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
@@ -11,7 +11,10 @@ import AppSeparateur from '../components/ui/AppSeparateur.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 
+const route = useRoute()
 const routeur = useRouter()
+// Retour à la page d'avant (ex. une annonce : /connexion?retour=/annonces/12) ; seulement une page de rafals
+const retour = typeof route.query.retour === 'string' && /^\/(?!\/)/.test(route.query.retour) ? route.query.retour : '/'
 const { seConnecter, compte } = useCompte()
 const { afficherMessage } = useMessage()
 const email = ref('')
@@ -25,7 +28,7 @@ async function connexion() {
   try {
     await seConnecter(email.value, motDePasse.value)
     afficherMessage(`Bonjour ${compte.value?.prenom} !`)
-    routeur.push('/')
+    routeur.push(retour)
   } catch (e) {
     erreur.value = messageErreur(e)
   } finally {

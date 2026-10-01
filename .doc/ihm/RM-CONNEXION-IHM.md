@@ -14,3 +14,6 @@ Carte centrée (460 px au maximum).
 4. Bouton principal [Se connecter] (inactif pendant l'envoi) → accueil + message vert « Bonjour Marie ! ».
 5. Bouton secondaire [Mot de passe oublié ?] → `/mot-de-passe-oublie`.
 6. Séparateur « pas encore de compte ? », puis bouton secondaire [Créer mon compte] → `/inscription`.
+
+## Retour à la page d'avant (lot 4.4)
+Une page peut envoyer à `/connexion?retour=/annonces/12` : après la connexion, on revient sur cette page (seulement une page de rafals, jamais un autre site) ; sinon l'accueil.

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Fenêtre propre à rafals : jamais la fenêtre grise du navigateur (CONVENTIONS-IHM).
-// Échap ou clic sur le fond la ferme ; le pied (boutons) ne change pas de hauteur.
+// Échap ou clic sur le fond la ferme ; le pied (boutons) ne change pas de hauteur ; un contenu trop haut défile.
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 const props = defineProps<{ ouverte: boolean; titre: string }>()
@@ -38,7 +38,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', surTouche))
         role="dialog"
         aria-modal="true"
         :aria-label="titre"
-        class="w-full max-w-[440px] rounded-rafals border border-bord bg-surface p-[22px] text-texte"
+        class="max-h-[calc(100dvh-32px)] w-full max-w-[440px] overflow-y-auto rounded-rafals border border-bord bg-surface p-[22px] text-texte"
       >
         <h3 class="mb-2 text-xl font-bold">{{ titre }}</h3>
         <div class="mb-[18px] leading-relaxed text-texte-doux"><slot /></div>

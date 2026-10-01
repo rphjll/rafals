@@ -9,6 +9,7 @@ import {
   type Blocage,
   JOURS,
   MOIS,
+  aParis,
   ajouterJours,
   bloqueCeJour,
   heure,
@@ -20,6 +21,7 @@ import {
 } from '../../outils/agenda'
 import { aujourdhuiIso } from '../../outils/dates'
 import type { ProfilPrestataire } from '../../outils/prestataires'
+import { type RendezVousVisible, aVenir, plage } from '../../outils/rendez_vous'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
@@ -28,7 +30,7 @@ import AppChamp from '../ui/AppChamp.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppSection from '../ui/AppSection.vue'
 
-const props = defineProps<{ agenda: AgendaVisible; profil: ProfilPrestataire }>()
+const props = defineProps<{ agenda: AgendaVisible; profil: ProfilPrestataire; rendezVous: RendezVousVisible[] }>()
 const emit = defineEmits<{ maj: [agenda: AgendaVisible] }>()
 const { afficherMessage } = useMessage()
 
@@ -63,6 +65,7 @@ interface Jour {
   plages: string
   bloque: Blocage | undefined
   fins: string[]
+  rendezVous: RendezVousVisible[]
 }
 function decrire(jour: string): Jour {
   const plages = props.agenda.plages.filter((p) => p.jour_semaine === jourSemaine(jour))
@@ -72,6 +75,8 @@ function decrire(jour: string): Jour {
     plages: plages.map((p) => `${heureCourte(p.debut)}-${heureCourte(p.fin)}`).join(' · '),
     bloque: props.agenda.blocages.find((b) => bloqueCeJour(b, jour)),
     fins: fins.value.filter((f) => f.jour === jour).map((f) => f.nom),
+    // Rendez-vous confirmés et demandes en attente de ce jour
+    rendezVous: props.rendezVous.filter((r) => aVenir(r, new Date(0)) && aParis(r.debut).jour === jour),
   }
 }
 const cases = computed(() => {
@@ -169,6 +174,7 @@ async function debloquer(blocage: Blocage) {
         <span v-if="j.bloque" class="font-bold text-attente">bloqué</span>
         <span v-else-if="j.plages" class="hidden sm:block">{{ j.plages }}</span>
         <span v-else class="hidden sm:block">fermé</span>
+        <span v-if="j.rendezVous.length" class="font-bold text-primaire">{{ j.rendezVous.length }} rdv</span>
         <span v-for="nom in j.fins" :key="nom" class="font-bold text-erreur">fin {{ nom }}</span>
       </button>
     </div>
@@ -193,6 +199,12 @@ async function debloquer(blocage: Blocage) {
       <template v-else-if="plagesDuJour">{{ plagesDuJour }} (semaine type)</template>
       <template v-else>Fermé ce jour-là (semaine type).</template>
     </p>
+    <ul v-if="detail.rendezVous.length" class="flex flex-col gap-1 text-[14.5px]">
+      <li v-for="r in detail.rendezVous" :key="r.id">
+        <b>{{ plage(r).split(', ')[1] }}</b> · {{ r.titre }} · {{ r.autre.nom }}
+        <span v-if="r.statut === 'en_attente'" class="text-attente">(demande en attente)</span>
+      </li>
+    </ul>
     <p v-for="nom in detail.fins" :key="nom" class="text-[14.5px] font-semibold text-erreur">
       Dernier jour du métier {{ nom }}.
     </p>

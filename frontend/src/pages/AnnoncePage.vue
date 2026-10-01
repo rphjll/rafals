@@ -2,15 +2,22 @@
 // Une annonce vue par un client (.doc/ihm/RM-ANNONCE-IHM.md) : photos, prix, durée, lieu (la ville, jamais la rue),
 // paiement, description. Son auteur la voit aussi quand elle est cachée (aperçu).
 import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppSection from '../components/ui/AppSection.vue'
+import AppSelection from '../components/ui/AppSelection.vue'
+import ChoixHoraire from '../components/rendez-vous/ChoixHoraire.vue'
+import FenetreReservation from '../components/rendez-vous/FenetreReservation.vue'
 import { useCompte } from '../composables/useCompte'
+import { useMessage } from '../composables/useMessage'
+import type { RendezVousVisible } from '../outils/rendez_vous'
 import { type AnnoncePublique, duree, euros, lieuPourLeClient, paiement } from '../outils/annonces'
 
 const route = useRoute()
+const routeur = useRouter()
+const { afficherMessage } = useMessage()
 const { compte } = useCompte()
 const annonce = ref<AnnoncePublique | null>(null)
 const erreur = ref('')
@@ -26,6 +33,34 @@ async function charger() {
   }
 }
 watch(() => route.params.id, charger, { immediate: true })
+
+// ---------- Réserver ----------
+const heures = ref<number | null>(null)
+const debutChoisi = ref<string | null>(null)
+watch(annonce, (a) => (heures.value = a?.heures_min ?? null))
+const choixHeures = computed(() => {
+  const a = annonce.value
+  if (!a?.heures_min || !a.heures_max) return []
+  return Array.from({ length: a.heures_max - a.heures_min + 1 }, (_, n) => (a.heures_min ?? 1) + n)
+})
+function choisir(debut: string) {
+  if (!compte.value) {
+    // Pas connecté : se connecter, puis revenir sur cette annonce
+    afficherMessage('Connectez-vous pour réserver : vous reviendrez ici.')
+    routeur.push({ path: '/connexion', query: { retour: route.fullPath } })
+    return
+  }
+  if (monAnnonce.value) {
+    afficherMessage('Vous ne pouvez pas réserver votre propre annonce.', 'erreur')
+    return
+  }
+  debutChoisi.value = debut
+}
+function reserve(rdv: RendezVousVisible) {
+  debutChoisi.value = null
+  afficherMessage(rdv.statut === 'confirme' ? 'Rendez-vous confirmé.' : 'Demande envoyée : le prestataire a 24 h pour répondre.')
+  routeur.push('/rendez-vous')
+}
 
 const monAnnonce = computed(() => !!annonce.value && compte.value?.prestataire_id === annonce.value.prestataire.id)
 const prix = computed(() => {
@@ -93,12 +128,33 @@ const prix = computed(() => {
           <dd class="font-medium">{{ paiement(annonce.modes_de_paiement) }}</dd>
         </dl>
         <p v-if="annonce.description" class="whitespace-pre-line">{{ annonce.description }}</p>
-        <div class="pt-10 sm:pt-0">
-          <AppBouton variante="verrouille" raison-verrou="La réservation arrive bientôt (niveau 4).">
-            {{ annonce.forme_prix === 'devis' ? 'Demander un devis' : 'Réserver' }}
+        <div v-if="annonce.forme_prix === 'devis'" class="pt-10 sm:pt-0">
+          <AppBouton variante="verrouille" raison-verrou="Les demandes de devis arrivent bientôt (niveau 5).">
+            Demander un devis
           </AppBouton>
         </div>
       </AppSection>
+
+      <!-- Réserver (RM-RENDEZ-VOUS) : les horaires libres des 14 prochains jours, puis la fenêtre de confirmation -->
+      <AppSection v-if="annonce.forme_prix !== 'devis'" titre="Choisir un horaire">
+        <p v-if="monAnnonce" class="text-[14px] text-texte-doux">
+          Vos clients choisiront ici un horaire libre de votre agenda (vous ne pouvez pas réserver votre propre annonce).
+        </p>
+        <AppSelection
+          v-if="annonce.forme_prix === 'heure' && choixHeures.length > 1"
+          v-model="heures"
+          etiquette="Combien d'heures ?"
+          :options="choixHeures.map((h) => ({ valeur: h, texte: `${h} h · ${euros((annonce?.prix_centimes ?? 0) * h)}` }))"
+        />
+        <ChoixHoraire :annonce-id="annonce.id" :heures="annonce.forme_prix === 'heure' ? heures : null" @choisir="choisir" />
+      </AppSection>
+      <FenetreReservation
+        :annonce="annonce"
+        :debut="debutChoisi"
+        :heures="heures"
+        @fermer="debutChoisi = null"
+        @reserve="reserve"
+      />
     </template>
   </div>
 </template>

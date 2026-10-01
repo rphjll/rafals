@@ -14,6 +14,7 @@ import MotDePasseOubliePage from './pages/MotDePasseOubliePage.vue'
 import NouveauMotDePassePage from './pages/NouveauMotDePassePage.vue'
 import PrestatairePage from './pages/PrestatairePage.vue'
 import ProposerPage from './pages/ProposerPage.vue'
+import RendezVousPage from './pages/RendezVousPage.vue'
 import TrouverPage from './pages/TrouverPage.vue'
 import VerifierAdressePage from './pages/VerifierAdressePage.vue'
 
@@ -43,7 +44,7 @@ export const routeur = createRouter({
     { path: '/mes-annonces/:id(\\d+)', name: 'annonce-modifier', component: AnnonceFormulairePage },
     { path: '/annonces/:id(\\d+)', name: 'annonce', component: AnnoncePage },
     { path: '/prestataires/:id(\\d+)', name: 'prestataire', component: PrestatairePage },
-    { path: '/rendez-vous', name: 'rendez-vous', ...bientot('Mes rendez-vous', 'avec les rendez-vous (niveau 4)') },
+    { path: '/rendez-vous', name: 'rendez-vous', component: RendezVousPage },
     { path: '/compte', name: 'compte', component: ComptePage },
     { path: '/administration', name: 'administration', component: AdministrationPage },
     { path: '/:chemin(.*)*', name: 'introuvable', ...bientot('Page introuvable', '') },

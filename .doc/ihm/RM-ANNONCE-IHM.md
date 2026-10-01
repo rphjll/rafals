@@ -12,4 +12,5 @@ Ouverte à tous, même sans compte. Une annonce cachée (en pause, retirée, mé
    - Où : « Chez vous (Karim Benali vient de Pessac) » ; « Chez Léa, à Mérignac (adresse donnée après réservation) » ; « Chez vous, ou chez Léa à Mérignac » — **jamais la rue** ;
    - Paiement : « Carte bancaire ou espèces » / « Espèces » (la carte seulement si le SIRET est vérifié en ce moment) ;
    - la description ;
-   - bouton 🔒 [Réserver] (ou 🔒 [Demander un devis]) verrouillé : « La réservation arrive bientôt (niveau 4). »
+   - « sur devis » : bouton 🔒 [Demander un devis] : « Les demandes de devis arrivent bientôt (niveau 5). »
+4. (prix fixe ou à l'heure) Carte « Choisir un horaire » et fenêtre de réservation : voir `RM-RENDEZ-VOUS-IHM.md` (lot 4.4).

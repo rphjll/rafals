@@ -29,6 +29,8 @@ const props = defineProps<{
   /** Phrase montrée sous l'adresse enregistrée (facultative) */
   note?: string
 }>()
+// Prévient la page (ex. la fenêtre de réservation) quand l'adresse change : la nouvelle adresse, ou null si effacée
+const emit = defineEmits<{ change: [adresse: Adresse | null] }>()
 const { afficherMessage } = useMessage()
 const adresse = ref<Adresse | null>(null)
 const chargee = ref(false)
@@ -43,6 +45,7 @@ const envoiEnCours = ref(false)
 onMounted(async () => {
   try {
     adresse.value = await appelerServeur<Adresse | null>(props.chemin)
+    emit('change', adresse.value)
   } catch (e) {
     erreur.value = messageErreur(e)
   } finally {
@@ -90,6 +93,7 @@ async function enregistrer() {
       code_postal: codePostal.value,
     })
     enModification.value = false
+    emit('change', adresse.value)
     afficherMessage('Adresse enregistrée.')
   } catch (e) {
     erreur.value = messageErreur(e)
@@ -103,6 +107,7 @@ async function effacer() {
   try {
     afficherMessage((await appelerServeur<{ message: string }>(`${props.chemin}/effacer`, {})).message)
     adresse.value = null
+    emit('change', null)
   } catch (e) {
     erreur.value = messageErreur(e) // ex. « Des annonces en ligne ont lieu chez vous… »
   }
