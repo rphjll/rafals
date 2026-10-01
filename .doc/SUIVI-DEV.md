@@ -4,13 +4,14 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 4.4 — Écrans des rendez-vous (Raphael : « Oui, je valide » le lot 4.3)
-- **Commencé le** : 30/09/2026
+- **Demande** : Lot 4.5 — Serveur des absences, contestations, compteurs, et des annulations laissées en attente au niveau 3 (Raphael : « Oui, je valide » le lot 4.4)
+- **Commencé le** : 01/10/2026
 - **Étapes** :
-  - [x] 1. Maquette cliquable validée (01/10/2026, « Oui, vas-y »)
-  - [x] 2. Écrans : réserver depuis une annonce, « Mes rendez-vous » (client), rendez-vous reçus et réglages (prestataire)
-  - [x] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : Raphael essaie les rendez-vous et valide le lot 4.4
+  - [ ] 1. MLD validé  ← on en est là
+  - [ ] 2. `schema_v10.sql` écrit et exécuté ; modèles
+  - [ ] 3. Services, routes, tests (absences, contestation, compteurs, 1 mois sans réserver, « annuler ou garder », fermeture de compte, blocage par l'administrateur)
+  - [ ] 4. Nettoyage, invariants, suivi, sauvegarde
+- **Question en attente** : validation du MLD du lot 4.5
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -71,8 +72,8 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 | 4.1 | Serveur | Recherche : métier + ville dans le rayon, métier principal d'abord, note pondérée, badge « Nouveau », distance, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat ; page publique d'un prestataire | RM-RECHERCHE | 3.4 | ✅ |
 | 4.2 | Écrans | « Trouver un prestataire » : résultats (une carte par prestataire), filtres, tri ; page publique d'un prestataire (profil + annonces) | RM-RECHERCHE | 4.1 | ✅ |
 | 4.3 | Serveur | Rendez-vous : réserver (horaire libre, adresse si chez le client, valeurs recopiées), confirmation automatique ou « j'accepte chaque demande », expiration 24 h, refuser, annuler et déplacer (délai du prestataire), annulation par le prestataire avec motif, rappels par mail ; les rendez-vous pris (+ pause) retirés des horaires libres | RM-RENDEZ-VOUS | 4.1 | ✅ |
-| 4.4 | Écrans | Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation | RM-RENDEZ-VOUS | 4.3, 4.2 | 🔎 |
-| 4.5 | Serveur | Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder » | RM-RENDEZ-VOUS, RM-AGENDA | 4.3 | ⬜ |
+| 4.4 | Écrans | Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation | RM-RENDEZ-VOUS | 4.3, 4.2 | ✅ |
+| 4.5 | Serveur | Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder » | RM-RENDEZ-VOUS, RM-AGENDA | 4.3 | 🟡 |
 | 4.6 | Écrans | Boutons [Client absent] / [N'est pas venu] / [Je suis venu] ; compteurs (Mon compte, page publique) ; Administration › contestations ; fenêtre « annuler ou garder » dans l'agenda | RM-RENDEZ-VOUS | 4.5, 4.4 | ⬜ |
 | 4.7 | Serveur | Avis : 30 jours avec rappel, réponse du prestataire, filtre de gros mots (liste modifiable), signalement, avis caché par l'administrateur ; note pondérée et badge « Nouveau » branchés dans la recherche | RM-AVIS | 4.5 | ⬜ |
 | 4.8 | Écrans | Laisser / modifier / retirer un avis ; avis sur la page publique ; Administration › avis signalés et liste des gros mots | RM-AVIS | 4.7, 4.6 | ⬜ |
@@ -151,3 +152,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **30/09/2026** — Lot 4.3 construit → 🔎 à vérifier. `schema_v9.sql` exécuté (table `rendez_vous` ; réglages `confirmation_automatique`, `annulation_delai_heures`). Serveur : réserver (horaire libre vérifié sous verrou, adresse recopiée, prix × heures, espèces pour l'instant), confirmation automatique ou demande (24 h), accepter / refuser, annuler (client dans le délai, prestataire avec motif), déplacer (nouveau rendez-vous lié à l'ancien), rappels (2 h avant la fin des 24 h, la veille à 18 h), tâche toutes les 5 minutes ; horaires libres tenant compte des rendez-vous et de la pause ; coordonnées selon RM-CLIENTS ; mails à chaque étape. Réutilisation : `verifier_modifiable()` partagé (annonces, agenda, rendez-vous). Export RGPD, nettoyage des essais et tests de fiche complétés. Tests : 189 OK (24 nouveaux). Vraie base : 0 donnée d'essai. Invariants : sécurité OK (chacun ses rendez-vous : 404 sinon) ; données OK (valeurs recopiées, jamais d'effacement) ; journal à chaque étape ; précisions notées dans `RM-RENDEZ-VOUS.md` (à valider).
 - **30/09/2026** — Lot 4.3 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 4.4 commencé.
 - **01/10/2026** — Lot 4.4 construit → 🔎 à vérifier. Écrans : réserver depuis la page d'une annonce (14 jours, heures libres, fenêtre avec adresse si besoin, espèces, carte 🔒 bientôt), « Mes rendez-vous » (à venir / passés, annuler et déplacer dans le délai, 🔒 hors délai avec le téléphone), « Mon agenda › Rendez-vous » (demandes à accepter avec compteur, refuser / annuler avec motif), carte « Réservations » dans les réglages, nombre de rendez-vous dans le calendrier. Connexion : retour à la page d'avant (`?retour=`, seulement une page de rafals). Réutilisation : `ChoixHoraire` (réserver et déplacer), `LigneRendezVous` (client et prestataire), la carte d'adresse commune dans la fenêtre de réservation, `outils/rendez_vous.ts` ; les fenêtres trop hautes défilent. Essai de bout en bout par le port 5174 (comptes d'essai n° 23 et 24 : refus sans adresse, réservation confirmée avec téléphone, horaire pris, déplacement, réglages, demande en attente sans téléphone, refus, annulation sans motif refusée puis avec motif) : conforme ; comptes effacés après sauvegarde ; comptage : 1 compte, 0 prestataire, 0 rendez-vous. Tests : 189 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude → à regarder par Raphael.
+- **01/10/2026** — Lot 4.4 validé par Raphael (« Oui, je valide ») → ✅. Compte n° 25 « lea@gmail.com » (non marqué, créé par Raphael pour son essai) : effacé avec son accord explicite (« C'est un essai : efface-le »), après sauvegarde, marqué puis nettoyé ; comptage : 1 compte, 0 prestataire, 0 annonce, 0 rendez-vous. Lot 4.5 commencé.
