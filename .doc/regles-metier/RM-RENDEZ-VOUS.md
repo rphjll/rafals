@@ -73,7 +73,7 @@ Le prestataire peut annuler un rendez-vous à tout moment, avec un **motif oblig
 - **Annulation par le prestataire** : impossible une fois le rendez-vous terminé.
 - **Tâche automatique** toutes les 5 minutes : demandes expirées, rappels.
 
-## Précisions prises au lot 4.5 (proposées par Claude, à valider par Raphael)
+## Précisions prises au lot 4.5 (proposées par Claude, validées par Raphael le 01/10/2026)
 - **Signaler une absence** : seulement sur un rendez-vous confirmé, après son heure de début ; une seule absence par rendez-vous.
 - **Pendant les 7 jours** laissés pour contester, une absence n'est **pas encore comptée** ni affichée ; elle compte au bout des 7 jours, ou quand l'administrateur décide qu'elle compte.
 - **Contester** : seulement la personne marquée absente, avec une explication d'au moins 10 caractères ; l'administrateur tranche une seule fois (« compte » ou « ne compte pas »), les deux sont prévenus.
