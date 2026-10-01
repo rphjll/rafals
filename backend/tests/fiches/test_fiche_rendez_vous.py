@@ -31,10 +31,13 @@ def test_fiche_rendez_vous(base: Session, decor) -> None:  # noqa: F811
     # Valeurs imposées par les contraintes : fin après début, listes de valeurs, adresse complète, attente limitée
     imposees = [
         {**liens, "commune_id": talence.id, "code_postal": "33400", "debut": LE_14, "fin": LE_14 + timedelta(hours=1),
-         "prix_centimes": 5000, "heures": None, "lieu": "chez_client", "mode_paiement": "especes", "statut": "en_attente"},
+         "prix_centimes": 5000, "heures": None, "lieu": "chez_client", "mode_paiement": "especes", "statut": "en_attente",
+         "absent": None, "absence_signalee_le": None, "contestation": None, "contestee_le": None, "absence_decision": None,
+         "absence_decide_par_id": None, "absence_decide_le": None},
         {**liens, "commune_id": None, "adresse_ligne": None, "code_postal": None, "debut": LE_14 + timedelta(days=1),
          "fin": LE_14 + timedelta(days=1, hours=3), "prix_centimes": 7500, "heures": 3, "lieu": "chez_moi",
-         "mode_paiement": "carte", "statut": "confirme"},
+         "mode_paiement": "carte", "statut": "confirme", "absent": "client", "absence_decision": "compte",
+         "absence_decide_par_id": compte.id},
     ]
 
     ajout = valeurs(RendezVous, 1, imposees[0])

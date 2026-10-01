@@ -1,4 +1,4 @@
-"""Miroir exact de la table rendez_vous (db/schema_v9.sql). Aucun calcul ici."""
+"""Miroir exact de la table rendez_vous (db/schema_v9.sql, v10). Aucun calcul ici."""
 
 from datetime import datetime
 
@@ -33,3 +33,10 @@ class RendezVous(Base):
     reponse_avant: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     statut_change_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     rappel_envoye_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    absent: Mapped[str | None] = mapped_column(Text)
+    absence_signalee_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    contestation: Mapped[str | None] = mapped_column(Text)
+    contestee_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    absence_decision: Mapped[str | None] = mapped_column(Text)
+    absence_decide_par_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("compte.id"))
+    absence_decide_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

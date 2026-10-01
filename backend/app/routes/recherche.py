@@ -10,6 +10,7 @@ from app.modeles.prestataires import Commune, Prestataire
 from app.routes.annonces import AnnoncePublique, annonce_publique
 from app.routes.dependances import Base, CompteOuPersonne, maintenant
 from app.routes.prestataires import CommuneVisible, MetierCourt, commune_visible
+from app.services import absences
 from app.services import recherche as service
 from app.services.annonces import modes_de_paiement, raison_cachee
 from app.services.erreurs import ErreurRegle
@@ -58,6 +59,7 @@ class PrestatairePublic(BaseModel):
     siret_verifie: bool
     note: float | None
     nombre_avis: int
+    absences: int  # « 1 absence sans prévenir » en 6 mois (RM-RENDEZ-VOUS)
     annonces: list[AnnoncePublique]
 
 
@@ -113,5 +115,6 @@ def page_publique(prestataire_id: int, db: Base, compte: CompteOuPersonne) -> Pr
         a_une_photo=prestataire.photo_id is not None, ville=db.get_one(Commune, prestataire.commune_id).nom,
         distance_km=prestataire.distance_km, metiers=[MetierCourt(id=m.id, nom=m.nom) for m in metiers],
         siret_verifie=prestataire.siret_statut == "verifie", note=None, nombre_avis=0,
+        absences=len(absences.absences_du_prestataire(db, prestataire.id, maintenant_)),
         annonces=[annonce_publique(db, a, prestataire) for a in annonces],
     )

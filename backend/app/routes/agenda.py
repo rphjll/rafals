@@ -1,6 +1,7 @@
 """Adresses de l'agenda du prestataire et des horaires libres d'une annonce (écrans au lot 3.4). Règles : RM-AGENDA.md."""
 
 from datetime import date, datetime, time
+from typing import Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -22,6 +23,7 @@ class PlageDemande(BaseModel):
 
 class Semaine(BaseModel):
     plages: list[PlageDemande]
+    rendez_vous: Literal["annuler", "garder"] | None = None  # si des rendez-vous tombent hors des nouveaux horaires
 
 
 class BlocageDemande(BaseModel):
@@ -30,6 +32,7 @@ class BlocageDemande(BaseModel):
     debut: datetime
     fin: datetime
     motif: str | None = None
+    rendez_vous: Literal["annuler", "garder"] | None = None  # si des rendez-vous tombent pendant la période
 
 
 class BlocageVisible(BaseModel):
@@ -80,7 +83,8 @@ def mon_agenda(db: Base, compte: CompteConnecte) -> AgendaVisible:
 @routeur.post("/moi/agenda/semaine")
 def semaine(donnees: Semaine, db: Base, compte: CompteConnecte) -> AgendaVisible:
     prestataire = mon_profil_ou_404(db, compte)
-    service.remplacer_semaine(db, prestataire, [service.Plage(**p.model_dump()) for p in donnees.plages], maintenant())
+    service.remplacer_semaine(db, prestataire, [service.Plage(**p.model_dump()) for p in donnees.plages], maintenant(),
+                              donnees.rendez_vous)
     db.commit()
     return agenda_visible(db, prestataire)
 

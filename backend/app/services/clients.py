@@ -207,7 +207,7 @@ def _effacer_donnees_personnelles(db: Session, compte: Compte, maintenant: datet
     )
 
 
-def _verifier_fermeture_possible(db: Session, compte: Compte) -> None:
+def _verifier_fermeture_possible(db: Session, compte: Compte, maintenant: datetime) -> None:
     prestataire = db.scalar(select(Prestataire).where(Prestataire.compte_id == compte.id))
     if prestataire is not None and prestataire.statut != "arrete":
         raise ErreurRegle("Arrêtez d'abord votre activité de prestataire (page « Mon activité »), puis fermez votre compte.")
@@ -215,13 +215,19 @@ def _verifier_fermeture_possible(db: Session, compte: Compte) -> None:
         autres = db.scalar(select(Compte.id).where(Compte.est_administrateur, Compte.id != compte.id).limit(1))
         if autres is None:
             raise ErreurRegle("Vous êtes le seul administrateur : nommez-en un autre avant de fermer votre compte.")
-    # Quand les rendez-vous existeront (niveau 4) : refuser s'il y a un rendez-vous à venir (RM-CLIENTS).
+    # Un rendez-vous à venir (RM-CLIENTS) : ex. « Annulez d'abord votre rendez-vous du 05/11/2026. »
+    prochain = db.scalar(select(RendezVous).where(
+        RendezVous.client_id == compte.id, RendezVous.statut.in_(("en_attente", "confirme")), RendezVous.fin > maintenant
+    ).order_by(RendezVous.debut).limit(1))
+    if prochain is not None:
+        jour = prochain.debut.astimezone(reglages.FUSEAU_AFFICHAGE)
+        raise ErreurRegle(f"Annulez d'abord votre rendez-vous du {jour:%d/%m/%Y} (page « Mes rendez-vous »).")
 
 
 def fermer(db: Session, compte: Compte, mot_de_passe: str, maintenant: datetime) -> None:
     if not mot_de_passe_correct(mot_de_passe, compte.mot_de_passe_hache):
         raise ErreurRegle("Mot de passe incorrect : votre compte n'a pas été fermé.", 403)
-    _verifier_fermeture_possible(db, compte)
+    _verifier_fermeture_possible(db, compte, maintenant)
     identifiant = compte.id
     _effacer_donnees_personnelles(db, compte, maintenant)
     journal.noter(db, auteur_id=identifiant, action="fermer_compte", table_cible="compte", ligne_id=identifiant, maintenant=maintenant)
@@ -256,7 +262,7 @@ def traiter_inactifs(db: Session, maintenant: datetime) -> tuple[int, int]:
         prevenus += 1
     for compte in db.scalars(derniere.where(Compte.inactivite_prevenue_le <= maintenant - reglages.INACTIVITE_PREAVIS)).all():
         try:
-            _verifier_fermeture_possible(db, compte)
+            _verifier_fermeture_possible(db, compte, maintenant)
         except ErreurRegle:
             continue  # ex. prestataire encore en activité, seul administrateur : on ne ferme pas automatiquement
         identifiant = compte.id

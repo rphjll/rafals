@@ -73,6 +73,15 @@ Le prestataire peut annuler un rendez-vous à tout moment, avec un **motif oblig
 - **Annulation par le prestataire** : impossible une fois le rendez-vous terminé.
 - **Tâche automatique** toutes les 5 minutes : demandes expirées, rappels.
 
+## Précisions prises au lot 4.5 (proposées par Claude, à valider par Raphael)
+- **Signaler une absence** : seulement sur un rendez-vous confirmé, après son heure de début ; une seule absence par rendez-vous.
+- **Pendant les 7 jours** laissés pour contester, une absence n'est **pas encore comptée** ni affichée ; elle compte au bout des 7 jours, ou quand l'administrateur décide qu'elle compte.
+- **Contester** : seulement la personne marquée absente, avec une explication d'au moins 10 caractères ; l'administrateur tranche une seule fois (« compte » ou « ne compte pas »), les deux sont prévenus.
+- **1 mois sans réserver** : à partir du moment où la 3e absence (en 6 mois) a compté. Ex. 3e absence comptée le 10/11 → plus de réservation jusqu'au 10/12 : « Vous ne pouvez plus réserver jusqu'au 10/12/2026 : 3 absences sans prévenir en 6 mois. »
+- **Annulations côté prestataire branchées** : bloquer une période ou changer de semaine type avec des rendez-vous touchés → refus tant qu'il n'a pas choisi « annuler » ou « garder » ; date de fin d'un métier → les rendez-vous de ce métier après la date sont annulés aussitôt ; blocage par l'administrateur → tous ses rendez-vous à venir annulés. Chaque client reçoit le motif (ex. « Le prestataire n'est pas disponible à cette date. »).
+- **Arrêter son activité** (définitif) : refusé tant qu'il reste des rendez-vous à venir (« annulez-les d'abord »), comme la fermeture de compte d'un client (RM-CLIENTS).
+- **Fermer son compte** (client) : refusé avec un rendez-vous à venir : « Annulez d'abord votre rendez-vous du 05/11/2026 (page « Mes rendez-vous »). » ; un compte inactif dans ce cas n'est pas fermé automatiquement.
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|

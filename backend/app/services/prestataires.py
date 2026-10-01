@@ -13,6 +13,7 @@ from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, MetierSecondaire, Prestataire
 from app.services import droits, fichiers, journal
+from app.services import rendez_vous_communs as communs
 from app.services import siret as service_siret
 from app.services.erreurs import ErreurRegle
 
@@ -359,6 +360,13 @@ def fixer_fin_metier(
         if fin_le is not None and prestataire.metier_principal_suivant_id == metier_id:
             prestataire.metier_principal_suivant_id = None
         apres = {"fin_le": fin_le}
+    if fin_le is not None:
+        # RM-ANNONCES : les réservations de ce métier après la date de fin sont annulées
+        lendemain = datetime.combine(fin_le + timedelta(days=1), datetime.min.time(), tzinfo=reglages.FUSEAU_AFFICHAGE)
+        for rdv in communs.actifs_a_venir(db, prestataire, maintenant):
+            if rdv.debut >= lendemain and db.get_one(Annonce, rdv.annonce_id).metier_id == metier_id:
+                communs.annuler_par_rafals(db, rdv, "Le prestataire n'exerce plus ce métier à cette date.",
+                                           prestataire.compte_id, maintenant)
     journal.noter(
         db, auteur_id=prestataire.compte_id, action="fixer_fin_metier", table_cible="prestataire", ligne_id=prestataire.id,
         avant={"metier_id": metier_id, **_texte(avant)}, apres={"metier_id": metier_id, **_texte(apres)},
@@ -443,6 +451,9 @@ def changer_statut(db: Session, prestataire: Prestataire, action: str, maintenan
         raise ErreurRegle("Votre profil est bloqué par l'administrateur de rafals : contactez-le.", 403)
     if prestataire.statut == "arrete":
         raise ErreurRegle("Votre activité est arrêtée : ce profil ne peut plus être modifié.")
+    if action == "arreter" and communs.actifs_a_venir(db, prestataire, maintenant):
+        raise ErreurRegle("Vous avez des rendez-vous à venir : annulez-les d'abord (« Mon agenda › Rendez-vous »), "
+                          "puis arrêtez votre activité.")
     departs, arrivee = _TRANSITIONS_PRESTATAIRE[action]
     if prestataire.statut not in departs:
         messages = {"pause": "Votre profil est déjà en pause.", "reprendre": "Votre profil est déjà actif."}
@@ -452,8 +463,7 @@ def changer_statut(db: Session, prestataire: Prestataire, action: str, maintenan
 
 
 def bloquer(db: Session, administrateur: Compte, prestataire_id: int, *, bloque: bool, maintenant: datetime) -> Prestataire:
-    """Par un administrateur. Débloquer remet le profil actif.
-    (Quand les rendez-vous existeront, bloquer annulera ceux à venir et préviendra les clients : RM-PRESTATAIRES.)"""
+    """Par un administrateur. Bloquer annule ses rendez-vous à venir (clients prévenus) ; débloquer remet le profil actif."""
     prestataire = db.get(Prestataire, prestataire_id)
     if prestataire is None:
         raise ErreurRegle("Ce prestataire n'existe pas.", 404)
@@ -461,6 +471,9 @@ def bloquer(db: Session, administrateur: Compte, prestataire_id: int, *, bloque:
         raise ErreurRegle("Ce prestataire a arrêté son activité : il ne peut être ni bloqué ni débloqué.")
     if bloque and prestataire.statut != "bloque":
         _changer_statut(db, prestataire, "bloque", administrateur.id, "bloquer_prestataire", maintenant)
+        # RM-PRESTATAIRES : ses rendez-vous à venir sont annulés et les clients prévenus
+        for rdv in communs.actifs_a_venir(db, prestataire, maintenant):
+            communs.annuler_par_rafals(db, rdv, "Ce prestataire n'est plus disponible sur rafals.", administrateur.id, maintenant)
     elif not bloque and prestataire.statut == "bloque":
         _changer_statut(db, prestataire, "actif", administrateur.id, "debloquer_prestataire", maintenant)
     return prestataire

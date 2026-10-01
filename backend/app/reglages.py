@@ -63,6 +63,13 @@ RAPPEL_JOUR_MEME_AVANT = timedelta(hours=2)
 COORDONNEES_CLIENT_VISIBLES = 3  # mois après le dernier rendez-vous (RM-CLIENTS)
 TACHE_RENDEZ_VOUS_MINUTES = 5
 
+# Absences (RM-RENDEZ-VOUS.md, validé le 30/09/2026)
+ABSENCE_CONTESTATION_DELAI = timedelta(days=7)
+ABSENCES_FENETRE_MOIS = 6
+ABSENCES_AVANT_SUSPENSION = 3
+SUSPENSION_MOIS = 1
+CONTESTATION_LONGUEUR_MIN = 10
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

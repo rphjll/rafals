@@ -16,6 +16,7 @@ from app.modeles.annonces import Annonce
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
 from app.services import journal
+from app.services import rendez_vous_communs as communs
 from app.services.annonces import verifier_modifiable
 from app.services.erreurs import ErreurRegle
 from app.services.prestataires import aujourd_hui, metiers_exerces
@@ -57,9 +58,12 @@ def plages_de(db: Session, prestataire: Prestataire) -> list[PlageHoraire]:
     ))
 
 
-def remplacer_semaine(db: Session, prestataire: Prestataire, plages: list[Plage], maintenant: datetime) -> list[PlageHoraire]:
+def remplacer_semaine(
+    db: Session, prestataire: Prestataire, plages: list[Plage], maintenant: datetime, rendez_vous: str | None = None
+) -> list[PlageHoraire]:
     """Toute la semaine type d'un coup (l'écran l'envoie en entier). Ex. Léa : mardi 9 h-12 h et 14 h-19 h, samedi 9 h-12 h.
-    (Rendez-vous déjà pris hors des nouveaux horaires : « annuler ou garder », branché au niveau 4.)"""
+    Rendez-vous déjà pris hors des nouveaux horaires : le prestataire choisit rendez_vous = « annuler » ou « garder »
+    (sinon refus 409 avec la liste, pour qu'il choisisse)."""
     verifier_modifiable(prestataire)
     triees = sorted(plages, key=lambda p: (p.jour_semaine, p.debut))
     for rang, plage in enumerate(triees):
@@ -71,6 +75,9 @@ def remplacer_semaine(db: Session, prestataire: Prestataire, plages: list[Plage]
         if precedente and precedente.jour_semaine == plage.jour_semaine and plage.debut < precedente.fin:
             raise ErreurRegle(f"Deux plages se chevauchent le {JOURS[plage.jour_semaine]} : "
                               f"{_hm(precedente.debut)}-{_hm(precedente.fin)} et {_hm(plage.debut)}-{_hm(plage.fin)}.")
+    hors = [r for r in communs.actifs_a_venir(db, prestataire, maintenant) if not _dans_les_plages(r, triees)]
+    _decider(db, prestataire, hors, rendez_vous, "en dehors de vos nouveaux horaires",
+             "Le prestataire a changé ses horaires.", maintenant)
     avant = [_texte_plage(p) for p in plages_de(db, prestataire)]
     db.execute(delete(PlageHoraire).where(PlageHoraire.prestataire_id == prestataire.id))
     for plage in triees:
@@ -81,6 +88,37 @@ def remplacer_semaine(db: Session, prestataire: Prestataire, plages: list[Plage]
         avant={"plages": avant}, apres={"plages": [_texte_plage(p) for p in triees]}, maintenant=maintenant,
     )
     return plages_de(db, prestataire)
+
+
+def _dans_les_plages(rdv, plages: list[Plage]) -> bool:
+    """Le rendez-vous tient-il entièrement dans une plage de la nouvelle semaine type (heure de Paris) ?"""
+    debut, fin = rdv.debut.astimezone(PARIS), rdv.fin.astimezone(PARIS)
+    return any(p.jour_semaine == debut.isoweekday() and p.debut <= debut.time() and fin.time() <= p.fin
+               and debut.date() == fin.date() for p in plages)
+
+
+def rendez_vous_touches(db: Session, prestataire: Prestataire, *, debut: datetime | None = None, fin: datetime | None = None,
+                        plages: list[Plage] | None = None, maintenant: datetime) -> list:
+    """Pour prévenir avant de valider : les rendez-vous à venir pendant une période, ou hors d'une semaine type."""
+    actifs = communs.actifs_a_venir(db, prestataire, maintenant)
+    if plages is not None:
+        return [r for r in actifs if not _dans_les_plages(r, plages)]
+    debut = debut if debut is None or debut.tzinfo else debut.replace(tzinfo=PARIS)
+    fin = fin if fin is None or fin.tzinfo else fin.replace(tzinfo=PARIS)
+    return [r for r in actifs if debut and fin and r.debut < fin and r.fin > debut]
+
+
+def _decider(db: Session, prestataire: Prestataire, touches: list, choix: str | None, ou: str, motif: str,
+             maintenant: datetime) -> None:
+    """Rendez-vous touchés : refus tant que le prestataire n'a pas choisi ; « annuler » les annule (clients prévenus)."""
+    if not touches:
+        return
+    if choix not in ("annuler", "garder"):
+        liste = " ; ".join(communs.texte_moment(r.debut) for r in touches[:5])
+        raise ErreurRegle(f"{len(touches)} rendez-vous {ou} ({liste}) : choisissez de les annuler ou de les garder.", 409)
+    if choix == "annuler":
+        for rdv in touches:
+            communs.annuler_par_rafals(db, rdv, motif, prestataire.compte_id, maintenant)
 
 
 JOURS = {1: "lundi", 2: "mardi", 3: "mercredi", 4: "jeudi", 5: "vendredi", 6: "samedi", 7: "dimanche"}
@@ -105,7 +143,8 @@ def blocages_a_venir(db: Session, prestataire: Prestataire, maintenant: datetime
 
 
 def bloquer(
-    db: Session, prestataire: Prestataire, *, debut: datetime, fin: datetime, motif: str | None, maintenant: datetime
+    db: Session, prestataire: Prestataire, *, debut: datetime, fin: datetime, motif: str | None, maintenant: datetime,
+    rendez_vous: str | None = None,
 ) -> Blocage:
     """Ex. Léa, congés du 04/08 au 24/08 inclus : du 04/08 0 h au 25/08 0 h. Karim, dentiste : 14/10 de 14 h à 16 h.
     Une date sans fuseau est lue à l'heure de Paris. (Rendez-vous déjà pris pendant la période : niveau 4.)"""
@@ -115,6 +154,9 @@ def bloquer(
         raise ErreurRegle("La fin doit être après le début.")
     if fin <= maintenant:
         raise ErreurRegle("Cette période est déjà passée.")
+    touches = rendez_vous_touches(db, prestataire, debut=debut, fin=fin, maintenant=maintenant)
+    _decider(db, prestataire, touches, rendez_vous, "pendant cette période",
+             "Le prestataire n'est pas disponible à cette date.", maintenant)
     blocage = Blocage(prestataire_id=prestataire.id, debut=debut, fin=fin,
                       motif=(motif or "").strip()[:120] or None, cree_le=maintenant)
     db.add(blocage)

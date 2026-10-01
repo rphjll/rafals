@@ -13,38 +13,13 @@ from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
 from app.modeles.prestataires import Commune, Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import agenda, annonces, clients, droits, journal, mails
+from app.services import absences, agenda, annonces, clients, droits, journal
+from app.services import rendez_vous_communs as communs
 from app.services.erreurs import ErreurRegle
 
 PARIS = reglages.FUSEAU_AFFICHAGE
-ACTIFS = ("en_attente", "confirme")  # rendez-vous qui comptent encore
-
-
-def _texte_moment(moment: datetime) -> str:
-    """« mardi 14/10/2026 à 10 h 00 » (heure de Paris)"""
-    local = moment.astimezone(PARIS)
-    jours = ("lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche")
-    return f"{jours[local.weekday()]} {local:%d/%m/%Y} à {local.hour} h {local.minute:02d}"
-
-
-def _journal(db: Session, auteur_id: int | None, action: str, rdv: RendezVous, maintenant: datetime, **apres) -> None:
-    journal.noter(db, auteur_id=auteur_id, action=action, table_cible="rendez_vous", ligne_id=rdv.id,
-                  apres={"statut": rdv.statut, **apres}, maintenant=maintenant)
-
-
-def _changer(rdv: RendezVous, statut: str, maintenant: datetime, motif: str | None = None) -> None:
-    rdv.statut, rdv.statut_change_le = statut, maintenant
-    if motif is not None:
-        rdv.motif = motif
-
-
-def _prevenir(db: Session, rdv: RendezVous, *, client: str | None = None, prestataire: str | None = None, sujet: str) -> None:
-    """Mail au client et / ou au prestataire (le texte dit ce qui s'est passé)."""
-    if client:
-        mails.envoyer_mail(db.get_one(Compte, rdv.client_id).email, sujet, client)
-    if prestataire:
-        compte = db.get_one(Compte, db.get_one(Prestataire, rdv.prestataire_id).compte_id)
-        mails.envoyer_mail(compte.email, sujet, prestataire)
+ACTIFS = communs.ACTIFS
+_texte_moment, _journal, _changer, _prevenir = communs.texte_moment, communs.noter, communs.changer, communs.prevenir
 
 
 # ---------- Réserver ----------
@@ -72,6 +47,10 @@ def reserver(db: Session, client: Compte, demande: Demande, maintenant: datetime
     ou « en attente » 24 h au plus si Léa accepte chaque demande."""
     if not droits.peut_reserver_ou_publier(db, client, maintenant):
         raise ErreurRegle("Vérifiez d'abord votre adresse mail (ou l'accord de vos parents) pour réserver.", 403)
+    suspendu = absences.reservation_suspendue_jusqu_au(db, client.id, maintenant)
+    if suspendu is not None:
+        raise ErreurRegle(f"Vous ne pouvez plus réserver jusqu'au {suspendu.astimezone(PARIS):%d/%m/%Y} : "
+                          f"{reglages.ABSENCES_AVANT_SUSPENSION} absences sans prévenir en {reglages.ABSENCES_FENETRE_MOIS} mois.", 403)
     annonce = db.get(Annonce, demande.annonce_id)
     if annonce is None:
         raise ErreurRegle("Cette annonce n'existe pas.", 404)
