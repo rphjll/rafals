@@ -4,13 +4,14 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 4.6 — Écrans des absences, contestations, compteurs et du choix « annuler ou garder » (Raphael : « Oui, je valide » le lot 4.5)
+- **Demande** : Lot 4.7 — Serveur des avis (Raphael : « Oui, je valide » le lot 4.6)
 - **Commencé le** : 01/10/2026
 - **Étapes** :
-  - [x] 1. Maquette cliquable validée (01/10/2026, « Oui, vas-y », avec 2 ajouts : signaler dans les 7 jours, annulations de dernière minute dans l'Administration)
-  - [x] 2. Écrans : boutons d'absence et « Je suis venu », compteurs (Mon compte, page publique, demandes), Administration › absences contestées, fenêtre « annuler ou garder » dans l'agenda
-  - [x] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : Raphael essaie les écrans des absences et valide le lot 4.6
+  - [ ] 1. MLD validé  ← on en est là
+  - [ ] 2. `schema_v11.sql` écrit et exécuté ; modèles ; liste des gros mots de départ
+  - [ ] 3. Services, routes, tests (laisser / modifier / retirer, rappel, réponse, filtre, signalement, avis caché ; note pondérée et « Nouveau » dans la recherche)
+  - [ ] 4. Nettoyage, invariants, suivi, sauvegarde
+- **Question en attente** : validation du MLD du lot 4.7
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -73,8 +74,8 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 | 4.3 | Serveur | Rendez-vous : réserver (horaire libre, adresse si chez le client, valeurs recopiées), confirmation automatique ou « j'accepte chaque demande », expiration 24 h, refuser, annuler et déplacer (délai du prestataire), annulation par le prestataire avec motif, rappels par mail ; les rendez-vous pris (+ pause) retirés des horaires libres | RM-RENDEZ-VOUS | 4.1 | ✅ |
 | 4.4 | Écrans | Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation | RM-RENDEZ-VOUS | 4.3, 4.2 | ✅ |
 | 4.5 | Serveur | Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder » | RM-RENDEZ-VOUS, RM-AGENDA | 4.3 | ✅ |
-| 4.6 | Écrans | Boutons [Client absent] / [N'est pas venu] / [Je suis venu] ; compteurs (Mon compte, page publique) ; Administration › contestations ; fenêtre « annuler ou garder » dans l'agenda | RM-RENDEZ-VOUS | 4.5, 4.4 | 🔎 |
-| 4.7 | Serveur | Avis : 30 jours avec rappel, réponse du prestataire, filtre de gros mots (liste modifiable), signalement, avis caché par l'administrateur ; note pondérée et badge « Nouveau » branchés dans la recherche | RM-AVIS | 4.5 | ⬜ |
+| 4.6 | Écrans | Boutons [Client absent] / [N'est pas venu] / [Je suis venu] ; compteurs (Mon compte, page publique) ; Administration › contestations ; fenêtre « annuler ou garder » dans l'agenda | RM-RENDEZ-VOUS | 4.5, 4.4 | ✅ |
+| 4.7 | Serveur | Avis : 30 jours avec rappel, réponse du prestataire, filtre de gros mots (liste modifiable), signalement, avis caché par l'administrateur ; note pondérée et badge « Nouveau » branchés dans la recherche | RM-AVIS | 4.5 | 🟡 |
 | 4.8 | Écrans | Laisser / modifier / retirer un avis ; avis sur la page publique ; Administration › avis signalés et liste des gros mots | RM-AVIS | 4.7, 4.6 | ⬜ |
 
 ## Niveaux 5 et 6 — à découper après l'écriture de leurs règles
@@ -155,3 +156,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **01/10/2026** — Lot 4.5 construit → 🔎 à vérifier. `schema_v10.sql` exécuté (7 rubriques d'absence dans `rendez_vous`). Serveur : signaler une absence (client ou prestataire, après l'heure), contester sous 7 jours, trancher (Administration, `/api/admin/contestations`), compteurs calculés (Mon compte, page publique du prestataire, vus par le prestataire qui reçoit une réservation), 3 absences en 6 mois → 1 mois sans réserver ; annulations branchées : blocage / semaine type (« annuler » ou « garder », sinon refus 409), date de fin d'un métier, blocage par l'administrateur ; arrêt d'activité et fermeture de compte refusés avec des rendez-vous à venir. Réutilisation : `rendez_vous_communs.py` (mails, états, annulation par rafals) partagé par rendez-vous, agenda et prestataires sans boucle entre fichiers. Correction en cours de route : une adresse générale « /rendez-vous/{numéro}/{action} » avalait « /absent » et « /contester » → remplacée par 3 adresses explicites. Tests : 205 OK (16 nouveaux). Vraie base : 0 donnée d'essai. Précisions notées dans `RM-RENDEZ-VOUS.md` (à valider ; une nouvelle : l'arrêt d'activité est refusé avec des rendez-vous à venir).
 - **01/10/2026** — Lot 4.5 validé par Raphael (« Oui, je valide », précisions comprises, dont l'arrêt d'activité refusé avec des rendez-vous à venir) → ✅. Lot 4.6 commencé.
 - **01/10/2026** — Lot 4.6 construit → 🔎 à vérifier. Serveur : signalement possible jusqu'à 7 jours après la fin ; `/api/admin/annulations-tardives`. Écrans : [N'est pas venu…] / [Client absent] / [Je suis venu…] (fenêtre commune `FenetreContestation`), bandeaux d'absence dans la ligne d'un rendez-vous, badge « 2 absences en 6 mois » sur les demandes, carte « Absences » dans Mon compte, absences sur la page publique, onglet « Absences contestées » (compteur) dans l'Administration avec les annulations de dernière minute, choix « annuler ou garder » dans l'agenda (blocage et semaine type) ; textes « quand les rendez-vous existeront » mis à jour. Incident sans conséquence : `recreer_base.sh` lancé sans base précisée → le garde-fou du script l'a arrêté, rien touché (vraie base vérifiée : 1 compte, 129 métiers, 34 969 communes, 7 lignes de journal). Essai de bout en bout par le port 5174 (comptes d'essai n° 26 et 27 : refus de signaler avant l'heure, 409 sur blocage et semaine type, blocage en annulant → rendez-vous annulé avec motif, administration interdite à un client) : conforme ; comptes effacés après sauvegarde ; comptage : 1 compte, 0 rendez-vous, 0 blocage. Tests : 207 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude → à regarder par Raphael.
+- **01/10/2026** — Lot 4.6 validé par Raphael (« Oui, je valide ») → ✅. Aucun compte d'essai à effacer (1 compte). Lot 4.7 commencé.
