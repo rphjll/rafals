@@ -11,7 +11,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 2. `schema_v11.sql` écrit et exécuté ; modèles ; liste des gros mots de départ
   - [ ] 3. Services, routes, tests (laisser / modifier / retirer, rappel, réponse, filtre, signalement, avis caché ; note pondérée et « Nouveau » dans la recherche)
   - [ ] 4. Nettoyage, invariants, suivi, sauvegarde
-- **Question en attente** : validation du MLD du lot 4.7
+- **Question en attente** : validation du MLD du lot 4.7 (https://claude.ai/artifact/FDkHqhq9afR2d4p5uZvS3K, fichier `.doc/mld/MLD-lot-4.7-avis.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »

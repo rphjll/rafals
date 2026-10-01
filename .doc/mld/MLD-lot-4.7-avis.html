@@ -1,0 +1,118 @@
+<title>MLD rafals avis</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 4.7 « Avis »</h1>
+    <p class="sous">rafals · proposé le 01/10/2026 · source : <code>.doc/regles-metier/RM-AVIS.md</code> · 2 tables nouvelles</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  RENDEZ_VOUS["<b>RENDEZ_VOUS</b><br/>id (PK)"]
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  AVIS["<b>AVIS</b><br/>id (PK)<br/>rendez_vous_id (FK)<br/>client_id (FK)<br/>prestataire_id (FK)<br/>cache_par_id (FK)"]
+  MOT_INTERDIT["<b>MOT_INTERDIT</b><br/>id (PK)<br/>ajoute_par_id (FK)"]
+  RENDEZ_VOUS -- "est noté par · (0,1) —— (1,1)" --- AVIS
+  COMPTE -- "écrit · (0,n) —— (1,1)" --- AVIS
+  PRESTATAIRE -- "reçoit · (0,n) —— (1,1)" --- AVIS
+  COMPTE -- "cache · (0,n) —— (0,1)" --- AVIS
+  COMPTE -- "ajoute · (0,n) —— (0,1)" --- MOT_INTERDIT
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>« est noté par · (0,1) —— (1,1) » : un rendez-vous a zéro ou un avis ; un avis porte sur un et un seul rendez-vous (« un avis par rendez-vous tenu »).</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>AVIS <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Jamais effacé : retiré par le client ou caché par l'administrateur, il reste en base.</p>
+        <ul>
+          <li><code>note</code> — 1 à 5 ★</li>
+          <li><code>texte</code> — 10 à 1000 caractères</li>
+          <li><code>cree_le</code>, <code>modifie_le</code> — modifiable pendant 30 jours après le rendez-vous</li>
+          <li><code>retire_le</code> — le client l'a retiré (caché, sa note ne compte plus)</li>
+          <li><code>reponse</code>, <code>repondu_le</code> — la réponse publique du prestataire (une seule)</li>
+          <li><code>signale_le</code>, <code>signalement</code> — le prestataire l'a signalé, avec sa raison</li>
+          <li><code>signalement_traite_le</code> — l'administrateur l'a regardé et l'a laissé</li>
+          <li><code>cache_le</code>, <code>cache_motif</code> (+ <code>cache_par_id</code>) — l'administrateur l'a caché, avec un motif envoyé au client</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>MOT_INTERDIT <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">La liste des gros mots, modifiable par l'administrateur (écrans au lot 4.8). Le filtre refuse un avis ou une réponse qui en contient un.</p>
+        <ul>
+          <li><code>mot</code> — en minuscules, sans accents, unique</li>
+          <li><code>ajoute_le</code> (+ <code>ajoute_par_id</code>, vide pour la liste de départ)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Deux choix techniques expliqués</h2>
+    <p class="note"><b>La note n'est pas enregistrée dans le prestataire.</b> « 4,5 ★ · 8 avis » et la note pondérée de la recherche se calculent à partir des avis visibles (ni retirés, ni cachés). Un avis caché par l'administrateur disparaît aussitôt de la note.</p>
+    <p class="note" style="margin-top:8px"><b>Le nom affiché est calculé</b> : « Marie D. » (prénom + initiale du nom), ou « Client ayant quitté rafals » si son compte est fermé. Rien de plus n'est recopié dans l'avis.</p>
+    <p class="note" style="margin-top:8px"><b>La liste de départ des gros mots</b> est chargée par un petit script (comme les métiers), écrite par moi et relue par toi avant la mise en ligne (RM-AVIS).</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>AVIS</code> n° 1 : rendez-vous n° 12 (Mme Dupont chez Karim), note 2, texte « En retard d'une heure, sinon travail correct. », <code>reponse</code> = « Bouchon sur la rocade, j'avais prévenu par SMS. ».
+      <p class="trad"><b>Traduction :</b> sur la page de Karim : « ★★ Marie D., octobre 2026 : En retard d'une heure… », avec la réponse de Karim dessous.</p>
+    </div>
+    <div class="exemple">
+      <code>AVIS</code> n° 2 : note 1, texte « Karim m'a volé un bijou », <code>signale_le</code> = 20/10, <code>signalement</code> = « Fausse accusation », <code>cache_le</code> = 21/10, <code>cache_motif</code> = « Accusation grave sans élément ».
+      <p class="trad"><b>Traduction :</b> Karim a signalé l'avis ; l'administrateur l'a caché ; il ne compte plus dans la note, mais il reste en base (trace).</p>
+    </div>
+    <div class="exemple">
+      <code>MOT_INTERDIT</code> n° 7 : mot « connard », <code>ajoute_par_id</code> vide.
+      <p class="trad"><b>Traduction :</b> un mot de la liste de départ ; « Karim est un connard » est refusé dès l'envoi.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Pas dans ce lot : les écrans (lot 4.8).</p>
+  </section>
+</div>
