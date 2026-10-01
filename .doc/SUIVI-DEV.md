@@ -10,7 +10,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 1. Maquette cliquable validée  ← on en est là
   - [ ] 2. Écrans : boutons d'absence et « Je suis venu », compteurs (Mon compte, page publique, demandes), Administration › absences contestées, fenêtre « annuler ou garder » dans l'agenda
   - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 4.6
+- **Question en attente** : validation de la maquette du lot 4.6 (https://claude.ai/artifact/4s6gVgox8WJXzbH8rEdTk5, fichier `.doc/ihm/maquette-lot-4.6-absences.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
