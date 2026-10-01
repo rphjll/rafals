@@ -10,7 +10,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
   - [ ] 1. Maquette cliquable validée  ← on en est là
   - [ ] 2. Écrans : donner / modifier / retirer un avis, avis sur la page publique, répondre et signaler (prestataire), Administration › avis signalés et mots interdits
   - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 4.8
+- **Question en attente** : validation de la maquette du lot 4.8 (https://claude.ai/artifact/Camn6SpayxDy9hEtJjYg9C, fichier `.doc/ihm/maquette-lot-4.8-avis.html`)
 - **En pause** : aucune
 
 ## Définition de « terminé »
