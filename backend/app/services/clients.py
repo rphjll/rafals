@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.modeles.agenda import Blocage, PlageHoraire
 from app.modeles.annonces import Annonce, Local
+from app.modeles.avis import Avis
 from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte, SessionConnexion
 from app.modeles.fichiers import AccordParental, Fichier
@@ -126,6 +127,11 @@ def exporter(db: Session, compte: Compte, maintenant: datetime) -> dict[str, Any
             {"titre": r.titre, "debut": _date(r.debut), "fin": _date(r.fin), "prix_centimes": r.prix_centimes,
              "statut": r.statut, "adresse": r.adresse_ligne}
             for r in db.scalars(select(RendezVous).where(RendezVous.client_id == compte.id).order_by(RendezVous.debut))
+        ],
+        "mes_avis": [
+            {"note": a.note, "texte": a.texte, "le": _date(a.cree_le), "retire": a.retire_le is not None,
+             "cache": a.cache_le is not None, "reponse_du_prestataire": a.reponse}
+            for a in db.scalars(select(Avis).where(Avis.client_id == compte.id).order_by(Avis.cree_le))
         ],
         "journal_de_mes_actions": [
             {"action": j.action, "le": _date(j.fait_le), "avant": j.avant, "apres": j.apres}

@@ -7,11 +7,11 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 4.7 — Serveur des avis (Raphael : « Oui, je valide » le lot 4.6)
 - **Commencé le** : 01/10/2026
 - **Étapes** :
-  - [ ] 1. MLD validé  ← on en est là
-  - [ ] 2. `schema_v11.sql` écrit et exécuté ; modèles ; liste des gros mots de départ
-  - [ ] 3. Services, routes, tests (laisser / modifier / retirer, rappel, réponse, filtre, signalement, avis caché ; note pondérée et « Nouveau » dans la recherche)
-  - [ ] 4. Nettoyage, invariants, suivi, sauvegarde
-- **Question en attente** : validation du MLD du lot 4.7 (https://claude.ai/artifact/FDkHqhq9afR2d4p5uZvS3K, fichier `.doc/mld/MLD-lot-4.7-avis.html`)
+  - [x] 1. MLD validé (01/10/2026)
+  - [x] 2. `schema_v11.sql` écrit et exécuté ; modèles ; liste des gros mots de départ
+  - [x] 3. Services, routes, tests (laisser / modifier / retirer, rappel, réponse, filtre, signalement, avis caché ; note pondérée et « Nouveau » dans la recherche)
+  - [x] 4. Nettoyage, invariants, suivi, sauvegarde
+- **Question en attente** : Raphael valide les précisions du lot 4.7 (RM-AVIS) et le lot
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -75,7 +75,7 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 | 4.4 | Écrans | Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation | RM-RENDEZ-VOUS | 4.3, 4.2 | ✅ |
 | 4.5 | Serveur | Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder » | RM-RENDEZ-VOUS, RM-AGENDA | 4.3 | ✅ |
 | 4.6 | Écrans | Boutons [Client absent] / [N'est pas venu] / [Je suis venu] ; compteurs (Mon compte, page publique) ; Administration › contestations ; fenêtre « annuler ou garder » dans l'agenda | RM-RENDEZ-VOUS | 4.5, 4.4 | ✅ |
-| 4.7 | Serveur | Avis : 30 jours avec rappel, réponse du prestataire, filtre de gros mots (liste modifiable), signalement, avis caché par l'administrateur ; note pondérée et badge « Nouveau » branchés dans la recherche | RM-AVIS | 4.5 | 🟡 |
+| 4.7 | Serveur | Avis : 30 jours avec rappel, réponse du prestataire, filtre de gros mots (liste modifiable), signalement, avis caché par l'administrateur ; note pondérée et badge « Nouveau » branchés dans la recherche | RM-AVIS | 4.5 | 🔎 |
 | 4.8 | Écrans | Laisser / modifier / retirer un avis ; avis sur la page publique ; Administration › avis signalés et liste des gros mots | RM-AVIS | 4.7, 4.6 | ⬜ |
 
 ## Niveaux 5 et 6 — à découper après l'écriture de leurs règles
@@ -157,3 +157,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **01/10/2026** — Lot 4.5 validé par Raphael (« Oui, je valide », précisions comprises, dont l'arrêt d'activité refusé avec des rendez-vous à venir) → ✅. Lot 4.6 commencé.
 - **01/10/2026** — Lot 4.6 construit → 🔎 à vérifier. Serveur : signalement possible jusqu'à 7 jours après la fin ; `/api/admin/annulations-tardives`. Écrans : [N'est pas venu…] / [Client absent] / [Je suis venu…] (fenêtre commune `FenetreContestation`), bandeaux d'absence dans la ligne d'un rendez-vous, badge « 2 absences en 6 mois » sur les demandes, carte « Absences » dans Mon compte, absences sur la page publique, onglet « Absences contestées » (compteur) dans l'Administration avec les annulations de dernière minute, choix « annuler ou garder » dans l'agenda (blocage et semaine type) ; textes « quand les rendez-vous existeront » mis à jour. Incident sans conséquence : `recreer_base.sh` lancé sans base précisée → le garde-fou du script l'a arrêté, rien touché (vraie base vérifiée : 1 compte, 129 métiers, 34 969 communes, 7 lignes de journal). Essai de bout en bout par le port 5174 (comptes d'essai n° 26 et 27 : refus de signaler avant l'heure, 409 sur blocage et semaine type, blocage en annulant → rendez-vous annulé avec motif, administration interdite à un client) : conforme ; comptes effacés après sauvegarde ; comptage : 1 compte, 0 rendez-vous, 0 blocage. Tests : 207 OK ; `vue-tsc` sans erreur. Invariants : non vérifié sur 4 formats d'écran par Claude → à regarder par Raphael.
 - **01/10/2026** — Lot 4.6 validé par Raphael (« Oui, je valide ») → ✅. Aucun compte d'essai à effacer (1 compte). Lot 4.7 commencé.
+- **01/10/2026** — Lot 4.7 construit → 🔎 à vérifier. `schema_v11.sql` exécuté (tables `avis`, `mot_interdit`) ; liste de départ de 50 mots interdits chargée dans la vraie base par `charger-mots-interdits.bat` (données de référence, comme les métiers ; à relire par Raphael). Serveur : laisser / modifier (30 jours) / retirer un avis, réponse unique du prestataire, filtre des mots interdits (mot entier, sans accents), signalement, décision de l'administrateur (laisser ou cacher avec motif), liste des mots modifiable par l'administrateur, avis publics d'un prestataire (« Marie D., octobre 2026 »), note et nombre d'avis sur la page publique, note pondérée et badge « Nouveau » branchés dans la recherche, rappel le lendemain à 10 h (tâche toutes les heures, une seule fois grâce au journal), avis visibles avec chaque rendez-vous. Réutilisation : `prestataire_visible_ou_404()` partagé (page publique et avis). Correction : le serveur n'ignore plus « ZZTEST » dans un nom (aucun code propre aux essais côté serveur). Export RGPD et nettoyage des essais complétés. Tests : 225 OK (18 nouveaux). Vraie base : 0 donnée d'essai, 0 avis, 50 mots interdits. Précisions notées dans `RM-AVIS.md` (à valider).

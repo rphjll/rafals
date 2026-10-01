@@ -1,0 +1,14 @@
+{
+  "_source": "Liste de départ des mots refusés dans les avis et les réponses (lot 4.7, 01/10/2026), écrite par Claude : injures courantes en français, en minuscules et sans accents. À relire par Raphael avant la mise en ligne (RM-AVIS.md). Modifiable ensuite par l'administrateur.",
+  "mots": [
+    "connard", "connards", "connasse", "connasses", "con", "cons", "conne", "connes",
+    "salaud", "salauds", "salope", "salopes", "saloperie",
+    "enfoire", "enfoires", "encule", "encules", "enculer",
+    "batard", "batards", "fdp", "ntm",
+    "pute", "putes", "putain", "pd", "pede", "pedes",
+    "merde", "merdeux", "merdique",
+    "abruti", "abrutis", "debile", "debiles", "cretin", "cretins", "imbecile", "imbeciles",
+    "bouffon", "bouffons", "gogol", "mongol", "attarde", "attardes",
+    "negre", "bougnoule", "youpin", "tarlouze", "gouine"
+  ]
+}

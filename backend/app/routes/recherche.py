@@ -5,12 +5,14 @@ from pydantic import BaseModel
 from sqlalchemy import select
 
 from app.modeles.annonces import Annonce
+from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
 from app.routes.annonces import AnnoncePublique, annonce_publique
 from app.routes.dependances import Base, CompteOuPersonne, maintenant
 from app.routes.prestataires import CommuneVisible, MetierCourt, commune_visible
 from app.services import absences
+from app.services import avis as service_avis
 from app.services import recherche as service
 from app.services.annonces import modes_de_paiement, raison_cachee
 from app.services.erreurs import ErreurRegle
@@ -97,24 +99,32 @@ def rechercher(
     )
 
 
-@routeur.get("/prestataires/{prestataire_id}")
-def page_publique(prestataire_id: int, db: Base, compte: CompteOuPersonne) -> PrestatairePublic:
-    """Profil et annonces en ligne d'un prestataire. Son auteur la voit toujours (aperçu)."""
+def prestataire_visible_ou_404(db: Base, prestataire_id: int, compte: Compte | None) -> Prestataire:
+    """Page publique (et ses avis) : visible si l'activité est active ; son auteur la voit toujours (aperçu)."""
     prestataire = db.get(Prestataire, prestataire_id)
     auteur = prestataire is not None and compte is not None and compte.id == prestataire.compte_id
     if prestataire is None or not (auteur or service.page_publique_visible(prestataire)):
         raise ErreurRegle("Ce prestataire n'existe pas.", 404)
+    return prestataire
+
+
+@routeur.get("/prestataires/{prestataire_id}")
+def page_publique(prestataire_id: int, db: Base, compte: CompteOuPersonne) -> PrestatairePublic:
+    """Profil, note et annonces en ligne d'un prestataire."""
+    prestataire = prestataire_visible_ou_404(db, prestataire_id, compte)
     maintenant_ = maintenant()
     annonces = [
         a for a in db.scalars(select(Annonce).where(Annonce.prestataire_id == prestataire.id).order_by(Annonce.cree_le))
         if raison_cachee(db, a, prestataire, maintenant_) is None
     ]
     metiers = [db.get_one(Metier, i) for i in metiers_exerces(db, prestataire, aujourd_hui(maintenant_))]
+    somme, nombre = service_avis.notes(db, [prestataire.id]).get(prestataire.id, (0, 0))
+    note = somme / nombre if nombre else None
     return PrestatairePublic(
         id=prestataire.id, nom_affiche=prestataire.nom_affiche, presentation=prestataire.presentation,
         a_une_photo=prestataire.photo_id is not None, ville=db.get_one(Commune, prestataire.commune_id).nom,
         distance_km=prestataire.distance_km, metiers=[MetierCourt(id=m.id, nom=m.nom) for m in metiers],
-        siret_verifie=prestataire.siret_statut == "verifie", note=None, nombre_avis=0,
+        siret_verifie=prestataire.siret_statut == "verifie", note=note, nombre_avis=nombre,
         absences=len(absences.absences_du_prestataire(db, prestataire.id, maintenant_)),
         annonces=[annonce_publique(db, a, prestataire) for a in annonces],
     )

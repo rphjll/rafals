@@ -72,6 +72,14 @@ ABSENCES_AVANT_SUSPENSION = 3
 SUSPENSION_MOIS = 1
 CONTESTATION_LONGUEUR_MIN = 10
 
+# Avis (RM-AVIS.md, validé le 30/09/2026)
+AVIS_DELAI = timedelta(days=30)
+AVIS_TEXTE_MIN = 10
+AVIS_TEXTE_MAX = 1000
+REPONSE_TEXTE_MIN = 2
+SIGNALEMENT_TEXTE_MIN = 5
+AVIS_RAPPEL_HEURE = 10  # le lendemain du rendez-vous, à partir de 10 h (heure de Paris)
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

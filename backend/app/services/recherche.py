@@ -14,7 +14,7 @@ from app import reglages
 from app.modeles.annonces import Annonce
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
-from app.services import agenda, communes
+from app.services import agenda, avis, communes
 from app.services.annonces import modes_de_paiement
 from app.services.erreurs import ErreurRegle
 from app.services.prestataires import aujourd_hui, en_cours, metiers_exerces
@@ -67,8 +67,8 @@ def note_ponderee(somme_des_notes: int, nombre_avis: int) -> float:
 
 
 def _avis(db: Session, prestataires: list[Prestataire]) -> dict[int, tuple[int, int]]:
-    """Par prestataire : (somme des notes, nombre d'avis). Les avis arrivent au lot 4.7 : pour l'instant, aucun."""
-    return {}
+    """Par prestataire : (somme des notes, nombre d'avis visibles)."""
+    return avis.notes(db, [p.id for p in prestataires])
 
 
 def _libre_dans_7_jours(db: Session, r: Resultat, maintenant: datetime) -> bool:

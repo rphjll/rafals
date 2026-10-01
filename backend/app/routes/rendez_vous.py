@@ -14,6 +14,7 @@ from app.modeles.rendez_vous import RendezVous
 from app.routes.dependances import Administrateur, Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
 from app.services import absences
+from app.services import avis as service_avis
 from app.services import rendez_vous as service
 
 routeur = APIRouter(prefix="/api")
@@ -101,7 +102,16 @@ class RendezVousVisible(BaseModel):
     reponse_avant: datetime | None
     annulable_jusqu_au: datetime | None
     absence: Absence | None
+    avis: dict | None  # l'avis laissé sur ce rendez-vous (voir routes/avis.py, AvisDetaille)
+    peut_noter: bool  # client : rendez-vous tenu, dans les 30 jours, pas encore d'avis
     autre: dict  # le prestataire (vu par le client) ou le client (vu par le prestataire)
+
+
+def _avis(db: Base, rdv: RendezVous) -> dict | None:
+    from app.routes.avis import detaille  # (import ici : routes/avis importe ce module indirectement)
+
+    a = service_avis.avis_du_rendez_vous(db, rdv.id)
+    return None if a is None else detaille(db, a).model_dump(mode="json")
 
 
 def absence_visible(rdv: RendezVous) -> Absence | None:
@@ -132,7 +142,8 @@ def vu_par_le_client(db: Base, rdv: RendezVous) -> RendezVousVisible:
         adresse=_adresse(db, rdv) if (rdv.lieu == "chez_client" or confirme) else None,
         mode_paiement=rdv.mode_paiement, statut=rdv.statut, motif=rdv.motif, reponse_avant=rdv.reponse_avant,
         annulable_jusqu_au=service.limite_annulation(prestataire, rdv) if rdv.statut == "confirme" else None,
-        absence=absence_visible(rdv),
+        absence=absence_visible(rdv), avis=_avis(db, rdv),
+        peut_noter=service_avis.peut_noter(rdv, maintenant()) and service_avis.avis_du_rendez_vous(db, rdv.id) is None,
         autre={"prestataire_id": prestataire.id, "nom": prestataire.nom_affiche, "telephone": telephone},
     )
 
@@ -145,7 +156,7 @@ def vu_par_le_prestataire(db: Base, prestataire: Prestataire, rdv: RendezVous) -
         id=rdv.id, annonce_id=rdv.annonce_id, remplace_id=rdv.remplace_id, debut=rdv.debut, fin=rdv.fin, titre=rdv.titre,
         prix_centimes=rdv.prix_centimes, heures=rdv.heures, lieu=rdv.lieu, adresse=_adresse(db, rdv) if visibles else None,
         mode_paiement=rdv.mode_paiement, statut=rdv.statut, motif=rdv.motif, reponse_avant=rdv.reponse_avant,
-        annulable_jusqu_au=None, absence=absence_visible(rdv),
+        annulable_jusqu_au=None, absence=absence_visible(rdv), avis=_avis(db, rdv), peut_noter=False,
         # RM-RENDEZ-VOUS : chaque prestataire qui reçoit une réservation voit les absences du client
         autre={"client_id": client.id, "nom": f"{client.prenom} {client.nom}" if visibles else "Client",
                "telephone": client.telephone if visibles else None,

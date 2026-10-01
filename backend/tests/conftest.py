@@ -57,10 +57,12 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     # Données de référence : la liste des métiers (la base de test ne reçoit que la structure)
     from scripts.charger_communes import charger as charger_communes
     from scripts.charger_metiers import charger
+    from scripts.charger_mots_interdits import charger as charger_mots_interdits
 
     with Session(moteur) as db:
         charger(db)
         charger_communes(db)
+        charger_mots_interdits(db)
         db.commit()
 
 
