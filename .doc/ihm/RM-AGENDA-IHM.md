@@ -3,7 +3,7 @@
 > Fichiers : `frontend/src/pages/AgendaPage.vue` (onglets, chargement), un fichier par onglet dans `frontend/src/components/agenda/` (`OngletCalendrier`, `OngletSemaine`, `OngletReglages`, `OngletHoraires`), `frontend/src/outils/agenda.ts` (heures, jours, périodes), composant commun `AppOnglets`. Construit au lot 3.4 (30/09/2026). Règles : `RM-AGENDA.md`, `RM-ANNONCES.md` (dates de fin de métier). Maquette : `maquette-lot-3.4-agenda.html`.
 
 ## Accès
-Menu « Mon agenda » (`/mon-agenda`), seulement pour un prestataire (même gardien que « Mes annonces » : se connecter / proposer ses services). Contenu centré, 720 px au plus. Titre « Mon agenda », puis 5 onglets : Calendrier, Rendez-vous (lot 4.4, voir `RM-RENDEZ-VOUS-IHM.md`, compteur orange des demandes), Semaine type, Réglages, Horaires libres ; l'onglet choisi est dans l'adresse (`?onglet=rendez-vous`, `semaine`, `reglages`, `horaires` ; rien = Calendrier).
+Menu « Mon agenda » (`/mon-agenda`), seulement pour un prestataire (même gardien que « Mes annonces » : se connecter / proposer ses services). Contenu centré, 720 px au plus. Titre « Mon agenda », puis 6 onglets : Calendrier, Rendez-vous (lot 4.4, voir `RM-RENDEZ-VOUS-IHM.md`, compteur orange des demandes), Semaine type, Réglages, Horaires libres, Paiements (lot 5.2) ; l'onglet choisi est dans l'adresse (`?onglet=rendez-vous`, `semaine`, `reglages`, `horaires`, `paiements` ; rien = Calendrier).
 
 ## Onglet « Calendrier »
 1. Carte du mois : [‹ septembre] « octobre 2026 » [novembre ›] ; grille lun → dim ; chaque jour : numéro + « 9-12 · 14-19 » (sur ordinateur) ; couleurs : vert = ouvert (semaine type), gris = fermé, hachuré orange + « bloqué » = période bloquée ; « 2 rdv » en vert foncé les jours qui ont des rendez-vous (confirmés ou demandés, lot 4.4) ; « fin Plombier » en rouge le dernier jour d'un métier ; jours passés pâlis ; le jour choisi est entouré (aujourd'hui au départ). Légende dessous.
@@ -27,3 +27,10 @@ Menu « Mon agenda » (`/mon-agenda`), seulement pour un prestataire (même gard
 
 ## Onglet « Horaires libres »
 « Ce que voit un client qui veut réserver (la réservation arrive au niveau 4). » Liste « Annonce » (seulement celles en ligne, à prix fixe ou à l'heure : « Coupe femme — 35 € · 45 min ») et « Jour » (aujourd'hui au départ) ; pour une annonce à l'heure, « Nombre d'heures choisi par le client ». Résultat : « Mardi 13 octobre : 10 horaires » puis des pastilles « 9 h 00 », « 9 h 15 »… ; ou « Aucun horaire libre ce jour-là (fermé, bloqué, trop tôt ou trop loin, ou métier arrêté). » Sans annonce utilisable : « Aucune annonce en ligne avec un prix fixe ou à l'heure : les annonces « sur devis » n'utilisent pas l'agenda. »
+
+## Onglet « Paiements » (lot 5.2, 02/10/2026 ; maquette `maquette-lot-5.2-paiements.html`)
+Fichier : `frontend/src/components/agenda/OngletPaiements.vue`. Règles : `RM-PAIEMENTS.md`.
+1. Deux chiffres : « À venir (bloqué chez Stripe) » (ex. « 93,00 € · 2 rendez-vous ») et « Versé en octobre » (ex. « 46,50 € · 1 rendez-vous »).
+2. Tableau (défile sur le côté sur téléphone), le plus récent d'abord : Rendez-vous (« Coupe femme », dessous « mar. 13/10 · Marie Dupont », ou « Client » hors du délai de RM-CLIENTS) · État (orange « versé le 15/10 » = date prévue, 48 h après la fin ; orange « en attente (absence) » ; vert « versé » ; rouge « remboursé au client ») · Payé · rafals 5 % · Frais Stripe · Pour vous (en gras ; « −1,45 € » quand le client a été remboursé par sa faute, « 0,00 € » quand le client a annulé).
+3. « « versé le 15/10 » en orange : date prévue… Les frais d'un remboursement sont retirés de votre versement suivant. »
+4. Vide : « Aucun paiement par carte pour l'instant. »

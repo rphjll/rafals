@@ -2,6 +2,7 @@
 
 import { aParis, heure, jourCourt, jourLisible } from './agenda'
 import type { AvisDetaille } from './avis'
+import type { PaiementVisible } from './paiements'
 import type { BadgeEtat } from './prestataires'
 
 export type StatutRendezVous =
@@ -37,6 +38,10 @@ export interface RendezVousVisible {
   /** Le prestataire (vu par le client) ou le client (vu par le prestataire) ; téléphone seulement quand c'est permis ;
    *  « absences » : celles du client en 6 mois, montrées au prestataire */
   autre: { nom: string; telephone: string | null; prestataire_id?: number; client_id?: number; absences?: number }
+  /** Payé par carte (lot 5.1) */
+  paiement: PaiementVisible | null
+  /** Juste après une réservation par carte : la page de paiement de Stripe */
+  paiement_adresse?: string | null
 }
 
 /** Absence sur un rendez-vous (lot 4.5) */
@@ -50,10 +55,13 @@ export interface Absence {
   compte: boolean
 }
 
-/** On peut signaler une absence après le début, et jusqu'à 7 jours après la fin (RM-RENDEZ-VOUS) */
-export function absenceSignalable(r: RendezVousVisible, maintenant = new Date()): boolean {
-  const septJours = 7 * 24 * 3600 * 1000
-  return r.statut === 'confirme' && !r.absence && new Date(r.debut) <= maintenant && maintenant.getTime() <= new Date(r.fin).getTime() + septJours
+/** On peut signaler une absence après le début, et jusqu'à 7 jours après la fin (RM-RENDEZ-VOUS) ; le client d'un
+ *  rendez-vous payé par carte, 48 h seulement : l'argent part ensuite vers le prestataire (RM-PAIEMENTS) */
+export function absenceSignalable(r: RendezVousVisible, moi: 'client' | 'prestataire', maintenant = new Date()): boolean {
+  const heure = 3600 * 1000
+  const paye = r.paiement && (r.paiement.statut === 'paye' || r.paiement.statut === 'verse')
+  const delai = moi === 'client' && paye ? 48 * heure : 7 * 24 * heure
+  return r.statut === 'confirme' && !r.absence && new Date(r.debut) <= maintenant && maintenant.getTime() <= new Date(r.fin).getTime() + delai
 }
 
 /** La personne marquée absente peut contester dans les 7 jours, une seule fois */

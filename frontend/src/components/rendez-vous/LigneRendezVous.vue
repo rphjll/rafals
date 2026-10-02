@@ -3,6 +3,7 @@
 // (et son téléphone quand c'est permis), lieu, prix ; les boutons viennent de la page (slot « actions »).
 import { computed } from 'vue'
 import { euros } from '../../outils/annonces'
+import { prixPayeClient, prixPayePrestataire } from '../../outils/paiements'
 import { type RendezVousVisible, badgeRendezVous, momentCourt, plage } from '../../outils/rendez_vous'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
@@ -11,6 +12,13 @@ const props = defineProps<{ rdv: RendezVousVisible; libelleAutre: 'Avec' | 'Clie
 
 // L'absence vue par chacun (RM-RENDEZ-VOUS) : « moi » = celui qui regarde
 const moi = computed(() => (props.libelleAutre === 'Avec' ? 'client' : 'prestataire'))
+
+// « 50 € · espèces », ou l'état du paiement par carte (lot 5.2)
+const prix = computed(() => {
+  const r = props.rdv
+  if (r.paiement) return (moi.value === 'client' ? prixPayeClient : prixPayePrestataire)(r.prix_centimes, r.paiement)
+  return `${r.prix_centimes ? euros(r.prix_centimes) : '—'} · ${r.mode_paiement === 'carte' ? 'carte' : 'espèces'}`
+})
 const absence = computed(() => {
   const a = props.rdv.absence
   if (!a) return null
@@ -57,9 +65,7 @@ const absence = computed(() => {
         <dd class="font-medium">{{ rdv.lieu === 'chez_client' && libelleAutre === 'Avec' ? 'Chez vous : ' : '' }}{{ rdv.adresse }}</dd>
       </template>
       <dt class="text-texte-doux">Prix</dt>
-      <dd class="font-medium">
-        {{ rdv.prix_centimes ? euros(rdv.prix_centimes) : '—' }} · {{ rdv.mode_paiement === 'carte' ? 'carte' : 'espèces' }}
-      </dd>
+      <dd class="font-medium">{{ prix }}</dd>
       <template v-if="rdv.motif">
         <dt class="text-texte-doux">Motif</dt>
         <dd class="font-medium">« {{ rdv.motif }} »</dd>

@@ -196,9 +196,15 @@ def _dans_le_delai(db: Session, rdv: RendezVous, maintenant: datetime) -> Presta
 
 def annuler_par_client(db: Session, client: Compte, rdv: RendezVous, maintenant: datetime) -> RendezVous:
     """Une demande en attente s'annule à tout moment ; un rendez-vous confirmé, jusqu'au délai du prestataire."""
-    _dans_le_delai(db, rdv, maintenant)
-    _changer(rdv, "annule_client", maintenant)
+    jamais_paye = pas_encore_paye(db, rdv.id)
+    if not jamais_paye:  # pas encore payée : le client peut toujours renoncer (le prestataire ne l'a pas vue)
+        _dans_le_delai(db, rdv, maintenant)
+    elif rdv.statut not in ACTIFS:
+        raise ErreurRegle("Ce rendez-vous n'est plus actif.")
+    _changer(rdv, "annule_client", maintenant, "Paiement non terminé" if jamais_paye else None)
     _journal(db, client.id, "annuler_rendez_vous_client", rdv, maintenant)
+    if jamais_paye:  # le prestataire n'a jamais vu cette réservation : rien à lui dire
+        return rdv
     _prevenir(db, rdv, sujet="rafals : rendez-vous annulé par le client",
               prestataire=f"Le client a annulé « {rdv.titre} », {_texte_moment(rdv.debut)}. L'horaire est de nouveau libre.")
     return rdv

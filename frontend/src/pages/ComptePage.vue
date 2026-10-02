@@ -7,6 +7,7 @@ import CarteAccordParental from '../components/compte/CarteAccordParental.vue'
 import CarteDonnees from '../components/compte/CarteDonnees.vue'
 import CarteFermeture from '../components/compte/CarteFermeture.vue'
 import CarteInformations from '../components/compte/CarteInformations.vue'
+import CartePaiements from '../components/compte/CartePaiements.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppCarte from '../components/ui/AppCarte.vue'
 import { useCompte } from '../composables/useCompte'
@@ -32,6 +33,7 @@ const { compte, chargementFait } = useCompte()
       texte-effacer="Effacer mon adresse"
     />
     <CarteAbsences />
+    <CartePaiements />
     <CarteDonnees />
     <CarteFermeture />
   </div>

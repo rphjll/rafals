@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Fenêtre « Réserver ce rendez-vous ? » (.doc/ihm/RM-ANNONCE-IHM.md ; RM-RENDEZ-VOUS.md) : récapitulatif, lieu
-// (si « chez vous ou chez le prestataire »), adresse du client si besoin, paiement, puis « Réserver mardi 13/10 à 10 h 45 ».
+// (si « chez vous ou chez le prestataire »), adresse du client si besoin, paiement, puis « Réserver mardi 13/10 à 10 h 45 »,
+// ou par carte « Payer 50 € et réserver » → la page de paiement de Stripe (lot 5.2, RM-PAIEMENTS.md).
 import { computed, ref, watch } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { aParis, heure, jourCourt, jourLisible } from '../../outils/agenda'
@@ -16,7 +17,7 @@ const props = defineProps<{ annonce: AnnoncePublique; debut: string | null; heur
 const emit = defineEmits<{ fermer: []; reserve: [rdv: RendezVousVisible] }>()
 
 const lieu = ref<'chez_client' | 'chez_moi'>('chez_client')
-const paiement = ref<'especes' | 'carte'>('especes')
+const paiement = ref<'especes' | 'carte'>(props.annonce.modes_de_paiement[0] ?? 'especes')
 const aUneAdresse = ref(false)
 const erreur = ref('')
 const envoiEnCours = ref(false)
@@ -26,6 +27,7 @@ watch(
   () => {
     erreur.value = ''
     lieu.value = props.annonce.lieu === 'chez_moi' ? 'chez_moi' : 'chez_client'
+    paiement.value = props.annonce.modes_de_paiement[0] ?? 'especes'
   },
 )
 
@@ -33,6 +35,11 @@ const minutes = computed(() =>
   props.annonce.forme_prix === 'heure' ? (props.heures ?? props.annonce.heures_min ?? 1) * 60 : (props.annonce.duree_minutes ?? 0),
 )
 const fin = computed(() => (props.debut ? new Date(new Date(props.debut).getTime() + minutes.value * 60000).toISOString() : ''))
+const montantTotal = computed(() => {
+  const a = props.annonce
+  if (a.prix_centimes === null) return 0
+  return a.forme_prix === 'heure' ? a.prix_centimes * (props.heures ?? a.heures_min ?? 1) : a.prix_centimes
+})
 const prix = computed(() => {
   const a = props.annonce
   if (a.prix_centimes === null) return ''
@@ -41,6 +48,7 @@ const prix = computed(() => {
     : euros(a.prix_centimes)
 })
 const titreBouton = computed(() => {
+  if (paiement.value === 'carte') return `Payer ${euros(montantTotal.value)} et réserver`
   if (!props.debut) return 'Réserver'
   const m = aParis(props.debut)
   return `Réserver ${jourLisible(m.jour).split(' ')[0]} ${jourCourt(m.jour).slice(0, 5)} à ${heure(m.heure)}`
@@ -59,6 +67,10 @@ async function reserver() {
       lieu: props.annonce.lieu === 'les_deux' ? lieu.value : null,
       mode_paiement: paiement.value,
     })
+    if (rdv.paiement_adresse) {
+      window.location.href = rdv.paiement_adresse // la page de paiement de Stripe ; retour sur « Mes rendez-vous »
+      return
+    }
     emit('reserve', rdv)
   } catch (e) {
     erreur.value = messageErreur(e) // ex. « Cet horaire vient d'être pris… »
@@ -106,10 +118,15 @@ async function reserver() {
         etiquette="Paiement"
         obligatoire
         :options="[
-          { valeur: 'especes', texte: 'Espèces, le jour même' },
-          { valeur: 'carte', texte: 'Carte', raisonVerrou: 'Le paiement par carte sur rafals arrive bientôt.' },
+          { valeur: 'especes', texte: 'Espèces, le jour même', raisonVerrou: annonce.modes_de_paiement.includes('especes') ? undefined : `${annonce.prestataire.nom_affiche} se fait payer par carte pour ce service.` },
+          { valeur: 'carte', texte: 'Carte, maintenant', raisonVerrou: annonce.modes_de_paiement.includes('carte') ? undefined : `${annonce.prestataire.nom_affiche} se fait payer en espèces pour ce service.` },
         ]"
       />
+      <AppAlerte v-if="paiement === 'carte'" etat="neutre">
+        Vous payez {{ euros(montantTotal) }} maintenant sur la page sécurisée de Stripe (30 minutes pour payer). Remboursé en
+        entier si {{ annonce.prestataire.nom_affiche }} refuse ou annule ; si vous annulez à temps, remboursé moins les frais
+        de paiement (environ 1 €).
+      </AppAlerte>
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     </div>
     <template #pied>

@@ -57,6 +57,7 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AvatarPrestataire` (dans `components/prestataire/`) — photo ronde ou initiales d'un prestataire ; `CarteResultat` (dans `components/recherche/`) — carte d'un prestataire dans les résultats (remplace l'`AppCarteResultat` prévu) ; textes de la recherche : `frontend/src/outils/recherche.ts` (lot 4.2).
 - Rendez-vous (dans `components/rendez-vous/`) : `ChoixHoraire` (14 jours + heures libres, pour réserver et déplacer), `FenetreReservation`, `LigneRendezVous` ; textes et états : `frontend/src/outils/rendez_vous.ts` ; une fenêtre trop haute défile (`AppFenetre`) (lot 4.4).
 - `FenetreTexte` (dans `components/`) — fenêtre à un seul texte : contester une absence, répondre à un avis, le signaler, le cacher ; `AvisAffiche` et `FenetreAvis` (dans `components/avis/`) ; types et étoiles : `frontend/src/outils/avis.ts` (lot 4.8).
+- Paiements par carte : types, sommes (« 46,50 € », toujours avec les centimes) et textes par `frontend/src/outils/paiements.ts` ; `AppAlerte` a un état « neutre » pour une simple explication (ex. ce qui se passe si l'on paie par carte) (lot 5.2).
 - `GardePrestataire` (dans `components/prestataire/`) — pages réservées aux prestataires (lot 3.2).
 - Prix, durées, lieux et paiements des annonces : toujours par `frontend/src/outils/annonces.ts` (« 50 € · 2 h », « 40 €/h · de 1 h à 3 h ») (lot 3.2).
 - Libellés et couleurs des états du prestataire : `frontend/src/outils/prestataires.ts`.

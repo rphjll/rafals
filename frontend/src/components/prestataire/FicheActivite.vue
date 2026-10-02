@@ -14,6 +14,7 @@ import AppSection from '../ui/AppSection.vue'
 import AvatarPrestataire from './AvatarPrestataire.vue'
 import CarteMesAnnonces from './CarteMesAnnonces.vue'
 import CarteMetiers from './CarteMetiers.vue'
+import CartePaiementCarte from './CartePaiementCarte.vue'
 
 const props = defineProps<{ profil: ProfilPrestataire }>()
 const emit = defineEmits<{ maj: [profil: ProfilPrestataire]; modifier: [] }>()
@@ -118,6 +119,7 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
 
     <template v-if="profil.statut !== 'arrete'">
       <CarteMesAnnonces />
+      <CartePaiementCarte />
       <CarteMetiers :profil="profil" @maj="(p) => emit('maj', p)" />
       <CarteAdresse
         titre="Mon local"

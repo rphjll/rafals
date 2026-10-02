@@ -117,7 +117,7 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
     </div>
   </AppSection>
 
-  <details v-if="passes.length" class="rounded-rafals border border-bord bg-surface p-5" :open="passes.some((r) => absenceSignalable(r) || contestable(r.absence, 'prestataire') || (r.avis && !r.avis.reponse))">
+  <details v-if="passes.length" class="rounded-rafals border border-bord bg-surface p-5" :open="passes.some((r) => absenceSignalable(r, 'prestataire') || contestable(r.absence, 'prestataire') || (r.avis && !r.avis.reponse))">
     <summary class="min-h-[28px] cursor-pointer font-bold">Passés et annulés ({{ passes.length }})</summary>
     <div class="flex flex-col divide-y divide-bord">
       <LigneRendezVous v-for="r in passes" :key="r.id" :rdv="r" libelle-autre="Client">
@@ -134,7 +134,7 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
               </template>
             </AvisAffiche>
           </div>
-          <AppBouton v-if="absenceSignalable(r)" variante="danger" @click="clientAbsent(r)">Client absent</AppBouton>
+          <AppBouton v-if="absenceSignalable(r, 'prestataire')" variante="danger" @click="clientAbsent(r)">Client absent</AppBouton>
           <AppBouton
             v-if="contestable(r.absence, 'prestataire')"
             variante="secondaire"

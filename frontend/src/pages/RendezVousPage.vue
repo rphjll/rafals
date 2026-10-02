@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Mes rendez-vous, côté client (.doc/ihm/RM-RENDEZ-VOUS-IHM.md ; RM-RENDEZ-VOUS.md) : à venir (annuler, déplacer dans
-// le délai du prestataire), puis passés et annulés.
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+// le délai du prestataire), puis passés et annulés. Retour de la page de paiement de Stripe (?paiement=fait|annule, lot 5.2).
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import AvisAffiche from '../components/avis/AvisAffiche.vue'
 import FenetreAvis from '../components/avis/FenetreAvis.vue'
@@ -18,8 +18,10 @@ import AppSection from '../components/ui/AppSection.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 import { aParis, heure, jourCourt } from '../outils/agenda'
+import { montant } from '../outils/paiements'
 import { type RendezVousVisible, absenceSignalable, aVenir, contestable, momentCourt, plage } from '../outils/rendez_vous'
 
+const route = useRoute()
 const routeur = useRouter()
 const { compte, chargementFait } = useCompte()
 const { afficherMessage } = useMessage()
@@ -38,6 +40,42 @@ async function charger() {
 onMounted(charger)
 watch(compte, charger)
 
+// ---------- Retour de la page de paiement de Stripe (lot 5.2) ----------
+// « fait » : Stripe prévient rafals de son côté, parfois quelques secondes après ; on relit jusqu'à ce que ce soit arrivé.
+// « annule » (le client est revenu sans payer) : la réservation est annulée aussitôt, l'horaire se libère.
+const retourPaiement = ref<{ etat: 'ok' | 'attente'; texte: string } | null>(null)
+let relecture: ReturnType<typeof setTimeout> | undefined
+async function suivrePaiement(rdvId: number, essais = 0) {
+  await charger()
+  const r = tous.value?.find((x) => x.id === rdvId)
+  if (r?.paiement?.statut === 'a_payer' && essais < 15) {
+    retourPaiement.value = { etat: 'attente', texte: 'Paiement en cours de confirmation…' }
+    relecture = setTimeout(() => suivrePaiement(rdvId, essais + 1), 2000)
+    return
+  }
+  retourPaiement.value =
+    r?.paiement?.statut === 'paye'
+      ? { etat: 'ok', texte: r.statut === 'en_attente' ? `Paiement reçu : ${r.autre.nom} a 24 h pour accepter.` : 'Paiement reçu : votre rendez-vous est confirmé.' }
+      : { etat: 'attente', texte: "Le paiement n'est pas encore confirmé : actualisez la page dans quelques minutes." }
+}
+async function abandonPaiement(rdvId: number) {
+  try {
+    await appelerServeur(`/api/moi/rendez-vous/${rdvId}/annuler`, {})
+  } catch {
+    // déjà annulée (par exemple au bout de 30 minutes) : rien à faire
+  }
+  retourPaiement.value = { etat: 'attente', texte: "Paiement non terminé : rien n'a été pris, la réservation est annulée." }
+  await charger()
+}
+onMounted(() => {
+  const rdvId = Number(route.query.rdv)
+  if (!rdvId || !route.query.paiement) return
+  if (route.query.paiement === 'fait') suivrePaiement(rdvId)
+  else abandonPaiement(rdvId)
+  routeur.replace({ query: {} })
+})
+onUnmounted(() => clearTimeout(relecture))
+
 // À venir : le plus proche d'abord ; passés et annulés : le plus récent d'abord
 const avenir = computed(() => (tous.value ?? []).filter((r) => aVenir(r)).sort((a, b) => a.debut.localeCompare(b.debut)))
 const passes = computed(() => (tous.value ?? []).filter((r) => !aVenir(r)))
@@ -53,7 +91,9 @@ async function annuler() {
   try {
     await appelerServeur(`/api/moi/rendez-vous/${r.id}/annuler`, {})
     aAnnuler.value = null
-    afficherMessage(r.statut === 'en_attente' ? 'Demande annulée.' : 'Rendez-vous annulé.')
+    afficherMessage(
+      r.paiement?.statut === 'paye' ? 'Rendez-vous annulé : remboursement en cours.' : r.statut === 'en_attente' ? 'Demande annulée.' : 'Rendez-vous annulé.',
+    )
     await charger()
   } catch (e) {
     aAnnuler.value = null
@@ -133,6 +173,7 @@ async function deplacer(debut: string) {
       :onglets="[{ id: 'a-venir', texte: 'À venir' }, { id: 'passes', texte: 'Passés et annulés' }]"
     />
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+    <AppAlerte v-if="retourPaiement" :etat="retourPaiement.etat">{{ retourPaiement.texte }}</AppAlerte>
 
     <template v-if="tous">
       <AppSection v-if="onglet === 'a-venir'">
@@ -194,7 +235,7 @@ async function deplacer(debut: string) {
                   Donner mon avis
                 </AppBouton>
               </template>
-              <AppBouton v-if="absenceSignalable(r)" variante="danger" @click="pasVenu = r">{{ r.autre.nom }} n'est pas venu…</AppBouton>
+              <AppBouton v-if="absenceSignalable(r, 'client')" variante="danger" @click="pasVenu = r">{{ r.autre.nom }} n'est pas venu…</AppBouton>
               <AppBouton v-if="contestable(r.absence, 'client')" variante="secondaire" @click="aContester = contester(`/api/moi/rendez-vous/${r.id}/contester`)">
                 Je suis venu…
               </AppBouton>
@@ -208,6 +249,12 @@ async function deplacer(debut: string) {
       <template v-if="aAnnuler">
         {{ aAnnuler.titre }} avec {{ aAnnuler.autre.nom }}, {{ plage(aAnnuler).toLowerCase() }}.
         {{ aAnnuler.autre.nom }} est prévenu par mail et l'horaire redevient libre.
+        <AppAlerte v-if="aAnnuler.paiement?.rembourse_si_annule_centimes" etat="neutre" class="mt-3">
+          Payé par carte : vous serez remboursé de {{ montant(aAnnuler.paiement.rembourse_si_annule_centimes) }}
+          ({{ montant(aAnnuler.paiement.montant_centimes) }} moins
+          {{ montant(aAnnuler.paiement.montant_centimes - aAnnuler.paiement.rembourse_si_annule_centimes) }} de frais de paiement),
+          sous 5 à 10 jours.
+        </AppAlerte>
       </template>
       <template #pied>
         <AppBouton variante="danger" @click="annuler">{{ aAnnuler?.statut === 'en_attente' ? 'Annuler la demande' : 'Annuler le rendez-vous' }}</AppBouton>

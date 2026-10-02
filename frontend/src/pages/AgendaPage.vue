@@ -1,9 +1,10 @@
 <script setup lang="ts">
-// Mon agenda (.doc/ihm/RM-AGENDA-IHM.md) : 5 onglets, un fichier chacun dans components/agenda/.
+// Mon agenda (.doc/ihm/RM-AGENDA-IHM.md) : 6 onglets, un fichier chacun dans components/agenda/.
 import { computed, onMounted, ref, watch } from 'vue'
 import { appelerServeur, messageErreur } from '../api'
 import OngletCalendrier from '../components/agenda/OngletCalendrier.vue'
 import OngletHoraires from '../components/agenda/OngletHoraires.vue'
+import OngletPaiements from '../components/agenda/OngletPaiements.vue'
 import OngletReglages from '../components/agenda/OngletReglages.vue'
 import OngletRendezVous from '../components/agenda/OngletRendezVous.vue'
 import OngletSemaine from '../components/agenda/OngletSemaine.vue'
@@ -22,6 +23,7 @@ const onglets = [
   { id: 'semaine', texte: 'Semaine type' },
   { id: 'reglages', texte: 'Réglages' },
   { id: 'horaires', texte: 'Horaires libres' },
+  { id: 'paiements', texte: 'Paiements' },
 ] as const
 
 const { compte } = useCompte()
@@ -77,6 +79,7 @@ watch(compte, charger)
       <OngletRendezVous v-else-if="ongletActif === 'rendez-vous'" :rendez-vous="rendezVous" @maj="charger" />
       <OngletSemaine v-else-if="ongletActif === 'semaine'" :agenda="agenda" @maj="apresChangement" />
       <OngletReglages v-else-if="ongletActif === 'reglages'" :agenda="agenda" @maj="(a) => (agenda = a)" />
+      <OngletPaiements v-else-if="ongletActif === 'paiements'" />
       <OngletHoraires v-else :annonces="annonces" />
     </template>
   </GardePrestataire>

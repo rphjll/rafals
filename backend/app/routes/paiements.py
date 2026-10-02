@@ -6,6 +6,8 @@ from fastapi import APIRouter, Header, Request
 from pydantic import BaseModel
 from sqlalchemy import select
 
+from app import reglages
+from app.modeles.comptes import Compte
 from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
@@ -43,25 +45,41 @@ class PaiementVisible(BaseModel):
     rendez_vous_id: int
     titre: str
     debut: datetime
+    avec: str  # le prestataire (vu par le client) ou le client (vu par le prestataire, « Client » hors délai RM-CLIENTS)
     statut: str  # a_payer · paye · verse · rembourse · abandonne
     montant_centimes: int
     paye_le: datetime | None
     rembourse_le: datetime | None
     rembourse_centimes: int | None
+    rembourse_si_annule_centimes: int | None = None  # client : ce qu'il récupère s'il annule à temps (prix - frais)
     commission_centimes: int | None = None
     frais_stripe_centimes: int | None = None
     net_centimes: int | None = None  # ce que reçoit le prestataire
     verse_le: datetime | None = None
+    versement_prevu_le: datetime | None = None  # 48 h après la fin, si rien ne le retient (absence)
 
 
 def visible(db: Base, paiement: Paiement, *, prestataire: bool) -> PaiementVisible:
+    from app.services import rendez_vous as service_rdv
+
     rdv = db.get_one(RendezVous, paiement.rendez_vous_id)
-    vu = PaiementVisible(id=paiement.id, rendez_vous_id=rdv.id, titre=rdv.titre, debut=rdv.debut, statut=paiement.statut,
-                         montant_centimes=paiement.montant_centimes, paye_le=paiement.paye_le,
+    presta = db.get_one(Prestataire, rdv.prestataire_id)
+    if prestataire:
+        client = db.get_one(Compte, rdv.client_id)
+        visibles = service_rdv.coordonnees_client_visibles(db, presta, client.id, maintenant())
+        avec = f"{client.prenom} {client.nom}" if visibles else "Client"
+    else:
+        avec = presta.nom_affiche
+    vu = PaiementVisible(id=paiement.id, rendez_vous_id=rdv.id, titre=rdv.titre, debut=rdv.debut, avec=avec,
+                         statut=paiement.statut, montant_centimes=paiement.montant_centimes, paye_le=paiement.paye_le,
                          rembourse_le=paiement.rembourse_le, rembourse_centimes=paiement.rembourse_centimes)
+    if paiement.statut == "paye" and paiement.frais_stripe_centimes is not None:
+        vu.rembourse_si_annule_centimes = paiement.montant_centimes - paiement.frais_stripe_centimes
     if prestataire:
         vu.commission_centimes, vu.frais_stripe_centimes = paiement.commission_centimes, paiement.frais_stripe_centimes
         vu.net_centimes, vu.verse_le = service.net(paiement), paiement.verse_le
+        if paiement.statut == "paye" and rdv.statut in ("confirme", "en_attente") and rdv.absent is None:
+            vu.versement_prevu_le = rdv.fin + reglages.VERSEMENT_APRES_FIN
     return vu
 
 

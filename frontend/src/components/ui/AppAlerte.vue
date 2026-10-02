@@ -1,11 +1,13 @@
 <script setup lang="ts">
 // Bandeau d'information posé là où l'utilisateur regarde (ex. l'erreur du serveur juste au-dessus du bouton).
-withDefaults(defineProps<{ etat?: 'ok' | 'attente' | 'erreur' }>(), { etat: 'erreur' })
+// « neutre » : une simple explication (ex. ce qui se passe si l'on paie par carte, lot 5.2).
+withDefaults(defineProps<{ etat?: 'ok' | 'attente' | 'erreur' | 'neutre' }>(), { etat: 'erreur' })
 
 const classesEtat: Record<string, string> = {
   ok: 'bg-ok-doux text-ok',
   attente: 'bg-attente-doux text-attente',
   erreur: 'bg-erreur-doux text-erreur',
+  neutre: 'bg-neutre-doux text-texte',
 }
 </script>
 

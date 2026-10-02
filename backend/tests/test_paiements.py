@@ -302,6 +302,20 @@ def test_mes_paiements_cote_client_et_cote_prestataire(paye, lea_carte, dupont) 
 
     assert [(p["rendez_vous_id"], p["montant_centimes"], p["net_centimes"]) for p in du_client] == [(paye, 5000, None)]
     assert [(p["commission_centimes"], p["frais_stripe_centimes"], p["net_centimes"]) for p in du_prestataire] == [(250, 100, 4650)]
+    assert du_client[0]["rembourse_si_annule_centimes"] == 4900 and du_client[0]["avec"] == "Karim Benali"
+    assert du_prestataire[0]["versement_prevu_le"] is not None
+
+
+def test_revenu_sans_payer_le_client_annule_sans_prevenir_le_prestataire(lea_carte, dupont, base: Session, mails_envoyes) -> None:
+    rdv = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
+    deja = len(mails_envoyes)  # (le mail d'inscription de Léa est déjà parti)
+
+    annule = dupont.client.post(f"/api/moi/rendez-vous/{rdv['id']}/annuler").json()
+    traiter(base)
+
+    assert annule["statut"] == "annule_client" and annule["motif"] == "Paiement non terminé"
+    assert paiement(base, rdv["id"]).statut == "abandonne"
+    assert [m for m in mails_envoyes[deja:] if m["a"] == lea_carte.email] == []
 
 
 def test_delai_de_paiement_dans_les_reglages() -> None:
