@@ -4,7 +4,15 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-_(vide)_
+- **Demande** : Lot 5.1 — Paiement par carte (Stripe Connect), côté serveur (Raphael : « Oui, je valide » le lot 5.0, puis enchaîner)
+- **Commencé le** : 02/10/2026
+- **Étapes** :
+  - [ ] 1. MLD des paiements (Artifact), validation de Raphael  ← on en est là
+  - [ ] 2. `schema_v12.sql`, exécuté par Raphael
+  - [ ] 3. Modèles, services (faux Stripe pour les tests), routes, tests
+  - [ ] 4. Invariants, suivi, sauvegarde git
+- **Question en attente** : validation du MLD
+- **En pause** : aucune
 
 ## Définition de « terminé »
 
@@ -73,7 +81,7 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 ## Niveau 5 — Argent
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 5.0 | Règles | Choix du service de paiement (Stripe), commission (5 %), sujets 10 Devis, 11 Factures, 12 Paiements, puis découper le niveau 5 ; vérification juridique confiée à Raphael (3 points ⚠️ dans les règles) | SUIVI_REGLES_METIER | niveau 4 | 🔎 |
+| 5.0 | Règles | Choix du service de paiement (Stripe), commission (5 %), sujets 10 Devis, 11 Factures, 12 Paiements, puis découper le niveau 5 ; vérification juridique confiée à Raphael (3 points ⚠️ dans les règles) | SUIVI_REGLES_METIER | niveau 4 | ✅ |
 | 5.1 | Serveur | Paiement par carte (Stripe Connect) : relier le compte Stripe du prestataire (avec le mandat de facturation), paiement à la réservation, 5 % pour rafals, versement 48 h après la fin, remboursements (refus, expiration, annulation, absence) avec les frais pour celui qui annule, 48 h pour signaler l'absence du prestataire si payé par carte ; faux Stripe pour les tests | RM-PAIEMENTS | 5.0 | ⬜ |
 | 5.2 | Écrans | « Activer le paiement par carte » (prestataire), payer en réservant, remboursements visibles, « Mes paiements » | RM-PAIEMENTS | 5.1 | ⬜ |
 | 5.3 | Serveur | Devis : demande écrite avec photos, lignes, TVA (case du profil), arrhes, dates des travaux, [Demander une autre date], accepter / refuser, expiration, [Travail terminé], solde, [Signaler un problème], annulation, [Payé] ; « sur devis » réservé au SIRET | RM-DEVIS | 5.1 | ⬜ |
@@ -166,3 +174,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **02/10/2026** — Lot 4.8 validé par Raphael (« Oui, je valide ») → ✅. **Niveau 4 terminé** (recherche, rendez-vous, absences, avis). Aucune donnée d'essai à effacer.
 - **02/10/2026** — Lot 5.0 rédigé → 🔎 à vérifier. Choix de Raphael : Stripe Connect « Stripe gère » (aucun frais fixe), commission 5 % (rien sur les espèces), paiement à la réservation, versement 48 h après la fin, client absent → le prestataire garde l'argent (7 jours de contestation), 48 h pour signaler l'absence du prestataire si payé par carte, frais de Stripe pour celui qui annule ; devis : acompte puis solde payé par le client après vérification, validité 30 jours modifiable, lignes détaillées, case « Je facture la TVA », réservé au SIRET, carte ou paiement en direct, dates proposées par le prestataire, acompte gardé si le client annule ; factures : créées par rafals (mandat de facturation), aussi pour les paiements en direct, facture mensuelle de la commission (le trimestre demandé n'est pas permis par la loi). Écrits : `RM-PAIEMENTS.md`, `RM-DEVIS.md`, `RM-FACTURES.md` ; exceptions notées dans `RM-RENDEZ-VOUS.md` et `RM-ANNONCES.md`. À voir par Raphael avec un professionnel du droit : prestataires sans SIRET, « acompte » ou « arrhes » (réglé ensuite : « arrhes »), rafals doit avoir un SIRET. Découpage du niveau 5 en 6 lots validé (« ok vsy continue »). Aucun code ni donnée touché.
 - **02/10/2026** — Lot 5.0 — Mot affiché pour la somme payée en acceptant un devis : « arrhes », toujours accompagné d'une explication (« payées maintenant, gardées par Paul si vous annulez ») ; Raphael : « bah un truc facile a comprendre ». Ce point n'est plus à faire vérifier ; il reste 2 points : prestataires sans SIRET (avis gratuit possible : CCI, URSSAF, permanence d'avocat) et SIRET de rafals (micro-entreprise à créer par Raphael avant la mise en ligne).
+- **02/10/2026** — Lot 5.0 validé par Raphael (« Oui, je valide ») → ✅.
