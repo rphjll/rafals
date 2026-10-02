@@ -28,7 +28,7 @@ Titre, métier, prix, durée (sauf « sur devis »), lieu, modes de paiement, pl
 Au choix, pour chaque annonce :
 - **prix fixe** : ex. Julie, « Ménage 2 h — 50 € » ;
 - **prix à l'heure** : ex. Karim, « Dépannage fuite — 40 € de l'heure » ;
-- **sur devis** : ex. un maçon, « Muret de jardin — prix sur devis » (il vient d'abord voir ; les devis arrivent au niveau 5).
+- **sur devis** : ex. un maçon, « Muret de jardin — prix sur devis » (il vient d'abord voir ; les devis arrivent au niveau 5). Réservé aux prestataires avec un SIRET (décidé le 02/10/2026, `RM-DEVIS.md`).
 **Pourquoi :** certains métiers ne peuvent pas connaître le prix à l'avance.
 
 ## Durée obligatoire (décidé le 29/09/2026)

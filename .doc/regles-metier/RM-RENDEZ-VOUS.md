@@ -83,7 +83,7 @@ Le prestataire peut annuler un rendez-vous à tout moment, avec un **motif oblig
 - **Fermer son compte** (client) : refusé avec un rendez-vous à venir : « Annulez d'abord votre rendez-vous du 05/11/2026 (page « Mes rendez-vous »). » ; un compte inactif dans ce cas n'est pas fermé automatiquement.
 
 ## Précisions prises au lot 4.6 (validées par Raphael le 01/10/2026, avec la maquette)
-- **Signaler une absence** : possible de l'heure de début jusqu'à 7 jours après la fin du rendez-vous ; après : « Le délai de 7 jours pour signaler une absence est passé. »
+- **Signaler une absence** : possible de l'heure de début jusqu'à 7 jours après la fin du rendez-vous ; après : « Le délai de 7 jours pour signaler une absence est passé. » Exception (niveau 5) : rendez-vous payé par carte, le client a 48 heures pour signaler l'absence du prestataire (`RM-PAIEMENTS.md`).
 - **Annulations de dernière minute** (par le prestataire, moins de 24 h avant) : listées dans « Administration › Absences contestées », par prestataire, sur 6 mois (ex. « Léa Martin · 2 »).
 
 ## Qui peut faire quoi

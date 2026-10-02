@@ -23,9 +23,9 @@
 | 07 | 4 — Action principale | Recherche | Métier + ville, ordre des résultats | validé et formalisé (30/09/2026) | `regles-metier/RM-RECHERCHE.md` |
 | 08 | 4 — Action principale | Rendez-vous | Réservation, confirmation, annulation, absence | validé et formalisé (30/09/2026) | `regles-metier/RM-RENDEZ-VOUS.md` |
 | 09 | 4 — Action principale | Avis | Qui note, quand, modération | validé et formalisé (30/09/2026) | `regles-metier/RM-AVIS.md` |
-| 10 | 5 — Argent | Devis | Création, acceptation, passage en facture | à faire | — |
-| 11 | 5 — Argent | Factures | Numérotation, mentions obligatoires, facture électronique / e-reporting | à faire | — |
-| 12 | 5 — Argent | Paiements et commission | Carte sur le site, espèces, pourcentage de rafals, remboursements | à faire | — |
+| 10 | 5 — Argent | Devis | Création, acceptation, passage en facture | rédigé le 02/10/2026, à relire par Raphael | `regles-metier/RM-DEVIS.md` |
+| 11 | 5 — Argent | Factures | Numérotation, mentions obligatoires, facture électronique / e-reporting | rédigé le 02/10/2026, à relire par Raphael | `regles-metier/RM-FACTURES.md` |
+| 12 | 5 — Argent | Paiements et commission | Carte sur le site, espèces, pourcentage de rafals, remboursements | rédigé le 02/10/2026, à relire par Raphael | `regles-metier/RM-PAIEMENTS.md` |
 | 13 | 6 — Services | Sites vitrines | Modèles (vitrine-express), sous-domaine, prix (abonnement ou à vie) | à faire | — |
 | 14 | 6 — Services | Aide à la création d'auto-entreprise | Parcours de Karim jusqu'au SIRET | à faire | — |
 | 15 | 6 — Services | Démarches administratives | Déclarations URSSAF, rappels, automatisation | à faire | — |

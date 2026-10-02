@@ -23,6 +23,7 @@ Règles validées → MLD validé → SQL → modèles → calculs (services) �
 **Niveau 4 — Action principale** : recherche (métier + ville, classement), rendez-vous (réservation, annulation, absences), avis. → `RM-RECHERCHE.md`, `RM-RENDEZ-VOUS.md`, `RM-AVIS.md` (validées le 30/09/2026) ; lots 4.1 à 4.8 dans `SUIVI-DEV.md`.
 
 **Niveau 5 — Argent** : devis, factures (numérotation, facture électronique / e-reporting), paiements par carte et commission. → règles à écrire : sujets 10, 11, 12. ⚠️ Avant ce niveau : vérification juridique des prestataires sans SIRET ; choix du service de paiement ; pourcentage de la commission.
+  → Découpé le 02/10/2026 en lots 5.1 à 5.6 (voir `SUIVI-DEV.md`).
 
 **Niveau 6 — Services** : sites vitrines (reprise de vitrine-express, sous-domaines `*.rafals.fr`), aide à la création d'auto-entreprise, démarches administratives, administration de la plateforme. → règles à écrire : sujets 13 à 16.
 
