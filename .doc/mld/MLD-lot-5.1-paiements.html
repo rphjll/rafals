@@ -1,0 +1,127 @@
+<title>MLD rafals paiements</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+  .note + .note { margin-top:8px; }
+  .etapes { margin:0; padding-left:20px; font-size:14px; }
+  .etapes li { margin:3px 0; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 5.1 « Paiement par carte »</h1>
+    <p class="sous">rafals · proposé le 02/10/2026 · source : <code>.doc/regles-metier/RM-PAIEMENTS.md</code> · 1 table nouvelle, 3 rubriques ajoutées à PRESTATAIRE</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  RENDEZ_VOUS["<b>RENDEZ_VOUS</b><br/>id (PK)<br/>prestataire_id (FK)<br/>client_id (FK)"]
+  PAIEMENT["<b>PAIEMENT</b><br/>id (PK)<br/>rendez_vous_id (FK)"]
+  PRESTATAIRE -- "reçoit · (0,n) —— (1,1)" --- RENDEZ_VOUS
+  RENDEZ_VOUS -- "est payé par · (0,1) —— (1,1)" --- PAIEMENT
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>« est payé par · (0,1) —— (1,1) » : un rendez-vous a zéro paiement (espèces) ou un seul (carte) ; un paiement porte sur un et un seul rendez-vous.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>PRESTATAIRE <span class="nouveau">3 ajoutées</span></h3>
+        <ul>
+          <li><code>stripe_compte</code> — le numéro de son compte Stripe (ex. <code>acct_1Q…</code>), vide tant qu'il n'a pas activé la carte</li>
+          <li><code>stripe_pret</code> — oui / non : Stripe a fini de vérifier son identité, il peut être payé par carte</li>
+          <li><code>mandat_facturation_le</code> — date de son accord pour que rafals fasse ses factures (RM-FACTURES)</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PAIEMENT <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Jamais effacé. Les sommes sont en centimes (comme partout dans rafals).</p>
+        <ul>
+          <li><code>montant_centimes</code> — ce que paie le client (ex. 5000 = 50,00 €)</li>
+          <li><code>commission_centimes</code> — les 5 % de rafals (ex. 250)</li>
+          <li><code>statut</code> — à payer · payé · versé · remboursé · abandonné</li>
+          <li><code>stripe_paiement</code> — le numéro du paiement chez Stripe (ex. <code>pi_3Q…</code>)</li>
+          <li><code>cree_le</code>, <code>paye_le</code></li>
+          <li><code>frais_stripe_centimes</code> — les frais pris par Stripe, connus après le paiement (ex. 100)</li>
+          <li><code>verse_le</code>, <code>stripe_versement</code> — l'argent est parti vers le prestataire</li>
+          <li><code>rembourse_le</code>, <code>rembourse_centimes</code>, <code>stripe_remboursement</code> — le client a été remboursé, et de combien</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Le chemin de l'argent (formule Stripe choisie)</h2>
+    <ol class="etapes">
+      <li>Paul réserve → le rendez-vous et son PAIEMENT « à payer » sont créés, Paul passe sur la page de paiement de Stripe.</li>
+      <li>Paul paie → Stripe prévient rafals → PAIEMENT « payé ». L'argent est sur le compte Stripe de Léa, <b>bloqué</b> : rafals décide quand il part vers sa banque.</li>
+      <li>48 h après la fin du rendez-vous, sans absence signalée → rafals débloque → PAIEMENT « versé ».</li>
+      <li>Remboursement → l'argent encore bloqué revient à Paul → PAIEMENT « remboursé ». Les 5 % de rafals sont rendus aussi.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Quatre choix techniques expliqués</h2>
+    <p class="note"><b>Les frais retenus au prestataire ne sont pas stockés à part.</b> Quand Léa refuse et que Paul récupère 50 €, Stripe retire tout seul l'euro de frais du compte Stripe de Léa : il sera pris sur son prochain paiement. Rien à calculer dans rafals.</p>
+    <p class="note"><b>Un rendez-vous déplacé garde son paiement.</b> Quand Paul déplace son rendez-vous, le PAIEMENT passe au nouveau rendez-vous (sa rubrique <code>rendez_vous_id</code> change) : Paul ne paie pas une 2ᵉ fois.</p>
+    <p class="note"><b>30 minutes pour payer.</b> Si Paul ferme la page de Stripe sans payer, l'horaire reste bloqué au plus 30 minutes, puis le rendez-vous est annulé et le PAIEMENT « abandonné » (réglage, modifiable). Sans cette limite, un horaire pourrait rester pris pour rien.</p>
+    <p class="note"><b>Tests sans vrai Stripe.</b> Comme pour le répertoire des SIRET et l'IA des avis, les tests utilisent un faux Stripe : aucune vraie carte, aucun appel à Internet.</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>PAIEMENT</code> n° 1 : rendez-vous n° 40 (Paul chez Léa, jeudi 15/10 de 10 h à 11 h), <code>montant_centimes</code> = 5000, <code>commission_centimes</code> = 250, <code>frais_stripe_centimes</code> = 100, <code>statut</code> = « versé », <code>paye_le</code> = 02/10 à 14 h 05, <code>verse_le</code> = 17/10 à 11 h.
+      <p class="trad"><b>Traduction :</b> Paul a payé 50 € le 02/10 ; rafals a gardé 2,50 €, Stripe 1,00 € ; Léa a reçu 46,50 € le 17/10, 48 h après le rendez-vous.</p>
+    </div>
+    <div class="exemple">
+      <code>PAIEMENT</code> n° 2 : rendez-vous n° 41 (Paul chez Karim, 3 h à 40 €), <code>montant_centimes</code> = 12000, <code>commission_centimes</code> = 600, <code>statut</code> = « remboursé », <code>rembourse_le</code> = 05/10, <code>rembourse_centimes</code> = 11795.
+      <p class="trad"><b>Traduction :</b> Paul a payé 120 €, puis a annulé dans le délai : il récupère 117,95 € (120 € moins les 2,05 € de frais de Stripe) ; rafals rend ses 6 €.</p>
+    </div>
+    <div class="exemple">
+      <code>PRESTATAIRE</code> n° 3 (Léa Martin) : <code>stripe_compte</code> = <code>acct_1QxY…</code>, <code>stripe_pret</code> = oui, <code>mandat_facturation_le</code> = 02/10/2026.
+      <p class="trad"><b>Traduction :</b> Léa a activé le paiement par carte et accepté que rafals fasse ses factures ; ses annonces peuvent proposer « carte ».</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Pas dans ce lot : les écrans (lot 5.2), les devis (lot 5.3), les factures (lot 5.5).</p>
+  </section>
+</div>
