@@ -4,7 +4,8 @@ import { computed, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import { type RendezVousVisible, absenceSignalable, aVenir, contestable, momentCourt, plage } from '../../outils/rendez_vous'
-import FenetreContestation from '../rendez-vous/FenetreContestation.vue'
+import FenetreTexte, { type DemandeTexte } from '../FenetreTexte.vue'
+import AvisAffiche from '../avis/AvisAffiche.vue'
 import LigneRendezVous from '../rendez-vous/LigneRendezVous.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
@@ -31,7 +32,14 @@ async function accepter(r: RendezVousVisible) {
 }
 
 // Absences (lot 4.6) : « Client absent » après l'heure ; « Je suis venu » si le client l'a signalé absent
-const aContester = ref<string | null>(null)
+const aContester = ref<DemandeTexte | null>(null)
+// [Je suis venu…] : la fenêtre commune à un seul texte
+const contester = (chemin: string): DemandeTexte => ({
+  titre: "Contester l'absence",
+  explication: "Expliquez ce qui s'est passé : l'administrateur de rafals lira les deux versions et tranchera. En attendant, rien n'est compté ni affiché.",
+  etiquette: "Ce qui s'est passé", aide: "ex. « Je suis venu à 10 h, personne n'a ouvert, j'ai appelé 2 fois. »",
+  chemin, cle: 'explication', bouton: 'Envoyer', reussite: 'Contestation envoyée : rafals va trancher.',
+})
 async function clientAbsent(r: RendezVousVisible) {
   try {
     await appelerServeur(`/api/moi/prestataire/rendez-vous/${r.id}/absent`, {})
@@ -41,6 +49,20 @@ async function clientAbsent(r: RendezVousVisible) {
     afficherMessage(messageErreur(e), 'erreur')
   }
 }
+
+// Avis reçus (lot 4.8) : une seule réponse publique ; un signalement à l'administrateur
+const aEcrire = ref<DemandeTexte | null>(null)
+const repondre = (avisId: number, auteur: string): DemandeTexte => ({
+  titre: `Répondre à ${auteur}`, explication: "Votre réponse sera affichée sous l'avis, pour tous. Une seule réponse ; la note ne change pas.",
+  etiquette: 'Votre réponse', aide: 'ex. « Bouchon sur la rocade, j\'avais prévenu par SMS. »',
+  chemin: `/api/moi/prestataire/avis/${avisId}/repondre`, cle: 'texte', bouton: 'Publier ma réponse', reussite: 'Réponse publiée.',
+})
+const signaler = (avisId: number): DemandeTexte => ({
+  titre: 'Signaler cet avis ?', explication: "L'administrateur de rafals le lira ; l'avis reste affiché en attendant.",
+  etiquette: 'Pourquoi ?', aide: 'ex. « Fausse accusation », « Contient mon numéro de téléphone »',
+  chemin: `/api/moi/prestataire/avis/${avisId}/signaler`, cle: 'texte', bouton: 'Signaler', danger: true,
+  reussite: "Avis signalé : l'administrateur va le regarder.",
+})
 
 // Refuser (motif facultatif) ou annuler (motif obligatoire) : la même fenêtre
 const cible = ref<{ rdv: RendezVousVisible; action: 'refuser' | 'annuler' } | null>(null)
@@ -95,16 +117,28 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
     </div>
   </AppSection>
 
-  <details v-if="passes.length" class="rounded-rafals border border-bord bg-surface p-5" :open="passes.some((r) => absenceSignalable(r) || contestable(r.absence, 'prestataire'))">
+  <details v-if="passes.length" class="rounded-rafals border border-bord bg-surface p-5" :open="passes.some((r) => absenceSignalable(r) || contestable(r.absence, 'prestataire') || (r.avis && !r.avis.reponse))">
     <summary class="min-h-[28px] cursor-pointer font-bold">Passés et annulés ({{ passes.length }})</summary>
     <div class="flex flex-col divide-y divide-bord">
       <LigneRendezVous v-for="r in passes" :key="r.id" :rdv="r" libelle-autre="Client">
         <template #actions>
+          <div v-if="r.avis" class="w-full rounded-rafals bg-fond p-3">
+            <AvisAffiche :avis="r.avis" :titre="`Avis de ${r.avis.auteur}`" nom-prestataire="vous">
+              <template #actions>
+                <AppBouton v-if="!r.avis.reponse && !r.avis.cache_motif" variante="secondaire" @click="aEcrire = repondre(r.avis.id, r.avis.auteur)">
+                  Répondre…
+                </AppBouton>
+                <AppBouton v-if="!r.avis.signale && !r.avis.cache_motif" variante="danger" @click="aEcrire = signaler(r.avis.id)">
+                  Signaler…
+                </AppBouton>
+              </template>
+            </AvisAffiche>
+          </div>
           <AppBouton v-if="absenceSignalable(r)" variante="danger" @click="clientAbsent(r)">Client absent</AppBouton>
           <AppBouton
             v-if="contestable(r.absence, 'prestataire')"
             variante="secondaire"
-            @click="aContester = `/api/moi/prestataire/rendez-vous/${r.id}/contester`"
+            @click="aContester = contester(`/api/moi/prestataire/rendez-vous/${r.id}/contester`)"
           >
             Je suis venu…
           </AppBouton>
@@ -136,5 +170,6 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
       <AppBouton variante="secondaire" @click="cible = null">{{ cible?.action === 'refuser' ? 'Revenir' : 'Garder' }}</AppBouton>
     </template>
   </AppFenetre>
-  <FenetreContestation :chemin="aContester" @fermer="aContester = null" @conteste="(aContester = null), emit('maj')" />
+  <FenetreTexte :demande="aContester" @fermer="aContester = null" @fait="(aContester = null), emit('maj')" />
+  <FenetreTexte :demande="aEcrire" @fermer="aEcrire = null" @fait="(aEcrire = null), emit('maj')" />
 </template>

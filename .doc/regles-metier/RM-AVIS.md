@@ -47,6 +47,14 @@ En plus du filtre, le prestataire peut cliquer [Signaler cet avis] avec une rais
 - **Rappel** : le lendemain du rendez-vous, à partir de 10 h, une seule fois, s'il n'y a pas encore d'avis ni d'absence.
 - Les avis d'un prestataire se voient seulement si sa page publique est visible (activité active).
 
+## Une IA gratuite lit chaque avis (demandé par Raphael le 02/10/2026, lot 4.8)
+Réponse de Raphael, mot pour mot : « je vais pas taper a la main chaques mots incorretct donc tu vas me faire un truc automatique pour ca », puis « un service d'ia gratuit pour moi », et le choix « Une IA installée dans rafals ».
+- Chaque avis et chaque réponse est lu par une IA libre installée dans rafals (conteneur `moderation`, Detoxify) qui donne une note de 0 à 1 ; à 0,7 ou plus (réglage), le texte est refusé : « Votre avis semble injurieux : reformulez-le calmement, s'il vous plaît. »
+- Exemple : « Karim est un gros nul qui arnaque les vieux » est refusé, sans aucun gros mot.
+- La liste des mots interdits reste en plus, comme filet de secours ; si l'IA est en panne, seule la liste s'applique (le client n'est jamais bloqué par une panne).
+- Les avis ne sortent jamais de rafals (données personnelles).
+- **Limite constatée** (essai du 02/10/2026, `scripts/essayer_moderation.py`) : les insultes sont bien refusées (« gros nul qui arnaque les vieux » 0,98 ; « espèce d'incapable » 0,80), les avis négatifs mais polis passent (« travail bâclé » 0,004) ; une **menace** sans insulte (« je vais te retrouver et tu vas le regretter » 0,01) n'est **pas** repérée : elle passe par le signalement à l'administrateur.
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|

@@ -32,3 +32,10 @@ Interdit donc : tout service propre à OVH (base de données « maison », outil
 
 ## Remarque : antivirus du PC de développement (29/09/2026)
 L'antivirus Avast du PC de Raphael intercepte les connexions HTTPS (« bouclier web ») : depuis Docker, rafals refuse ces connexions (certificat « Avast Web/Mail Shield Root » inconnu). Conséquence locale : la vérification du SIRET auprès de l'État reste « à vérifier ». Décision de Raphael : ne rien changer. Sur le serveur OVH, pas d'antivirus au milieu : rien à faire.
+
+## IA de modération des avis (lot 4.8, 02/10/2026)
+Conteneur `moderation` : IA libre Detoxify (licence Apache 2.0, gratuite pour toujours), sur le processeur, sans carte graphique. Les avis ne quittent jamais rafals.
+- **Taille** : image de 3,9 Go (bibliothèque d'IA + modèle de 1 Go), téléchargée une fois à la construction ; au démarrage, l'IA met environ 1 minute à se charger (pendant ce temps, seule la liste des mots filtre).
+- **Mémoire** : prévoir environ 1,5 Go de mémoire vive en plus sur le serveur OVH (un avis est lu en moins d'une seconde).
+- **Sur le PC** : la construction a demandé de couper un moment l'analyse HTTPS d'Avast (même cause que pour le SIRET), choix de Raphael le 02/10/2026.
+- Si l'IA est arrêtée ou trop lente (10 s), les avis passent avec la seule liste des mots interdits (rien n'est bloqué).

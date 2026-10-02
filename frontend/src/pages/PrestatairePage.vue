@@ -4,6 +4,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
+import AvisAffiche from '../components/avis/AvisAffiche.vue'
 import AvatarPrestataire from '../components/prestataire/AvatarPrestataire.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
@@ -11,6 +12,7 @@ import AppBouton from '../components/ui/AppBouton.vue'
 import AppSection from '../components/ui/AppSection.vue'
 import { useCompte } from '../composables/useCompte'
 import { lieuPourLeClient, paiement, prixCourt } from '../outils/annonces'
+import { type AvisPublic, etoiles } from '../outils/avis'
 import { type PrestatairePublic, noteLisible } from '../outils/recherche'
 
 const route = useRoute()
@@ -18,13 +20,21 @@ const routeur = useRouter()
 const { compte } = useCompte()
 const prestataire = ref<PrestatairePublic | null>(null)
 const erreur = ref('')
+// Avis : les 10 plus récents, puis [Voir plus d'avis]
+const AVIS_PAR_PAGE = 10
+const avis = ref<AvisPublic[]>([])
+const nombreAffiches = ref(AVIS_PAR_PAGE)
 
 watch(
   () => route.params.id,
   async (id) => {
     erreur.value = ''
     try {
-      prestataire.value = await appelerServeur<PrestatairePublic>(`/api/prestataires/${id}`)
+      ;[prestataire.value, avis.value] = await Promise.all([
+        appelerServeur<PrestatairePublic>(`/api/prestataires/${id}`),
+        appelerServeur<AvisPublic[]>(`/api/prestataires/${id}/avis`),
+      ])
+      nombreAffiches.value = AVIS_PAR_PAGE
     } catch (e) {
       erreur.value = messageErreur(e)
     }
@@ -108,7 +118,24 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
       </AppSection>
 
       <AppSection titre="Avis">
-        <p class="text-[14px] text-texte-doux">Les avis arrivent bientôt.</p>
+        <template v-if="avis.length">
+          <div class="flex flex-wrap items-center gap-3.5">
+            <span class="text-[34px] font-bold">{{ noteLisible(prestataire.note ?? 0) }}</span>
+            <div>
+              <div class="text-lg tracking-wide text-accent">{{ etoiles(prestataire.note ?? 0) }}</div>
+              <span class="text-[13.5px] text-texte-doux">{{ prestataire.nombre_avis }} avis de clients ayant eu un rendez-vous</span>
+            </div>
+          </div>
+          <div class="flex flex-col divide-y divide-bord">
+            <div v-for="a in avis.slice(0, nombreAffiches)" :key="a.id" class="py-3 first:pt-0">
+              <AvisAffiche :avis="a" :nom-prestataire="prenom" />
+            </div>
+          </div>
+          <div v-if="avis.length > nombreAffiches">
+            <AppBouton variante="secondaire" @click="nombreAffiches += AVIS_PAR_PAGE">Voir plus d'avis</AppBouton>
+          </div>
+        </template>
+        <p v-else class="text-[14px] text-texte-doux">Pas encore d'avis.</p>
       </AppSection>
       <p class="text-[13px] text-texte-doux">Le téléphone et l'adresse sont donnés après une réservation.</p>
     </template>

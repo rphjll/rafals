@@ -1,6 +1,7 @@
 // Rendez-vous : types et textes montrés (états, plages horaires), à un seul endroit (RM-RENDEZ-VOUS.md).
 
 import { aParis, heure, jourCourt, jourLisible } from './agenda'
+import type { AvisDetaille } from './avis'
 import type { BadgeEtat } from './prestataires'
 
 export type StatutRendezVous =
@@ -29,6 +30,10 @@ export interface RendezVousVisible {
   reponse_avant: string | null
   annulable_jusqu_au: string | null
   absence: Absence | null
+  /** L'avis laissé sur ce rendez-vous (lot 4.8) */
+  avis: AvisDetaille | null
+  /** Client : rendez-vous tenu, dans les 30 jours, pas encore d'avis */
+  peut_noter: boolean
   /** Le prestataire (vu par le client) ou le client (vu par le prestataire) ; téléphone seulement quand c'est permis ;
    *  « absences » : celles du client en 6 mois, montrées au prestataire */
   autre: { nom: string; telephone: string | null; prestataire_id?: number; client_id?: number; absences?: number }

@@ -4,8 +4,10 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
+import AvisAffiche from '../components/avis/AvisAffiche.vue'
+import FenetreAvis from '../components/avis/FenetreAvis.vue'
 import ChoixHoraire from '../components/rendez-vous/ChoixHoraire.vue'
-import FenetreContestation from '../components/rendez-vous/FenetreContestation.vue'
+import FenetreTexte, { type DemandeTexte } from '../components/FenetreTexte.vue'
 import LigneRendezVous from '../components/rendez-vous/LigneRendezVous.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
@@ -61,7 +63,14 @@ async function annuler() {
 
 // ---------- Absences (lot 4.6) ----------
 const pasVenu = ref<RendezVousVisible | null>(null)
-const aContester = ref<string | null>(null)
+const aContester = ref<DemandeTexte | null>(null)
+// [Je suis venu…] : la fenêtre commune à un seul texte
+const contester = (chemin: string): DemandeTexte => ({
+  titre: "Contester l'absence",
+  explication: "Expliquez ce qui s'est passé : l'administrateur de rafals lira les deux versions et tranchera. En attendant, rien n'est compté ni affiché.",
+  etiquette: "Ce qui s'est passé", aide: "ex. « Je suis venu à 10 h, personne n'a ouvert, j'ai appelé 2 fois. »",
+  chemin, cle: 'explication', bouton: 'Envoyer', reussite: 'Contestation envoyée : rafals va trancher.',
+})
 async function signalerPasVenu() {
   const r = pasVenu.value
   if (!r) return
@@ -73,6 +82,19 @@ async function signalerPasVenu() {
     afficherMessage(messageErreur(e), 'erreur')
   } finally {
     pasVenu.value = null
+  }
+}
+
+// ---------- Avis (lot 4.8) ----------
+const aNoter = ref<{ rendezVousId: number; avis: RendezVousVisible['avis']; prestataire: string; quoi: string } | null>(null)
+async function retirerAvis(r: RendezVousVisible) {
+  if (!r.avis) return
+  try {
+    await appelerServeur(`/api/moi/avis/${r.avis.id}/retirer`, {})
+    afficherMessage("Avis retiré : il n'est plus affiché.")
+    await charger()
+  } catch (e) {
+    afficherMessage(messageErreur(e), 'erreur')
   }
 }
 
@@ -148,8 +170,32 @@ async function deplacer(debut: string) {
         <div class="flex flex-col divide-y divide-bord">
           <LigneRendezVous v-for="r in passes" :key="r.id" :rdv="r" libelle-autre="Avec">
             <template #actions>
+              <div v-if="r.avis" class="w-full rounded-rafals bg-fond p-3">
+                <AvisAffiche :avis="r.avis" titre="Votre avis" :nom-prestataire="r.autre.nom">
+                  <template #actions>
+                    <template v-if="!r.avis.retire && !r.avis.cache_motif">
+                      <AppBouton
+                        v-if="new Date() < new Date(r.avis.modifiable_jusqu_au)"
+                        variante="secondaire"
+                        @click="aNoter = { rendezVousId: r.id, avis: r.avis, prestataire: r.autre.nom, quoi: plage(r) }"
+                      >
+                        Modifier
+                      </AppBouton>
+                      <AppBouton variante="danger" @click="retirerAvis(r)">Retirer</AppBouton>
+                      <span v-if="new Date() < new Date(r.avis.modifiable_jusqu_au)" class="text-[13.5px] text-texte-doux">
+                        Modifiable jusqu'au {{ momentCourt(r.avis.modifiable_jusqu_au) }}.
+                      </span>
+                    </template>
+                  </template>
+                </AvisAffiche>
+              </div>
+              <template v-else-if="r.peut_noter">
+                <AppBouton @click="aNoter = { rendezVousId: r.id, avis: null, prestataire: r.autre.nom, quoi: `${r.titre}, ${plage(r).toLowerCase()}.` }">
+                  Donner mon avis
+                </AppBouton>
+              </template>
               <AppBouton v-if="absenceSignalable(r)" variante="danger" @click="pasVenu = r">{{ r.autre.nom }} n'est pas venu…</AppBouton>
-              <AppBouton v-if="contestable(r.absence, 'client')" variante="secondaire" @click="aContester = `/api/moi/rendez-vous/${r.id}/contester`">
+              <AppBouton v-if="contestable(r.absence, 'client')" variante="secondaire" @click="aContester = contester(`/api/moi/rendez-vous/${r.id}/contester`)">
                 Je suis venu…
               </AppBouton>
             </template>
@@ -179,7 +225,9 @@ async function deplacer(debut: string) {
         <AppBouton variante="secondaire" @click="pasVenu = null">Annuler</AppBouton>
       </template>
     </AppFenetre>
-    <FenetreContestation :chemin="aContester" @fermer="aContester = null" @conteste="(aContester = null), charger()" />
+    <FenetreTexte :demande="aContester" @fermer="aContester = null" @fait="(aContester = null), charger()" />
+
+    <FenetreAvis :cible="aNoter" @fermer="aNoter = null" @enregistre="(aNoter = null), charger()" />
 
     <AppFenetre :ouverte="aDeplacer !== null" :titre="`Déplacer « ${aDeplacer?.titre} »`" @fermer="aDeplacer = null">
       <div v-if="aDeplacer" class="flex flex-col gap-3 text-texte">

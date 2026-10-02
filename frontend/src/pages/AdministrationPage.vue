@@ -6,8 +6,10 @@ import { useRouter } from 'vue-router'
 import { appelerServeur } from '../api'
 import OngletAbsences from '../components/admin/OngletAbsences.vue'
 import OngletAccords from '../components/admin/OngletAccords.vue'
+import OngletAvisSignales from '../components/admin/OngletAvisSignales.vue'
 import OngletComptes from '../components/admin/OngletComptes.vue'
 import OngletMetiers from '../components/admin/OngletMetiers.vue'
+import OngletMotsInterdits from '../components/admin/OngletMotsInterdits.vue'
 import OngletPrestataires from '../components/admin/OngletPrestataires.vue'
 import OngletPropositions from '../components/admin/OngletPropositions.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
@@ -23,6 +25,8 @@ const onglets = [
   { id: 'comptes', texte: 'Comptes', composant: OngletComptes },
   { id: 'prestataires', texte: 'Prestataires', composant: OngletPrestataires },
   { id: 'absences', texte: 'Absences contestées', composant: OngletAbsences },
+  { id: 'avis', texte: 'Avis signalés', composant: OngletAvisSignales },
+  { id: 'mots', texte: 'Mots interdits', composant: OngletMotsInterdits },
   { id: 'propositions', texte: 'Propositions de métiers', composant: OngletPropositions },
   { id: 'metiers', texte: 'Métiers', composant: OngletMetiers },
 ] as const
@@ -33,12 +37,15 @@ const onglet = computed(() => onglets.find((o) => o.id === ongletActif.value) ??
 const enAttente = ref<Record<string, number>>({})
 async function compter() {
   if (!compte.value?.est_administrateur) return
-  const [accords, propositions, contestations] = await Promise.all([
+  const [accords, propositions, contestations, signales] = await Promise.all([
     appelerServeur<unknown[]>('/api/admin/accords'),
     appelerServeur<unknown[]>('/api/admin/propositions'),
     appelerServeur<unknown[]>('/api/admin/contestations'),
+    appelerServeur<unknown[]>('/api/admin/avis-signales'),
   ])
-  enAttente.value = { accords: accords.length, propositions: propositions.length, absences: contestations.length }
+  enAttente.value = {
+    accords: accords.length, propositions: propositions.length, absences: contestations.length, avis: signales.length,
+  }
 }
 onMounted(compter)
 watch(compte, compter)
