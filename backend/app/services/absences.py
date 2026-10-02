@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.comptes import Compte
+from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
 from app.services import rendez_vous_communs as communs
@@ -96,8 +97,12 @@ def signaler_client_absent(db: Session, prestataire: Prestataire, rdv: RendezVou
 
 
 def signaler_prestataire_absent(db: Session, client: Compte, rdv: RendezVous, maintenant: datetime) -> RendezVous:
-    """[N'est pas venu], par le client, après l'heure (remboursement d'un paiement en ligne : niveau 5)."""
+    """[N'est pas venu], par le client, après l'heure. Payé par carte : 48 h seulement, car l'argent part ensuite vers le
+    prestataire ; le client est remboursé si l'absence compte (RM-PAIEMENTS, services/paiements.py)."""
     _apres_le_debut(rdv, maintenant)
+    paye = db.scalar(select(Paiement.id).where(Paiement.rendez_vous_id == rdv.id, Paiement.statut.in_(("paye", "verse"))))
+    if paye is not None and maintenant > rdv.fin + reglages.ABSENCE_SIGNALEMENT_DELAI_CARTE:
+        raise ErreurRegle("Le délai de 48 heures pour signaler une absence est passé.")
     rdv.absent, rdv.absence_signalee_le = "prestataire", maintenant
     communs.noter(db, client.id, "signaler_prestataire_absent", rdv, maintenant)
     communs.prevenir(db, rdv, sujet="rafals : absence signalée",

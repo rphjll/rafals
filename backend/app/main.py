@@ -14,10 +14,11 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.db import moteur
 from app.routes import (
-    accords, administration, agenda, annonces, avis, clients, comptes, metiers, prestataires, recherche, rendez_vous,
+    accords, administration, agenda, annonces, avis, clients, comptes, metiers, paiements, prestataires, recherche, rendez_vous,
 )
 from app.services import avis as service_avis
 from app.services import clients as service_clients
+from app.services import paiements as service_paiements
 from app.services import prestataires as service_prestataires
 from app.services import rendez_vous as service_rendez_vous
 from app.services.erreurs import ErreurRegle
@@ -69,6 +70,11 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
             "rendez-vous (expirations, rappels)", reglages.TACHE_RENDEZ_VOUS_MINUTES * 60,
             _dans_une_session(service_rendez_vous.traiter),
         )),
+        # Paiements par carte : remboursements, versements 48 h après, paiements jamais terminés (lot 5.1)
+        asyncio.create_task(_tache_periodique(
+            "paiements (remboursements, versements)", reglages.TACHE_PAIEMENTS_MINUTES * 60,
+            _dans_une_session(service_paiements.traiter),
+        )),
         # Rappel « Comment s'est passé votre rendez-vous ? » le lendemain (lot 4.7)
         asyncio.create_task(_tache_periodique(
             "rappels d'avis", 60 * 60, _dans_une_session(service_avis.envoyer_rappels),
@@ -91,6 +97,7 @@ app.include_router(recherche.routeur)
 app.include_router(rendez_vous.routeur)
 app.include_router(avis.routeur)
 app.include_router(clients.routeur)
+app.include_router(paiements.routeur)
 
 
 @app.exception_handler(ErreurRegle)

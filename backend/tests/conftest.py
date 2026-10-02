@@ -6,6 +6,7 @@ Vérifié deux fois : dans les réglages, puis auprès de la base elle-même
 """
 
 import re
+from collections import defaultdict
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
@@ -176,3 +177,131 @@ def mails_envoyes(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
         mails, "envoyer_mail", lambda a, sujet, texte: envoyes.append({"a": a, "sujet": sujet, "texte": texte})
     )
     return envoyes
+
+
+class FauxStripe:
+    """Stripe simulé : comptes des prestataires, pages de paiement, paiements, remboursements, soldes, versements.
+    Frais de carte comme le vrai : 1,5 % + 0,25 € (ex. 1,00 € sur 50 €). `appels` garde chaque demande faite à Stripe ;
+    `panne = True` simule un Stripe injoignable."""
+
+    SECRET = "whsec_zztest"
+
+    def __init__(self) -> None:
+        self.appels: list[dict] = []
+        self.panne = False
+        self.comptes: dict[str, dict] = {}
+        self.sessions: dict[str, dict] = {}
+        self.intents: dict[str, dict] = {}
+        # compte → {"available": …, "pending": …} en centimes ; vide pour les comptes laissés par les tests d'avant
+        self.soldes: dict[str, dict[str, int]] = defaultdict(lambda: {"available": 0, "pending": 0})
+        self._deja: dict[str, dict] = {}
+        self._numero = 0
+
+    def _id(self, prefixe: str) -> str:
+        self._numero += 1  # unique d'un test à l'autre : les lignes d'essai restent dans la base de test
+        return f"{prefixe}_zztest{uuid4().hex[:8]}{self._numero}"
+
+    @staticmethod
+    def frais(montant: int) -> int:
+        return (montant * 15 + 500) // 1000 + 25
+
+    def appeler(self, methode: str, chemin: str, donnees: dict | None = None, *, compte: str | None = None,
+                cle_unique: str | None = None) -> dict:
+        from app.services.stripe_api import StripeIndisponible
+
+        donnees = donnees or {}
+        self.appels.append({"methode": methode, "chemin": chemin, "donnees": donnees, "compte": compte, "cle": cle_unique})
+        if self.panne:
+            raise StripeIndisponible("Stripe simulé en panne")
+        if cle_unique and cle_unique in self._deja:  # même demande refaite : Stripe ne la refait pas
+            return self._deja[cle_unique]
+        reponse = self._repondre(methode, chemin, donnees, compte)
+        if cle_unique:
+            self._deja[cle_unique] = reponse
+        return reponse
+
+    def _repondre(self, methode: str, chemin: str, donnees: dict, compte: str | None) -> dict:
+        morceaux = chemin.strip("/").split("/")
+        if chemin == "/v1/accounts" and methode == "POST":
+            identifiant = self._id("acct")
+            self.comptes[identifiant] = {"id": identifiant, "charges_enabled": False, "payouts_enabled": False, **donnees}
+            self.soldes[identifiant] = {"available": 0, "pending": 0}
+            return self.comptes[identifiant]
+        if chemin == "/v1/account_links":
+            return {"url": f"https://connect.stripe.com/setup/zztest/{donnees['account']}"}
+        if morceaux[:2] == ["v1", "accounts"] and methode == "GET":
+            return self.comptes[morceaux[2]]
+        if chemin == "/v1/checkout/sessions":
+            identifiant = self._id("cs")
+            self.sessions[identifiant] = {"id": identifiant, "compte": compte, **donnees}
+            return {"id": identifiant, "url": f"https://checkout.stripe.com/c/pay/{identifiant}"}
+        if morceaux[:2] == ["v1", "payment_intents"]:
+            pi = self.intents.get(morceaux[2], {"id": morceaux[2], "frais": 0, "commission": 0})  # (d'un test d'avant)
+            return {"id": pi["id"], "latest_charge": {"application_fee": f"fee_{pi['id']}", "balance_transaction": {
+                "fee_details": [{"type": "stripe_fee", "amount": pi["frais"]},
+                                {"type": "application_fee", "amount": pi["commission"]}]}}}
+        if chemin == "/v1/refunds":
+            self.soldes[compte or ""]["available"] -= int(donnees["amount"])
+            return {"id": self._id("re"), "amount": donnees["amount"]}
+        if morceaux[:2] == ["v1", "application_fees"]:
+            pi = self.intents.get(morceaux[2].removeprefix("fee_"), {"compte": "", "commission": 0})
+            self.soldes[pi["compte"]]["available"] += pi["commission"]
+            return {"id": self._id("fr")}
+        if chemin == "/v1/balance":
+            solde = self.soldes[compte or ""]
+            return {"available": [{"amount": solde["available"], "currency": "eur"}],
+                    "pending": [{"amount": solde["pending"], "currency": "eur"}]}
+        if chemin == "/v1/payouts":
+            self.soldes[compte or ""]["available"] -= int(donnees["amount"])
+            return {"id": self._id("po"), "amount": donnees["amount"]}
+        raise AssertionError(f"Appel à Stripe non prévu dans le faux Stripe : {methode} {chemin}")
+
+    # ---------- Ce que fait le client ou Stripe, pour les tests ----------
+
+    def payer(self, session_id: str | None = None, *, en_attente: bool = False) -> dict:
+        """Le client paie sur la page de Stripe (la dernière ouverte par défaut) : l'argent arrive sur le compte du
+        prestataire (moins la commission de rafals et les frais). Renvoie le message que Stripe envoie à rafals."""
+        session = self.sessions[session_id or list(self.sessions)[-1]]
+        montant = int(session["line_items"][0]["price_data"]["unit_amount"])
+        commission = int(session["payment_intent_data"]["application_fee_amount"])
+        pi = self._id("pi")
+        self.intents[pi] = {"id": pi, "compte": session["compte"], "montant": montant, "commission": commission,
+                            "frais": self.frais(montant)}
+        self.soldes[session["compte"]]["pending" if en_attente else "available"] += montant - commission - self.frais(montant)
+        return self.evenement("checkout.session.completed", {
+            "id": session["id"], "payment_status": "paid", "payment_intent": pi, "metadata": session["metadata"]})
+
+    def compte_verifie(self, compte: str) -> dict:
+        """Stripe a vérifié l'identité et le RIB du prestataire."""
+        self.comptes[compte].update(charges_enabled=True, payouts_enabled=True)
+        return self.evenement("account.updated", self.comptes[compte])
+
+    @staticmethod
+    def evenement(sorte: str, objet: dict) -> dict:
+        return {"id": f"evt_zztest_{uuid4().hex[:8]}", "type": sorte, "data": {"object": objet}}
+
+    def envoyer(self, client: TestClient, evenement: dict, *, secret: str | None = None):
+        """Envoie le message à rafals comme Stripe : avec la signature calculée sur le secret partagé."""
+        import hashlib
+        import hmac
+        import json
+        import time
+
+        corps = json.dumps(evenement).encode()
+        horodatage = str(int(time.time()))
+        signature = hmac.new((secret or self.SECRET).encode(), f"{horodatage}.".encode() + corps, hashlib.sha256).hexdigest()
+        return client.post("/api/stripe/evenements", content=corps,
+                           headers={"Stripe-Signature": f"t={horodatage},v1={signature}", "Content-Type": "application/json"})
+
+
+@pytest.fixture(autouse=True)
+def faux_stripe(monkeypatch: pytest.MonkeyPatch) -> FauxStripe:
+    """Les tests n'appellent jamais le vrai Stripe ; les clés sont fausses (aucune vraie carte, aucun appel à internet)."""
+    from app import config
+    from app.services import stripe_api
+
+    faux = FauxStripe()
+    monkeypatch.setattr(config, "STRIPE_CLE_SECRETE", "sk_test_zztest")
+    monkeypatch.setattr(config, "STRIPE_SECRET_WEBHOOK", FauxStripe.SECRET)
+    monkeypatch.setattr(stripe_api, "appeler", faux.appeler)
+    return faux

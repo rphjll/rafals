@@ -52,6 +52,13 @@ def siret_verifie(base: Session, compte) -> None:
     base.commit()
 
 
+def carte_activee(base: Session, compte) -> None:
+    """Comme si Stripe avait vérifié son compte (lot 5.1) : ses annonces peuvent proposer la carte."""
+    base.execute(text("UPDATE prestataire SET stripe_compte = 'acct_zztest_' || id, stripe_pret = true WHERE compte_id = :id"),
+                 {"id": compte.id})
+    base.commit()
+
+
 # ---------- Écrire une annonce ----------
 
 
@@ -97,15 +104,19 @@ def test_carte_seulement_avec_un_siret_verifie(fabrique_prestataire, metiers, ba
     sans_siret = publier(karim, menage(metiers["Plombier"], paiement_carte=True))
     siret_verifie(base, karim)
     avec_siret = publier(karim, menage(metiers["Plombier"], paiement_carte=True))
+    carte_activee(base, karim)  # lot 5.1 : la carte n'est proposée qu'une fois son compte Stripe vérifié
+    modes = next(a for a in karim.client.get("/api/moi/annonces").json() if a["id"] == avec_siret.json()["id"])["modes_de_paiement"]
 
     assert sans_siret.status_code == 400 and "SIRET vérifié" in sans_siret.json()["detail"]
-    assert avec_siret.status_code == 201 and avec_siret.json()["modes_de_paiement"] == ["carte", "especes"]
+    assert avec_siret.status_code == 201 and avec_siret.json()["modes_de_paiement"] == ["especes"]
+    assert modes == ["carte", "especes"]
 
 
 def test_siret_perdu_la_carte_devient_especes(fabrique_prestataire, metiers, base: Session) -> None:
     # MLD 3.1 : la carte est un souhait ; SIRET refusé → « espèces », sans rien ressaisir
     karim = fabrique_prestataire()
     siret_verifie(base, karim)
+    carte_activee(base, karim)
     annonce = publier(karim, menage(metiers["Plombier"], paiement_carte=True, paiement_especes=False)).json()
     base.execute(text("UPDATE prestataire SET siret_statut = 'refuse' WHERE compte_id = :id"), {"id": karim.id})
     base.commit()

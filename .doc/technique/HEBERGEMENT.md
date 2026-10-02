@@ -39,3 +39,9 @@ Conteneur `moderation` : IA libre Detoxify (licence Apache 2.0, gratuite pour to
 - **Mémoire** : prévoir environ 1,5 Go de mémoire vive en plus sur le serveur OVH (un avis est lu en moins d'une seconde).
 - **Sur le PC** : la construction a demandé de couper un moment l'analyse HTTPS d'Avast (même cause que pour le SIRET), choix de Raphael le 02/10/2026.
 - Si l'IA est arrêtée ou trop lente (10 s), les avis passent avec la seule liste des mots interdits (rien n'est bloqué).
+
+## Paiement par carte : Stripe (lot 5.1, 02/10/2026)
+Service extérieur choisi par Raphael (Stripe Connect, « Stripe gère la tarification ») ; rien de propre à OVH, la portabilité est gardée.
+- **Clés** : `STRIPE_CLE_SECRETE` et `STRIPE_SECRET_WEBHOOK` dans le fichier `.env` (jamais dans git). Sur le PC : les clés du **mode test** de Stripe (cartes d'essai, aucun argent réel).
+- **Messages de Stripe** (« webhook ») : Stripe appelle `https://<site>/api/stripe/evenements`, qui vérifie la signature. Sur le PC, Stripe ne peut pas joindre `localhost` : on utilise l'outil « Stripe CLI » (`stripe listen --forward-to localhost:8001/api/stripe/evenements`), à installer au moment de l'essai à la main.
+- **Pas de bibliothèque Stripe** dans le serveur : quelques appels web suffisent, donc aucune reconstruction du conteneur `backend`.

@@ -29,6 +29,12 @@ S3_COMPARTIMENT = os.environ.get("S3_COMPARTIMENT", "rafals")
 S3_CLE_ACCES = os.environ.get("S3_CLE_ACCES", "")
 S3_CLE_SECRETE = os.environ.get("S3_CLE_SECRETE", "")
 
+# Paiement par carte (Stripe, lot 5.1). Clés du tableau de bord de Stripe, dans le fichier .env (jamais dans git).
+# Sans clé secrète, le paiement par carte est simplement indisponible (les espèces restent possibles).
+STRIPE_CLE_SECRETE = os.environ.get("STRIPE_CLE_SECRETE", "")
+STRIPE_SECRET_WEBHOOK = os.environ.get("STRIPE_SECRET_WEBHOOK", "")
+STRIPE_VERSION = os.environ.get("STRIPE_VERSION", "")  # vide : la version choisie dans le compte Stripe
+
 # Adresse des écrans, pour fabriquer les liens envoyés par mail
 ADRESSE_SITE = os.environ.get("ADRESSE_SITE", "http://localhost:5174")
 

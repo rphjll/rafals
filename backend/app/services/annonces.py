@@ -298,9 +298,10 @@ def retirer_photo(db: Session, prestataire: Prestataire, annonce: Annonce, ordre
 
 
 def modes_de_paiement(annonce: Annonce, prestataire: Prestataire) -> list[str]:
-    """La carte est un souhait : proposée seulement si le SIRET est vérifié en ce moment ; sinon espèces
-    (ex. SIRET de Julie refusé : « carte ou espèces » devient « espèces » sans qu'elle ressaisisse rien)."""
-    carte = annonce.paiement_carte and prestataire.siret_statut == "verifie"
+    """La carte est un souhait : proposée seulement si le SIRET est vérifié en ce moment et que Stripe a vérifié son
+    compte (lot 5.1) ; sinon espèces (ex. SIRET de Julie refusé : « carte ou espèces » devient « espèces » sans qu'elle
+    ressaisisse rien)."""
+    carte = annonce.paiement_carte and prestataire.siret_statut == "verifie" and prestataire.stripe_pret
     especes = annonce.paiement_especes or (annonce.paiement_carte and not carte)
     return [mode for mode, oui in (("carte", carte), ("especes", especes)) if oui]
 

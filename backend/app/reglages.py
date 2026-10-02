@@ -83,6 +83,13 @@ AVIS_RAPPEL_HEURE = 10  # le lendemain du rendez-vous, à partir de 10 h (heure 
 # Réglage de départ, à ajuster après des essais en français.
 AVIS_SEUIL_TOXICITE = 0.7
 
+# Paiement par carte (RM-PAIEMENTS.md, validé par Raphael le 02/10/2026)
+COMMISSION_POURCENT = 5  # gardé par rafals sur chaque paiement par carte (rien sur les espèces)
+PAIEMENT_DELAI = timedelta(minutes=30)  # pour payer sur la page de Stripe ; ensuite la réservation est annulée (MLD 5.1)
+VERSEMENT_APRES_FIN = timedelta(hours=48)  # l'argent part vers le prestataire 48 h après la fin du rendez-vous
+ABSENCE_SIGNALEMENT_DELAI_CARTE = timedelta(hours=48)  # payé par carte : 48 h pour signaler l'absence du prestataire
+TACHE_PAIEMENTS_MINUTES = 5
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

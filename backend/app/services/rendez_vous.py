@@ -1,6 +1,6 @@
 """Rendez-vous : réserver, accepter / refuser / expirer, annuler, déplacer, rappels.
 Règles : .doc/regles-metier/RM-RENDEZ-VOUS.md (validé le 30/09/2026). Un rendez-vous n'est jamais effacé.
-(Absences et contestations : lot 4.5. Paiement par carte : niveau 5.)"""
+(Absences et contestations : lot 4.5. Paiement par carte : lot 5.1, services/paiements.py.)"""
 
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta
@@ -11,9 +11,10 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
+from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Commune, Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import absences, agenda, annonces, clients, droits, journal
+from app.services import absences, agenda, annonces, clients, droits, journal, stripe_api
 from app.services import rendez_vous_communs as communs
 from app.services.erreurs import ErreurRegle
 
@@ -74,8 +75,8 @@ def reserver(db: Session, client: Compte, demande: Demande, maintenant: datetime
         raise ErreurRegle("Choisissez où a lieu le service : chez vous, ou chez le prestataire.")
     if demande.mode_paiement not in annonces.modes_de_paiement(annonce, prestataire):
         raise ErreurRegle("Ce mode de paiement n'est pas accepté pour cette annonce.")
-    if demande.mode_paiement == "carte":
-        raise ErreurRegle("Le paiement par carte sur rafals arrive bientôt : choisissez les espèces pour l'instant.")
+    if demande.mode_paiement == "carte" and not stripe_api.disponible():
+        raise ErreurRegle("Le paiement par carte n'est pas encore ouvert sur rafals : choisissez les espèces.")
 
     # Adresse recopiée : celle du client (chez lui), ou le local du prestataire
     if lieu == "chez_client":
@@ -102,8 +103,15 @@ def reserver(db: Session, client: Compte, demande: Demande, maintenant: datetime
     db.add(rdv)
     db.flush()
     _journal(db, client.id, "reserver", rdv, maintenant, debut=rdv.debut.isoformat())
+    if rdv.mode_paiement != "carte":  # par carte : les mails partent quand Stripe confirme le paiement
+        annoncer_reservation(db, rdv, maintenant)
+    return rdv
+
+
+def annoncer_reservation(db: Session, rdv: RendezVous, maintenant: datetime) -> None:
+    """Les mails d'une nouvelle réservation : confirmée, ou demande à accepter."""
     quand = _texte_moment(rdv.debut)
-    if automatique:
+    if rdv.statut == "confirme":
         _prevenir(db, rdv, sujet=f"rafals : rendez-vous confirmé, {quand}",
                   client=f"Votre rendez-vous « {rdv.titre} » est confirmé : {quand}.",
                   prestataire=f"Nouveau rendez-vous « {rdv.titre} » : {quand}.")
@@ -112,15 +120,20 @@ def reserver(db: Session, client: Compte, demande: Demande, maintenant: datetime
                   client=f"Votre demande « {rdv.titre} » pour {quand} attend l'accord du prestataire (24 h au plus).",
                   prestataire=f"Nouvelle demande « {rdv.titre} » pour {quand} : acceptez-la ou refusez-la sur rafals "
                               f"avant {_texte_moment(rdv.reponse_avant or maintenant)}.")
-    return rdv
 
 
 # ---------- Le prestataire répond ----------
 
 
+def pas_encore_paye(db: Session, rdv_id: int) -> bool:
+    """Réservation par carte dont le paiement n'est pas terminé (ou ne l'a jamais été) : le prestataire ne la voit pas."""
+    return db.scalar(select(Paiement.id).where(Paiement.rendez_vous_id == rdv_id,
+                                               Paiement.statut.in_(("a_payer", "abandonne")))) is not None
+
+
 def rendez_vous_du_prestataire(db: Session, prestataire: Prestataire, rdv_id: int) -> RendezVous:
     rdv = db.get(RendezVous, rdv_id)
-    if rdv is None or rdv.prestataire_id != prestataire.id:
+    if rdv is None or rdv.prestataire_id != prestataire.id or pas_encore_paye(db, rdv.id):
         raise ErreurRegle("Ce rendez-vous n'existe pas.", 404)
     return rdv
 
@@ -192,7 +205,7 @@ def annuler_par_client(db: Session, client: Compte, rdv: RendezVous, maintenant:
 
 
 def annuler_par_prestataire(db: Session, prestataire: Prestataire, rdv: RendezVous, motif: str, maintenant: datetime) -> RendezVous:
-    """À tout moment, motif obligatoire, envoyé au client (remboursement d'un paiement en ligne : niveau 5)."""
+    """À tout moment, motif obligatoire, envoyé au client (payé par carte : remboursé en entier, services/paiements.py)."""
     motif = (motif or "").strip()
     if not motif:
         raise ErreurRegle("Écrivez le motif : il est envoyé au client (ex. « Malade, désolée »).")
@@ -214,6 +227,8 @@ def deplacer(db: Session, client: Compte, rdv: RendezVous, nouveau_debut: dateti
     prestataire = _dans_le_delai(db, rdv, maintenant)
     if rdv.statut != "confirme":
         raise ErreurRegle("Seul un rendez-vous confirmé se déplace ; une demande en attente s'annule puis se refait.")
+    if pas_encore_paye(db, rdv.id):
+        raise ErreurRegle("Terminez d'abord le paiement de ce rendez-vous.")
     if db.scalar(select(RendezVous).where(RendezVous.remplace_id == rdv.id, RendezVous.statut == "en_attente")):
         raise ErreurRegle("Un déplacement de ce rendez-vous attend déjà la réponse du prestataire.")
     if nouveau_debut.tzinfo is None:

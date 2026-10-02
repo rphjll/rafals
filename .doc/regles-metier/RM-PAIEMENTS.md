@@ -59,3 +59,14 @@ Lors d'un remboursement, Stripe garde ses frais. **Celui qui annule les paie** ;
 Le client choisit le nombre d'heures en réservant et voit le total (`RM-ANNONCES.md`) : ce total est payé à la réservation, comme un prix fixe.
 - Exemple : Karim, 40 € de l'heure, Paul choisit 3 h → 120 € payés à la réservation ; rafals garde 6,00 €.
 - Exemple : même annonce, 2 h → 80 € ; rafals garde 4,00 €.
+
+## Mise en œuvre (lot 5.1, 02/10/2026)
+- **Activer la carte** (prestataire) : SIRET vérifié + case « J'accepte que rafals fasse mes factures à ma place » (mandat de facturation, date gardée) → page de Stripe (identité, RIB). Ses annonces proposent « carte » seulement une fois que Stripe a tout vérifié.
+- **30 minutes pour payer** (réglage, proposé dans le MLD 5.1 et validé par Raphael) : la réservation par carte attend son paiement ; le prestataire ne la voit pas encore et aucun mail ne part. Sans paiement au bout de 30 minutes, elle est annulée (« Paiement non terminé ») et l'horaire se libère.
+  - Exemple : Paul réserve à 14 h 00 et ferme la page de Stripe → à 14 h 30, la réservation est annulée : « Rien n'a été pris sur votre carte. »
+  - Exemple : un paiement qui arrive quand même après l'annulation est remboursé en entier.
+- **Un rendez-vous déplacé garde son paiement** : rien à repayer.
+- **Les frais retenus** sur le versement suivant se voient dans le mail du prestataire.
+  - Exemple : « 45,50 € versés vers votre compte en banque (1,00 € de frais de remboursement retenus) ».
+- **Panne de Stripe** : les remboursements et les versements sont réessayés toutes les 5 minutes, sans jamais être faits deux fois.
+- **Sans clés Stripe** dans le fichier `.env`, le paiement par carte est simplement fermé : « Le paiement par carte n'est pas encore ouvert sur rafals. »

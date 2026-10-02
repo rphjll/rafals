@@ -1,4 +1,4 @@
-"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8, v9). Aucun calcul ici."""
+"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8, v9, v12). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -46,6 +46,9 @@ class Prestataire(Base):
     reservation_delai_max_mois: Mapped[int] = mapped_column(Integer, server_default="2")
     confirmation_automatique: Mapped[bool] = mapped_column(Boolean, server_default="true")
     annulation_delai_heures: Mapped[int] = mapped_column(Integer, server_default="24")
+    stripe_compte: Mapped[str | None] = mapped_column(Text)
+    stripe_pret: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    mandat_facturation_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class MetierSecondaire(Base):

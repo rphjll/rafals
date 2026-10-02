@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.services.recherche import note_ponderee
-from tests.test_annonces import AUJOURD_HUI, menage, metiers, publier, siret_verifie  # noqa: F401 (fixture)
+from tests.test_annonces import AUJOURD_HUI, carte_activee, menage, metiers, publier, siret_verifie  # noqa: F401 (fixture)
 from tests.test_prestataires import devenir, id_commune, id_metier
 
 
@@ -166,6 +166,7 @@ def test_filtre_vient_chez_moi(fabrique, client, metiers, villes) -> None:
 def test_filtre_paiement_par_carte(fabrique, client, metiers, villes, base: Session) -> None:
     julie = fabrique("Julie carte", "Talence", "Maçon", annonce_dans="")
     siret_verifie(base, julie)
+    carte_activee(base, julie)
     publier(julie, menage(metiers["Maçon"], titre="Muret", paiement_carte=True))
     fabrique("Paul espèces", "Talence", "Maçon")
 

@@ -14,6 +14,7 @@ from app.modeles.rendez_vous import RendezVous
 from app.routes.dependances import Administrateur, Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
 from app.services import absences
+from app.services import paiements as service_paiements
 from app.services import avis as service_avis
 from app.services import rendez_vous as service
 
@@ -105,6 +106,8 @@ class RendezVousVisible(BaseModel):
     avis: dict | None  # l'avis laissé sur ce rendez-vous (voir routes/avis.py, AvisDetaille)
     peut_noter: bool  # client : rendez-vous tenu, dans les 30 jours, pas encore d'avis
     autre: dict  # le prestataire (vu par le client) ou le client (vu par le prestataire)
+    paiement: dict | None = None  # payé par carte (voir routes/paiements.py, PaiementVisible)
+    paiement_adresse: str | None = None  # juste après une réservation par carte : la page de paiement de Stripe
 
 
 def _avis(db: Base, rdv: RendezVous) -> dict | None:
@@ -122,6 +125,13 @@ def absence_visible(rdv: RendezVous) -> Absence | None:
         contestable_jusqu_au=rdv.absence_signalee_le + reglages.ABSENCE_CONTESTATION_DELAI, contestation=rdv.contestation,
         contestee_le=rdv.contestee_le, decision=rdv.absence_decision, compte=absences.compte_deja(rdv, maintenant()),
     )
+
+
+def _paiement(db: Base, rdv: RendezVous, *, prestataire: bool) -> dict | None:
+    from app.routes.paiements import visible  # (import ici : routes/paiements importe routes/prestataires)
+
+    p = service_paiements.du_rendez_vous(db, rdv.id)
+    return None if p is None else visible(db, p, prestataire=prestataire).model_dump(mode="json")
 
 
 def _adresse(db: Base, rdv: RendezVous) -> str | None:
@@ -145,6 +155,7 @@ def vu_par_le_client(db: Base, rdv: RendezVous) -> RendezVousVisible:
         absence=absence_visible(rdv), avis=_avis(db, rdv),
         peut_noter=service_avis.peut_noter(rdv, maintenant()) and service_avis.avis_du_rendez_vous(db, rdv.id) is None,
         autre={"prestataire_id": prestataire.id, "nom": prestataire.nom_affiche, "telephone": telephone},
+        paiement=_paiement(db, rdv, prestataire=False),
     )
 
 
@@ -161,6 +172,7 @@ def vu_par_le_prestataire(db: Base, prestataire: Prestataire, rdv: RendezVous) -
         autre={"client_id": client.id, "nom": f"{client.prenom} {client.nom}" if visibles else "Client",
                "telephone": client.telephone if visibles else None,
                "absences": len(absences.absences_du_client(db, client.id, maintenant()))},
+        paiement=_paiement(db, rdv, prestataire=True),
     )
 
 
@@ -169,9 +181,13 @@ def vu_par_le_prestataire(db: Base, prestataire: Prestataire, rdv: RendezVous) -
 
 @routeur.post("/rendez-vous", status_code=201)
 def reserver(donnees: DemandeReservation, db: Base, compte: CompteConnecte) -> RendezVousVisible:
+    """Par carte : la réponse donne l'adresse de la page de paiement de Stripe (30 minutes pour payer)."""
     rdv = service.reserver(db, compte, service.Demande(**donnees.model_dump()), maintenant())
+    adresse = service_paiements.commencer(db, rdv, compte, maintenant()) if rdv.mode_paiement == "carte" else None
     db.commit()
-    return vu_par_le_client(db, rdv)
+    vu = vu_par_le_client(db, rdv)
+    vu.paiement_adresse = adresse
+    return vu
 
 
 @routeur.get("/moi/rendez-vous")
@@ -204,7 +220,7 @@ def rendez_vous_recus(db: Base, compte: CompteConnecte) -> list[RendezVousVisibl
     liste = db.scalars(
         select(RendezVous).where(RendezVous.prestataire_id == prestataire.id).order_by(RendezVous.debut.desc())
     ).all()
-    return [vu_par_le_prestataire(db, prestataire, r) for r in liste]
+    return [vu_par_le_prestataire(db, prestataire, r) for r in liste if not service.pas_encore_paye(db, r.id)]
 
 
 def _repondre(db: Base, compte: Compte, rdv_id: int, action: str, motif: str | None) -> RendezVousVisible:
