@@ -4,7 +4,16 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- (aucun)
+- **Demande** : Lot 5.0 — Argent : vérification juridique (sans SIRET), service de paiement, commission, puis règles des sujets 10 Devis, 11 Factures, 12 Paiements, et découpage du niveau 5 (Raphael : « Oui, on commence »)
+- **Commencé le** : 02/10/2026
+- **Étapes** :
+  - [ ] 1. Choix du service de paiement (comparaison avec un exemple chiffré)  ← on en est là
+  - [ ] 2. Commission de rafals
+  - [ ] 3. Vérification juridique des prestataires sans SIRET (à faire par Raphael auprès d'un professionnel)
+  - [ ] 4. Sujets 10 Devis, 11 Factures, 12 Paiements : `RM-DEVIS.md`, `RM-FACTURES.md`, `RM-PAIEMENTS.md`
+  - [ ] 5. Découpage du niveau 5 en lots
+- **Question en attente** : service de paiement
+- **En pause** : aucune
 
 ## Définition de « terminé »
 
@@ -73,7 +82,7 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 ## Niveaux 5 et 6 — à découper après l'écriture de leurs règles
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 5.0 | Règles | Vérification juridique (sans SIRET), choix du service de paiement, sujets 10 Devis, 11 Factures, 12 Paiements, puis découper le niveau 5 | SUIVI_REGLES_METIER | niveau 4 | ⬜ |
+| 5.0 | Règles | Vérification juridique (sans SIRET), choix du service de paiement, sujets 10 Devis, 11 Factures, 12 Paiements, puis découper le niveau 5 | SUIVI_REGLES_METIER | niveau 4 | 🟡 |
 | 6.0 | Règles | Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6 | SUIVI_REGLES_METIER | niveau 5 | ⬜ |
 
 ## Journal
