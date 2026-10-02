@@ -4,15 +4,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 4.8 — Écrans des avis (Raphael : « Oui, je valide » le lot 4.7)
-- **Commencé le** : 01/10/2026
-- **Étapes** :
-  - [x] 1. Maquette validée (02/10/2026), avec une demande : une IA gratuite installée dans rafals lit les avis (choix de Raphael : IA locale Detoxify, conteneur « moderation »)
-  - [x] 1 bis. Conteneur « moderation » construit (analyse HTTPS d'Avast coupée le temps de la construction par Raphael)
-  - [x] 2. Écrans : donner / modifier / retirer un avis, avis sur la page publique, répondre et signaler (prestataire), Administration › avis signalés et mots interdits
-  - [x] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : Raphael réactive l'analyse HTTPS d'Avast, essaie les avis et valide le lot 4.8 (dernier du niveau 4)
-- **En pause** : aucune
+- (aucun)
 
 ## Définition de « terminé »
 
@@ -76,7 +68,7 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 | 4.5 | Serveur | Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder » | RM-RENDEZ-VOUS, RM-AGENDA | 4.3 | ✅ |
 | 4.6 | Écrans | Boutons [Client absent] / [N'est pas venu] / [Je suis venu] ; compteurs (Mon compte, page publique) ; Administration › contestations ; fenêtre « annuler ou garder » dans l'agenda | RM-RENDEZ-VOUS | 4.5, 4.4 | ✅ |
 | 4.7 | Serveur | Avis : 30 jours avec rappel, réponse du prestataire, filtre de gros mots (liste modifiable), signalement, avis caché par l'administrateur ; note pondérée et badge « Nouveau » branchés dans la recherche | RM-AVIS | 4.5 | ✅ |
-| 4.8 | Écrans | Laisser / modifier / retirer un avis ; avis sur la page publique ; Administration › avis signalés et liste des gros mots | RM-AVIS | 4.7, 4.6 | 🔎 |
+| 4.8 | Écrans | Laisser / modifier / retirer un avis ; avis sur la page publique ; Administration › avis signalés et liste des gros mots | RM-AVIS | 4.7, 4.6 | ✅ |
 
 ## Niveaux 5 et 6 — à découper après l'écriture de leurs règles
 | Lot | Type | Description | Règle source | Dépend de | État |
@@ -161,3 +153,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **01/10/2026** — Lot 4.7 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 4.8 commencé.
 - **02/10/2026** — Maquette du lot 4.8 validée avec une demande de Raphael (« je vais pas taper a la main chaques mots incorretct donc tu vas me faire un truc automatique pour ca ») → choix : « un service d'ia gratuit pour moi », puis « Une IA installée dans rafals ». Conteneur `moderation` créé (Detoxify multilingue, Apache 2.0, processeur seulement) ; serveur branché (`services/moderation.py`, seuil 0,7 dans `reglages.py`, panne = liste des mots seule) ; tests avec une fausse IA. Construction de l'image bloquée par Avast (certificats HTTPS remplacés, comme pour le SIRET) : Raphael choisit de couper l'analyse HTTPS le temps de la construction.
 - **02/10/2026** — Lot 4.8 construit → 🔎 à vérifier. Conteneur `moderation` construit (image 3,9 Go) et démarré ; essai réel en français (`scripts/essayer_moderation.py`) : avis polis acceptés, injures refusées même sans gros mot, menaces non repérées (limite notée dans RM-AVIS). Écrans : donner / modifier / retirer un avis (étoiles cliquables), avis dans « Mes rendez-vous » et « Mon agenda › Rendez-vous » (répondre, signaler), carte « Avis » de la page publique (note, 10 avis, voir plus), Administration › « Avis signalés » (compteur) et « Mots interdits ». Réutilisation : `FenetreTexte` commune (remplace `FenetreContestation` : contester, répondre, signaler, cacher), `AvisAffiche` (client, prestataire, page publique, administration). `CLAUDE.md` + copie : conteneur `moderation` ajouté. Tests : 227 OK (fausse IA dans les tests, panne simulée) ; `vue-tsc` sans erreur ; pages vérifiées par le port 5174. Vraie base : 0 donnée d'essai, 0 avis, 50 mots interdits. Invariants : données personnelles OK (les avis ne quittent jamais rafals) ; non vérifié sur 4 formats d'écran par Claude → à regarder par Raphael.
+- **02/10/2026** — Lot 4.8 validé par Raphael (« Oui, je valide ») → ✅. **Niveau 4 terminé** (recherche, rendez-vous, absences, avis). Aucune donnée d'essai à effacer.
