@@ -17,8 +17,8 @@
 - Les prestataires **sans SIRET** n'ont pas de factures sur rafals.
 
 ## Devis : une facture par paiement
-- L'acompte donne une **facture d'acompte**, et le solde une **facture de solde** qui rappelle l'acompte déjà payé (obligation légale).
-  - Exemple : F-2026-0005 « Acompte de 30 % sur le devis D-2026-0002 — 360,00 € », puis F-2026-0006 « Solde — total 1 200,00 €, acompte déjà payé 360,00 €, reste 840,00 € ».
+- Les arrhes donnent une **facture d'arrhes**, et le solde une **facture de solde** qui rappelle les arrhes déjà payées (obligation légale).
+  - Exemple : F-2026-0005 « Arrhes de 30 % sur le devis D-2026-0002 — 360,00 € », puis F-2026-0006 « Solde — total 1 200,00 €, arrhes déjà payées 360,00 €, reste 840,00 € ».
 
 ## Facture de la commission de rafals : une par mois (choix de Raphael le 02/10/2026)
 Réponse de Raphael, mot pour mot : « j'ai pas compris juste quand il pay un truc j'ai une comition direct de 5pourcents » — c'est bien le cas : les 5 % sont pris à chaque paiement. La question portait seulement sur la facture que rafals doit donner au prestataire pour ces 5 %. Raphael a d'abord demandé « un papier par trimestre », que la loi ne permet pas (une facture qui regroupe plusieurs ventes couvre au plus un mois, article 289 du Code général des impôts), puis a choisi « un par mois ».

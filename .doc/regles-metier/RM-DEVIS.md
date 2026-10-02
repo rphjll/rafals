@@ -2,12 +2,12 @@
 
 > Rédigé au lot 5.0, à partir des réponses de Raphael. En cours d'écriture. Point de départ : `RM-ANNONCES.md` § « Sur devis » (le client envoie une demande écrite, avec photos, et le prestataire répond par un devis).
 
-## Paiement d'un devis accepté : acompte, puis solde (choix de Raphael le 02/10/2026)
-- Le prestataire fixe un **acompte** dans son devis (un pourcentage du total). Il est payé par carte **dès que le client accepte** le devis, et versé au prestataire sans attendre, pour qu'il puisse acheter ses matériaux.
+## Paiement d'un devis accepté : arrhes, puis solde (choix de Raphael le 02/10/2026)
+- Le prestataire fixe des **arrhes** dans son devis (un pourcentage du total). Elles sont payées par carte **dès que le client accepte** le devis, et versées au prestataire sans attendre, pour qu'il puisse acheter ses matériaux.
 - Le **reste (le solde)** est payé quand le prestataire déclare le travail terminé.
 - rafals garde 5 % de chaque paiement (`RM-PAIEMENTS.md`).
-  - Exemple : devis de Paul, maçon, 1 200 € avec 30 % d'acompte → Mme Dupont paie 360 € en acceptant (rafals garde 18 €), puis 840 € à la fin (rafals garde 42 €).
-  - Exemple : devis de 400 € avec 50 % d'acompte → 200 € en acceptant, 200 € à la fin.
+  - Exemple : devis de Paul, maçon, 1 200 € avec 30 % d'arrhes → Mme Dupont paie 360 € en acceptant (rafals garde 18 €), puis 840 € à la fin (rafals garde 42 €).
+  - Exemple : devis de 400 € avec 50 % d'arrhes → 200 € en acceptant, 200 € à la fin.
 - **Le solde, le client le paie lui-même** après avoir vérifié le travail (choix de Raphael le 02/10/2026) : quand le prestataire clique [Travail terminé], le client reçoit un mail « Paul a terminé. [Payer 840 €] ». S'il n'est pas d'accord, il clique [Signaler un problème] et l'administrateur regarde. rafals relance un client qui tarde.
   - Exemple : Paul clique [Travail terminé] le 20/10 → Mme Dupont vérifie le muret et paie 840 € le 21/10.
   - Exemple : le muret penche → Mme Dupont clique [Signaler un problème] : « Le muret penche de 5 cm » → l'administrateur regarde.
@@ -36,7 +36,7 @@
   - Exemple : Paul, maçon avec SIRET → « Muret de jardin — sur devis » possible.
 
 ## Modes de paiement d'un devis (choix de Raphael le 02/10/2026)
-- Si l'annonce accepte les espèces, le client choisit en acceptant le devis : « Par carte sur rafals » (acompte puis solde, rafals garde 5 %) ou « En direct avec le prestataire » (espèces, chèque… ; rafals ne touche rien, le prestataire clique [Payé] quand il a reçu l'argent).
+- Si l'annonce accepte les espèces, le client choisit en acceptant le devis : « Par carte sur rafals » (arrhes puis solde, rafals garde 5 %) ou « En direct avec le prestataire » (espèces, chèque… ; rafals ne touche rien, le prestataire clique [Payé] quand il a reçu l'argent).
   - Exemple : Mme Dupont choisit la carte → 360 € en acceptant, 840 € à la fin.
   - Exemple : M. Leroy choisit « En direct » et paie Paul par chèque → Paul clique [Payé] ; rafals ne touche rien.
 - Si l'annonce n'accepte que la carte, seul « Par carte sur rafals » est proposé.
@@ -50,17 +50,19 @@ Réponses de Raphael, mot pour mot : « dans le calendrié de reservation », pu
   - Exemple : Mme Dupont écrit « Je suis absente cette semaine-là, plutôt fin octobre » → Paul propose « du 26/10 au 27/10 » → elle accepte.
 
 ## Annulation d'un devis accepté (choix de Raphael le 02/10/2026)
-- **Le client annule** → le prestataire **garde l'acompte**, et le client ne doit rien de plus.
+- **Le client annule** → le prestataire **garde les arrhes**, et le client ne doit rien de plus.
   - Exemple : Mme Dupont annule le 10/10 → Paul garde 360 € ; les 19 et 20/10 se libèrent dans son agenda.
-- **Le prestataire annule** → le client est **remboursé de l'acompte**, repris sur les prochains versements du prestataire (frais de Stripe à sa charge, `RM-PAIEMENTS.md`).
+- **Le prestataire annule** → le client est **remboursé des arrhes**, repris sur les prochains versements du prestataire (frais de Stripe à sa charge, `RM-PAIEMENTS.md`).
   - Exemple : Paul annule le 15/10 → Mme Dupont récupère 360 €.
-- ⚠️ À faire vérifier avec le professionnel du droit (étape 3 du lot 5.0) : en droit français, une somme que le client peut perdre en se rétractant s'appelle plutôt des **« arrhes »** ; un « acompte » engage en principe le client à payer tout le prix. Le mot affiché sur rafals sera peut-être « arrhes ».
+- **Le mot affiché : « arrhes », toujours expliqué** (décidé le 02/10/2026). Réponse de Raphael, mot pour mot : « bah un truc facile a comprendre ». En droit français, une somme que le client perd s'il annule s'appelle des « arrhes » (un « acompte » l'engagerait à payer tout le prix) ; pour qu'elle soit facile à comprendre, chaque fois qu'elle s'affiche, une explication l'accompagne.
+  - Exemple sur le devis : « Arrhes : 360 € — payées maintenant, gardées par Paul si vous annulez. »
+  - Exemple sur le bouton : [Accepter et payer 360 € d'arrhes].
 
 ## Le parcours d'un devis (résumé des choix ci-dessus)
 1. Le client envoie une **demande écrite** depuis une annonce « sur devis » (texte, photos) — `RM-ANNONCES.md`.
-2. Le prestataire répond par un **devis** : lignes, TVA, acompte en %, dates des travaux, « Valable jusqu'au ». Numéros par prestataire : D-2026-0001, D-2026-0002…
-3. Le client **accepte** (et paie l'acompte s'il paie par carte), **refuse**, ou **demande une autre date**.
+2. Le prestataire répond par un **devis** : lignes, TVA, arrhes en %, dates des travaux, « Valable jusqu'au ». Numéros par prestataire : D-2026-0001, D-2026-0002…
+3. Le client **accepte** (et paie les arrhes s'il paie par carte), **refuse**, ou **demande une autre date**.
 4. Le prestataire clique **[Travail terminé]** → le client paie le solde (ou le prestataire clique [Payé] s'il a été payé en direct).
 - **États d'un devis** : envoyé → accepté → terminé → payé ; ou refusé, expiré, annulé (par le client ou le prestataire). Un devis n'est jamais effacé.
-- Exemple : D-2026-0002 de Paul (1 200 €, acompte 30 %) : envoyé le 02/10, accepté le 03/10 (360 €), terminé le 20/10, payé le 21/10 (840 €).
+- Exemple : D-2026-0002 de Paul (1 200 €, arrhes 30 %) : envoyé le 02/10, accepté le 03/10 (360 €), terminé le 20/10, payé le 21/10 (840 €).
 - Exemple : D-2026-0003 de Paul, envoyé le 02/10, sans réponse → expiré le 01/11.
