@@ -14,7 +14,7 @@ from app.modeles.comptes import Compte
 from app.modeles.journal import JournalAction
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import journal
+from app.services import journal, moderation
 from app.services import rendez_vous_communs as communs
 from app.services.erreurs import ErreurRegle
 from app.services.metiers import sans_accents
@@ -44,6 +44,10 @@ def _verifier_texte(db: Session, texte: str, mini: int, quoi: str) -> str:
         raise ErreurRegle(f"{quoi} doit faire entre {mini} et {reglages.AVIS_TEXTE_MAX} caractères.")
     if mot_interdit_dans(db, texte):
         raise ErreurRegle(f"{quoi} contient un mot interdit : reformulez-le, s'il vous plaît.")
+    # L'IA lit aussi le texte : une injure sans gros mot est refusée (ex. « un gros nul qui arnaque les vieux »)
+    note = moderation.toxicite(texte)
+    if note is not None and note >= reglages.AVIS_SEUIL_TOXICITE:
+        raise ErreurRegle(f"{quoi} semble injurieux : reformulez-le calmement, s'il vous plaît.")
     return texte
 
 

@@ -36,6 +36,11 @@ services:
     depends_on:
       - backend
 
+  # IA de moderation des avis (Detoxify, libre et gratuite) : lit un avis, dit s'il est injurieux.
+  # Aucune porte ouverte sur le PC : seul le serveur de rafals lui parle. Image d'environ 2 Go (modele inclus).
+  moderation:
+    build: ./moderation
+
   # Attrape tous les mails envoyes par rafals sur le PC (rien ne part pour de vrai).
   # Page des mails : http://localhost:8025
   mailpit:

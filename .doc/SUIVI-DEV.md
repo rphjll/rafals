@@ -7,10 +7,11 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 - **Demande** : Lot 4.8 — Écrans des avis (Raphael : « Oui, je valide » le lot 4.7)
 - **Commencé le** : 01/10/2026
 - **Étapes** :
-  - [ ] 1. Maquette cliquable validée  ← on en est là
+  - [x] 1. Maquette validée (02/10/2026), avec une demande : une IA gratuite installée dans rafals lit les avis (choix de Raphael : IA locale Detoxify, conteneur « moderation »)
+  - [ ] 1 bis. Conteneur « moderation » : construction bloquée par Avast (analyse HTTPS) ← Raphael coupe l'analyse HTTPS, puis « c'est fait » → relancer `docker compose build moderation`
   - [ ] 2. Écrans : donner / modifier / retirer un avis, avis sur la page publique, répondre et signaler (prestataire), Administration › avis signalés et mots interdits
   - [ ] 3. `RM-*-IHM.md`, essais, nettoyage, invariants, sauvegarde
-- **Question en attente** : validation de la maquette du lot 4.8 (https://claude.ai/artifact/Camn6SpayxDy9hEtJjYg9C, fichier `.doc/ihm/maquette-lot-4.8-avis.html`)
+- **Question en attente** : Raphael coupe l'analyse HTTPS d'Avast et dit « c'est fait »
 - **En pause** : aucune
 
 ## Définition de « terminé »
@@ -158,3 +159,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **01/10/2026** — Lot 4.6 validé par Raphael (« Oui, je valide ») → ✅. Aucun compte d'essai à effacer (1 compte). Lot 4.7 commencé.
 - **01/10/2026** — Lot 4.7 construit → 🔎 à vérifier. `schema_v11.sql` exécuté (tables `avis`, `mot_interdit`) ; liste de départ de 50 mots interdits chargée dans la vraie base par `charger-mots-interdits.bat` (données de référence, comme les métiers ; à relire par Raphael). Serveur : laisser / modifier (30 jours) / retirer un avis, réponse unique du prestataire, filtre des mots interdits (mot entier, sans accents), signalement, décision de l'administrateur (laisser ou cacher avec motif), liste des mots modifiable par l'administrateur, avis publics d'un prestataire (« Marie D., octobre 2026 »), note et nombre d'avis sur la page publique, note pondérée et badge « Nouveau » branchés dans la recherche, rappel le lendemain à 10 h (tâche toutes les heures, une seule fois grâce au journal), avis visibles avec chaque rendez-vous. Réutilisation : `prestataire_visible_ou_404()` partagé (page publique et avis). Correction : le serveur n'ignore plus « ZZTEST » dans un nom (aucun code propre aux essais côté serveur). Export RGPD et nettoyage des essais complétés. Tests : 225 OK (18 nouveaux). Vraie base : 0 donnée d'essai, 0 avis, 50 mots interdits. Précisions notées dans `RM-AVIS.md` (à valider).
 - **01/10/2026** — Lot 4.7 validé par Raphael (« Oui, je valide », précisions comprises) → ✅. Lot 4.8 commencé.
+- **02/10/2026** — Maquette du lot 4.8 validée avec une demande de Raphael (« je vais pas taper a la main chaques mots incorretct donc tu vas me faire un truc automatique pour ca ») → choix : « un service d'ia gratuit pour moi », puis « Une IA installée dans rafals ». Conteneur `moderation` créé (Detoxify multilingue, Apache 2.0, processeur seulement) ; serveur branché (`services/moderation.py`, seuil 0,7 dans `reglages.py`, panne = liste des mots seule) ; tests avec une fausse IA. Construction de l'image bloquée par Avast (certificats HTTPS remplacés, comme pour le SIRET) : Raphael choisit de couper l'analyse HTTPS le temps de la construction.

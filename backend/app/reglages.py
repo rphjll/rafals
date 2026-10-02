@@ -79,6 +79,9 @@ AVIS_TEXTE_MAX = 1000
 REPONSE_TEXTE_MIN = 2
 SIGNALEMENT_TEXTE_MIN = 5
 AVIS_RAPPEL_HEURE = 10  # le lendemain du rendez-vous, à partir de 10 h (heure de Paris)
+# IA de modération (lot 4.8) : au-dessus de cette note (0 à 1), l'avis ou la réponse est refusé comme injurieux.
+# Réglage de départ, à ajuster après des essais en français.
+AVIS_SEUIL_TOXICITE = 0.7
 
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30

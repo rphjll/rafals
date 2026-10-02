@@ -79,6 +79,19 @@ def test_avis_refuses(dupont, rdv_tenu, note, texte, morceau) -> None:
     assert reponse.status_code == 400 and morceau in reponse.json()["detail"]
 
 
+def test_l_ia_refuse_une_injure_sans_gros_mot(dupont, rdv_tenu) -> None:
+    # « ZZINJURE » : marque que la fausse IA des tests juge injurieuse (la vraie lit le sens du texte)
+    reponse = noter(dupont, rdv_tenu, 1, "Une arnaqueuse ZZINJURE qui profite des vieux")
+
+    assert reponse.status_code == 400 and "semble injurieux" in reponse.json()["detail"]
+
+
+def test_ia_en_panne_l_avis_passe_avec_la_liste_seule(dupont, rdv_tenu, ia_de_moderation) -> None:
+    ia_de_moderation["panne"] = 1
+
+    assert noter(dupont, rdv_tenu, 4, "Très bien, rien à redire ZZINJURE").status_code == 201
+
+
 def test_un_mot_seulement_s_il_est_entier(base: Session) -> None:
     assert service.mot_interdit_dans(base, "Une conserve de qualité, un concours réussi") is None
     assert service.mot_interdit_dans(base, "Quel Connard !") == "connard"

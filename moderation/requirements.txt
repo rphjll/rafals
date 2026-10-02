@@ -1,0 +1,6 @@
+# IA libre de détection des textes injurieux (Detoxify, licence Apache 2.0), version « multilingual » (français compris)
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.5,<3
+detoxify>=0.5.2,<0.6
+fastapi>=0.115,<1
+uvicorn>=0.30,<1

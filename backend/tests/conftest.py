@@ -149,6 +149,23 @@ def repertoire_de_l_etat(monkeypatch: pytest.MonkeyPatch) -> dict[str, list]:
     return faux
 
 
+@pytest.fixture(autouse=True)
+def ia_de_moderation(monkeypatch: pytest.MonkeyPatch) -> dict[str, float]:
+    """Les tests n'appellent jamais la vraie IA : un texte qui contient « ZZINJURE » reçoit 0,99, les autres 0,01 ;
+    un test peut simuler une panne : ia_de_moderation["panne"] = 1."""
+    from app.services import moderation
+
+    reglage: dict[str, float] = {}
+
+    def interroger(texte: str) -> float:
+        if reglage.get("panne"):
+            raise OSError("IA de modération simulée en panne")
+        return 0.99 if "ZZINJURE" in texte else 0.01
+
+    monkeypatch.setattr(moderation, "interroger", interroger)
+    return reglage
+
+
 @pytest.fixture
 def mails_envoyes(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     """Remplace l'envoi réel : les mails sont gardés dans une liste que le test peut lire."""
