@@ -1,4 +1,4 @@
-"""Miroir exact de la table paiement (db/schema_v12.sql). Aucun calcul ici."""
+"""Miroir exact de la table paiement (db/schema_v12.sql, v13). Aucun calcul ici."""
 
 from datetime import datetime
 
@@ -12,7 +12,9 @@ class Paiement(Base):
     __tablename__ = "paiement"
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
-    rendez_vous_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("rendez_vous.id"))
+    rendez_vous_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("rendez_vous.id"))
+    devis_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("devis.id"))
+    sorte: Mapped[str] = mapped_column(Text, server_default="rendez_vous")
     montant_centimes: Mapped[int] = mapped_column(Integer)
     commission_centimes: Mapped[int] = mapped_column(Integer)
     statut: Mapped[str] = mapped_column(Text, server_default="a_payer")

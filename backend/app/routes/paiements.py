@@ -4,13 +4,11 @@ from datetime import datetime
 
 from fastapi import APIRouter, Header, Request
 from pydantic import BaseModel
-from sqlalchemy import select
 
 from app import reglages
 from app.modeles.comptes import Compte
 from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Prestataire
-from app.modeles.rendez_vous import RendezVous
 from app.routes.dependances import Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
 from app.services import paiements as service
@@ -42,7 +40,9 @@ class PaiementVisible(BaseModel):
     """Un paiement par carte, vu par le client (sans les sommes internes) ou par le prestataire (tout)."""
 
     id: int
-    rendez_vous_id: int
+    rendez_vous_id: int | None
+    devis_id: int | None = None
+    sorte: str = "rendez_vous"  # rendez_vous · arrhes · solde
     titre: str
     debut: datetime
     avec: str  # le prestataire (vu par le client) ou le client (vu par le prestataire, « Client » hors délai RM-CLIENTS)
@@ -60,25 +60,31 @@ class PaiementVisible(BaseModel):
 
 
 def visible(db: Base, paiement: Paiement, *, prestataire: bool) -> PaiementVisible:
+    """Un paiement de rendez-vous, ou les arrhes / le solde d'un devis (« titre » : « Muret de jardin — devis
+    D-2026-0002 (arrhes) »)."""
     from app.services import rendez_vous as service_rdv
 
-    rdv = db.get_one(RendezVous, paiement.rendez_vous_id)
-    presta = db.get_one(Prestataire, rdv.prestataire_id)
+    s = service.sujet(db, paiement)
+    rdv = s.rdv
     if prestataire:
-        client = db.get_one(Compte, rdv.client_id)
-        visibles = service_rdv.coordonnees_client_visibles(db, presta, client.id, maintenant())
+        client = db.get_one(Compte, s.client_id)
+        # Devis : le prestataire connaît son client ; rendez-vous : selon RM-CLIENTS (3 mois après)
+        visibles = rdv is None or service_rdv.coordonnees_client_visibles(db, s.prestataire, client.id, maintenant())
         avec = f"{client.prenom} {client.nom}" if visibles else "Client"
     else:
-        avec = presta.nom_affiche
-    vu = PaiementVisible(id=paiement.id, rendez_vous_id=rdv.id, titre=rdv.titre, debut=rdv.debut, avec=avec,
-                         statut=paiement.statut, montant_centimes=paiement.montant_centimes, paye_le=paiement.paye_le,
-                         rembourse_le=paiement.rembourse_le, rembourse_centimes=paiement.rembourse_centimes)
-    if paiement.statut == "paye" and paiement.frais_stripe_centimes is not None:
+        avec = s.prestataire.nom_affiche
+    titre = s.titre if rdv is not None else f"{s.titre} — {s.quand}"
+    debut = rdv.debut if rdv is not None else paiement.cree_le
+    vu = PaiementVisible(id=paiement.id, rendez_vous_id=rdv.id if rdv else None, devis_id=paiement.devis_id, sorte=paiement.sorte,
+                         titre=titre, debut=debut, avec=avec, statut=paiement.statut, montant_centimes=paiement.montant_centimes,
+                         paye_le=paiement.paye_le, rembourse_le=paiement.rembourse_le,
+                         rembourse_centimes=paiement.rembourse_centimes)
+    if rdv is not None and paiement.statut == "paye" and paiement.frais_stripe_centimes is not None:
         vu.rembourse_si_annule_centimes = paiement.montant_centimes - paiement.frais_stripe_centimes
     if prestataire:
         vu.commission_centimes, vu.frais_stripe_centimes = paiement.commission_centimes, paiement.frais_stripe_centimes
         vu.net_centimes, vu.verse_le = service.net(paiement), paiement.verse_le
-        if paiement.statut == "paye" and rdv.statut in ("confirme", "en_attente") and rdv.absent is None:
+        if rdv is not None and paiement.statut == "paye" and rdv.statut in ("confirme", "en_attente") and rdv.absent is None:
             vu.versement_prevu_le = rdv.fin + reglages.VERSEMENT_APRES_FIN
     return vu
 
@@ -114,19 +120,15 @@ def activer_carte(donnees: Activation, db: Base, compte: CompteConnecte) -> Adre
 @routeur.get("/moi/paiements")
 def mes_paiements(db: Base, compte: CompteConnecte) -> list[PaiementVisible]:
     """Client : ce qu'il a payé par carte, les plus récents d'abord."""
-    lignes = db.scalars(select(Paiement).join(RendezVous, RendezVous.id == Paiement.rendez_vous_id).where(
-        RendezVous.client_id == compte.id, Paiement.statut != "abandonne").order_by(Paiement.id.desc())).all()
-    return [visible(db, p, prestataire=False) for p in lignes]
+    return [visible(db, p, prestataire=False) for p in service.du_client(db, compte.id) if p.statut != "abandonne"]
 
 
 @routeur.get("/moi/prestataire/paiements")
 def paiements_recus(db: Base, compte: CompteConnecte) -> list[PaiementVisible]:
     """Prestataire : ce qu'on lui a payé par carte (bloqué, versé, remboursé)."""
     prestataire = mon_profil_ou_404(db, compte)
-    lignes = db.scalars(select(Paiement).join(RendezVous, RendezVous.id == Paiement.rendez_vous_id).where(
-        RendezVous.prestataire_id == prestataire.id, Paiement.statut.not_in(service.CACHES_AU_PRESTATAIRE),
-    ).order_by(Paiement.id.desc())).all()
-    return [visible(db, p, prestataire=True) for p in lignes]
+    return [visible(db, p, prestataire=True) for p in service.du_prestataire(db, prestataire.id)
+            if p.statut not in service.CACHES_AU_PRESTATAIRE]
 
 
 # ---------- Stripe prévient rafals ----------

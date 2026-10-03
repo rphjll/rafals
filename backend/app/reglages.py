@@ -90,6 +90,16 @@ VERSEMENT_APRES_FIN = timedelta(hours=48)  # l'argent part vers le prestataire 4
 ABSENCE_SIGNALEMENT_DELAI_CARTE = timedelta(hours=48)  # payé par carte : 48 h pour signaler l'absence du prestataire
 TACHE_PAIEMENTS_MINUTES = 5
 
+# Devis (RM-DEVIS.md, validé par Raphael le 02/10/2026 ; maxima validés avec le MLD 5.3 le 03/10/2026)
+DEMANDE_DEVIS_TEXTE = (10, 2000)
+DEMANDE_DEVIS_PHOTOS_MAX = 5
+DEVIS_LIGNES_MAX = 20
+DEVIS_LIBELLE = (2, 200)
+DEVIS_VALIDITE_DEFAUT = timedelta(days=30)  # « Valable jusqu'au » rempli d'avance, modifiable
+DEVIS_TAUX_TVA_POUR_MILLE = (55, 100, 200)  # 5,5 %, 10 %, 20 %
+DEVIS_MENTION_SANS_TVA = "TVA non applicable, art. 293 B du CGI"
+DEVIS_RELANCES_SOLDE = (timedelta(days=3), timedelta(days=10))  # rappels au client qui n'a pas payé le solde (choix de Claude)
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

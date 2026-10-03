@@ -62,8 +62,9 @@ def carte_activee(base: Session, compte) -> None:
 # ---------- Écrire une annonce ----------
 
 
-def test_les_trois_formes_de_prix(fabrique_prestataire, metiers) -> None:
+def test_les_trois_formes_de_prix(fabrique_prestataire, metiers, base: Session) -> None:
     karim = fabrique_prestataire()
+    siret_verifie(base, karim)  # « sur devis » demande un SIRET vérifié (lot 5.3)
 
     fixe = publier(karim, menage(metiers["Plombier"]))
     heure = publier(karim, menage(metiers["Plombier"], titre="Dépannage à l'heure", forme_prix="heure", prix_centimes=4000,

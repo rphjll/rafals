@@ -70,3 +70,4 @@ Le client choisit le nombre d'heures en réservant et voit le total (`RM-ANNONCE
   - Exemple : « 45,50 € versés vers votre compte en banque (1,00 € de frais de remboursement retenus) ».
 - **Panne de Stripe** : les remboursements et les versements sont réessayés toutes les 5 minutes, sans jamais être faits deux fois.
 - **Sans clés Stripe** dans le fichier `.env`, le paiement par carte est simplement fermé : « Le paiement par carte n'est pas encore ouvert sur rafals. »
+- **Devis (lot 5.3)** : les arrhes et le solde payés par carte sont versés sans attendre (voir `RM-DEVIS.md`). Un paiement remboursé après avoir été versé garde sa date de versement (`schema_v14.sql`, décision de Raphael du 03/10/2026).

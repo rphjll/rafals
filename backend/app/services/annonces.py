@@ -126,6 +126,8 @@ def _verifier(db: Session, prestataire: Prestataire, d: DonneesAnnonce, maintena
 
     if d.forme_prix not in FORMES_PRIX:
         raise ErreurRegle("Choisissez la forme du prix : fixe, à l'heure ou sur devis.")
+    if d.forme_prix == "devis" and prestataire.siret_statut != "verifie":
+        raise ErreurRegle("« Sur devis » est réservé aux prestataires avec un SIRET vérifié (RM-DEVIS).")
     prix = duree = heures_min = heures_max = None
     if d.forme_prix in ("fixe", "heure"):
         if d.prix_centimes is None or d.prix_centimes <= 0:

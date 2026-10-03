@@ -174,6 +174,10 @@ def debloquer(db: Session, prestataire: Prestataire, blocage_id: int, maintenant
     blocage = db.get(Blocage, blocage_id)
     if blocage is None or blocage.prestataire_id != prestataire.id:
         raise ErreurRegle("Cette période n'existe pas.", 404)
+    from app.modeles.devis import Devis  # jours de travaux d'un devis accepté (lot 5.3)
+
+    if db.scalar(select(Devis.id).where(Devis.blocage_id == blocage.id)) is not None:
+        raise ErreurRegle("Ces jours sont réservés aux travaux d'un devis accepté : pour les libérer, annulez le devis.")
     journal.noter(
         db, auteur_id=prestataire.compte_id, action="debloquer_agenda", table_cible="blocage", ligne_id=blocage.id,
         avant={"debut": blocage.debut.isoformat(), "fin": blocage.fin.isoformat()}, maintenant=maintenant,

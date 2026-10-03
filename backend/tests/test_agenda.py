@@ -9,7 +9,7 @@ from app import reglages
 from app.modeles.annonces import Annonce
 from app.modeles.prestataires import Prestataire
 from app.services.agenda import ajouter_mois, horaires_libres
-from tests.test_annonces import AUJOURD_HUI, fabrique_prestataire, menage, metiers, publier  # noqa: F401 (fixtures)
+from tests.test_annonces import AUJOURD_HUI, fabrique_prestataire, menage, metiers, publier, siret_verifie  # noqa: F401 (fixtures)
 
 PARIS = reglages.FUSEAU_AFFICHAGE
 # Un mardi entre 1 et 2 semaines d'ici : assez loin pour « au plus tôt », assez près pour « au plus tard »
@@ -159,8 +159,9 @@ def test_prix_a_l_heure_le_client_choisit_ses_heures(fabrique_prestataire, metie
     assert hors_limites.status_code == 400 and "entre 2 h et 4 h" in hors_limites.json()["detail"]
 
 
-def test_sur_devis_pas_d_agenda(fabrique_prestataire, metiers, client) -> None:  # noqa: F811
+def test_sur_devis_pas_d_agenda(fabrique_prestataire, metiers, client, base: Session) -> None:  # noqa: F811
     paul = fabrique_prestataire()
+    siret_verifie(base, paul)  # « sur devis » demande un SIRET vérifié (lot 5.3)
     annonce = publier(paul, menage(metiers["Plombier"], titre="Muret", forme_prix="devis", prix_centimes=None,
                                    duree_minutes=None)).json()["id"]
 

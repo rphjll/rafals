@@ -63,6 +63,7 @@ class ProfilVisible(BaseModel):
     statut: str
     a_une_photo: bool
     cree_le: datetime
+    facture_tva: bool  # case « Je facture la TVA » (lot 5.3, RM-DEVIS)
 
 
 class FinMetier(BaseModel):
@@ -119,6 +120,7 @@ def visible(db: Base, prestataire: Prestataire) -> ProfilVisible:
         statut=prestataire.statut,
         a_une_photo=prestataire.photo_id is not None,
         cree_le=prestataire.cree_le,
+        facture_tva=prestataire.facture_tva,
     )
 
 

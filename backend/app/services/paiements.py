@@ -1,4 +1,5 @@
-"""Paiement par carte d'un rendez-vous (Stripe Connect). Règles : RM-PAIEMENTS.md (validé par Raphael le 02/10/2026).
+"""Paiement par carte d'un rendez-vous, et des arrhes et du solde d'un devis (Stripe Connect).
+Règles : RM-PAIEMENTS.md (validé par Raphael le 02/10/2026), RM-DEVIS.md.
 
 Le chemin de l'argent : le client paie en réservant → l'argent est bloqué sur le compte Stripe du prestataire →
 48 h après la fin du rendez-vous, rafals le fait partir vers sa banque (« versé »). Un remboursement prend l'argent
@@ -7,21 +8,27 @@ encore bloqué : rafals n'avance jamais d'argent. rafals garde 5 % ; rien sur le
 Une seule tâche de fond (toutes les 5 minutes) regarde chaque paiement en cours et fait ce que l'état du rendez-vous
 demande : rembourser (refusé, expiré, annulé, absence), verser, ou abandonner un paiement jamais terminé. Ainsi,
 aucune action (annuler, refuser, bloquer un jour…) n'a besoin de connaître Stripe, et une panne de Stripe est
-simplement réessayée au passage suivant."""
+simplement réessayée au passage suivant.
+
+Devis (lot 5.3) : les arrhes partent vers le prestataire sans attendre (pour ses matériaux), le solde aussi (le client
+l'a payé après avoir vérifié le travail) ; si le prestataire annule un devis accepté, les arrhes sont rendues."""
 
 import logging
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import Select, or_, select
 from sqlalchemy.orm import Session
 
 from app import config, reglages
+from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
+from app.modeles.devis import DemandeDevis, Devis
 from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import absences, journal, stripe_api
+from app.services import absences, journal, mails, stripe_api
 from app.services import rendez_vous_communs as communs
 from app.services.erreurs import ErreurRegle
 from app.services.stripe_api import StripeIndisponible
@@ -32,6 +39,7 @@ EN_COURS = ("a_payer", "paye")  # paiements que la tâche de fond suit encore
 CACHES_AU_PRESTATAIRE = ("a_payer", "abandonne")  # réservation pas encore payée (ou jamais) : le prestataire ne la voit pas
 PAGE_PROFIL = "/proposer"
 PAGE_RENDEZ_VOUS = "/rendez-vous"
+PAGE_DEVIS = "/devis"
 
 
 def commission(montant_centimes: int) -> int:
@@ -48,9 +56,69 @@ def du_rendez_vous(db: Session, rdv_id: int) -> Paiement | None:
     return db.scalar(select(Paiement).where(Paiement.rendez_vous_id == rdv_id))
 
 
+def du_devis(db: Session, devis_id: int, sorte: str) -> Paiement | None:
+    return db.scalar(select(Paiement).where(Paiement.devis_id == devis_id, Paiement.sorte == sorte))
+
+
 def net(paiement: Paiement) -> int:
     """Ce que reçoit le prestataire : le prix, moins les 5 % de rafals, moins les frais de Stripe."""
     return paiement.montant_centimes - paiement.commission_centimes - (paiement.frais_stripe_centimes or 0)
+
+
+def numero_devis(devis: Devis) -> str:
+    """« D-2026-0002 »"""
+    return f"D-{devis.annee}-{devis.numero:04d}"
+
+
+@dataclass
+class Sujet:
+    """Ce que paie un paiement : un rendez-vous, ou les arrhes / le solde d'un devis. Ex. « Coupe femme »,
+    « mardi 13/10/2026 à 10 h 00 » ; « Muret de jardin », « devis D-2026-0002 (arrhes) »."""
+
+    prestataire: Prestataire
+    client_id: int
+    titre: str
+    quand: str
+    rdv: RendezVous | None = None
+    devis: Devis | None = None
+
+
+def sujet(db: Session, paiement: Paiement) -> Sujet:
+    if paiement.rendez_vous_id is not None:
+        rdv = db.get_one(RendezVous, paiement.rendez_vous_id)
+        return Sujet(db.get_one(Prestataire, rdv.prestataire_id), rdv.client_id, rdv.titre, communs.texte_moment(rdv.debut),
+                     rdv=rdv)
+    devis = db.get_one(Devis, paiement.devis_id)
+    demande = db.get_one(DemandeDevis, devis.demande_devis_id)
+    quoi = "arrhes" if paiement.sorte == "arrhes" else "solde"
+    return Sujet(db.get_one(Prestataire, demande.prestataire_id), demande.client_id,
+                 db.get_one(Annonce, demande.annonce_id).titre, f"devis {numero_devis(devis)} ({quoi})", devis=devis)
+
+
+def _prevenir(db: Session, s: Sujet, *, objet: str, client: str | None = None, prestataire: str | None = None) -> None:
+    if client:
+        mails.envoyer_mail(db.get_one(Compte, s.client_id).email, objet, client)
+    if prestataire:
+        mails.envoyer_mail(db.get_one(Compte, s.prestataire.compte_id).email, objet, prestataire)
+
+
+def _avec_leur_sujet() -> Select[tuple[Paiement]]:
+    """Les paiements avec leur rendez-vous ou leur demande de devis, pour les filtrer par client ou par prestataire."""
+    return (select(Paiement).outerjoin(RendezVous, RendezVous.id == Paiement.rendez_vous_id)
+            .outerjoin(Devis, Devis.id == Paiement.devis_id).outerjoin(DemandeDevis, DemandeDevis.id == Devis.demande_devis_id))
+
+
+def du_prestataire(db: Session, prestataire_id: int, statuts: tuple[str, ...] | None = None) -> list[Paiement]:
+    requete = _avec_leur_sujet().where(or_(RendezVous.prestataire_id == prestataire_id,
+                                           DemandeDevis.prestataire_id == prestataire_id))
+    if statuts:
+        requete = requete.where(Paiement.statut.in_(statuts))
+    return list(db.scalars(requete.order_by(Paiement.id.desc())))
+
+
+def du_client(db: Session, client_id: int) -> list[Paiement]:
+    requete = _avec_leur_sujet().where(or_(RendezVous.client_id == client_id, DemandeDevis.client_id == client_id))
+    return list(db.scalars(requete.order_by(Paiement.id.desc())))
 
 
 def _stripe(appel: Any) -> Any:
@@ -112,7 +180,7 @@ def actualiser(db: Session, prestataire: Prestataire) -> Prestataire:
     return prestataire
 
 
-# ---------- Le client paie en réservant ----------
+# ---------- Le client paie ----------
 
 
 def commencer(db: Session, rdv: RendezVous, client: Compte, maintenant: datetime) -> str:
@@ -121,25 +189,57 @@ def commencer(db: Session, rdv: RendezVous, client: Compte, maintenant: datetime
     prestataire = db.get_one(Prestataire, rdv.prestataire_id)
     if not prestataire.stripe_compte or rdv.prix_centimes is None:
         raise ErreurRegle("Ce mode de paiement n'est pas accepté pour cette annonce.")
-    paiement = Paiement(rendez_vous_id=rdv.id, montant_centimes=rdv.prix_centimes, commission_centimes=commission(rdv.prix_centimes),
-                        statut="a_payer", cree_le=maintenant)
+    paiement = Paiement(rendez_vous_id=rdv.id, sorte="rendez_vous", montant_centimes=rdv.prix_centimes,
+                        commission_centimes=commission(rdv.prix_centimes), statut="a_payer", cree_le=maintenant)
     db.add(paiement)
     db.flush()
-    page = f"{config.ADRESSE_SITE}{PAGE_RENDEZ_VOUS}?rdv={rdv.id}&paiement="
+    return _page_de_paiement(paiement, client, prestataire, f"{rdv.titre} — {communs.texte_moment(rdv.debut)}",
+                             f"{PAGE_RENDEZ_VOUS}?rdv={rdv.id}&paiement=", maintenant)
+
+
+def commencer_devis(db: Session, devis: Devis, sorte: str, montant: int, client: Compte, maintenant: datetime) -> str:
+    """Arrhes (en acceptant) ou solde (après les travaux) d'un devis. Un paiement jamais terminé est simplement repris
+    (un seul paiement d'arrhes et un seul de solde par devis). Ex. arrhes de 30 % sur 1 200 € → 360 €."""
+    demande = db.get_one(DemandeDevis, devis.demande_devis_id)
+    prestataire = db.get_one(Prestataire, demande.prestataire_id)
+    if not prestataire.stripe_compte or not prestataire.stripe_pret:
+        raise ErreurRegle("Ce prestataire ne peut pas encore être payé par carte : choisissez « En direct ».")
+    paiement = du_devis(db, devis.id, sorte)
+    if paiement is not None and paiement.statut != "abandonne":
+        if paiement.statut == "a_payer":
+            raise ErreurRegle("Un paiement est déjà en cours : terminez-le sur la page de Stripe, ou attendez 30 minutes.")
+        raise ErreurRegle("C'est déjà payé.")
+    if paiement is None:
+        paiement = Paiement(devis_id=devis.id, sorte=sorte, montant_centimes=montant, commission_centimes=commission(montant),
+                            statut="a_payer", cree_le=maintenant)
+        db.add(paiement)
+    else:  # repris : nouvelle page de paiement, même ligne
+        paiement.statut, paiement.cree_le = "a_payer", maintenant
+        paiement.montant_centimes, paiement.commission_centimes = montant, commission(montant)
+    db.flush()
+    titre = db.get_one(Annonce, demande.annonce_id).titre
+    quoi = "arrhes" if sorte == "arrhes" else "solde"
+    return _page_de_paiement(paiement, client, prestataire, f"{titre} — devis {numero_devis(devis)} ({quoi})",
+                             f"{PAGE_DEVIS}?devis={devis.id}&paiement=", maintenant)
+
+
+def _page_de_paiement(paiement: Paiement, client: Compte, prestataire: Prestataire, libelle: str, retour: str,
+                      maintenant: datetime) -> str:
+    """La page de paiement de Stripe, sur le compte du prestataire, avec la commission de rafals."""
+    page = f"{config.ADRESSE_SITE}{retour}"
     # Stripe garde sa page ouverte au moins 30 minutes : une minute de plus que notre délai (un paiement arrivé
-    # après l'annulation est remboursé en entier, voir marquer_paye)
+    # après l'annulation est remboursé en entier, voir marquer_paye). La clé change si la page est reprise.
     fin = int((maintenant + reglages.PAIEMENT_DELAI).timestamp()) + 60
     session = _stripe(lambda: stripe_api.appeler("POST", "/v1/checkout/sessions", {
         "mode": "payment", "customer_email": client.email, "expires_at": fin,
         "line_items": [{"quantity": 1, "price_data": {
-            "currency": "eur", "unit_amount": paiement.montant_centimes,
-            "product_data": {"name": f"{rdv.titre} — {communs.texte_moment(rdv.debut)}"},
+            "currency": "eur", "unit_amount": paiement.montant_centimes, "product_data": {"name": libelle},
         }}],
         "payment_intent_data": {"application_fee_amount": paiement.commission_centimes,
                                 "metadata": {"paiement_id": paiement.id}},
         "metadata": {"paiement_id": paiement.id},
         "success_url": f"{page}fait", "cancel_url": f"{page}annule",
-    }, compte=prestataire.stripe_compte, cle_unique=f"page-paiement-{paiement.id}"))
+    }, compte=prestataire.stripe_compte, cle_unique=f"page-paiement-{paiement.id}-{int(maintenant.timestamp())}"))
     return session["url"]
 
 
@@ -155,33 +255,41 @@ def _frais(prestataire: Prestataire, paiement_stripe: str) -> tuple[int, str | N
 
 
 def marquer_paye(db: Session, paiement: Paiement, paiement_stripe: str, maintenant: datetime) -> None:
-    """Stripe confirme le paiement : la réservation existe vraiment, les mails partent (confirmée ou demande).
-    Payé trop tard (réservation déjà annulée) : remboursé en entier."""
+    """Stripe confirme le paiement : la réservation (ou l'acceptation du devis, ou le solde) est enregistrée et les
+    mails partent. Payé trop tard (réservation déjà annulée, devis plus acceptable) : remboursé en entier."""
     if paiement.statut not in ("a_payer", "abandonne"):
         return  # déjà traité (Stripe peut prévenir deux fois)
-    from app.services import rendez_vous  # (import ici : rendez_vous ne doit pas dépendre de ce module)
-
-    rdv = db.get_one(RendezVous, paiement.rendez_vous_id)
-    prestataire = db.get_one(Prestataire, rdv.prestataire_id)
-    trop_tard = paiement.statut == "abandonne" or rdv.statut not in communs.ACTIFS
+    s = sujet(db, paiement)
+    deja_abandonne = paiement.statut == "abandonne"
     paiement.statut, paiement.stripe_paiement, paiement.paye_le = "paye", paiement_stripe, maintenant
     try:
-        paiement.frais_stripe_centimes = _frais(prestataire, paiement_stripe)[0]
+        paiement.frais_stripe_centimes = _frais(s.prestataire, paiement_stripe)[0]
     except StripeIndisponible as erreur:  # connus plus tard (au remboursement ou au versement)
         journal_serveur.warning("Stripe : %s", erreur)
-    journal.noter(db, auteur_id=rdv.client_id, action="payer_rendez_vous", table_cible="paiement", ligne_id=paiement.id,
-                  apres={"montant_centimes": paiement.montant_centimes, "rendez_vous_id": rdv.id}, maintenant=maintenant)
-    if trop_tard:
-        _rembourser(db, paiement, rdv, paiement.montant_centimes, "le paiement est arrivé après l'annulation de la réservation",
-                    maintenant)
-    else:
-        rendez_vous.annoncer_reservation(db, rdv, maintenant)
+    journal.noter(db, auteur_id=s.client_id, action=f"payer_{paiement.sorte}", table_cible="paiement", ligne_id=paiement.id,
+                  apres={"montant_centimes": paiement.montant_centimes}, maintenant=maintenant)
+    if s.rdv is not None:
+        from app.services import rendez_vous  # (import ici : rendez_vous ne doit pas dépendre de ce module)
+
+        if deja_abandonne or s.rdv.statut not in communs.ACTIFS:
+            _rembourser(db, paiement, s, paiement.montant_centimes,
+                        "le paiement est arrivé après l'annulation de la réservation", maintenant)
+        else:
+            rendez_vous.annoncer_reservation(db, s.rdv, maintenant)
+        return
+    from app.services import devis as service_devis  # (même raison)
+
+    assert s.devis is not None
+    if not service_devis.apres_paiement(db, s.devis, paiement, maintenant):
+        _rembourser(db, paiement, s, paiement.montant_centimes,
+                    "le paiement est arrivé trop tard, le devis n'est plus valable", maintenant)
 
 
-def _abandonner(db: Session, paiement: Paiement, rdv: RendezVous, maintenant: datetime) -> None:
-    """Paiement jamais terminé : la réservation est annulée, l'horaire se libère."""
+def _abandonner(db: Session, paiement: Paiement, rdv: RendezVous | None, maintenant: datetime) -> None:
+    """Paiement jamais terminé : la réservation est annulée, l'horaire se libère. (Devis : rien d'autre ne change,
+    le client peut payer de nouveau.)"""
     paiement.statut = "abandonne"
-    if rdv.statut in communs.ACTIFS:
+    if rdv is not None and rdv.statut in communs.ACTIFS:
         communs.changer(rdv, "annule_client", maintenant, "Paiement non terminé")
         communs.noter(db, None, "abandonner_paiement", rdv, maintenant)
         communs.prevenir(db, rdv, sujet="rafals : réservation annulée",
@@ -204,7 +312,7 @@ def recevoir(db: Session, evenement: dict[str, Any], maintenant: datetime) -> st
             marquer_paye(db, paiement, objet["payment_intent"], maintenant)
             return "payé"
         if sorte == "checkout.session.expired" and paiement.statut == "a_payer":
-            _abandonner(db, paiement, db.get_one(RendezVous, paiement.rendez_vous_id), maintenant)
+            _abandonner(db, paiement, sujet(db, paiement).rdv, maintenant)
             return "abandonné"
     elif sorte == "account.updated":
         prestataire = db.scalar(select(Prestataire).where(Prestataire.stripe_compte == objet.get("id")))
@@ -217,17 +325,16 @@ def recevoir(db: Session, evenement: dict[str, Any], maintenant: datetime) -> st
 # ---------- Rembourser, verser ----------
 
 
-def _rembourser(db: Session, paiement: Paiement, rdv: RendezVous, montant: int, raison: str, maintenant: datetime) -> None:
+def _rembourser(db: Session, paiement: Paiement, s: Sujet, montant: int, raison: str, maintenant: datetime) -> None:
     """Rend `montant` au client, pris sur l'argent encore bloqué chez le prestataire ; rafals rend toujours ses 5 %.
     Les frais de Stripe restent à la charge du prestataire (Stripe les reprend sur ses prochains paiements) quand il
     en est la cause ; quand c'est le client qui annule, `montant` les a déjà retirés."""
-    prestataire = db.get_one(Prestataire, rdv.prestataire_id)
     pi = paiement.stripe_paiement or ""
     rembourse = stripe_api.appeler("POST", "/v1/refunds", {"payment_intent": pi, "amount": montant,
                                                           "metadata": {"paiement_id": paiement.id}},
-                                   compte=prestataire.stripe_compte, cle_unique=f"remboursement-{paiement.id}")
+                                   compte=s.prestataire.stripe_compte, cle_unique=f"remboursement-{paiement.id}")
     if paiement.commission_centimes:
-        commission_rafals = _frais(prestataire, pi)[1]
+        commission_rafals = _frais(s.prestataire, pi)[1]
         if commission_rafals:
             stripe_api.appeler("POST", f"/v1/application_fees/{commission_rafals}/refunds", {},
                                cle_unique=f"commission-rendue-{paiement.id}")
@@ -235,23 +342,22 @@ def _rembourser(db: Session, paiement: Paiement, rdv: RendezVous, montant: int, 
     paiement.stripe_remboursement = rembourse.get("id")
     journal.noter(db, auteur_id=None, action="rembourser_paiement", table_cible="paiement", ligne_id=paiement.id,
                   apres={"rembourse_centimes": montant, "raison": raison}, maintenant=maintenant)
-    communs.prevenir(db, rdv, sujet="rafals : vous êtes remboursé",
-                     client=f"« {rdv.titre} », {communs.texte_moment(rdv.debut)} : {raison}. Vous êtes remboursé de "
-                            f"{euros(montant)} ; l'argent revient sur votre carte sous 5 à 10 jours.")
+    _prevenir(db, s, objet="rafals : vous êtes remboursé",
+              client=f"« {s.titre} », {s.quand} : {raison}. Vous êtes remboursé de {euros(montant)} ; l'argent revient "
+                     "sur votre carte sous 5 à 10 jours.")
 
 
-def _verser(db: Session, paiement: Paiement, rdv: RendezVous, maintenant: datetime) -> bool:
-    """Fait partir l'argent du rendez-vous vers la banque du prestataire. Si des frais de remboursement sont dus
-    (son compte Stripe est en dessous de ce qu'il devrait contenir), ils sont retirés de ce versement.
+def _verser(db: Session, paiement: Paiement, s: Sujet, maintenant: datetime) -> bool:
+    """Fait partir l'argent vers la banque du prestataire. Si des frais de remboursement sont dus (son compte Stripe
+    est en dessous de ce qu'il devrait contenir), ils sont retirés de ce versement.
     False : l'argent n'est pas encore disponible chez Stripe (quelques jours après le paiement) → on réessaiera."""
-    prestataire = db.get_one(Prestataire, rdv.prestataire_id)
+    prestataire = s.prestataire
     if paiement.frais_stripe_centimes is None:
         paiement.frais_stripe_centimes = _frais(prestataire, paiement.stripe_paiement or "")[0]
     solde = stripe_api.appeler("GET", "/v1/balance", compte=prestataire.stripe_compte)
-    disponible = sum(s["amount"] for s in solde.get("available", []) if s.get("currency") == "eur")
-    en_route = sum(s["amount"] for s in solde.get("pending", []) if s.get("currency") == "eur")
-    bloques = db.scalars(select(Paiement).join(RendezVous, RendezVous.id == Paiement.rendez_vous_id).where(
-        RendezVous.prestataire_id == prestataire.id, Paiement.statut == "paye"))
+    disponible = sum(x["amount"] for x in solde.get("available", []) if x.get("currency") == "eur")
+    en_route = sum(x["amount"] for x in solde.get("pending", []) if x.get("currency") == "eur")
+    bloques = du_prestataire(db, prestataire.id, ("paye",))
     manque = max(0, sum(net(p) for p in bloques) - disponible - en_route)
     montant = net(paiement) - manque
     if 0 < montant and disponible < montant:
@@ -265,9 +371,9 @@ def _verser(db: Session, paiement: Paiement, rdv: RendezVous, maintenant: dateti
     journal.noter(db, auteur_id=None, action="verser_paiement", table_cible="paiement", ligne_id=paiement.id,
                   apres={"verse_centimes": max(montant, 0), "frais_retenus_centimes": manque}, maintenant=maintenant)
     retenue = f" ({euros(min(manque, net(paiement)))} de frais de remboursement retenus)" if manque else ""
-    communs.prevenir(db, rdv, sujet="rafals : argent versé",
-                     prestataire=f"« {rdv.titre} », {communs.texte_moment(rdv.debut)} : {euros(max(montant, 0))} versés "
-                                 f"vers votre compte en banque{retenue}. Ils arrivent sous quelques jours.")
+    _prevenir(db, s, objet="rafals : argent versé",
+              prestataire=f"« {s.titre} », {s.quand} : {euros(max(montant, 0))} versés vers votre compte en "
+                          f"banque{retenue}. Ils arrivent sous quelques jours.")
     return True
 
 
@@ -296,29 +402,46 @@ def _que_faire(rdv: RendezVous, maintenant: datetime) -> tuple[str, str] | None:
     return ("tout", "le prestataire n'est pas venu") if retenue else None
 
 
+def _regler_devis(db: Session, paiement: Paiement, s: Sujet, maintenant: datetime) -> str | None:
+    """Arrhes ou solde payés : versés sans attendre ; arrhes d'un devis annulé par le prestataire : rendues."""
+    assert s.devis is not None
+    if paiement.sorte == "arrhes" and s.devis.statut == "annule_prestataire":
+        # Déjà versées au prestataire : Stripe les reprend sur son compte (ses prochains paiements) — rafals n'avance rien
+        _rembourser(db, paiement, s, paiement.montant_centimes, "le prestataire a annulé le devis", maintenant)
+        return "rembourses"
+    if paiement.statut != "paye":
+        return None
+    return "verses" if _verser(db, paiement, s, maintenant) else None
+
+
 def _regler(db: Session, paiement: Paiement, maintenant: datetime) -> str | None:
-    rdv = db.get_one(RendezVous, paiement.rendez_vous_id)
+    s = sujet(db, paiement)
     if paiement.statut == "a_payer":
-        if rdv.statut not in communs.ACTIFS or maintenant >= paiement.cree_le + reglages.PAIEMENT_DELAI:
-            _abandonner(db, paiement, rdv, maintenant)
+        delai_fini = maintenant >= paiement.cree_le + reglages.PAIEMENT_DELAI
+        if delai_fini or (s.rdv is not None and s.rdv.statut not in communs.ACTIFS):
+            _abandonner(db, paiement, s.rdv, maintenant)
             return "abandonnes"
         return None
+    if s.rdv is None:
+        return _regler_devis(db, paiement, s, maintenant)
+    rdv = s.rdv
     while rdv.statut == "deplace":  # le paiement suit le rendez-vous qui remplace l'ancien : rien à payer de nouveau
         nouveau = db.scalar(select(RendezVous).where(
             RendezVous.remplace_id == rdv.id, RendezVous.statut.not_in(("refuse", "expire"))).order_by(RendezVous.id.desc()))
         if nouveau is None:
             return None
         paiement.rendez_vous_id, rdv = nouveau.id, nouveau
+        s = sujet(db, paiement)
     action = _que_faire(rdv, maintenant)
     if action is None:
         return None
     sorte, raison = action
     if sorte == "verser":
-        return "verses" if _verser(db, paiement, rdv, maintenant) else None
+        return "verses" if _verser(db, paiement, s, maintenant) else None
     if paiement.frais_stripe_centimes is None:
-        paiement.frais_stripe_centimes = _frais(db.get_one(Prestataire, rdv.prestataire_id), paiement.stripe_paiement or "")[0]
+        paiement.frais_stripe_centimes = _frais(s.prestataire, paiement.stripe_paiement or "")[0]
     montant = paiement.montant_centimes - (paiement.frais_stripe_centimes if sorte == "moins_frais" else 0)
-    _rembourser(db, paiement, rdv, montant, raison, maintenant)
+    _rembourser(db, paiement, s, montant, raison, maintenant)
     return "rembourses"
 
 
@@ -326,14 +449,22 @@ def traiter(db: Session, maintenant: datetime | None = None) -> dict[str, int]:
     """Lancé toutes les 5 minutes. Ex. Paul a annulé → remboursé de 49,00 € ; rendez-vous de Léa fini depuis 48 h →
     46,50 € versés ; page de paiement fermée depuis 30 minutes → réservation annulée."""
     maintenant = maintenant or datetime.now(UTC)
-    compte = {"abandonnes": 0, "rembourses": 0, "verses": 0, "pannes_stripe": 0}
-    for paiement in db.scalars(select(Paiement).where(Paiement.statut.in_(EN_COURS)).order_by(Paiement.id)).all():
+    compte = {"abandonnes": 0, "rembourses": 0, "verses": 0, "pannes_stripe": 0, "erreurs": 0}
+    # (+ les arrhes déjà versées d'un devis que le prestataire vient d'annuler : à rendre au client)
+    arrhes_a_rendre = select(Paiement.id).join(Devis, Devis.id == Paiement.devis_id).where(
+        Paiement.sorte == "arrhes", Paiement.statut == "verse", Devis.statut == "annule_prestataire")
+    a_suivre = select(Paiement).where(or_(Paiement.statut.in_(EN_COURS), Paiement.id.in_(arrhes_a_rendre))).order_by(Paiement.id)
+    for paiement in db.scalars(a_suivre).all():
         try:
             with db.begin_nested():  # une panne sur un paiement n'annule pas ce qui est fait pour les autres
                 fait = _regler(db, paiement, maintenant)
         except StripeIndisponible as erreur:
             journal_serveur.warning("Stripe, paiement n° %s : %s", paiement.id, erreur)
             compte["pannes_stripe"] += 1
+            continue
+        except Exception:  # un paiement en erreur ne bloque jamais les autres ; noté pour être corrigé
+            journal_serveur.exception("Paiement n° %s : erreur inattendue", paiement.id)
+            compte["erreurs"] += 1
             continue
         if fait:
             compte[fait] += 1

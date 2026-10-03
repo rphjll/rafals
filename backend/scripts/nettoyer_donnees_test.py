@@ -45,9 +45,18 @@ RATTACHEES: dict[str, list[str]] = {
         " OR a.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
         " OR (table_cible = 'mot_interdit' AND ligne_id IN (SELECT m.id FROM mot_interdit m WHERE m.ajoute_par_id = :id))"
         " OR (table_cible = 'paiement' AND ligne_id IN (SELECT pa.id FROM paiement pa JOIN rendez_vous r ON r.id = pa.rendez_vous_id"
-        " WHERE r.client_id = :id OR r.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))",
+        " WHERE r.client_id = :id OR r.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
+        " OR (table_cible = 'paiement' AND ligne_id IN (SELECT pa.id FROM paiement pa WHERE pa.devis_id IN (SELECT v.id FROM devis v WHERE v.demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))))"
+        " OR (table_cible = 'demande_devis' AND ligne_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
+        " OR (table_cible = 'devis' AND ligne_id IN (SELECT v.id FROM devis v WHERE v.demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))))",
         "DELETE FROM avis WHERE client_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM mot_interdit WHERE ajoute_par_id = :id",
+        # Demandes de devis et devis (lot 5.3), comme client ou comme prestataire : paiements, lignes, devis, photos, demandes
+        "DELETE FROM paiement WHERE devis_id IN (SELECT v.id FROM devis v WHERE v.demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))",
+        "DELETE FROM ligne_devis WHERE devis_id IN (SELECT v.id FROM devis v WHERE v.demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))",
+        "DELETE FROM devis WHERE demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",
+        "DELETE FROM photo_demande WHERE demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",
+        "DELETE FROM demande_devis WHERE client_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         # Paiements par carte de ses rendez-vous (lot 5.1), avant les rendez-vous
         "DELETE FROM paiement WHERE rendez_vous_id IN (SELECT r.id FROM rendez_vous r WHERE r.client_id = :id"
         " OR r.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",

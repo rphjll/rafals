@@ -66,3 +66,16 @@ Réponses de Raphael, mot pour mot : « dans le calendrié de reservation », pu
 - **États d'un devis** : envoyé → accepté → terminé → payé ; ou refusé, expiré, annulé (par le client ou le prestataire). Un devis n'est jamais effacé.
 - Exemple : D-2026-0002 de Paul (1 200 €, arrhes 30 %) : envoyé le 02/10, accepté le 03/10 (360 €), terminé le 20/10, payé le 21/10 (840 €).
 - Exemple : D-2026-0003 de Paul, envoyé le 02/10, sans réponse → expiré le 01/11.
+
+## Mise en œuvre (lot 5.3, 03/10/2026 ; MLD `MLD-lot-5.3-devis.html` validé avec 5 choix)
+- **Le prestataire peut décliner une demande** (motif facultatif, envoyé au client). Ex. « Je ne fais pas ce genre de travaux ».
+- **Un seul devis par demande** ; refusé ou expiré : le client fait une nouvelle demande.
+- **Les jours des travaux sont bloqués** dans l'agenda dès l'acceptation (« Travaux D-2026-0002 ») ; on ne peut pas les débloquer à la main (« pour les libérer, annulez le devis ») ; une annulation les libère. Un devis ne peut proposer que des jours libres (ni rendez-vous, ni congés).
+- **« En direct »** : pas d'arrhes par rafals ; le prestataire clique [Payé] (espèces, chèque ou virement) quand il a tout reçu.
+- **Au plus 5 photos par demande et 20 lignes par devis** ; demande de 10 à 2000 caractères.
+- **Arrhes par carte** : le devis n'est accepté qu'une fois les arrhes payées (30 minutes pour payer, puis on peut recommencer) ; payées trop tard (devis refusé ou expiré entre-temps) : remboursées en entier.
+- **Arrhes et solde** partent vers le prestataire sans attendre (pas de délai de 48 h : le client a vérifié le travail avant de payer le solde). Si le prestataire annule après avoir reçu les arrhes, Stripe les reprend sur son compte pour les rendre au client.
+- **Rappels du solde** (choix de Claude, réglage) : 3 jours puis 10 jours après [Travail terminé], si le client n'a pas payé.
+  - Exemple : travaux déclarés terminés le 20/10 → rappels les 23/10 et 30/10.
+- **Numéros** : D-2026-0001, D-2026-0002… par prestataire et par année ; le taux de TVA (ou la mention 293 B) est figé dans le devis à l'envoi.
+- Le client voit le téléphone du prestataire une fois le devis accepté.

@@ -34,9 +34,9 @@ def test_fiche_paiement(base: Session, decor) -> None:  # noqa: F811
     base.commit()
     # Valeurs imposées par les contraintes : versé (date de versement, pas de remboursement), puis remboursé
     imposees = [
-        {"rendez_vous_id": rdv.id, "montant_centimes": 5000, "commission_centimes": 250, "statut": "verse",
+        {"rendez_vous_id": rdv.id, "devis_id": None, "sorte": "rendez_vous", "montant_centimes": 5000, "commission_centimes": 250, "statut": "verse",
          "rembourse_le": None, "rembourse_centimes": None},
-        {"rendez_vous_id": rdv.id, "montant_centimes": 12000, "commission_centimes": 600, "statut": "rembourse",
+        {"rendez_vous_id": rdv.id, "devis_id": None, "sorte": "rendez_vous", "montant_centimes": 12000, "commission_centimes": 600, "statut": "rembourse",
          "verse_le": None, "rembourse_centimes": 11795},
     ]
 

@@ -17,7 +17,7 @@ def villes(client) -> dict[str, int]:
 
 
 @pytest.fixture
-def fabrique(fabrique_compte, metiers, villes):  # noqa: F811
+def fabrique(fabrique_compte, metiers, villes, base: Session):  # noqa: F811
     """Un prestataire avec une annonce en ligne : fabrique("Sophie", "Bordeaux", "Électricien", km=30, prix=5000…).
     fabrique.noms(page) : les noms des prestataires créés PAR CE TEST, dans l'ordre des résultats (la base de test
     contient aussi ceux des autres tests, parfois avec le même nom)."""
@@ -32,6 +32,8 @@ def fabrique(fabrique_compte, metiers, villes):  # noqa: F811
         assert reponse.status_code == 201, reponse.text
         compte.prestataire_id = reponse.json()["id"]
         crees[compte.prestataire_id] = nom
+        if annonce.get("forme_prix") == "devis":
+            siret_verifie(base, compte)  # « sur devis » demande un SIRET vérifié (lot 5.3)
         if annonce_dans != "":
             reponse = publier(compte, menage(metiers[annonce_dans or principal], titre=f"Annonce de {nom}", **annonce))
             assert reponse.status_code == 201, reponse.text
@@ -132,8 +134,9 @@ def test_note_ponderee() -> None:
 # ---------- Carte d'un prestataire ----------
 
 
-def test_une_carte_par_prestataire_a_partir_du_moins_cher(fabrique, client, metiers, villes) -> None:
+def test_une_carte_par_prestataire_a_partir_du_moins_cher(fabrique, client, metiers, villes, base: Session) -> None:
     karim = fabrique("Karim", "Pessac", "Plombier", prix_centimes=5000)
+    siret_verifie(base, karim)  # « sur devis » demande un SIRET vérifié (lot 5.3)
     publier(karim, menage(metiers["Plombier"], titre="À l'heure", forme_prix="heure", prix_centimes=4000,
                           duree_minutes=None, heures_min=1, heures_max=3))
     publier(karim, menage(metiers["Plombier"], titre="Chauffe-eau", forme_prix="devis", prix_centimes=None, duree_minutes=None))
