@@ -3,7 +3,9 @@
 import { computed, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
-import { type RendezVousVisible, absenceSignalable, aVenir, contestable, momentCourt, plage } from '../../outils/rendez_vous'
+import { type MoyenDirect, ouvrirPdf } from '../../outils/factures'
+import { type RendezVousVisible, absenceSignalable, aVenir, contestable, encaissable, momentCourt, plage } from '../../outils/rendez_vous'
+import FenetrePayeDirect from '../FenetrePayeDirect.vue'
 import FenetreTexte, { type DemandeTexte } from '../FenetreTexte.vue'
 import AvisAffiche from '../avis/AvisAffiche.vue'
 import LigneRendezVous from '../rendez-vous/LigneRendezVous.vue'
@@ -13,7 +15,7 @@ import AppChamp from '../ui/AppChamp.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppSection from '../ui/AppSection.vue'
 
-const props = defineProps<{ rendezVous: RendezVousVisible[] }>()
+const props = defineProps<{ rendezVous: RendezVousVisible[]; siretVerifie: boolean }>()
 const emit = defineEmits<{ maj: [] }>()
 const { afficherMessage } = useMessage()
 
@@ -25,6 +27,21 @@ async function accepter(r: RendezVousVisible) {
   try {
     await appelerServeur(`/api/moi/prestataire/rendez-vous/${r.id}/accepter`, {})
     afficherMessage(`Rendez-vous accepté : ${r.autre.nom} est prévenu.`)
+    emit('maj')
+  } catch (e) {
+    afficherMessage(messageErreur(e), 'erreur')
+  }
+}
+
+// [Payé…] (lot 5.6) : rendez-vous payé en espèces, prestataire avec SIRET → rafals crée la facture
+const aEncaisser = ref<RendezVousVisible | null>(null)
+async function encaisser(moyen: MoyenDirect) {
+  const r = aEncaisser.value
+  aEncaisser.value = null
+  if (!r) return
+  try {
+    const jour = await appelerServeur<RendezVousVisible>(`/api/moi/prestataire/rendez-vous/${r.id}/paye`, { moyen })
+    afficherMessage(`Paiement noté : la facture ${jour.facture_numero} est créée.`)
     emit('maj')
   } catch (e) {
     afficherMessage(messageErreur(e), 'erreur')
@@ -117,7 +134,7 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
     </div>
   </AppSection>
 
-  <details v-if="passes.length" class="rounded-rafals border border-bord bg-surface p-5" :open="passes.some((r) => absenceSignalable(r, 'prestataire') || contestable(r.absence, 'prestataire') || (r.avis && !r.avis.reponse))">
+  <details v-if="passes.length" class="rounded-rafals border border-bord bg-surface p-5" :open="passes.some((r) => absenceSignalable(r, 'prestataire') || contestable(r.absence, 'prestataire') || (r.avis && !r.avis.reponse) || (siretVerifie && encaissable(r)))">
     <summary class="min-h-[28px] cursor-pointer font-bold">Passés et annulés ({{ passes.length }})</summary>
     <div class="flex flex-col divide-y divide-bord">
       <LigneRendezVous v-for="r in passes" :key="r.id" :rdv="r" libelle-autre="Client">
@@ -134,6 +151,8 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
               </template>
             </AvisAffiche>
           </div>
+          <AppBouton v-if="siretVerifie && encaissable(r)" @click="aEncaisser = r">Payé…</AppBouton>
+          <AppBouton v-if="r.facture_id" variante="secondaire" @click="ouvrirPdf(r.facture_id)">Facture (PDF)</AppBouton>
           <AppBouton v-if="absenceSignalable(r, 'prestataire')" variante="danger" @click="clientAbsent(r)">Client absent</AppBouton>
           <AppBouton
             v-if="contestable(r.absence, 'prestataire')"
@@ -172,4 +191,9 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
   </AppFenetre>
   <FenetreTexte :demande="aContester" @fermer="aContester = null" @fait="(aContester = null), emit('maj')" />
   <FenetreTexte :demande="aEcrire" @fermer="aEcrire = null" @fait="(aEcrire = null), emit('maj')" />
+  <FenetrePayeDirect
+    :demande="aEncaisser ? { nom: aEncaisser.autre.nom, centimes: aEncaisser.prix_centimes ?? 0 } : null"
+    @fermer="aEncaisser = null"
+    @confirmer="encaisser"
+  />
 </template>

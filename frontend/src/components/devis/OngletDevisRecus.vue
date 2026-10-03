@@ -8,12 +8,13 @@ import { aParis } from '../../outils/agenda'
 import { formaterDate } from '../../outils/dates'
 import { type DemandeVisible, MOYENS_DIRECTS, arrhesPayees, badgeDemande, jourDevis } from '../../outils/devis'
 import { montant } from '../../outils/paiements'
+import type { MoyenDirect } from '../../outils/factures'
+import FenetrePayeDirect from '../FenetrePayeDirect.vue'
 import FenetreTexte, { type DemandeTexte } from '../FenetreTexte.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppChamp from '../ui/AppChamp.vue'
-import AppChoix from '../ui/AppChoix.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppSection from '../ui/AppSection.vue'
 import FenetreEcrireDevis from './FenetreEcrireDevis.vue'
@@ -74,13 +75,12 @@ async function envoyerDates() {
 
 // ---------- Payé en direct ----------
 const aEncaisser = ref<DemandeVisible | null>(null)
-const moyen = ref<'especes' | 'cheque' | 'virement'>('especes')
-async function confirmerPaye() {
+async function confirmerPaye(moyen: MoyenDirect) {
   const d = aEncaisser.value
   aEncaisser.value = null
   try {
-    await appelerServeur(`/api/moi/prestataire/devis/${d?.devis?.id}/paye`, { moyen: moyen.value })
-    afficherMessage('Devis payé.')
+    await appelerServeur(`/api/moi/prestataire/devis/${d?.devis?.id}/paye`, { moyen })
+    afficherMessage('Devis payé : la facture est créée.')
     emit('maj')
   } catch (e) {
     afficherMessage(messageErreur(e), 'erreur')
@@ -176,19 +176,9 @@ async function confirmerPaye() {
     </template>
   </AppFenetre>
 
-  <AppFenetre :ouverte="aEncaisser !== null" titre="Payé en direct ?" @fermer="aEncaisser = null">
-    <div v-if="aEncaisser?.devis" class="flex flex-col gap-3 text-texte">
-      <p class="text-[14px] text-texte-doux">Vous avez reçu tout l'argent ({{ montant(aEncaisser.devis.ttc_centimes) }}) hors de rafals.</p>
-      <AppChoix
-        v-model="moyen"
-        etiquette="Comment ?"
-        obligatoire
-        :options="[{ valeur: 'especes', texte: 'Espèces' }, { valeur: 'cheque', texte: 'Chèque' }, { valeur: 'virement', texte: 'Virement' }]"
-      />
-    </div>
-    <template #pied>
-      <AppBouton @click="confirmerPaye">Confirmer</AppBouton>
-      <AppBouton variante="secondaire" @click="aEncaisser = null">Annuler</AppBouton>
-    </template>
-  </AppFenetre>
+  <FenetrePayeDirect
+    :demande="aEncaisser?.devis ? { nom: aEncaisser.autre.nom, centimes: aEncaisser.devis.ttc_centimes } : null"
+    @fermer="aEncaisser = null"
+    @confirmer="confirmerPaye"
+  />
 </template>

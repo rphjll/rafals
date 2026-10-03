@@ -115,7 +115,12 @@ watch(compte, charger)
         />
       </template>
       <div v-else class="mx-auto flex w-full max-w-[720px] flex-col gap-4">
-        <OngletRendezVous v-if="ongletActif === 'rendez-vous'" :rendez-vous="rendezVous" @maj="charger" />
+        <OngletRendezVous
+          v-if="ongletActif === 'rendez-vous'"
+          :rendez-vous="rendezVous"
+          :siret-verifie="profil.siret_statut === 'verifie'"
+          @maj="charger"
+        />
         <OngletPaiements v-else />
       </div>
     </template>

@@ -42,6 +42,12 @@ export interface RendezVousVisible {
   paiement: PaiementVisible | null
   /** Juste après une réservation par carte : la page de paiement de Stripe */
   paiement_adresse?: string | null
+  /** [Payé] : argent reçu hors de rafals (lot 5.5) */
+  paye_direct_le: string | null
+  paye_direct_moyen: 'especes' | 'cheque' | 'virement' | null
+  /** La facture de ce rendez-vous, s'il en a une */
+  facture_id: number | null
+  facture_numero: string | null
 }
 
 /** Absence sur un rendez-vous (lot 4.5) */
@@ -62,6 +68,12 @@ export function absenceSignalable(r: RendezVousVisible, moi: 'client' | 'prestat
   const paye = r.paiement && (r.paiement.statut === 'paye' || r.paiement.statut === 'verse')
   const delai = moi === 'client' && paye ? 48 * heure : 7 * 24 * heure
   return r.statut === 'confirme' && !r.absence && new Date(r.debut) <= maintenant && maintenant.getTime() <= new Date(r.fin).getTime() + delai
+}
+
+/** [Payé…] : rendez-vous en espèces confirmé, dont l'heure est passée, pas encore noté payé, sans absence (RM-FACTURES).
+ *  (Le SIRET vérifié du prestataire est contrôlé par l'écran et par le serveur.) */
+export function encaissable(r: RendezVousVisible, maintenant = new Date()): boolean {
+  return r.statut === 'confirme' && r.mode_paiement === 'especes' && !r.paye_direct_le && !r.absence && !!r.prix_centimes && new Date(r.debut) <= maintenant
 }
 
 /** La personne marquée absente peut contester dans les 7 jours, une seule fois */

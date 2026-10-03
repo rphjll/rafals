@@ -47,3 +47,6 @@ Fichiers en plus : `frontend/src/outils/paiements.ts` (types, sommes « 46,50 �
 - **Annuler un rendez-vous payé** : dans la fenêtre, bandeau « Payé par carte : vous serez remboursé de 49,00 € (50,00 € moins 1,00 € de frais de paiement), sous 5 à 10 jours. » ; réussite : « Rendez-vous annulé : remboursement en cours. »
 - **Absence du prestataire** : payé par carte, le bouton [Léa Martin n'est pas venue…] reste 48 h après la fin (7 jours en espèces).
 - Une réservation par carte pas encore payée n'apparaît pas chez le prestataire.
+
+## [Payé…] et facture (lot 5.6, 03/10/2026)
+Voir `RM-FACTURES-IHM.md` : bouton [Payé…] du prestataire sur un rendez-vous en espèces, ligne « Prix » « … · payé en espèces le 13/10/2026 · facture F-2026-0003 », bouton [Facture (PDF)].

@@ -3,6 +3,8 @@
 // (et son téléphone quand c'est permis), lieu, prix ; les boutons viennent de la page (slot « actions »).
 import { computed } from 'vue'
 import { euros } from '../../outils/annonces'
+import { jourCourt, aParis } from '../../outils/agenda'
+import { MOYENS_DIRECTS } from '../../outils/devis'
 import { prixPayeClient, prixPayePrestataire } from '../../outils/paiements'
 import { type RendezVousVisible, badgeRendezVous, momentCourt, plage } from '../../outils/rendez_vous'
 import AppAlerte from '../ui/AppAlerte.vue'
@@ -17,7 +19,13 @@ const moi = computed(() => (props.libelleAutre === 'Avec' ? 'client' : 'prestata
 const prix = computed(() => {
   const r = props.rdv
   if (r.paiement) return (moi.value === 'client' ? prixPayeClient : prixPayePrestataire)(r.prix_centimes, r.paiement)
-  return `${r.prix_centimes ? euros(r.prix_centimes) : '—'} · ${r.mode_paiement === 'carte' ? 'carte' : 'espèces'}`
+  const prix = r.prix_centimes ? euros(r.prix_centimes) : '—'
+  if (r.paye_direct_le && r.paye_direct_moyen) {
+    const facture = r.facture_numero ? ` · facture ${r.facture_numero}` : ''
+    const moyen = r.paye_direct_moyen === 'especes' ? 'en espèces' : `par ${MOYENS_DIRECTS[r.paye_direct_moyen]}`
+    return `${prix} · payé ${moyen} le ${jourCourt(aParis(r.paye_direct_le).jour)}${facture}`
+  }
+  return `${prix} · ${r.mode_paiement === 'carte' ? 'carte' : 'espèces'}`
 })
 const absence = computed(() => {
   const a = props.rdv.absence

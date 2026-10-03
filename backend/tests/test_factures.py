@@ -69,6 +69,7 @@ def test_paye_en_especes_seulement_avec_un_siret(lea, dupont, base: Session) -> 
 
     assert sans_siret.status_code == 400 and "SIRET vérifié" in sans_siret.json()["detail"]
     assert paye_.status_code == 200 and paye_.json()["paye_direct_moyen"] == "especes"
+    assert paye_.json()["facture_numero"] == f"F-{ANNEE}-0001" and paye_.json()["facture_id"]
     assert deux_fois.status_code == 400 and "déjà" in deux_fois.json()["detail"]
     facture = du_client(dupont)[0]
     assert (facture["ttc_centimes"], facture["moyen_paiement"]) == (5000, "especes")

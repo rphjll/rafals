@@ -291,6 +291,11 @@ def facturer_les_commissions(db: Session, maintenant: datetime) -> dict[str, int
 # ---------- Qui voit quoi ----------
 
 
+def du_rendez_vous(db: Session, rdv_id: int) -> Facture | None:
+    """La facture de vente d'un rendez-vous (pas ses avoirs), s'il en a une."""
+    return db.scalar(select(Facture).where(Facture.rendez_vous_id == rdv_id, Facture.sorte == "vente").order_by(Facture.id.desc()))
+
+
 def du_client(db: Session, client_id: int) -> list[Facture]:
     return list(db.scalars(select(Facture).where(Facture.client_id == client_id).order_by(Facture.id.desc())))
 

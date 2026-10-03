@@ -27,6 +27,7 @@ const liens = computed(() => [
     : []),
   { vers: '/rendez-vous', texte: 'Mes rendez-vous' },
   { vers: '/devis', texte: 'Mes devis' },
+  { vers: '/factures', texte: 'Mes factures' },
   { vers: '/compte', texte: 'Mon compte' },
   // Visible seulement des administrateurs (lot 1.4)
   ...(compte.value?.est_administrateur ? [{ vers: '/administration', texte: 'Administration' }] : []),

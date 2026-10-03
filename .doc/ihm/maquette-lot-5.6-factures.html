@@ -1,0 +1,124 @@
+<title>Maquette rafals factures</title>
+<style>
+:root{--fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;--prim:#2F6B4F;--prim-t:#FFFFFF;--prim-doux:#E2EEE7;--accent:#D9793A;--ok:#2E7D4F;--ok-doux:#E3F2E8;--att:#B26A00;--att-doux:#FCF0DC;--err:#B3261E;--err-doux:#FBE4E2;--neu:#5B6573;--neu-doux:#E8ECF1;--sur:#FFFFFF;--voile:rgb(10 14 20 / .55)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}}
+:root[data-theme="dark"]{color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:"Segoe UI",system-ui,sans-serif;font-size:15px;margin:0}
+.bandeau{background:var(--surface);border-bottom:1px dashed var(--bord);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--doux)}
+.bandeau b{color:var(--texte)}
+.onglet{font:inherit;border:1px solid var(--bord);background:transparent;color:var(--texte);border-radius:8px;padding:5px 9px;cursor:pointer}
+.onglet[aria-pressed="true"]{border-color:var(--prim);color:var(--prim);font-weight:700}
+header{background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px}
+.entete{max-width:1080px;margin:0 auto;height:60px;display:flex;align-items:center}
+.logo{font-weight:700;font-size:24px;color:var(--prim)} .logo span{color:var(--accent)}
+main{padding-inline:16px;padding-block:28px 60px}
+.contenu{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:28px;margin:0;letter-spacing:-.3px} h2{font-size:20px;margin:0} h3{margin:0;font-size:17px}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.tete{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid transparent;min-height:42px;padding:9px 16px;cursor:pointer}
+.petit{min-height:36px;padding:6px 12px;font-size:14px}
+.prim{background:var(--prim);color:var(--prim-t);border-color:var(--prim)} .sec{background:var(--surface);color:var(--prim);border-color:var(--prim)} .dan{background:var(--surface);color:var(--err);border-color:var(--err)}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap} .b-neu{background:var(--neu-doux);color:var(--neu)} .b-att{background:var(--att-doux);color:var(--att)}
+.note{font-size:13.5px;color:var(--doux);margin:0}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.alerte{border-radius:8px;padding:10px 12px;font-weight:500;font-size:14px} .a-att{background:var(--att-doux);color:var(--att)} .a-err{background:var(--err-doux);color:var(--err)}
+.etoiles{color:var(--accent);font-size:18px;letter-spacing:1px}
+.choix-etoiles{display:flex;gap:4px} .choix-etoiles button{font-size:30px;border:0;background:none;cursor:pointer;color:var(--bord);padding:0 2px;min-height:42px} .choix-etoiles button.on{color:var(--accent)}
+.avis{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--bord);padding-top:12px}
+.avis:first-of-type{border-top:0;padding-top:0}
+.reponse{margin-left:18px;border-left:3px solid var(--prim-doux);padding:4px 10px;font-size:14px}
+.rdv{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--bord);padding-top:14px}
+.rdv:first-of-type{border-top:0;padding-top:0}
+.monavis{background:var(--fond);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.resume{display:flex;align-items:center;gap:14px;flex-wrap:wrap} .grosse{font-size:34px;font-weight:700}
+.sous-onglets{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--bord)}
+.sous-onglets button{font:inherit;border:0;background:transparent;color:var(--doux);padding:10px 12px;border-bottom:3px solid transparent;font-weight:600;min-height:42px}
+.sous-onglets button[aria-pressed="true"]{color:var(--prim);border-bottom-color:var(--prim)}
+.compteur{margin-left:4px;background:var(--accent);color:var(--sur);border-radius:999px;padding:1px 7px;font-size:12px}
+.mots{display:flex;flex-wrap:wrap;gap:6px} .mot{display:inline-flex;align-items:center;gap:6px;background:var(--neu-doux);border-radius:999px;padding:3px 4px 3px 10px;font-size:14px} .mot button{border:0;background:var(--surface);color:var(--err);border-radius:999px;width:24px;height:24px;cursor:pointer;font-weight:700}
+input,textarea{min-height:42px;border:1px solid var(--bord);border-radius:10px;background:var(--fond);color:var(--texte);font:inherit;padding:10px 12px;width:100%}
+textarea{min-height:100px}
+.voile{position:fixed;inset:0;background:var(--voile);display:grid;place-items:center;padding:16px}
+.fenetre{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:22px;width:min(480px,100%);display:flex;flex-direction:column;gap:12px}
+.fenetre h3{font-size:20px} .pied{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--ok);color:var(--sur);padding:12px 18px;border-radius:10px;font-weight:600}
+.b-ok{background:var(--ok-doux);color:var(--ok)} .b-err{background:var(--err-doux);color:var(--err)}
+.a-ok{background:var(--ok-doux);color:var(--ok)} .a-neu{background:var(--neu-doux);color:var(--neu)}
+.ver{background:var(--neu-doux);color:var(--neu);border-color:var(--neu-doux)}
+.lignes{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px} .lignes span:nth-child(odd){color:var(--doux)}
+.choix{display:grid;grid-template-columns:1fr 1fr;gap:8px} .choix button{font:inherit;border:1px solid var(--bord);background:var(--surface);color:var(--texte);border-radius:10px;min-height:52px;padding:8px;cursor:pointer;text-align:left}
+.choix button[aria-pressed="true"]{border-color:var(--prim);background:var(--prim-doux);font-weight:600}
+.case{display:flex;gap:10px;align-items:flex-start;font-size:14px} .case input{width:20px;min-height:20px;height:20px;margin-top:2px}
+.etats{display:flex;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--doux);align-items:center}
+.tableau{overflow-x:auto} table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px} th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bord)} th{color:var(--doux);font-weight:600;font-size:13px} th.n,td.n{text-align:right;font-variant-numeric:tabular-nums}
+.chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px} .chiffre{background:var(--fond);border-radius:10px;padding:10px 12px} .chiffre b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.etq{font-weight:600;font-size:13px}
+.ligne-form{display:grid;grid-template-columns:1fr 70px 100px auto;gap:6px;align-items:center}
+.ligne-form .court{text-align:right}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:10px} .deux label{display:flex;flex-direction:column;gap:4px}
+.choix.trois{grid-template-columns:1fr 1fr 1fr}
+.photos{display:flex;gap:6px} .photos span{background:var(--neu-doux);border-radius:8px;padding:14px 18px}
+.fenetre{width:min(560px,100%);max-height:90vh;overflow-y:auto}
+@media (max-width:480px){.ligne-form{grid-template-columns:1fr 60px 80px auto}.deux{grid-template-columns:1fr}}
+</style>
+<div class="bandeau"><b>Maquette lot 5.6</b> · écrans :
+  <button class="onglet" data-e="client" aria-pressed="true">1. Mes factures (client)</button>
+  <button class="onglet" data-e="presta">2. Mes factures (prestataire)</button>
+  <button class="onglet" data-e="rdv">3. Mon agenda › Rendez-vous : [Payé]</button>
+  <button class="onglet" data-e="pdf">4. Le PDF</button>
+</div>
+<header><div class="entete"><span class="logo">rafals<span>.</span></span><span class="note" style="margin-left:auto">menu : … · Mes rendez-vous · Mes devis · <b>Mes factures</b> · Mon compte</span></div></header>
+<main><div class="contenu" id="ecran"></div></main>
+<div id="couche"></div><div class="toast" id="toast" hidden></div>
+
+<script>
+const E = {};
+const ligne = (num, sorte, date, objet, qui, total) => '<tr><td><b>' + num + '</b>' + (sorte ? '<br>' + sorte : '') + '</td><td>' + date + '</td><td>' + objet + '<br><span class="note">' + qui + '</span></td><td class="n"><b>' + total + '</b></td><td><button class="btn sec petit" data-e="pdf">PDF</button></td></tr>';
+const tete = '<div class="tableau"><table><thead><tr><th>Numéro</th><th>Date</th><th>Objet</th><th class="n">Total</th><th></th></tr></thead><tbody>';
+E.client = () => '<h1>Mes factures</h1><div class="carte">' + tete +
+  ligne('F-2026-0006', '', '21/10/2026', 'Solde du devis D-2026-0002 — Muret de jardin', 'Paul Petit · carte', '833,00 €') +
+  ligne('F-2026-0005', '', '03/10/2026', 'Arrhes sur le devis D-2026-0002 — Muret de jardin', 'Paul Petit · carte', '357,00 €') +
+  ligne('F-2026-0002', '<span class="badge b-att">avoir</span>', '05/10/2026', 'Avoir sur la facture F-2026-0001', 'Karim Benali · carte', '−120,00 €') +
+  ligne('F-2026-0001', '', '01/10/2026', 'Dépannage fuite, jeudi 15/10/2026 à 9 h 00', 'Karim Benali · carte', '120,00 €') +
+  ligne('F-2026-0014', '', '13/10/2026', 'Coupe femme, mardi 13/10/2026 à 10 h 00', 'Léa Martin · espèces', '50,00 €') +
+  '</tbody></table></div><p class="note">Les numéros sont ceux de chaque prestataire. Un avoir est une facture « en moins », après un remboursement. Vide : « Aucune facture pour l\'instant. »</p></div>' +
+  '<p class="note">Dans « Mon compte », la carte « Mes paiements par carte » renvoie ici : « Vos factures : Mes factures ».</p>';
+E.presta = () => '<h1>Mes factures</h1><div class="sous-onglets"><button>Reçues</button><button aria-pressed="true">Émises</button><button>Commission de rafals</button></div>' +
+  '<p class="note">Pour un prestataire : « Reçues » (ce qu\'il a payé comme client), « Émises » (faites par rafals à son nom), « Commission de rafals ».</p>' +
+  '<div class="carte">' + tete +
+  ligne('F-2026-0003', '', '13/10/2026', 'Coupe femme, mardi 13/10/2026 à 10 h 00', 'Marie Dupont · espèces', '50,00 €') +
+  ligne('F-2026-0002', '<span class="badge b-att">avoir</span>', '06/10/2026', 'Avoir sur la facture F-2026-0001', 'Paul Petit · carte', '−49,00 €') +
+  ligne('F-2026-0001', '', '02/10/2026', 'Coupe femme, mardi 13/10/2026 à 14 h 00', 'Paul Petit · carte', '50,00 €') +
+  '</tbody></table></div><p class="note">rafals fait ces factures à votre place (mandat de facturation accepté le 02/10/2026). Vide : « Aucune facture pour l\'instant : elles se créent toutes seules à chaque paiement. »</p></div>' +
+  '<div class="carte"><h3>Onglet « Commission de rafals »</h3>' + tete +
+  ligne('R-2026-0001', '', '01/11/2026', 'Commissions d\'octobre 2026', 'rafals · déjà prélevée', '30,00 €') +
+  '</tbody></table></div><p class="note">Vide : « Pas encore de facture de commission : rafals vous en envoie une le 1er de chaque mois si vous avez été payé par carte. »</p></div>';
+E.rdv = () => '<h1>Mon agenda</h1><div class="sous-onglets"><button>Calendrier</button><button aria-pressed="true">Rendez-vous</button><button>Paiements</button></div>' +
+  '<details class="carte" open><summary style="font-weight:700;cursor:pointer">Passés et annulés (2)</summary>' +
+  '<div class="rdv"><div class="tete"><h3>Coupe femme</h3><span class="badge b-neu">passé</span></div><p style="margin:0;font-weight:600">Mardi 13/10/2026, 10 h 00 – 10 h 45</p><div class="lignes"><span>Client</span><span>Marie Dupont · 06 98 76 54 32</span><span>Prix</span><span>50 € · espèces</span></div><div class="actions"><button class="btn prim petit" data-fen="paye">Payé…</button><button class="btn dan petit">Client absent</button></div></div>' +
+  '<div class="rdv"><div class="tete"><h3>Coupe + brushing</h3><span class="badge b-neu">passé</span></div><p style="margin:0;font-weight:600">Lundi 05/10/2026, 9 h 00 – 10 h 00</p><div class="lignes"><span>Client</span><span>Paul Petit</span><span>Prix</span><span>60 € · <b>payé en espèces le 05/10/2026</b> · facture F-2026-0002</span></div><div class="actions"><button class="btn sec petit" data-e="pdf">Facture (PDF)</button></div></div>' +
+  '</details><p class="note">[Payé…] : seulement avec un SIRET vérifié, pour un rendez-vous en espèces, à partir de son heure. Sans SIRET : pas de bouton (pas de facture).</p>';
+E.pdf = () => '<div class="carte" style="font-family:Georgia,serif;background:#fff;color:#111"><h2 style="font-family:inherit">FACTURE F-2026-0001</h2><p style="margin:0">Date : 02/10/2026</p>' +
+  '<p style="margin:0"><b>Vendeur</b><br>Léa Martin<br>3 rue du Moulin, 33700 Mérignac<br>SIRET : 443 061 841 00047</p><p style="margin:0"><b>Client</b><br>Paul Petit<br>8 allée des Pins, 33400 Talence</p>' +
+  '<p style="margin:0"><b>Objet : Coupe femme, mardi 13/10/2026 à 14 h 00</b></p>' +
+  '<div class="tableau"><table style="color:#111"><thead><tr><th>Désignation</th><th class="n">Quantité</th><th class="n">Prix unitaire</th><th class="n">Montant</th></tr></thead><tbody><tr><td>Coupe femme</td><td class="n">1</td><td class="n">50,00 €</td><td class="n">50,00 €</td></tr><tr><td colspan="3" style="text-align:right"><b>Total</b></td><td class="n"><b>50,00 €</b></td></tr></tbody></table></div>' +
+  '<p style="margin:0">TVA non applicable, art. 293 B du CGI<br>Payé par carte le 02/10/2026.</p><p style="margin:0;font-size:12px">Facture établie par rafals au nom et pour le compte de Léa Martin (mandat de facturation).</p></div>' +
+  '<p class="note">Le bouton [PDF] ouvre ce document dans un nouvel onglet du navigateur (on peut l\'enregistrer ou l\'imprimer). Déjà fabriqué par le serveur au lot 5.5 ; ceci montre son contenu.</p>';
+const F = {
+  paye: '<h3>Payé en direct ?</h3><p class="note">Marie Dupont vous a payé 50,00 € hors de rafals. rafals crée la facture à votre nom.</p><span style="font-weight:600;font-size:13px">Comment ? *</span><div class="choix trois"><button aria-pressed="true">Espèces</button><button>Chèque</button><button>Virement</button></div><div class="pied"><button class="btn prim" data-close data-toast="Paiement noté : la facture F-2026-0003 est créée.">Confirmer</button><button class="btn sec" data-close>Annuler</button></div>',
+};
+let etat = 'client', m;
+function rendre() { document.getElementById('ecran').innerHTML = E[etat](); document.querySelectorAll('.bandeau .onglet').forEach(b => b.setAttribute('aria-pressed', b.dataset.e === etat)); }
+function toast(t) { const x = document.getElementById('toast'); x.textContent = t; x.hidden = false; clearTimeout(m); m = setTimeout(() => x.hidden = true, 3000); }
+document.addEventListener('click', ev => {
+  const c = ev.target.closest('.choix button'); if (c) { c.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === c)); return; }
+  const el = ev.target.closest('[data-e],[data-fen],[data-close],[data-toast]'); if (!el) return;
+  if (el.dataset.fen) { document.getElementById('couche').innerHTML = '<div class="voile"><div class="fenetre">' + F[el.dataset.fen] + '</div></div>'; return; }
+  if (el.hasAttribute('data-close')) document.getElementById('couche').innerHTML = '';
+  if (el.dataset.e) { etat = el.dataset.e; rendre(); }
+  if (el.dataset.toast) toast(el.dataset.toast);
+});
+rendre();
+</script>

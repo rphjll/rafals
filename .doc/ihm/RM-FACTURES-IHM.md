@@ -1,0 +1,15 @@
+# Factures — Interface
+
+> Fichiers : `frontend/src/pages/FacturesPage.vue` (« Mes factures »), `frontend/src/components/factures/TableauFactures.vue`, `frontend/src/components/FenetrePayeDirect.vue` (commune aux rendez-vous et aux devis), `frontend/src/outils/factures.ts`. Construit au lot 5.6 (03/10/2026). Règles : `RM-FACTURES.md`. Maquette : `maquette-lot-5.6-factures.html`.
+
+## Page « Mes factures » (`/factures`, menu « Mes factures »)
+Pas connecté : carte « Connectez-vous pour voir vos factures. » + [Se connecter]. Titre « Mes factures ». Contenu centré, 760 px au plus.
+- **Client** : un tableau, la plus récente d'abord — Numéro (« F-2026-0001 », badge orange « avoir » dessous pour un avoir) · Date (« 02/10/2026 ») · Objet (« Coupe femme, mardi 13/10/2026 à 14 h 00 », dessous « Léa Martin · carte ») · Total (« 50,00 € », « −49,00 € » pour un avoir) · [PDF]. « Les numéros sont ceux de chaque prestataire. Un avoir est une facture « en moins », après un remboursement. » Vide : « Aucune facture pour l'instant. »
+- **Prestataire** : 3 onglets — « Reçues » (comme un client) ; « Émises » (`?onglet=emises` : ses ventes et avoirs, dessous « Paul Petit · carte » ; « rafals fait ces factures à votre place, à votre nom (mandat de facturation)… » ; vide : « Aucune facture pour l'instant : elles se créent toutes seules à chaque paiement. ») ; « Commission de rafals » (`?onglet=commission` : « R-2026-0001 », « Commissions d'octobre 2026 », dessous « rafals · déjà prélevée » ; vide : « Pas encore de facture de commission : rafals vous en envoie une le 1er de chaque mois si vous avez été payé par carte. »).
+- **[PDF]** : ouvre la facture dans un nouvel onglet du navigateur (à enregistrer ou imprimer). Le tableau défile sur le côté sur téléphone.
+
+## Le PDF (fabriqué par le serveur)
+Une page A4 : « FACTURE F-2026-0001 » (ou « AVOIR ») ; Date ; Vendeur (nom, adresse, SIRET « 443 061 841 00047 ») ; Client (nom, adresse) ; « Objet : … » ; tableau Désignation · Quantité · Prix unitaire · Montant (avec TVA : HT et une colonne TVA) ; Total (ou Total HT, TVA, Total TTC) ; « TVA non applicable, art. 293 B du CGI » ; « Payé par carte le 02/10/2026. » (avoir : « Remboursé par… ») ; « Facture établie par rafals au nom et pour le compte de Léa Martin (mandat de facturation). » Commission : vendeur rafals, « Commission déjà prélevée sur les paiements par carte : rien à régler. »
+
+## [Payé…] sur un rendez-vous payé en espèces (prestataire, « Mon agenda › Rendez-vous › Passés et annulés »)
+Seulement avec un SIRET vérifié, pour un rendez-vous confirmé en espèces, à partir de son heure, sans absence ; le bloc « Passés et annulés » s'ouvre tout seul s'il y en a un. Fenêtre « Payé en direct ? » : « Marie Dupont vous a payé 50,00 € hors de rafals. rafals crée la facture à votre nom. » ; « Comment ? * » [Espèces | Chèque | Virement] ; [Confirmer] → « Paiement noté : la facture F-2026-0003 est créée. » ; [Annuler]. Ensuite, la ligne « Prix » devient « 50 € · payé en espèces le 13/10/2026 · facture F-2026-0003 » (client et prestataire) et le bouton [Facture (PDF)] apparaît chez le prestataire.

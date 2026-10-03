@@ -2,12 +2,15 @@
 // Mon compte › Mes paiements par carte (.doc/ihm/RM-COMPTE-IHM.md ; RM-PAIEMENTS.md, lot 5.2) : ce que le client a payé
 // par carte, et ses remboursements. Sans paiement par carte : la carte ne s'affiche pas.
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { appelerServeur } from '../../api'
 import { aParis, jourCourt } from '../../outils/agenda'
 import { type PaiementVisible, montant } from '../../outils/paiements'
 import AppBadge from '../ui/AppBadge.vue'
+import AppBouton from '../ui/AppBouton.vue'
 import AppSection from '../ui/AppSection.vue'
 
+const routeur = useRouter()
 const paiements = ref<PaiementVisible[]>([])
 onMounted(async () => {
   // Une page de paiement fermée sans payer n'a rien coûté : elle n'est pas listée
@@ -44,6 +47,6 @@ const date = (iso: string) => jourCourt(aParis(iso).jour)
         </tbody>
       </table>
     </div>
-    <p class="text-[13.5px] text-texte-doux">Les factures arriveront bientôt.</p>
+    <div><AppBouton variante="secondaire" @click="routeur.push('/factures')">Voir mes factures</AppBouton></div>
   </AppSection>
 </template>

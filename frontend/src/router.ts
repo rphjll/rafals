@@ -8,6 +8,7 @@ import ComptePage from './pages/ComptePage.vue'
 import BientotPage from './pages/BientotPage.vue'
 import CataloguePage from './pages/CataloguePage.vue'
 import DevisPage from './pages/DevisPage.vue'
+import FacturesPage from './pages/FacturesPage.vue'
 import ConnexionPage from './pages/ConnexionPage.vue'
 import InscriptionPage from './pages/InscriptionPage.vue'
 import MesAnnoncesPage from './pages/MesAnnoncesPage.vue'
@@ -47,6 +48,7 @@ export const routeur = createRouter({
     { path: '/prestataires/:id(\\d+)', name: 'prestataire', component: PrestatairePage },
     { path: '/rendez-vous', name: 'rendez-vous', component: RendezVousPage },
     { path: '/devis', name: 'devis', component: DevisPage },
+    { path: '/factures', name: 'factures', component: FacturesPage },
     { path: '/compte', name: 'compte', component: ComptePage },
     { path: '/administration', name: 'administration', component: AdministrationPage },
     { path: '/:chemin(.*)*', name: 'introuvable', ...bientot('Page introuvable', '') },
