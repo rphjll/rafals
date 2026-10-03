@@ -1,14 +1,16 @@
 # Règle métier — Agenda et disponibilités (sujet 06)
 
-> Validé et formalisé le 29/09/2026 (lot 3.0).
+> Validé et formalisé le 29/09/2026 (lot 3.0). Modifié le 03/10/2026 (refonte du calendrier : un calendrier par métier, ouvertures exceptionnelles).
 
 ## Objectif
 Quand un prestataire travaille, et donc quels horaires un client peut réserver.
 
 ## Déjà décidé
-- **Un seul agenda par prestataire**, même pour une société (`GLOSSAIRE-METIER.md`).
+- **Un calendrier par métier** (décidé par Raphael le 03/10/2026 ; remplace « un seul agenda par prestataire » du 29/09/2026). Réponse de Raphael, mot pour mot : « y'aura un agenda par metier […] si le prestataire a plusieurs métiers il a le nombre de calendriers correspondant au metiers ». Chaque métier a sa semaine type, ses fermetures, ses ouvertures et sa date d'arrêt ; les réglages (pas, pause, délais, confirmation) restent les mêmes pour tous les métiers.
+  - Exemple 1 : Léa coiffe du mardi au samedi et maquille le samedi après-midi et le dimanche : 2 calendriers.
+  - Exemple 2 : Karim (un seul métier, plombier) a un seul calendrier, sans choix à l'écran.
 - Chaque annonce à prix fixe ou à l'heure a une **durée** qui bloque l'agenda ; « sur devis » n'utilise pas l'agenda (`RM-ANNONCES.md`).
-- **Arrêter un métier** se fait par une date de fin dans le calendrier (`RM-ANNONCES.md`).
+- **Arrêter un métier** se fait par une **date d'arrêt** dans son calendrier (`RM-ANNONCES.md`) : bouton [Date d'arrêt], un seul jour (le dernier jour de travail) ; tous les jours d'après sont fermés dans ce calendrier (décidé le 03/10/2026 ; ce bouton n'est plus dans « Mon activité »).
 
 ## Une semaine type (décidé le 29/09/2026)
 Le prestataire remplit une fois ses horaires pour chaque jour de la semaine, avec plusieurs plages possibles par jour ; ils se répètent chaque semaine.
@@ -24,6 +26,24 @@ Dans son calendrier, le prestataire bloque une période (plusieurs jours, ou que
 - **Rendez-vous déjà pris pendant la période : le prestataire choisit** (décidé le 29/09/2026). rafals affiche d'abord la liste (ex. « 1 rendez-vous pendant cette période : Mme Dupont, 12/08 à 10 h »), puis :
   - [Annuler ces rendez-vous et bloquer] → chaque client est prévenu par mail, et remboursé s'il a payé en ligne ;
   - [Bloquer autour] → les rendez-vous restent, tout le reste de la période est bloqué.
+
+À l'écran, un blocage s'appelle une **fermeture exceptionnelle** (03/10/2026). Elle ne ferme que le calendrier du métier où elle est posée ; seuls les rendez-vous de ce métier sont concernés par le choix « annuler ou garder ».
+
+## Ouverture exceptionnelle (décidé le 03/10/2026)
+Dans le calendrier d'un métier, le prestataire ouvre une période en plus de sa semaine type ; ces heures deviennent réservables.
+- Exemple 1 : Léa, fermée le dimanche, ouvre le dimanche 18/10 de 10 h à 13 h (mariage).
+- Exemple 2 : Karim, fermé le samedi, ouvre le samedi 07/11 de 8 h à 18 h.
+- **Sur plusieurs jours, l'ouverture vaut sans arrêt du début à la fin** (choix B de Raphael, 03/10/2026). Ex. « du 01/11 à 9 h jusqu'au 30/11 à 18 h » : un client peut réserver le 15/11 à 3 h du matin.
+- **Une fermeture passe avant une ouverture, et la coupe** (Raphael : « si une ouverture est sur 1 mois par exemple et que une fermeture est en plein milieux ca doit faire 2 ouvertures différentes »). Ex. ouverture 10 h-13 h, fermeture 11 h-12 h → deux ouvertures, 10 h-11 h et 12 h-13 h. Retirer ensuite la fermeture ne recolle pas les deux. Une ouverture posée par-dessus une fermeture existante est enregistrée coupée ; entièrement couverte par une fermeture, elle est refusée.
+- Retirer une ouverture où des rendez-vous ont été pris : même choix « annuler ou garder » que pour une fermeture.
+- Même forme qu'une fermeture : refusée si déjà passée, motif facultatif de 120 caractères jamais montré aux clients.
+
+## Un rendez-vous dans un métier et les autres calendriers : au choix du prestataire (décidé le 03/10/2026)
+Réponse de Raphael, mot pour mot : « bah le prestataire doit avoir le choix ». Réglage « Un rendez-vous dans un métier bloque mes autres calendriers » : **oui au départ** (jamais deux rendez-vous en même temps) ou non (chaque calendrier est indépendant).
+- Exemple 1 (oui) : Léa a une coupe samedi de 15 h à 16 h → personne ne peut réserver un maquillage samedi à 15 h.
+- Exemple 2 (non) : la même coupe ne retire rien au calendrier Maquilleuse : un maquillage à 15 h reste réservable.
+- Les jours de travaux d'un devis accepté comptent comme un rendez-vous : avec « oui », ils ferment aussi les autres calendriers.
+- La pause après chaque rendez-vous s'applique de la même façon.
 
 ## Heures de début proposées : pas choisi par le prestataire (décidé le 29/09/2026)
 Le prestataire choisit l'écart entre deux heures de début proposées : 15 min, 30 min ou 1 h (15 min au départ, tant qu'il n'a rien choisi). Un horaire n'est proposé que si le service finit avant la fin de la plage.
@@ -59,15 +79,22 @@ Seulement les horaires libres, jamais les autres rendez-vous ni le nom des autre
 - **Pas d'horaire** : prestataire en pause, bloqué ou arrêté ; annonce pas en ligne ; métier arrêté ce jour-là ; annonce « sur devis ».
 - Le choix « annuler ou garder les rendez-vous déjà pris » (blocage, changement d'horaires) sera branché au niveau 4, avec les rendez-vous.
 
+## Précisions prises à la refonte du 03/10/2026 (proposées par Claude, à relire par Raphael)
+- **Sans métier précisé**, une demande au serveur vise le calendrier du métier principal.
+- **Un métier hors du profil** : son calendrier n'existe pas (refus).
+- **Jours de travaux d'un devis accepté** : fermeture posée dans le calendrier du métier de l'annonce du devis.
+- **Semaine type et ouverture collées** (ex. 9 h-12 h puis ouverture 12 h-14 h) : une seule période, un service peut passer de l'une à l'autre.
+- **Date d'arrêt** : les rendez-vous de ce métier pris après la date sont annulés d'office, clients prévenus (règle de `RM-ANNONCES.md`, inchangée : pas de choix « garder »).
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|
-| Remplir sa semaine type, bloquer des dates, régler le pas, la pause et les délais | Le prestataire | Son propre agenda seulement |
+| Remplir la semaine type d'un métier, poser ou retirer une fermeture ou une ouverture exceptionnelle, mettre une date d'arrêt, régler le pas, la pause, les délais et le blocage entre métiers | Le prestataire | Ses propres calendriers seulement |
 | Voir les horaires libres | Tout le monde, même sans compte | Annonce en ligne |
 | Voir les rendez-vous pris (nom du client, adresse) | Le prestataire | Ses rendez-vous seulement (`RM-CLIENTS.md`) |
 
 ## Valeurs par défaut (réglages, modifiables sans toucher au code)
-Pas entre deux heures de début : 15 min · pause entre deux rendez-vous : 0 min · au plus tôt : 2 h avant · au plus tard : 2 mois à l'avance.
+Pas entre deux heures de début : 15 min · pause entre deux rendez-vous : 0 min · au plus tôt : 2 h avant · au plus tard : 2 mois à l'avance · un rendez-vous dans un métier bloque les autres calendriers : oui.
 
 ## Questions ouvertes
 - (aucune)

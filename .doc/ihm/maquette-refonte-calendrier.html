@@ -25,6 +25,10 @@ h1{font-size:28px;margin:0} h2{font-size:20px;margin:0} h3{margin:0;font-size:17
 .mode{background:var(--surface);color:var(--texte);border-color:var(--bord)}
 .mode.f[aria-pressed="true"]{background:var(--att);color:var(--sur);border-color:var(--att)}
 .mode.o[aria-pressed="true"]{background:var(--ok);color:var(--sur);border-color:var(--ok)}
+.mode.a[aria-pressed="true"]{background:var(--err);color:var(--sur);border-color:var(--err)}
+.case.sel-a{outline:3px solid var(--err);outline-offset:-1px}
+.a-err{background:var(--err-doux);color:var(--err)}
+.case.ouvert .t-err{background:var(--surface);border-radius:4px;padding:0 4px;align-self:flex-start;max-width:100%}
 .badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
 .b-ok{background:var(--ok-doux);color:var(--ok)} .b-att{background:var(--att-doux);color:var(--att)} .b-neu{background:var(--neu-doux);color:var(--neu)}
 .note{font-size:13.5px;color:var(--doux);margin:0}
@@ -38,7 +42,17 @@ h1{font-size:28px;margin:0} h2{font-size:20px;margin:0} h3{margin:0;font-size:17
 .panneau > *{flex-shrink:0}
 @media (max-width:900px){.disposition{grid-template-columns:1fr}.panneau{height:auto;min-height:0;max-height:70vh}}
 .grille{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;user-select:none}
-.grille.glisser{touch-action:none;cursor:crosshair}
+.zone-mois{display:grid;grid-template-columns:1fr;gap:18px;align-items:start}
+.zone-mois.deux{grid-template-columns:1fr 1fr}
+.zone-mois.glisser{touch-action:none;cursor:crosshair}
+.unmois{display:flex;flex-direction:column;gap:6px;min-width:0}
+/* 2 mois côte à côte : cases plus petites, textes courts */
+.zone-mois.deux .long{display:none} .zone-mois.deux .court{display:inline} .zone-mois.deux .cache-tel{display:none}
+.zone-mois.deux .case{min-height:58px;font-size:11px;padding:3px}
+@media (max-width:700px){.zone-mois.deux{grid-template-columns:1fr}}
+.segment{display:inline-flex;border:1px solid var(--prim);border-radius:10px;overflow:hidden}
+.segment button{font:inherit;font-weight:600;border:0;background:var(--surface);color:var(--prim);min-height:42px;padding:9px 14px;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--prim);color:var(--prim-t)}
 .nomjour{text-align:center;font-size:12px;font-weight:600;color:var(--doux);padding-bottom:2px}
 .case{position:relative;font:inherit;color:inherit;text-align:left;min-height:74px;border:1px solid var(--bord);border-radius:8px;padding:4px 5px;display:flex;flex-direction:column;gap:1px;font-size:12px;overflow:hidden;cursor:pointer;background:var(--neu-doux)}
 .case.ouvert{background:var(--vif);color:var(--vif-t);border-color:var(--vif)}
@@ -87,6 +101,10 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
     <li>Le détail du jour est <b>à droite</b> du calendrier sur ordinateur (on clique un jour, on lit à côté sans descendre) ; sur téléphone il passe dessous, faute de place.</li>
     <li><b>3 onglets au lieu de 6</b> : « Semaine type » et « Réglages » deviennent des boutons du calendrier ; « Horaires libres » devient « Ce que voit un client » dans le détail du jour.</li>
     <li>Sans activer de bouton, glissez à la souris du 6 au 9 : le détail de chaque jour s'affiche à droite.</li>
+    <li>Une fermeture au milieu d'une ouverture la coupe en deux : fermez le dimanche 18 de 11 h à 12 h, l'ouverture 10 h – 13 h devient « 10 h – 11 h » et « 12 h – 13 h » dans la liste de gauche.</li>
+    <li>En haut à gauche, « 1 mois | 2 mois » : 1 mois au départ ; avec 2 mois, octobre et novembre sont côte à côte et on peut glisser de l'un à l'autre.</li>
+    <li><b>Un calendrier par métier</b> : Léa a 2 métiers, donc 2 calendriers (choix tout en haut). Chacun a sa semaine type, ses fermetures, ses ouvertures et sa date d'arrêt.</li>
+    <li><b>Date d'arrêt</b> : activez le bouton rouge puis cliquez un seul jour (ex. le 27) : tous les jours d'après se ferment dans ce calendrier. Ce bouton remplace celui de « Mon activité ».</li>
     <li>Essayez : cliquez <b>Fermeture exceptionnelle</b>, puis appuyez sur le 13 et glissez jusqu'au 16. Le vendredi 9 est fermé de 16 h à 20 h : seule cette partie est hachurée, la journée se lit de gauche (7 h) à droite (21 h).</li>
   </ul>
 </div>
@@ -111,7 +129,12 @@ const rdv = [
   {jour:'2026-10-06',h:'14 h 30 – 15 h 15',titre:'Coupe femme',client:'Nadia Benali',attente:true},
   {jour:'2026-10-07',h:'9 h 00 – 10 h 30',titre:'Couleur',client:'Paul Petit'},
 ];
-let mois = '2026-10', choisi = AUJ, choisiFin = AUJ, glisse = false, mode = null, selection = null, onglet = 'calendrier', annonce = 45;
+// Métiers de Léa ; fin = dernier jour de travail (date d'arrêt), ou null
+// Un calendrier par métier : chacun a sa semaine type, ses fermetures, ses ouvertures et sa date d'arrêt
+let metiers = [{nom:'Coiffeuse',fin:null},{nom:'Maquilleuse',fin:null,semaine:{1:[],2:[],3:[],4:[],5:[],6:[['14:00','19:00']],7:[['10:00','18:00']]},periodes:[]}];
+let actif = 0, rdvBloque = true;
+function changerMetier(i){metiers[actif].semaine=semaine;metiers[actif].periodes=periodes;actif=i;semaine=metiers[i].semaine;periodes=metiers[i].periodes;choisiFin=choisi;mode=null}
+let mois = '2026-10', choisi = AUJ, choisiFin = AUJ, glisse = false, nbMois = 1, mode = null, selection = null, onglet = 'calendrier', annonce = 45;
 
 const $ = (s) => document.querySelector(s);
 const pad = (n) => String(n).padStart(2,'0');
@@ -141,7 +164,11 @@ function decrire(j){
   const ferm=periodes.filter(p=>p.type==='f').map(p=>({p,m:morceau(p,j)})).filter(x=>x.m);
   const ouv=periodes.filter(p=>p.type==='o').map(p=>({p,m:morceau(p,j)})).filter(x=>x.m);
   const entier=ferm.find(x=>x.m[0]===0&&x.m[1]===1440);
-  return {j,plages,ferm,ouv,entier,rdv:rdv.filter(r=>r.jour===j)};
+  const fin=metiers[actif].fin;
+  const fins=fin===j?[metiers[actif].nom]:[];
+  // Après la date d'arrêt de ce métier : tous les jours sont fermés
+  if(fin&&j>fin)return {j,plages:[],ferm:[],ouv:[],entier:undefined,fins,arrete:true,rdv:rdv.filter(r=>r.jour===j)};
+  return {j,plages,ferm,ouv,entier,fins,rdv:rdv.filter(r=>r.jour===j)};
 }
 // Plages réellement ouvertes ce jour : semaine type + ouvertures, moins les fermetures
 function ouvertes(d){
@@ -163,14 +190,18 @@ function rendre(){
 
 function calendrier(){
   const [a,m]=mois.split('-').map(Number);
-  const prem=`${mois}-01`;const cases=[];for(let j=prem;j.startsWith(mois);j=ajouter(j,1))cases.push(decrire(j));
+  const suivant=new Date(Date.UTC(a,m,1)).toISOString().slice(0,7);
   const nomM=(e)=>MOIS[((m-1+e)%12+12)%12];
   const d=decrire(choisi);
   const ouv=ouvertes(d);
   const sel=selection?[selection.a,selection.b].sort():null;
   return `
+  ${metiers.length>1?`<div class="tete" style="justify-content:flex-start"><b>Calendrier du métier :</b><div class="segment" role="group" aria-label="Métier">${metiers.map((x,i)=>`<button data-metier-cal="${i}" aria-pressed="${i===actif}">${x.nom}</button>`).join('')}</div></div>`:''}
   <div class="carte" style="padding:14px 20px">
-    <div class="tete" style="justify-content:flex-end">
+    <div class="tete">
+      <div class="segment" role="group" aria-label="Nombre de mois affichés">
+        <button data-mois="1" aria-pressed="${nbMois===1}">1 mois</button><button data-mois="2" aria-pressed="${nbMois===2}">2 mois</button>
+      </div>
       <div class="actions">
         <button class="btn sec" id="b-semaine">Semaine type</button>
         <button class="btn sec" id="b-reglages">Réglages</button>
@@ -181,25 +212,25 @@ function calendrier(){
     <div class="carte">
       <div class="tete">
         <button class="btn sec petit" id="prec">‹ ${nomM(-1)}</button>
-        <h2 style="text-transform:capitalize">${MOIS[m-1]} ${a}</h2>
+        <h2 style="text-transform:capitalize">${nbMois===2?`${MOIS[m-1]}${suivant.startsWith(String(a))?'':` ${a}`} – ${MOIS[Number(suivant.slice(5))-1]} ${suivant.slice(0,4)}`:`${MOIS[m-1]} ${a}`}</h2>
         <button class="btn sec petit" id="suiv">${nomM(1)} ›</button>
       </div>
-      <div class="grille ${mode?'glisser':''}" id="grille">
-        ${JOURS.map(n=>`<div class="nomjour">${n.slice(0,3)}</div>`).join('')}
-        ${'<div></div>'.repeat(js(prem)-1)}
-        ${cases.map(c=>caseJour(c,sel)).join('')}
+      <div class="zone-mois ${mode?'glisser':''} ${nbMois===2?'deux':''}" id="grille">
+        ${grilleMois(mois,sel)}${nbMois===2?grilleMois(suivant,sel):''}
       </div>
       <div class="actions">
         <button class="btn mode f" id="m-f" aria-pressed="${mode==='f'}">Fermeture exceptionnelle</button>
         <button class="btn mode o" id="m-o" aria-pressed="${mode==='o'}">Ouverture exceptionnelle</button>
+        <button class="btn mode a" id="m-a" aria-pressed="${mode==='a'}">Date d'arrêt</button>
       </div>
-      ${mode?`<div class="alerte ${mode==='f'?'a-att':'a-ok'}"><span>${mode==='f'?'Fermeture':'Ouverture'} exceptionnelle : appuyez sur le premier jour et glissez jusqu'au dernier (ou cliquez un seul jour). Vous réglerez les heures ensuite.</span><button class="btn petit sec" id="m-fin">Terminer</button></div>`:''}
+      ${mode?`<div class="alerte ${mode==='f'?'a-att':mode==='a'?'a-err':'a-ok'}"><span>${mode==='a'?`Date d'arrêt de ${metiers[actif].nom} : cliquez sur votre dernier jour de travail (un seul jour). Tous les jours d'après seront fermés.`:`${mode==='f'?'Fermeture':'Ouverture'} exceptionnelle : appuyez sur le premier jour et glissez jusqu'au dernier (ou cliquez un seul jour). Vous réglerez les heures ensuite.`}</span><button class="btn petit sec" id="m-fin">Terminer</button></div>`:''}
       <div class="legende">
         <span><i style="background:var(--vif)"></i>ouvert</span>
         <span><i style="background:var(--neu-doux)"></i>fermé</span>
         <span><i style="background:repeating-linear-gradient(135deg,var(--att-doux) 0 3px,var(--surface) 3px 6px);border:1px solid var(--att)"></i>fermeture (hachurée sur les heures concernées)</span>
         <span><i style="background:var(--vif);border:2px dashed var(--vif-t)"></i>ouverture exceptionnelle</span>
         <span><b class="t-prim">2 rdv</b>&nbsp;rendez-vous</span>
+        <span><b class="t-err">fin …</b>&nbsp;dernier jour avant l'arrêt</span>
       </div>
     </div>
     <div class="carte panneau">
@@ -207,7 +238,8 @@ function calendrier(){
     </div>
   </div>
   <div class="deux-listes">${liste('o')}${liste('f')}</div>
-  <p class="note">Le motif n'est jamais montré aux clients : ils voient seulement plus ou moins d'horaires.</p>`;
+  ${metiers[actif].fin?`<div class="carte"><div class="tete"><h2>Date d'arrêt</h2><button class="btn dan petit" id="reprendre">Retirer la date d'arrêt</button></div>
+    <p style="margin:0"><b>${metiers[actif].nom}</b> : dernier jour le ${court(metiers[actif].fin)}, fermé à partir du ${court(ajouter(metiers[actif].fin,1))}.</p></div>`:''}`;
 }
 function unJour(d,ouv){
   return `
@@ -245,6 +277,15 @@ function plusieursJours(){
       </div>`:''}
       <button class="btn sec petit" id="un-seul">Revenir à un seul jour</button>`;
 }
+function grilleMois(mm,sel){
+  const prem=`${mm}-01`;const cases=[];for(let j=prem;j.startsWith(mm);j=ajouter(j,1))cases.push(decrire(j));
+  return `<div class="unmois">${nbMois===2?`<h3 style="text-transform:capitalize;text-align:center">${MOIS[Number(mm.slice(5))-1]}</h3>`:''}
+    <div class="grille">
+      ${JOURS.map(n=>`<div class="nomjour">${n.slice(0,3)}</div>`).join('')}
+      ${'<div></div>'.repeat(js(prem)-1)}
+      ${cases.map(c=>caseJour(c,sel)).join('')}
+    </div></div>`;
+}
 function liste(type){
   const f=type==='f';
   const l=periodes.filter(p=>p.type===type).sort((x,y)=>x.debut<y.debut?-1:1);
@@ -262,21 +303,22 @@ function caseJour(c,sel){
   if(c.ouv.length)cl.push('exc');
   if(c.j<AUJ)cl.push('passe');
   if(c.j>=choisi&&c.j<=choisiFin&&!mode)cl.push('choisi');
-  if(sel&&c.j>=sel[0]&&c.j<=sel[1])cl.push(mode==='f'?'sel-f':'sel-o');
+  if(sel&&c.j>=sel[0]&&c.j<=sel[1])cl.push(mode==='f'?'sel-f':mode==='a'?'sel-a':'sel-o');
   // Partie hachurée : fenêtre d'affichage 7 h → 21 h (les heures hors de cette fenêtre sont collées aux bords)
   const hach=c.entier?'':c.ferm.map(({m})=>{const A=7*60,B=21*60;const t=Math.max(0,Math.min(1,(m[0]-A)/(B-A))),f=Math.max(0,Math.min(1,(m[1]-A)/(B-A)));return f>t?`<span class="hachure" style="left:${(t*100).toFixed(1)}%;width:${((f-t)*100).toFixed(1)}%"></span>`:''}).join('');
   let txt;
   if(c.entier)txt=`<span class="t-att">fermé<span class="long"> (exceptionnel)</span></span>`;
   else{
     const pl=c.plages.map(([a,b])=>`${hc(a)}-${hc(b)}`).join(' · ');
-    txt=pl?`<span class="cache-tel">${pl}</span>`:(c.ouv.length?'':'<span class="cache-tel">fermé</span>');
+    txt=pl?`<span class="cache-tel">${pl}</span>`:(c.ouv.length?'':`<span class="cache-tel">${c.arrete?'arrêté':'fermé'}</span>`);
     if(c.ferm.length)txt+=`<span class="t-att"><span class="long">partiellement fermé</span><span class="court">partiel</span></span>`;
     if(c.ouv.length)txt+=`<span class="t-ok"><span class="long">+ ${c.ouv.map(x=>`${hc(enHeure(x.m[0]))}-${hc(enHeure(x.m[1]))}`).join(', ')}</span><span class="court">+ ouvert</span></span>`;
   }
-  return `<button class="${cl.join(' ')}" data-jour="${c.j}" aria-label="${lisible(c.j)}">${hach}<b>${Number(c.j.slice(8))}</b>${txt}${c.rdv.length?`<span class="t-prim">${c.rdv.length} rdv</span>`:''}</button>`;
+  return `<button class="${cl.join(' ')}" data-jour="${c.j}" aria-label="${lisible(c.j)}">${hach}<b>${Number(c.j.slice(8))}</b>${txt}${c.rdv.length?`<span class="t-prim">${c.rdv.length} rdv</span>`:''}${c.fins.map(n=>`<span class="t-err">fin<span class="long"> ${n}</span></span>`).join('')}</button>`;
 }
 
 function badge(d,ouv){
+  if(d.arrete)return '<span class="badge b-neu">arrêté</span>';
   if(d.entier)return '<span class="badge b-att">fermeture</span>';
   if(d.ferm.length)return '<span class="badge b-att">partiellement fermé</span>';
   if(d.ouv.length)return '<span class="badge b-ok">ouverture exceptionnelle</span>';
@@ -284,6 +326,8 @@ function badge(d,ouv){
 }
 function detailJour(d,ouv){
   const l=[];
+  if(d.arrete)return `<p style="margin:0"><b>Fermé</b> : ${metiers[actif].nom} est arrêté depuis le ${court(ajouter(metiers[actif].fin,1))}.</p>`;
+  d.fins.forEach(n=>l.push(`<p style="margin:0" class="t-err">Dernier jour du métier ${n}. Tous les jours d'après sont fermés.</p>`));
   const st=d.plages.map(([a,b])=>`${h(a)} – ${h(b)}`).join(' · ');
   if(d.entier)l.push(`<p style="margin:0"><b>Fermé</b> : ${periodeLisible(d.entier.p)}${d.entier.p.motif?` · ${d.entier.p.motif}`:''}</p>`);
   else{
@@ -306,6 +350,7 @@ function brancher(){
   $('#prec').onclick=()=>{changerMois(-1)};$('#suiv').onclick=()=>{changerMois(1)};
   $('#m-f').onclick=()=>{mode=mode==='f'?null:'f';rendre()};
   $('#m-o').onclick=()=>{mode=mode==='o'?null:'o';rendre()};
+  document.querySelectorAll('[data-mois]').forEach(b=>b.onclick=()=>{nbMois=Number(b.dataset.mois);rendre()});
   if($('#m-fin'))$('#m-fin').onclick=()=>{mode=null;rendre()};
   $('#b-semaine').onclick=fenetreSemaine;$('#b-reglages').onclick=fenetreReglages;
   if($('#annonce'))$('#annonce').onchange=(e)=>{annonce=Number(e.target.value);rendre()};
@@ -319,13 +364,17 @@ function brancher(){
   // Sans bouton activé : souris seulement (au doigt, glisser sert à faire défiler la page), pour lire plusieurs jours.
   const sous=(e)=>document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-jour]')?.dataset.jour;
   const permis=(j)=>j&&(!mode||j>=AUJ);
+  if($('#m-a'))$('#m-a').onclick=()=>{mode=mode==='a'?null:'a';rendre()};
+  if($('#reprendre'))$('#reprendre').onclick=()=>{metiers[actif].fin=null;rendre();toast(`Date d'arrêt retirée : ${metiers[actif].nom} continue.`)};
+  document.querySelectorAll('[data-metier-cal]').forEach(b=>b.onclick=()=>{changerMetier(Number(b.dataset.metierCal));rendre()});
   g.onpointerdown=(e)=>{if(!mode&&e.pointerType!=='mouse')return;const j=sous(e);if(!permis(j))return;e.preventDefault();selection={a:j,b:j};rendreSel()};
-  g.onpointermove=(e)=>{if(!selection)return;const j=sous(e);if(permis(j)&&j!==selection.b){selection.b=j;rendreSel()}};
+  g.onpointermove=(e)=>{if(!selection)return;const j=sous(e);if(permis(j)&&j!==selection.b){if(mode==='a')selection.a=j;selection.b=j;rendreSel()}};
   window.onpointerup=()=>{if(!selection)return;const [a,b]=[selection.a,selection.b].sort();selection=null;
+    if(mode==='a')return fenetreArret(a);
     if(mode)return fenetrePeriode(mode,a,b);
     choisi=a;choisiFin=b;glisse=true;setTimeout(()=>glisse=false,50);rendre()};
 }
-function rendreSel(){const [a,b]=[selection.a,selection.b].sort();document.querySelectorAll('#grille [data-jour]').forEach(c=>{const on=c.dataset.jour>=a&&c.dataset.jour<=b;c.classList.toggle(mode==='f'?'sel-f':mode==='o'?'sel-o':'choisi',on)})}
+function rendreSel(){const [a,b]=[selection.a,selection.b].sort();document.querySelectorAll('#grille [data-jour]').forEach(c=>{const on=c.dataset.jour>=a&&c.dataset.jour<=b;c.classList.toggle(mode==='f'?'sel-f':mode==='o'?'sel-o':mode==='a'?'sel-a':'choisi',on)})}
 function changerMois(e){const [a,m]=mois.split('-').map(Number);mois=new Date(Date.UTC(a,m-1+e,1)).toISOString().slice(0,7);rendre()}
 
 // ---------- Fenêtres ----------
@@ -355,7 +404,30 @@ function fenetrePeriode(type,a,b){
   ['#p-du','#p-au','#p-de','#p-a'].forEach(s=>$(s).onchange=maj);maj();
   $('#p-annuler').onclick=fermer;
   $('#p-ok').onclick=()=>{const p=lire();if(p.fin<=p.debut){$('#p-resume').textContent='La fin doit être après le début.';return}
-    p.id=Date.now();periodes.push(p);mode=null;choisi=choisiFin=p.debut.slice(0,10);fermer();toast(`${f?'Fermeture':'Ouverture'} enregistrée : ${periodeLisible(p).toLowerCase()}.`)};
+    const avant=periodes.filter(x=>x.type==='o').length;enregistrer(p);const coupe=periodes.filter(x=>x.type==='o').length-avant-(f?0:1);mode=null;choisi=choisiFin=p.debut.slice(0,10);fermer();toast(`${f?'Fermeture':'Ouverture'} enregistrée : ${periodeLisible(p).toLowerCase()}.${coupe>0?' Une ouverture a été coupée en deux autour de la fermeture.':''}`)};
+}
+// Une fermeture passe avant une ouverture : l'ouverture est coupée autour de la fermeture (2 ouvertures différentes)
+let numero=100;
+function couper(o,f){
+  if(f.fin<=o.debut||f.debut>=o.fin)return [o];
+  const res=[];
+  if(o.debut<f.debut)res.push({...o,id:++numero,fin:f.debut});
+  if(o.fin>f.fin)res.push({...o,id:++numero,debut:f.fin});
+  return res;
+}
+function enregistrer(p){
+  p.id=++numero;
+  if(p.type==='f'){periodes=periodes.flatMap(x=>x.type==='o'?couper(x,p):[x]);periodes.push(p)}
+  else{let morceaux=[p];for(const f of periodes.filter(x=>x.type==='f'))morceaux=morceaux.flatMap(o=>couper(o,f));periodes.push(...morceaux)}
+}
+function fenetreArret(jour){
+  const nom=metiers[actif].nom;
+  couche(`<h3>Date d'arrêt — ${nom}</h3>
+    <p style="margin:0">Dernier jour de travail : <b>${lisible(jour)}</b>.</p>
+    <p class="note">À partir du ${court(ajouter(jour,1))}, tous les jours du calendrier « ${nom} » sont fermés : ses annonces ne sont plus réservables. Si des rendez-vous tombent après cette date, vous choisirez de les annuler ou de les garder.</p>
+    <div class="pied"><button class="btn dan" id="a-ok">Arrêter ${nom} après le ${court(jour)}</button><button class="btn sec" id="a-annuler">Annuler</button></div>`);
+  $('#a-annuler').onclick=fermer;
+  $('#a-ok').onclick=()=>{metiers[actif].fin=jour;mode=null;choisi=choisiFin=jour;fermer();toast(`${nom} : dernier jour le ${court(jour)}.`)};
 }
 function fenetreSemaine(){
   couche(`<h3>Semaine type</h3><p class="note">Vos horaires de chaque semaine, heure de Paris. Plusieurs plages possibles par jour. Un jour sans plage est fermé.</p>
@@ -372,8 +444,10 @@ function fenetreReglages(){
   <label class="champ">Pause après chaque rendez-vous<select><option>aucune</option></select></label>
   <label class="champ">Réservation au plus tôt<select><option>2 h avant</option></select></label>
   <label class="champ">Réservation au plus tard<select><option>2 mois à l'avance</option></select></label>
+  ${metiers.length>1?`<div class="champ" style="display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13px">Un rendez-vous dans un métier bloque mes autres calendriers<div class="choix" style="grid-template-columns:1fr 1fr" id="r-bloque"><button aria-pressed="${rdvBloque}" data-v="1">Oui — jamais deux rendez-vous en même temps</button><button aria-pressed="${!rdvBloque}" data-v="">Non — chaque calendrier est indépendant</button></div><span class="note" style="font-weight:400">Ex. « Coupe femme » samedi de 15 h à 16 h. Oui : personne ne peut réserver un maquillage à 15 h. Non : un maquillage à 15 h reste réservable.</span></div>`:''}
   <p class="note">(Mêmes réglages que l'ancien onglet, réunis dans une fenêtre.)</p>
   <div class="pied"><button class="btn prim" id="r-ok">Enregistrer les réglages</button><button class="btn sec" id="r-annuler">Annuler</button></div>`);
+  document.querySelectorAll('#r-bloque button').forEach(b=>b.onclick=()=>{rdvBloque=!!b.dataset.v;document.querySelectorAll('#r-bloque button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
   $('#r-ok').onclick=()=>{fermer();toast('Réglages enregistrés.')};$('#r-annuler').onclick=fermer;
 }
 function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(toast.m);toast.m=setTimeout(()=>e.hidden=true,3000)}

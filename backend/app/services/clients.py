@@ -9,7 +9,7 @@ from sqlalchemy import or_, select, update
 from sqlalchemy.orm import Session
 
 from app import reglages
-from app.modeles.agenda import Blocage, PlageHoraire
+from app.modeles.agenda import Blocage, Ouverture, PlageHoraire
 from app.modeles.annonces import Annonce, Local
 from app.modeles.avis import Avis
 from app.modeles.clients import Adresse
@@ -166,16 +166,22 @@ def exporter(db: Session, compte: Compte, maintenant: datetime) -> dict[str, Any
             ],
             "agenda": {
                 "semaine_type": [
-                    {"jour": p.jour_semaine, "debut": p.debut.isoformat(), "fin": p.fin.isoformat()}
+                    {"metier": db.get_one(Metier, p.metier_id).nom, "jour": p.jour_semaine, "debut": p.debut.isoformat(),
+                     "fin": p.fin.isoformat()}
                     for p in db.scalars(select(PlageHoraire).where(PlageHoraire.prestataire_id == prestataire.id))
                 ],
                 "periodes_bloquees": [
-                    {"debut": _date(b.debut), "fin": _date(b.fin), "motif": b.motif}
+                    {"metier": db.get_one(Metier, b.metier_id).nom, "debut": _date(b.debut), "fin": _date(b.fin), "motif": b.motif}
                     for b in db.scalars(select(Blocage).where(Blocage.prestataire_id == prestataire.id))
+                ],
+                "ouvertures_exceptionnelles": [
+                    {"metier": db.get_one(Metier, o.metier_id).nom, "debut": _date(o.debut), "fin": _date(o.fin), "motif": o.motif}
+                    for o in db.scalars(select(Ouverture).where(Ouverture.prestataire_id == prestataire.id))
                 ],
                 "pas_minutes": prestataire.agenda_pas_minutes, "pause_minutes": prestataire.agenda_pause_minutes,
                 "delai_min_minutes": prestataire.reservation_delai_min_minutes,
                 "delai_max_mois": prestataire.reservation_delai_max_mois,
+                "rendez_vous_bloque_autres_metiers": prestataire.rendez_vous_bloque_autres_metiers,
             },
         }
     journal.noter(

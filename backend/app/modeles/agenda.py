@@ -1,4 +1,4 @@
-"""Miroir exact des tables plage_horaire et blocage (db/schema_v8.sql). Aucun calcul ici."""
+"""Miroir exact des tables plage_horaire, blocage (db/schema_v8.sql, v16) et ouverture (v16). Aucun calcul ici."""
 
 from datetime import datetime, time
 
@@ -13,6 +13,7 @@ class PlageHoraire(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
+    metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
     jour_semaine: Mapped[int] = mapped_column(Integer)
     debut: Mapped[time] = mapped_column(Time)
     fin: Mapped[time] = mapped_column(Time)
@@ -23,6 +24,19 @@ class Blocage(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
+    metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
+    debut: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    fin: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    motif: Mapped[str | None] = mapped_column(Text)
+    cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Ouverture(Base):
+    __tablename__ = "ouverture"
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
+    metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
     debut: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     fin: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     motif: Mapped[str | None] = mapped_column(Text)

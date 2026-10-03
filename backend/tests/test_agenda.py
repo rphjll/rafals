@@ -48,7 +48,8 @@ def test_semaine_type_plusieurs_plages_par_jour(lea) -> None:
 
     assert [(p["jour_semaine"], p["debut"], p["fin"]) for p in agenda["plages"]] == [
         (2, "09:00:00", "12:00:00"), (2, "14:00:00", "19:00:00"), (6, "09:00:00", "12:00:00")]
-    assert agenda["reglages"] == {"pas_minutes": 15, "pause_minutes": 0, "delai_min_minutes": 120, "delai_max_mois": 2}
+    assert agenda["reglages"] == {"pas_minutes": 15, "pause_minutes": 0, "delai_min_minutes": 120, "delai_max_mois": 2,
+                                  "rendez_vous_bloque_autres_metiers": True}
 
 
 @pytest.mark.parametrize(("plages", "morceau"), [

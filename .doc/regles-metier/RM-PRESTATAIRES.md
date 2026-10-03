@@ -7,7 +7,7 @@ Ce qu'un prestataire renseigne sur rafals (métiers, zone, SIRET) et quand les c
 
 ## Principes
 - On devient prestataire depuis son compte, par « Proposer mes services » (voir `RM-COMPTES.md`).
-- Un seul agenda par prestataire, même pour une société (voir `GLOSSAIRE-METIER.md`).
+- Un calendrier par métier du prestataire, jamais un par salarié, même pour une société (voir `GLOSSAIRE-METIER.md` ; « un calendrier par métier » décidé le 03/10/2026, `RM-AGENDA.md`).
 - Sans SIRET : annonces payables en espèces seulement ; rafals lui conseille de se déclarer (voir `GLOSSAIRE-METIER.md`, ⚠️ à vérifier juridiquement).
 
 ## Un métier principal et des métiers secondaires (décidé le 27/09/2026)

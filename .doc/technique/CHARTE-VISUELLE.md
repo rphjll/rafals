@@ -32,6 +32,12 @@
 | `sur-etat` | `#FFFFFF` | `#0F1A13` | Texte posé sur une couleur d'état pleine (message court vert ou rouge) |
 | `voile` | noir bleuté à 55 % | idem | Fond assombri derrière une fenêtre |
 
+## Couleur du calendrier (ajoutée le 03/10/2026, demandée par Raphael : « un vert vif »)
+| Nom technique | Mode clair | Mode sombre | Sert à |
+|---|---|---|---|
+| `ouvert` | `#5FD38A` | `#1F8A4A` | Fond d'un jour ouvert dans le calendrier de « Mon agenda » |
+| `ouvert-texte` | `#0F2A1A` | `#F2FFF6` | Texte posé sur ce vert ; bord en pointillés d'une ouverture exceptionnelle |
+
 Toutes les couleurs sont écrites à un seul endroit : `frontend/src/style.css`.
 
 ## Polices (gratuites, installées dans rafals)

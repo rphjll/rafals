@@ -1,4 +1,5 @@
-// Agenda : types et calculs d'affichage (heures, jours, périodes bloquées), à un seul endroit (RM-AGENDA.md).
+// Agenda : types et calculs d'affichage (heures, jours, fermetures et ouvertures), à un seul endroit (RM-AGENDA.md).
+// « Blocage » = « fermeture exceptionnelle » à l'écran ; une ouverture exceptionnelle a la même forme.
 // Toutes les dates sont lues à l'heure de Paris.
 
 export interface Plage {
@@ -19,11 +20,16 @@ export interface ReglagesAgenda {
   pause_minutes: number
   delai_min_minutes: number
   delai_max_mois: number
+  /** Un rendez-vous dans un métier rend la même heure non réservable dans les autres calendriers */
+  rendez_vous_bloque_autres_metiers: boolean
 }
 
+/** Le calendrier d'un métier */
 export interface AgendaVisible {
+  metier_id: number
   plages: Plage[]
   blocages: Blocage[]
+  ouvertures: Blocage[]
   reglages: ReglagesAgenda
 }
 
@@ -89,8 +95,60 @@ export function periodeLisible(blocage: Blocage): string {
     return dernier === d.jour ? `Le ${jourCourt(d.jour)}` : `Du ${jourCourt(d.jour)} au ${jourCourt(dernier)}`
   }
   if (d.jour === f.jour) return `${jourCourt(d.jour)}, de ${heure(d.heure)} à ${heure(f.heure)}`
-  return `Du ${jourCourt(d.jour)} à ${heure(d.heure)} au ${jourCourt(f.jour)} à ${heure(f.heure)}`
+  // Jusqu'à minuit : « 09/10/2026, de 16 h 00 à 24 h 00 »
+  if (f.heure === '00:00' && ajouterJours(d.jour, 1) === f.jour) return `${jourCourt(d.jour)}, de ${heure(d.heure)} à 24 h 00`
+  return `Du ${jourCourt(d.jour)} à ${heure(d.heure)} jusqu'au ${jourCourt(f.jour)} à ${heure(f.heure)}`
 }
+
+// ---------- Calendrier : un jour en minutes (0 = minuit, 1440 = minuit suivant) ----------
+
+export type Minutes = [debut: number, fin: number]
+
+/** « 09:30 » ou « 09:30:00 » → 570 */
+export function enMinutes(texte: string): number {
+  const [h, m] = texte.split(':').map(Number)
+  return (h ?? 0) * 60 + (m ?? 0)
+}
+
+/** 570 → « 9 h 30 » ; 1440 → « 24 h 00 » */
+export function minutesLisibles(minutes: number): string {
+  return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')}`
+}
+
+/** 570 → « 09:30 » (pour l'envoi au serveur ; 1440 ne s'écrit pas ainsi : c'est 00:00 le lendemain) */
+export function minutesEnHeure(minutes: number): string {
+  return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
+}
+
+/** La partie d'une fermeture ou d'une ouverture qui tombe ce jour-là ; rien si elle ne le touche pas.
+ *  Ex. congés du 20 au 24 → [0, 1440] le 22 ; dentiste le 9 de 16 h à 20 h → [960, 1200] le 9. */
+export function morceauDuJour(periode: Blocage, jour: string): Minutes | null {
+  if (!bloqueCeJour(periode, jour)) return null
+  const d = aParis(periode.debut)
+  const f = aParis(periode.fin)
+  return [d.jour < jour ? 0 : enMinutes(d.heure), f.jour > jour ? 1440 : enMinutes(f.heure)]
+}
+
+/** Heures réservables d'un jour : semaine type + ouvertures, moins les fermetures (une fermeture passe avant).
+ *  Ex. 9 h-12 h et 14 h-19 h, fermé de 16 h à 20 h → [[540, 720], [840, 960]]. */
+export function heuresOuvertes(plages: Minutes[], ouvertures: Minutes[], fermetures: Minutes[]): Minutes[] {
+  let ouvertes: Minutes[] = []
+  for (const [debut, fin] of [...plages, ...ouvertures].sort((a, b) => a[0] - b[0])) {
+    const derniere = ouvertes[ouvertes.length - 1]
+    if (derniere && debut <= derniere[1]) derniere[1] = Math.max(derniere[1], fin)
+    else ouvertes.push([debut, fin])
+  }
+  for (const [de, a] of fermetures) {
+    ouvertes = ouvertes.flatMap(([debut, fin]): Minutes[] => {
+      if (a <= debut || de >= fin) return [[debut, fin]]
+      return [...(debut < de ? [[debut, de] as Minutes] : []), ...(fin > a ? [[a, fin] as Minutes] : [])]
+    })
+  }
+  return ouvertes
+}
+
+/** Choix d'heures des fenêtres « Fermeture / Ouverture exceptionnelle » : tous les quarts d'heure, de 0 h 00 à 24 h 00 */
+export const QUARTS_D_HEURE = Array.from({ length: 97 }, (_, n) => n * 15)
 
 /** 90 → « 1 h 30 » ; 0 → « aucune » ; 2880 → « 2 jours » */
 export function dureeLisible(minutes: number): string {

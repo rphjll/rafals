@@ -19,7 +19,7 @@
 | 03 | 2 — Objets communs | Clients et données personnelles | Profil du particulier, ce qu'on garde, effacement (RGPD) | validé et formalisé (28/09/2026) | `regles-metier/RM-CLIENTS.md` |
 | 04 | 2 — Objets communs | Métiers et catégories | La grande liste, les dossiers, la recherche par lettres | validé et formalisé (28/09/2026) | `regles-metier/RM-METIERS.md` |
 | 05 | 3 — Cœur | Annonces | Contenu, prix, ville, modes de paiement (espèces seulement sans SIRET) | validé et formalisé (29/09/2026) | `regles-metier/RM-ANNONCES.md` |
-| 06 | 3 — Cœur | Agenda et disponibilités | Horaires, congés, créneaux libres | validé et formalisé (29/09/2026) | `regles-metier/RM-AGENDA.md` |
+| 06 | 3 — Cœur | Agenda et disponibilités | Horaires, congés, créneaux libres | validé et formalisé (29/09/2026), modifié le 03/10/2026 (un calendrier par métier, ouvertures exceptionnelles) | `regles-metier/RM-AGENDA.md` |
 | 07 | 4 — Action principale | Recherche | Métier + ville, ordre des résultats | validé et formalisé (30/09/2026) | `regles-metier/RM-RECHERCHE.md` |
 | 08 | 4 — Action principale | Rendez-vous | Réservation, confirmation, annulation, absence | validé et formalisé (30/09/2026) | `regles-metier/RM-RENDEZ-VOUS.md` |
 | 09 | 4 — Action principale | Avis | Qui note, quand, modération | validé et formalisé (30/09/2026) | `regles-metier/RM-AVIS.md` |

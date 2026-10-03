@@ -65,7 +65,7 @@ Le prestataire choisit, pour chaque annonce, un métier parmi ceux de son profil
 
 ## Arrêter un métier : une date de fin dans le calendrier, pas un bouton « supprimer » (décidé le 29/09/2026)
 Réponse de Raphael, mot pour mot : « au lieux d'un bouton suprimer ce metier je veux que dans le calendrier il puisse choisir une date de cloturations donc si il dis demain par exemple toute les reservations apres seront annulés et il n'execrcera plus ce metier mais si il veut reprendre faut quand meme faire en sorte qu'il puisse ».
-- Le prestataire choisit dans son calendrier une **date de fin** pour un de ses métiers.
+- Le prestataire choisit dans son calendrier une **date de fin** pour un de ses métiers. (Depuis le 03/10/2026 : bouton [Date d'arrêt] du calendrier de ce métier, un seul jour ; tous les jours d'après y sont fermés. Le bouton de « Mon activité » est retiré. Voir `RM-AGENDA.md`.)
 - Les réservations de ce métier **après** cette date sont annulées ; après cette date, il n'exerce plus ce métier.
 - Il peut **reprendre** ce métier plus tard.
 - Précision de Raphael, mot pour mot : « quans il cloture a partir d'une date apres c bloqué pour tout lesreste de sa vie il peut plus faire d'annonces sur ce metier ou quoi sauf si il re met ce metier dans se compétences » → après la date de fin, le métier sort de son profil ; pour reprendre, il le remet dans ses métiers.

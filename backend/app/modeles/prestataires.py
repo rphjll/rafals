@@ -1,4 +1,4 @@
-"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8, v9, v12, v13). Aucun calcul ici."""
+"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8, v9, v12, v13, v16). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -50,6 +50,7 @@ class Prestataire(Base):
     stripe_pret: Mapped[bool] = mapped_column(Boolean, server_default="false")
     mandat_facturation_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     facture_tva: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    rendez_vous_bloque_autres_metiers: Mapped[bool] = mapped_column(Boolean, server_default="true")
 
 
 class MetierSecondaire(Base):

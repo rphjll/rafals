@@ -398,7 +398,8 @@ def _accepte(db: Session, devis: Devis, mode_paiement: str, maintenant: datetime
     """Accepté : les jours des travaux sont bloqués dans l'agenda du prestataire (« Travaux D-2026-0002 »)."""
     demande = demande_de(db, devis)
     de, a = _limites(devis.travaux_debut, devis.travaux_fin)
-    blocage = Blocage(prestataire_id=demande.prestataire_id, debut=de, fin=a, motif=f"Travaux {numero(devis)}", cree_le=maintenant)
+    blocage = Blocage(prestataire_id=demande.prestataire_id, metier_id=db.get_one(Annonce, demande.annonce_id).metier_id,
+                      debut=de, fin=a, motif=f"Travaux {numero(devis)}", cree_le=maintenant)
     db.add(blocage)
     db.flush()
     devis.blocage_id = blocage.id

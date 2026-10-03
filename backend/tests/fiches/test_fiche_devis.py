@@ -86,7 +86,7 @@ def test_fiche_devis_et_ligne(base: Session, decor) -> None:  # noqa: F811
     compte, prestataire, (plombier, _), (pessac, _) = decor
     annonce = _annonce(base, prestataire, plombier)
     demande = _demande(base, compte, prestataire, annonce, pessac.id)
-    blocage = Blocage(prestataire_id=prestataire.id, debut=datetime(2027, 10, 14, tzinfo=UTC),
+    blocage = Blocage(prestataire_id=prestataire.id, metier_id=plombier.id, debut=datetime(2027, 10, 14, tzinfo=UTC),
                       fin=datetime(2027, 10, 16, tzinfo=UTC), motif="Travaux D-2027-0001")
     base.add(blocage)
     base.commit()
