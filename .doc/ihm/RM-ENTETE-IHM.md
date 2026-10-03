@@ -12,6 +12,7 @@ Bandeau blanc (`surface`) collé en haut de toutes les pages, bordure fine en ba
    2. « Proposer mes services » → `/proposer` — devient « Mon activité » quand le compte a un profil de prestataire (lot 2.5)
    3. « Mes annonces » → `/mes-annonces` — **seulement pour un prestataire** (lot 3.2)
    4. « Mon agenda » → `/mon-agenda` — **seulement pour un prestataire** (lot 3.4)
+   4 bis. « Mes démarches » → `/demarches` — **seulement pour un prestataire** (lot 6.2)
    5. « Mes rendez-vous » → `/rendez-vous` (lot 4.4)
    6. « Mes devis » → `/devis` (lot 5.4)
    7. « Mes factures » → `/factures` (lot 5.6)

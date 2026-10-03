@@ -12,6 +12,8 @@ import OngletMetiers from '../components/admin/OngletMetiers.vue'
 import OngletMotsInterdits from '../components/admin/OngletMotsInterdits.vue'
 import OngletProblemesDevis from '../components/admin/OngletProblemesDevis.vue'
 import OngletPrestataires from '../components/admin/OngletPrestataires.vue'
+import OngletTableauDeBord from '../components/admin/OngletTableauDeBord.vue'
+import OngletTousLesPaiements from '../components/admin/OngletTousLesPaiements.vue'
 import OngletPropositions from '../components/admin/OngletPropositions.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppCarte from '../components/ui/AppCarte.vue'
@@ -22,6 +24,7 @@ const routeur = useRouter()
 const { compte, chargementFait } = useCompte()
 
 const onglets = [
+  { id: 'tableau', texte: 'Tableau de bord', composant: OngletTableauDeBord },
   { id: 'accords', texte: 'Accords à vérifier', composant: OngletAccords },
   { id: 'comptes', texte: 'Comptes', composant: OngletComptes },
   { id: 'prestataires', texte: 'Prestataires', composant: OngletPrestataires },
@@ -31,8 +34,9 @@ const onglets = [
   { id: 'devis', texte: 'Problèmes de devis', composant: OngletProblemesDevis },
   { id: 'propositions', texte: 'Propositions de métiers', composant: OngletPropositions },
   { id: 'metiers', texte: 'Métiers', composant: OngletMetiers },
+  { id: 'paiements', texte: 'Paiements', composant: OngletTousLesPaiements },
 ] as const
-const ongletActif = ref('accords')
+const ongletActif = ref('tableau')
 const onglet = computed(() => onglets.find((o) => o.id === ongletActif.value) ?? onglets[0])
 
 // Compteurs orange des choses qui attendent une décision
@@ -69,6 +73,6 @@ watch(compte, compter)
 
     <AppOnglets v-model="ongletActif" :onglets="onglets" :compteurs="enAttente" />
 
-    <component :is="onglet.composant" :key="onglet.id" @maj="compter" />
+    <component :is="onglet.composant" :key="onglet.id" @maj="compter" @aller="(id: string) => (ongletActif = id)" />
   </div>
 </template>

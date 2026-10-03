@@ -73,6 +73,9 @@ async function allerChezStripe() {
           Activer le paiement par carte
         </AppBouton>
       </div>
+      <div>
+        <AppBouton variante="secondaire" @click="routeur.push('/creer-mon-auto-entreprise')">Pas de SIRET ? Créer mon auto-entreprise : le guide</AppBouton>
+      </div>
     </template>
 
     <template v-else-if="etat.pret">

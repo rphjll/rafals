@@ -58,3 +58,6 @@ Fichier : `frontend/src/components/prestataire/CartePaiementCarte.vue`, placée 
 
 ## Carte « TVA » (lot 5.4, 03/10/2026 ; maquette `maquette-lot-5.4-devis.html`)
 Fichier : `frontend/src/components/prestataire/CarteTva.vue`, après « Paiement par carte ». Case « Je facture la TVA » (enregistrée au clic) → « Vos prochains devis indiqueront la TVA. » / « Vos prochains devis seront sans TVA (mention 293 B). » ; « Non coché : … « TVA non applicable, art. 293 B du CGI » (auto-entrepreneur en franchise). Coché : un taux par ligne (5,5 %, 10 % ou 20 %) et les totaux HT, TVA, TTC. Vaut pour vos prochains devis. »
+
+## Liens vers le guide « Créer mon auto-entreprise » (lot 6.2, 03/10/2026)
+Sans profil, sous le formulaire : « Pas encore d'entreprise ? [Créer mon auto-entreprise : le guide] ». Dans « Mon activité », carte « Paiement par carte » sans SIRET vérifié : [Pas de SIRET ? Créer mon auto-entreprise : le guide]. Voir `RM-CREATION-AUTO-ENTREPRISE-IHM.md`.

@@ -1,0 +1,95 @@
+<title>MLD rafals sites vitrines</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+  .note + .note { margin-top:8px; }
+  .etapes { margin:0; padding-left:20px; font-size:14px; }
+  .etapes li { margin:3px 0; }
+</style>
+<div class="page">
+  <header>
+    <h1>MLD — lot 6.5 « Sites vitrines »</h1>
+    <p class="sous">rafals · proposé le 03/10/2026 pendant l'absence de Raphael · <b>pas encore validé, rien n'est exécuté</b> · source : <code>RM-SITES-VITRINES.md</code> · 1 table nouvelle</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  SITE_VITRINE["<b>SITE_VITRINE</b><br/>id (PK)<br/>prestataire_id (FK)"]
+  PRESTATAIRE -- "a · (0,1) —— (1,1)" --- SITE_VITRINE
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>« a · (0,1) —— (1,1) » : un prestataire a zéro ou un site ; un site appartient à un et un seul prestataire.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>SITE_VITRINE <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Le site ne contient presque rien : tout le reste (nom, métier, photo, annonces, avis) est lu dans le profil au moment où quelqu'un ouvre le site.</p>
+        <ul>
+          <li><code>adresse</code> — le début de l'adresse, unique : « julie-menage » pour julie-menage.rafals.fr (3 à 30 caractères : minuscules, chiffres, tirets)</li>
+          <li><code>modele</code> — classique · cartes · impact</li>
+          <li><code>style</code> — une des 5 palettes de couleurs (ex. sauge, océan, corail, ardoise, soleil)</li>
+          <li><code>accroche</code> — une phrase, 80 caractères au plus (facultative)</li>
+          <li><code>avis_visibles</code> — oui / non</li>
+          <li><code>en_ligne</code> — oui / non (choix du prestataire)</li>
+          <li><code>cree_le</code>, <code>modifie_le</code></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Trois choix techniques expliqués</h2>
+    <p class="note"><b>« Hors ligne tout seul » n'est pas enregistré</b> : le site s'affiche si <code>en_ligne</code> = oui <b>et</b> si le profil est actif. Julie met son profil en pause → son site disparaît sans que rien ne change dans cette table ; elle reprend → il revient.</p>
+    <p class="note"><b>Pas de prix dans la table pour l'instant</b> : le prix du site n'est pas décidé (abonnement, prix unique ou gratuit). Selon ta réponse, un lot suivant ajoutera ce qu'il faut (ex. une date de fin d'abonnement).</p>
+    <p class="note"><b>Les adresses réservées</b> (www, api, admin, rafals, mail…) sont une liste dans les réglages, pas une table.</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>SITE_VITRINE</code> n° 1 : prestataire Julie Martin, <code>adresse</code> « julie-menage », <code>modele</code> classique, <code>style</code> sauge, <code>accroche</code> « Votre maison propre, sans y penser », <code>avis_visibles</code> oui, <code>en_ligne</code> oui.
+      <p class="trad"><b>Traduction :</b> julie-menage.rafals.fr est en ligne, avec la mise en page « Classique » en vert sauge et ses avis.</p>
+    </div>
+    <div class="exemple">
+      <code>SITE_VITRINE</code> n° 2 : prestataire Karim Benali, <code>adresse</code> « karim-plombier », <code>modele</code> cartes, <code>style</code> océan, <code>accroche</code> vide, <code>en_ligne</code> non.
+      <p class="trad"><b>Traduction :</b> Karim prépare son site ; karim-plombier.rafals.fr affiche encore « Ce site n'est pas disponible pour le moment. »</p>
+    </div>
+  </section>
+</div>

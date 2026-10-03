@@ -64,6 +64,10 @@ async function enregistre(nouveau: ProfilPrestataire) {
           Créez votre profil de prestataire : les clients vous trouveront dès que vous publierez votre première annonce.
         </p>
         <FormulaireProfil @enregistre="enregistre" />
+        <p class="text-[14px] text-texte-doux">
+          Pas encore d'entreprise ?
+          <AppBouton variante="secondaire" @click="routeur.push('/creer-mon-auto-entreprise')">Créer mon auto-entreprise : le guide</AppBouton>
+        </p>
       </template>
     </template>
   </div>

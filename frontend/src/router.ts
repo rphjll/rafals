@@ -7,6 +7,8 @@ import AnnoncePage from './pages/AnnoncePage.vue'
 import ComptePage from './pages/ComptePage.vue'
 import BientotPage from './pages/BientotPage.vue'
 import CataloguePage from './pages/CataloguePage.vue'
+import CreerAutoEntreprisePage from './pages/CreerAutoEntreprisePage.vue'
+import DemarchesPage from './pages/DemarchesPage.vue'
 import DevisPage from './pages/DevisPage.vue'
 import FacturesPage from './pages/FacturesPage.vue'
 import ConnexionPage from './pages/ConnexionPage.vue'
@@ -49,6 +51,8 @@ export const routeur = createRouter({
     { path: '/rendez-vous', name: 'rendez-vous', component: RendezVousPage },
     { path: '/devis', name: 'devis', component: DevisPage },
     { path: '/factures', name: 'factures', component: FacturesPage },
+    { path: '/demarches', name: 'demarches', component: DemarchesPage },
+    { path: '/creer-mon-auto-entreprise', name: 'creer-auto-entreprise', component: CreerAutoEntreprisePage },
     { path: '/compte', name: 'compte', component: ComptePage },
     { path: '/administration', name: 'administration', component: AdministrationPage },
     { path: '/:chemin(.*)*', name: 'introuvable', ...bientot('Page introuvable', '') },

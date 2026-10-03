@@ -8,6 +8,7 @@ import { jourCourt, aParis } from '../../outils/agenda'
 import { type PaiementVisible, badgePaiement, montant, pourLePrestataire } from '../../outils/paiements'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
+import AppChiffre from '../ui/AppChiffre.vue'
 import AppSection from '../ui/AppSection.vue'
 
 const paiements = ref<PaiementVisible[] | null>(null)
@@ -43,16 +44,12 @@ function jourDuRendezVous(iso: string): string {
       <p v-if="!paiements.length" class="text-texte-doux">Aucun paiement par carte pour l'instant.</p>
       <template v-else>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2.5">
-          <div class="rounded-rafals bg-fond px-3 py-2.5">
-            <span class="text-[13.5px] text-texte-doux">À venir (bloqué chez Stripe)</span>
-            <b class="block text-[22px] tabular-nums">{{ montant(somme(bloques)) }}</b>
-            <span class="text-[13.5px] text-texte-doux">{{ rendezVous(bloques.length) }}</span>
-          </div>
-          <div class="rounded-rafals bg-fond px-3 py-2.5">
-            <span class="text-[13.5px] text-texte-doux">Versé en {{ NOMS_MOIS[Number(moisCourant.slice(5)) - 1] }}</span>
-            <b class="block text-[22px] tabular-nums">{{ montant(somme(versesCeMois)) }}</b>
-            <span class="text-[13.5px] text-texte-doux">{{ rendezVous(versesCeMois.length) }}</span>
-          </div>
+          <AppChiffre titre="À venir (bloqué chez Stripe)" :valeur="montant(somme(bloques))" :detail="rendezVous(bloques.length)" />
+          <AppChiffre
+            :titre="`Versé en ${NOMS_MOIS[Number(moisCourant.slice(5)) - 1]}`"
+            :valeur="montant(somme(versesCeMois))"
+            :detail="rendezVous(versesCeMois.length)"
+          />
         </div>
         <div class="overflow-x-auto">
           <table class="w-full min-w-[560px] border-collapse text-[14px]">

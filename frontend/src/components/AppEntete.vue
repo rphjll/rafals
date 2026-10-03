@@ -23,6 +23,7 @@ const liens = computed(() => [
     ? [
         { vers: '/mes-annonces', texte: 'Mes annonces' },
         { vers: '/mon-agenda', texte: 'Mon agenda' },
+        { vers: '/demarches', texte: 'Mes démarches' },
       ]
     : []),
   { vers: '/rendez-vous', texte: 'Mes rendez-vous' },
