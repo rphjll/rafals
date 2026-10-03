@@ -4,7 +4,10 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-_(vide)_
+**Retouche hors lot — refonte du calendrier de « Mon agenda »** (demandée le 03/10/2026) : détail du jour sur le côté ; onglets regroupés (semaine type, réglages, horaires libres dans le calendrier) ; mode « Fermeture exceptionnelle » et « Ouverture exceptionnelle » en glissant d'un jour à l'autre ; blocage de quelques heures hachuré seulement sur sa partie (« partiellement bloqué ») ; fenêtre « du … à … h jusqu'au … à … h » sans case à cocher.
+- Étape 1 🟡 : maquette cliquable `.doc/ihm/maquette-refonte-calendrier.html` → validation de Raphael.
+- Étape 2 ⬜ : ouverture exceptionnelle = nouvelle table → MLD à valider, puis `schema_v<N>.sql`, modèle, calcul des horaires libres, routes, tests.
+- Étape 3 ⬜ : écrans, `RM-AGENDA-IHM.md`, `RM-AGENDA.md`, tests, sauvegarde.
 
 ## Définition de « terminé »
 
