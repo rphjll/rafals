@@ -1,0 +1,171 @@
+<title>MLD rafals devis</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+  .note + .note { margin-top:8px; }
+  .etapes { margin:0; padding-left:20px; font-size:14px; }
+  .etapes li { margin:3px 0; }
+</style>
+<div class="page">
+  <header>
+    <h1>MLD — lot 5.3 « Devis »</h1>
+    <p class="sous">rafals · proposé le 03/10/2026 · sources : <code>.doc/regles-metier/RM-DEVIS.md</code>, <code>RM-PAIEMENTS.md</code> · 4 tables nouvelles, PAIEMENT et PRESTATAIRE complétées</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  ANNONCE["<b>ANNONCE</b><br/>id (PK)"]
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  COMMUNE["<b>COMMUNE</b><br/>id (PK)"]
+  FICHIER["<b>FICHIER</b><br/>id (PK)"]
+  BLOCAGE["<b>BLOCAGE</b><br/>id (PK)"]
+  DEMANDE_DEVIS["<b>DEMANDE_DEVIS</b><br/>id (PK)<br/>client_id (FK)<br/>annonce_id (FK)<br/>prestataire_id (FK)<br/>commune_id (FK)"]
+  PHOTO_DEMANDE["<b>PHOTO_DEMANDE</b><br/>id (PK)<br/>demande_devis_id (FK)<br/>fichier_id (FK)"]
+  DEVIS["<b>DEVIS</b><br/>id (PK)<br/>demande_devis_id (FK)<br/>blocage_id (FK)"]
+  LIGNE_DEVIS["<b>LIGNE_DEVIS</b><br/>id (PK)<br/>devis_id (FK)"]
+  PAIEMENT["<b>PAIEMENT</b><br/>id (PK)<br/>rendez_vous_id (FK)<br/>devis_id (FK)"]
+  COMPTE -- "demande · (0,n) —— (1,1)" --- DEMANDE_DEVIS
+  ANNONCE -- "reçoit · (0,n) —— (1,1)" --- DEMANDE_DEVIS
+  PRESTATAIRE -- "reçoit · (0,n) —— (1,1)" --- DEMANDE_DEVIS
+  COMMUNE -- "lieu des travaux · (0,n) —— (0,1)" --- DEMANDE_DEVIS
+  DEMANDE_DEVIS -- "montre · (0,n) —— (1,1)" --- PHOTO_DEMANDE
+  FICHIER -- "est · (0,1) —— (1,1)" --- PHOTO_DEMANDE
+  DEMANDE_DEVIS -- "reçoit · (0,1) —— (1,1)" --- DEVIS
+  DEVIS -- "contient · (1,n) —— (1,1)" --- LIGNE_DEVIS
+  BLOCAGE -- "jours de travaux · (0,1) —— (0,1)" --- DEVIS
+  DEVIS -- "est payé par · (0,n) —— (0,1)" --- PAIEMENT
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>(1,n)</b><span>un ou plusieurs.</span>
+      <b>lecture</b><span>« reçoit · (0,1) —— (1,1) » : une demande reçoit zéro ou un devis ; un devis répond à une et une seule demande.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>DEMANDE_DEVIS <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Ce que le client écrit depuis une annonce « sur devis ». Jamais effacée.</p>
+        <ul>
+          <li><code>texte</code> — 10 à 2000 caractères (ex. « Muret de 5 mètres au fond du jardin »)</li>
+          <li><code>adresse_ligne</code>, <code>adresse_complement</code>, <code>code_postal</code> (+ <code>commune_id</code>) — le lieu des travaux, recopié de l'adresse du client</li>
+          <li><code>statut</code> — envoyée · devis reçu · déclinée · annulée</li>
+          <li><code>cree_le</code>, <code>statut_change_le</code></li>
+          <li><code>motif</code> — pourquoi le prestataire décline (facultatif)</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PHOTO_DEMANDE <span class="nouveau">nouvelle</span></h3>
+        <ul><li><code>ordre</code> — 1 à 5 (comme les photos d'une annonce)</li></ul>
+      </div>
+      <div class="carte">
+        <h3>DEVIS <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Jamais effacé. Les lignes ne changent plus une fois le devis envoyé (seules les dates peuvent changer).</p>
+        <ul>
+          <li><code>annee</code>, <code>numero</code> — D-2026-0002 : numéros qui se suivent, par prestataire et par année</li>
+          <li><code>facture_tva</code> — oui / non, recopié du profil à l'envoi (figé)</li>
+          <li><code>arrhes_pourcent</code> — 0 à 100 (ex. 30)</li>
+          <li><code>travaux_debut</code>, <code>travaux_fin</code> — dates des travaux (ex. 19/10 et 20/10)</li>
+          <li><code>valable_jusqu_au</code> — date (30 jours d'avance, modifiable)</li>
+          <li><code>statut</code> — envoyé · autre date demandée · accepté · terminé · payé · refusé · expiré · annulé par le client · annulé par le prestataire</li>
+          <li><code>mode_paiement</code> — carte · en direct (choisi en acceptant)</li>
+          <li><code>envoye_le</code>, <code>accepte_le</code>, <code>termine_le</code>, <code>paye_le</code>, <code>statut_change_le</code></li>
+          <li><code>message</code> — « autre date » demandée par le client, ou motif d'un refus / d'une annulation</li>
+          <li><code>probleme</code>, <code>probleme_le</code>, <code>probleme_traite_le</code> — [Signaler un problème] du client, regardé par l'administrateur</li>
+          <li><code>moyen_direct</code> — « espèces », « chèque », « virement » : noté par le prestataire avec [Payé]</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>LIGNE_DEVIS <span class="nouveau">nouvelle</span></h3>
+        <ul>
+          <li><code>ordre</code> — 1, 2, 3…</li>
+          <li><code>libelle</code> — ex. « Parpaings »</li>
+          <li><code>quantite_centiemes</code> — 4000 = 40 ; 250 = 2,5 (m², heures…)</li>
+          <li><code>prix_unitaire_centimes</code> — hors taxe si TVA (ex. 350 = 3,50 €)</li>
+          <li><code>tva_pour_mille</code> — 55, 100 ou 200 (5,5 %, 10 %, 20 %) ; vide sans TVA</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PAIEMENT <span class="nouveau">complétée</span></h3>
+        <ul>
+          <li><code>rendez_vous_id</code> — devient facultatif</li>
+          <li><code>devis_id</code> (FK) — nouveau ; un paiement porte sur un rendez-vous <b>ou</b> un devis</li>
+          <li><code>sorte</code> — rendez-vous · arrhes · solde (un seul de chaque par devis)</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PRESTATAIRE <span class="nouveau">1 ajoutée</span></h3>
+        <ul><li><code>facture_tva</code> — la case « Je facture la TVA » (non au départ)</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les totaux ne sont pas enregistrés</h2>
+    <p class="note">Hors taxe, TVA, total, arrhes et solde se calculent à partir des lignes, qui ne changent plus après l'envoi. Ex. 40 × 3,50 € = 140,00 € ; total 1 200,00 € ; arrhes 30 % = 360,00 € ; solde 840,00 €. Les sommes payées par carte, elles, sont figées dans PAIEMENT.</p>
+  </section>
+
+  <section>
+    <h2>Cinq choix à valider avec ce schéma</h2>
+    <p class="note"><b>1. Le prestataire peut décliner une demande</b> (« Je ne fais pas ce genre de travaux »), avec un motif facultatif, comme pour un rendez-vous refusé.</p>
+    <p class="note"><b>2. Un seul devis par demande.</b> Un devis expiré ou refusé : le client fait une nouvelle demande (règle déjà écrite pour l'expiration).</p>
+    <p class="note"><b>3. Les jours des travaux bloquent l'agenda</b> par un blocage relié au devis, créé à l'acceptation (« Travaux D-2026-0002 ») et enlevé si le devis est annulé : les rendez-vous ne peuvent plus être pris ces jours-là.</p>
+    <p class="note"><b>4. « En direct » = tout hors de rafals</b> : pas d'arrhes par rafals, le prestataire clique [Payé] une fois, quand il a tout reçu.</p>
+    <p class="note"><b>5. Au plus 5 photos et 20 lignes</b> par devis (réglages).</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>DEMANDE_DEVIS</code> n° 4 : Mme Dupont → annonce « Muret de jardin » de Paul, texte « Muret de 5 mètres au fond du jardin », 2 <code>PHOTO_DEMANDE</code>, adresse « 8 allée des Pins, 33400 Talence », statut « devis reçu ».
+      <p class="trad"><b>Traduction :</b> Mme Dupont a demandé un devis à Paul pour son muret, avec 2 photos ; Paul a répondu.</p>
+    </div>
+    <div class="exemple">
+      <code>DEVIS</code> n° 2 : demande n° 4, <code>annee</code> 2026, <code>numero</code> 2, <code>facture_tva</code> non, <code>arrhes_pourcent</code> 30, travaux du 19/10 au 20/10, valable jusqu'au 01/11, statut « accepté », <code>mode_paiement</code> carte ; 3 <code>LIGNE_DEVIS</code> : « Parpaings — 4000 centièmes × 350 », « Main-d'œuvre — 1600 × 4500 », « Enduit — 100 × 33 000 ».
+      <p class="trad"><b>Traduction :</b> devis D-2026-0002 : 140 € + 720 € + 330 € = 1 190 € ; Mme Dupont l'a accepté et a payé 357 € d'arrhes par carte (un <code>PAIEMENT</code> sorte « arrhes ») ; le 19 et le 20 sont bloqués dans l'agenda de Paul.</p>
+    </div>
+    <div class="exemple">
+      <code>PAIEMENT</code> n° 9 : <code>devis_id</code> 2, <code>rendez_vous_id</code> vide, <code>sorte</code> « solde », 83 300 centimes, statut « payé ».
+      <p class="trad"><b>Traduction :</b> Mme Dupont a payé le solde de 833 € après les travaux ; rafals garde 41,65 €.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Pas dans ce lot : les écrans (lot 5.4), les factures (lot 5.5).</p>
+  </section>
+</div>
