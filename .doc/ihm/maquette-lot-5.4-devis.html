@@ -1,0 +1,143 @@
+<title>Maquette rafals devis</title>
+<style>
+:root{--fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;--prim:#2F6B4F;--prim-t:#FFFFFF;--prim-doux:#E2EEE7;--accent:#D9793A;--ok:#2E7D4F;--ok-doux:#E3F2E8;--att:#B26A00;--att-doux:#FCF0DC;--err:#B3261E;--err-doux:#FBE4E2;--neu:#5B6573;--neu-doux:#E8ECF1;--sur:#FFFFFF;--voile:rgb(10 14 20 / .55)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}}
+:root[data-theme="dark"]{color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:"Segoe UI",system-ui,sans-serif;font-size:15px;margin:0}
+.bandeau{background:var(--surface);border-bottom:1px dashed var(--bord);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--doux)}
+.bandeau b{color:var(--texte)}
+.onglet{font:inherit;border:1px solid var(--bord);background:transparent;color:var(--texte);border-radius:8px;padding:5px 9px;cursor:pointer}
+.onglet[aria-pressed="true"]{border-color:var(--prim);color:var(--prim);font-weight:700}
+header{background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px}
+.entete{max-width:1080px;margin:0 auto;height:60px;display:flex;align-items:center}
+.logo{font-weight:700;font-size:24px;color:var(--prim)} .logo span{color:var(--accent)}
+main{padding-inline:16px;padding-block:28px 60px}
+.contenu{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:28px;margin:0;letter-spacing:-.3px} h2{font-size:20px;margin:0} h3{margin:0;font-size:17px}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.tete{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid transparent;min-height:42px;padding:9px 16px;cursor:pointer}
+.petit{min-height:36px;padding:6px 12px;font-size:14px}
+.prim{background:var(--prim);color:var(--prim-t);border-color:var(--prim)} .sec{background:var(--surface);color:var(--prim);border-color:var(--prim)} .dan{background:var(--surface);color:var(--err);border-color:var(--err)}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap} .b-neu{background:var(--neu-doux);color:var(--neu)} .b-att{background:var(--att-doux);color:var(--att)}
+.note{font-size:13.5px;color:var(--doux);margin:0}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.alerte{border-radius:8px;padding:10px 12px;font-weight:500;font-size:14px} .a-att{background:var(--att-doux);color:var(--att)} .a-err{background:var(--err-doux);color:var(--err)}
+.etoiles{color:var(--accent);font-size:18px;letter-spacing:1px}
+.choix-etoiles{display:flex;gap:4px} .choix-etoiles button{font-size:30px;border:0;background:none;cursor:pointer;color:var(--bord);padding:0 2px;min-height:42px} .choix-etoiles button.on{color:var(--accent)}
+.avis{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--bord);padding-top:12px}
+.avis:first-of-type{border-top:0;padding-top:0}
+.reponse{margin-left:18px;border-left:3px solid var(--prim-doux);padding:4px 10px;font-size:14px}
+.rdv{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--bord);padding-top:14px}
+.rdv:first-of-type{border-top:0;padding-top:0}
+.monavis{background:var(--fond);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.resume{display:flex;align-items:center;gap:14px;flex-wrap:wrap} .grosse{font-size:34px;font-weight:700}
+.sous-onglets{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--bord)}
+.sous-onglets button{font:inherit;border:0;background:transparent;color:var(--doux);padding:10px 12px;border-bottom:3px solid transparent;font-weight:600;min-height:42px}
+.sous-onglets button[aria-pressed="true"]{color:var(--prim);border-bottom-color:var(--prim)}
+.compteur{margin-left:4px;background:var(--accent);color:var(--sur);border-radius:999px;padding:1px 7px;font-size:12px}
+.mots{display:flex;flex-wrap:wrap;gap:6px} .mot{display:inline-flex;align-items:center;gap:6px;background:var(--neu-doux);border-radius:999px;padding:3px 4px 3px 10px;font-size:14px} .mot button{border:0;background:var(--surface);color:var(--err);border-radius:999px;width:24px;height:24px;cursor:pointer;font-weight:700}
+input,textarea{min-height:42px;border:1px solid var(--bord);border-radius:10px;background:var(--fond);color:var(--texte);font:inherit;padding:10px 12px;width:100%}
+textarea{min-height:100px}
+.voile{position:fixed;inset:0;background:var(--voile);display:grid;place-items:center;padding:16px}
+.fenetre{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:22px;width:min(480px,100%);display:flex;flex-direction:column;gap:12px}
+.fenetre h3{font-size:20px} .pied{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--ok);color:var(--sur);padding:12px 18px;border-radius:10px;font-weight:600}
+.b-ok{background:var(--ok-doux);color:var(--ok)} .b-err{background:var(--err-doux);color:var(--err)}
+.a-ok{background:var(--ok-doux);color:var(--ok)} .a-neu{background:var(--neu-doux);color:var(--neu)}
+.ver{background:var(--neu-doux);color:var(--neu);border-color:var(--neu-doux)}
+.lignes{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px} .lignes span:nth-child(odd){color:var(--doux)}
+.choix{display:grid;grid-template-columns:1fr 1fr;gap:8px} .choix button{font:inherit;border:1px solid var(--bord);background:var(--surface);color:var(--texte);border-radius:10px;min-height:52px;padding:8px;cursor:pointer;text-align:left}
+.choix button[aria-pressed="true"]{border-color:var(--prim);background:var(--prim-doux);font-weight:600}
+.case{display:flex;gap:10px;align-items:flex-start;font-size:14px} .case input{width:20px;min-height:20px;height:20px;margin-top:2px}
+.etats{display:flex;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--doux);align-items:center}
+.tableau{overflow-x:auto} table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px} th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bord)} th{color:var(--doux);font-weight:600;font-size:13px} th.n,td.n{text-align:right;font-variant-numeric:tabular-nums}
+.chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px} .chiffre{background:var(--fond);border-radius:10px;padding:10px 12px} .chiffre b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.etq{font-weight:600;font-size:13px}
+.ligne-form{display:grid;grid-template-columns:1fr 70px 100px auto;gap:6px;align-items:center}
+.ligne-form .court{text-align:right}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:10px} .deux label{display:flex;flex-direction:column;gap:4px}
+.choix.trois{grid-template-columns:1fr 1fr 1fr}
+.photos{display:flex;gap:6px} .photos span{background:var(--neu-doux);border-radius:8px;padding:14px 18px}
+.fenetre{width:min(560px,100%);max-height:90vh;overflow-y:auto}
+@media (max-width:480px){.ligne-form{grid-template-columns:1fr 60px 80px auto}.deux{grid-template-columns:1fr}}
+</style>
+<div class="bandeau"><b>Maquette lot 5.4</b> · écrans :
+  <button class="onglet" data-e="annonce" aria-pressed="true">1. Annonce « sur devis »</button>
+  <button class="onglet" data-e="client">2. Mes devis (client)</button>
+  <button class="onglet" data-e="presta">3. Mes devis (prestataire)</button>
+  <button class="onglet" data-e="activite">4. Mon activité › TVA</button>
+  <button class="onglet" data-e="admin">5. Administration › Devis</button>
+</div>
+<header><div class="entete"><span class="logo">rafals<span>.</span></span><span class="note" style="margin-left:auto">menu : … · Mes rendez-vous · <b>Mes devis</b> · Mon compte</span></div></header>
+<main><div class="contenu" id="ecran"></div></main>
+<div id="couche"></div><div class="toast" id="toast" hidden></div>
+
+<script>
+const E = {};
+const lignesDevis = '<div class="tableau"><table><thead><tr><th>Désignation</th><th class="n">Quantité</th><th class="n">Prix unitaire</th><th class="n">Montant</th></tr></thead><tbody>' +
+  '<tr><td>Parpaings</td><td class="n">40</td><td class="n">3,50 €</td><td class="n">140,00 €</td></tr>' +
+  '<tr><td>Main-d\'œuvre</td><td class="n">16</td><td class="n">45,00 €</td><td class="n">720,00 €</td></tr>' +
+  '<tr><td>Enduit</td><td class="n">1</td><td class="n">330,00 €</td><td class="n">330,00 €</td></tr>' +
+  '<tr><td colspan="3"><b>Total</b><br><span class="note">TVA non applicable, art. 293 B du CGI</span></td><td class="n"><b>1 190,00 €</b></td></tr></tbody></table></div>';
+const recap = '<div class="lignes"><span>Travaux</span><span>du lundi 19/10/2026 au mardi 20/10/2026</span><span>Arrhes</span><span>357,00 € (30 %) — payées en acceptant, gardées par Paul si vous annulez</span><span>Solde</span><span>833,00 € — à payer après les travaux, une fois vérifiés</span><span>Valable</span><span>jusqu\'au 01/11/2026</span></div>';
+E.annonce = () => '<div class="carte"><div class="tete"><h2>Muret de jardin</h2><b style="color:var(--prim)">Sur devis</b></div><p class="note">par <b>Paul Petit</b> · Maçon · chez vous · carte bancaire ou espèces</p><p>Murets, petites maçonneries, enduits.</p><div><button class="btn prim" data-fen="demande">Demander un devis</button></div></div>' +
+  '<p class="note">Pas connecté : « Connectez-vous pour demander un devis : vous reviendrez ici. » · Sa propre annonce : bouton absent, « Vos clients vous écriront ici. » · Prestataire sans SIRET vérifié : 🔒 « Ce prestataire ne peut pas faire de devis en ce moment. »</p>';
+E.client = () => '<h1>Mes devis</h1><div class="sous-onglets"><button aria-pressed="true">Mes demandes</button><button>Devis reçus <span class="compteur">1</span></button></div>' +
+  '<p class="note">L\'onglet « Devis reçus » n\'existe que pour un prestataire.</p>' +
+  '<div class="carte"><div class="tete"><h3>Muret de jardin · Paul Petit</h3><span class="badge b-att">devis à étudier</span></div><p class="note">Votre demande du 02/10 : « Muret de 5 mètres au fond du jardin » · 2 photos · 8 allée des Pins, 33400 Talence</p>' +
+  '<h3 style="font-size:16px">Devis D-2026-0002</h3>' + lignesDevis + recap +
+  '<div class="actions"><button class="btn prim" data-fen="accepter">Accepter…</button><button class="btn sec" data-fen="autredate">Demander une autre date…</button><button class="btn dan" data-fen="refuser">Refuser…</button></div></div>' +
+  '<div class="carte"><div class="tete"><h3>Terrasse en bois · Paul Petit</h3><span class="badge b-ok">travaux terminés</span></div>' +
+  '<div class="lignes"><span>Devis</span><span>D-2026-0001 · 2 400,00 € · arrhes payées 720,00 € le 25/09</span><span>Avec</span><span>Paul Petit · 06 12 34 56 78</span></div>' +
+  '<div class="alerte a-att">Paul a terminé le 01/10. Vérifiez le travail, puis payez le solde.</div>' +
+  '<div class="actions"><button class="btn prim" data-toast="(vers la page de paiement de Stripe)">Payer le solde : 1 680,00 €</button><button class="btn dan" data-fen="probleme">Signaler un problème…</button></div></div>' +
+  '<div class="carte"><div class="tete"><h3>Clôture · Karim Benali</h3><span class="badge b-neu">demande envoyée</span></div><p class="note">« Clôture grillagée de 20 m » · Karim n\'a pas encore répondu.</p><div><button class="btn dan petit" data-toast="Demande annulée.">Annuler la demande</button></div></div>' +
+  '<p class="note">Autres états : « accepté » (vert, + [Annuler le devis…] tant que les travaux ne sont pas terminés), « payé » (vert), « refusé », « expiré », « déclinée » (avec le motif), « annulé ». Vide : « Aucune demande de devis. Trouvez un prestataire → ». Retour de Stripe : « Arrhes payées : devis accepté. » / « Solde payé : merci ! »</p>';
+E.presta = () => '<h1>Mes devis</h1><div class="sous-onglets"><button>Mes demandes</button><button aria-pressed="true">Devis reçus <span class="compteur">1</span></button></div>' +
+  '<div class="carte"><div class="tete"><h3>Muret de jardin · Marie Dupont</h3><span class="badge b-att">à répondre</span></div><p>« Muret de 5 mètres au fond du jardin »</p><div class="photos"><span>📷 1</span><span>📷 2</span></div><p class="note">8 allée des Pins, 33400 Talence · 06 98 76 54 32 · reçue le 02/10</p>' +
+  '<div class="actions"><button class="btn prim" data-fen="ecrire">Écrire le devis…</button><button class="btn dan" data-fen="decliner">Décliner…</button></div></div>' +
+  '<div class="carte"><div class="tete"><h3>Terrasse en bois · Paul Petit</h3><span class="badge b-att">autre date demandée</span></div><p class="note">D-2026-0003 · 2 400,00 € · travaux prévus du 12/10 au 14/10</p><div class="alerte a-att">Le client demande : « Je suis absente cette semaine-là, plutôt fin octobre »</div><div class="actions"><button class="btn prim" data-fen="dates">Proposer d\'autres dates…</button></div></div>' +
+  '<div class="carte"><div class="tete"><h3>Chape · Léa Martin</h3><span class="badge b-ok">accepté</span></div><p class="note">D-2026-0001 · 900,00 € · en direct · travaux du 05/10 au 06/10 (jours bloqués dans votre agenda)</p><div class="actions"><button class="btn prim" data-toast="Travail déclaré terminé : le client est prévenu.">Travail terminé</button><button class="btn sec" data-fen="paye">Payé…</button><button class="btn dan" data-fen="annulerp">Annuler le devis…</button></div><p class="note">[Travail terminé] verrouillé avant le premier jour : « Vous pourrez déclarer le travail terminé à partir du 05/10. »</p></div>';
+E.activite = () => '<h1>Mon activité</h1><div class="carte"><p class="note">(Mon profil, Mes annonces, Paiement par carte… : inchangés)</p></div>' +
+  '<div class="carte"><h2>TVA</h2><label class="case"><input type="checkbox"> <span>Je facture la TVA</span></label><p class="note">Non coché : vos devis et factures portent « TVA non applicable, art. 293 B du CGI » (auto-entrepreneur en franchise). Coché : un taux par ligne (5,5 %, 10 % ou 20 %) et les totaux HT, TVA, TTC. Vaut pour vos prochains devis.</p></div>';
+E.admin = () => '<h1>Administration</h1><div class="sous-onglets"><button>…</button><button>Avis signalés</button><button aria-pressed="true">Problèmes de devis <span class="compteur">1</span></button><button>…</button></div>' +
+  '<div class="carte"><div class="tete"><h3>D-2026-0001 · Terrasse en bois</h3><span class="badge b-att">problème</span></div><div class="lignes"><span>Client</span><span>Marie Dupont</span><span>Prestataire</span><span>Paul Petit</span><span>Signalé le</span><span>02/10/2026 à 9 h 12</span></div><div class="alerte a-att">« Le muret penche de 5 cm »</div><p class="note">Contactez le client et le prestataire (téléphones dans « Comptes »), puis :</p><div><button class="btn sec" data-toast="Problème traité.">Marquer comme traité</button></div></div><p class="note">Vide : « Aucun problème signalé. »</p>';
+const ligneForm = (l, q, p) => '<div class="ligne-form"><input value="' + l + '" placeholder="Désignation"><input value="' + q + '" placeholder="Qté" class="court"><input value="' + p + '" placeholder="Prix unit. €" class="court"><button class="btn dan petit" title="Retirer">×</button></div>';
+const F = {
+  demande: '<h3>Demander un devis à Paul Petit</h3><p class="note">Muret de jardin. Décrivez votre besoin : Paul vous répond par un devis.</p><span class="etq">Votre besoin *</span><textarea placeholder="ex. Muret de 5 mètres au fond du jardin, hauteur 1 m"></textarea><p class="note">De 10 à 2000 caractères.</p><span class="etq">Photos (5 au plus)</span><div class="actions"><button class="btn sec petit">Choisir des photos</button><span class="note">muret.jpg · jardin.jpg</span></div><div class="lignes"><span>Lieu</span><span>Chez vous : 8 allée des Pins, 33400 Talence</span></div><div class="pied"><button class="btn prim" data-close data-toast="Demande envoyée : Paul Petit va vous répondre.">Envoyer ma demande</button><button class="btn sec" data-close>Annuler</button></div>',
+  accepter: '<h3>Accepter le devis D-2026-0002 ?</h3><p class="note">Muret de jardin avec Paul Petit · 1 190,00 € · travaux du 19/10 au 20/10.</p><span class="etq">Paiement *</span><div class="choix"><button data-paie="carte" aria-pressed="true">Par carte sur rafals</button><button data-paie="direct">En direct avec Paul</button></div><div id="explic" class="alerte a-neu">Arrhes : 357,00 € — payées maintenant sur la page sécurisée de Stripe, gardées par Paul si vous annulez. Le solde (833,00 €) se paie après les travaux.</div><div class="pied"><button class="btn prim" id="go" data-close data-toast="(vers la page de paiement de Stripe)">Accepter et payer 357,00 € d\'arrhes</button><button class="btn sec" data-close>Annuler</button></div>',
+  autredate: '<h3>Demander une autre date</h3><p class="note">Paul propose du 19/10 au 20/10. Il pourra changer les dates ; le reste du devis ne change pas.</p><textarea placeholder="ex. Je suis absente cette semaine-là, plutôt fin octobre"></textarea><div class="pied"><button class="btn prim" data-close data-toast="Demande envoyée : Paul va proposer d\'autres dates.">Envoyer</button><button class="btn sec" data-close>Annuler</button></div>',
+  refuser: '<h3>Refuser ce devis ?</h3><input placeholder="Pourquoi ? (facultatif) ex. Trop cher"><div class="pied"><button class="btn dan" data-close data-toast="Devis refusé : Paul est prévenu.">Refuser</button><button class="btn sec" data-close>Garder</button></div>',
+  probleme: '<h3>Signaler un problème</h3><p class="note">L\'administrateur de rafals regarde ; Paul est prévenu.</p><textarea placeholder="ex. Le muret penche de 5 cm"></textarea><div class="pied"><button class="btn dan" data-close data-toast="Problème signalé : l\'administrateur va regarder.">Signaler</button><button class="btn sec" data-close>Annuler</button></div>',
+  ecrire: '<h3>Devis pour Marie Dupont</h3><p class="note">Muret de jardin · « Muret de 5 mètres au fond du jardin »</p><span class="etq">Lignes * (20 au plus)</span>' + ligneForm('Parpaings', '40', '3,50') + ligneForm('Main-d\'œuvre', '16', '45,00') + ligneForm('Enduit', '1', '330,00') +
+    '<div><button class="btn sec petit">+ Ajouter une ligne</button></div><p style="margin:0;text-align:right"><b>Total : 1 190,00 €</b> <span class="note">· TVA non applicable, art. 293 B du CGI</span></p>' +
+    '<div class="deux"><label><span class="etq">Travaux du *</span><input type="date" value="2026-10-19"></label><label><span class="etq">au *</span><input type="date" value="2026-10-20"></label></div>' +
+    '<div class="deux"><label><span class="etq">Arrhes (%) *</span><input value="30"></label><label><span class="etq">Valable jusqu\'au *</span><input type="date" value="2026-11-01"></label></div><p class="note">Arrhes : 357,00 € payées en acceptant (par carte), gardées par vous si le client annule. Seuls des jours libres dans votre agenda.</p>' +
+    '<div class="pied"><button class="btn prim" data-close data-toast="Devis D-2026-0002 envoyé à Marie Dupont.">Envoyer le devis</button><button class="btn sec" data-close>Annuler</button></div>',
+  decliner: '<h3>Décliner la demande ?</h3><input placeholder="Pourquoi ? (facultatif) ex. Je ne fais pas ce genre de travaux"><div class="pied"><button class="btn dan" data-close data-toast="Demande déclinée : le client est prévenu.">Décliner</button><button class="btn sec" data-close>Annuler</button></div>',
+  dates: '<h3>Proposer d\'autres dates</h3><div class="deux"><label><span class="etq">Travaux du *</span><input type="date" value="2026-10-26"></label><label><span class="etq">au *</span><input type="date" value="2026-10-28"></label></div><div class="pied"><button class="btn prim" data-close data-toast="Nouvelles dates envoyées au client.">Envoyer</button><button class="btn sec" data-close>Annuler</button></div>',
+  paye: '<h3>Payé en direct ?</h3><p class="note">Vous avez reçu tout l\'argent (900,00 €) hors de rafals.</p><div class="choix trois"><button aria-pressed="true">Espèces</button><button>Chèque</button><button>Virement</button></div><div class="pied"><button class="btn prim" data-close data-toast="Devis payé.">Confirmer</button><button class="btn sec" data-close>Annuler</button></div>',
+  annulerp: '<h3>Annuler le devis D-2026-0001 ?</h3><p class="note">Les jours des travaux redeviennent libres. Arrhes payées par carte : rendues en entier au client.</p><input placeholder="Motif * ex. Chantier impossible"><div class="pied"><button class="btn dan" data-close data-toast="Devis annulé : le client est prévenu.">Annuler le devis</button><button class="btn sec" data-close>Garder</button></div>',
+};
+let etat = 'annonce', m;
+function rendre() { document.getElementById('ecran').innerHTML = E[etat](); document.querySelectorAll('.bandeau .onglet').forEach(b => b.setAttribute('aria-pressed', b.dataset.e === etat)); }
+function toast(t) { const x = document.getElementById('toast'); x.textContent = t; x.hidden = false; clearTimeout(m); m = setTimeout(() => x.hidden = true, 3000); }
+document.addEventListener('click', ev => {
+  const p = ev.target.closest('[data-paie]');
+  if (p) {
+    p.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === p));
+    const carte = p.dataset.paie === 'carte';
+    document.getElementById('explic').textContent = carte ? 'Arrhes : 357,00 € — payées maintenant sur la page sécurisée de Stripe, gardées par Paul si vous annulez. Le solde (833,00 €) se paie après les travaux.' : 'Vous réglez Paul directement (espèces, chèque, virement). rafals ne prend rien.';
+    const go = document.getElementById('go'); go.textContent = carte ? 'Accepter et payer 357,00 € d\'arrhes' : 'Accepter le devis'; go.dataset.toast = carte ? '(vers la page de paiement de Stripe)' : 'Devis accepté : Paul est prévenu.';
+    return;
+  }
+  const el = ev.target.closest('[data-e],[data-fen],[data-close],[data-toast]'); if (!el) return;
+  if (el.dataset.fen) { document.getElementById('couche').innerHTML = '<div class="voile"><div class="fenetre">' + F[el.dataset.fen] + '</div></div>'; return; }
+  if (el.hasAttribute('data-close')) document.getElementById('couche').innerHTML = '';
+  if (el.dataset.e) { etat = el.dataset.e; rendre(); }
+  if (el.dataset.toast) toast(el.dataset.toast);
+});
+rendre();
+</script>

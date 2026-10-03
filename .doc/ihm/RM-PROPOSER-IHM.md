@@ -56,3 +56,6 @@ Fichier : `frontend/src/components/prestataire/CartePaiementCarte.vue`, placée 
 - **En vérification** (badge orange « vérification par Stripe ») : bandeau orange « Stripe vérifie vos informations : cela prend de quelques minutes à 2 jours. Vos annonces proposent les espèces en attendant. » ; [Continuer chez Stripe] [Actualiser] → « Paiement par carte activé. » ou « Toujours en cours de vérification par Stripe. »
 - **Activé** (badge vert « activé ») : « Vos annonces qui acceptent la carte la proposent aux clients. » + « Mandat de facturation accepté le 02/10/2026. Vos paiements : « Mon agenda › Paiements ». »
 - Retour de la page de Stripe (`?stripe=retour`) : « Merci : Stripe vérifie vos informations. » (si pas encore activé), puis l'adresse redevient `/proposer`.
+
+## Carte « TVA » (lot 5.4, 03/10/2026 ; maquette `maquette-lot-5.4-devis.html`)
+Fichier : `frontend/src/components/prestataire/CarteTva.vue`, après « Paiement par carte ». Case « Je facture la TVA » (enregistrée au clic) → « Vos prochains devis indiqueront la TVA. » / « Vos prochains devis seront sans TVA (mention 293 B). » ; « Non coché : … « TVA non applicable, art. 293 B du CGI » (auto-entrepreneur en franchise). Coché : un taux par ligne (5,5 %, 10 % ou 20 %) et les totaux HT, TVA, TTC. Vaut pour vos prochains devis. »

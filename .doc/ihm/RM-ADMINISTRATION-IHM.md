@@ -7,7 +7,7 @@ Entrée de menu visible seulement des administrateurs. **(pas administrateur, ou
 
 **Ordre des éléments :**
 1. Titre « Administration ».
-2. Onglets : « Accords à vérifier » · « Comptes » · « Prestataires » (lot 2.5) · « Absences contestées » (lot 4.6, compteur orange) · « Avis signalés » (lot 4.8, compteur orange) · « Mots interdits » (lot 4.8) · « Propositions de métiers » · « Métiers ». Détail des onglets du lot 4.8 : `RM-AVIS-IHM.md`. Compteur orange du nombre en attente sur « Accords à vérifier » et « Propositions de métiers », mis à jour après chaque décision. L'onglet choisi est dans l'adresse (ex. `?onglet=metiers`).
+2. Onglets : « Accords à vérifier » · « Comptes » · « Prestataires » (lot 2.5) · « Absences contestées » (lot 4.6, compteur orange) · « Avis signalés » (lot 4.8, compteur orange) · « Mots interdits » (lot 4.8) · « Problèmes de devis » (lot 5.4, compteur orange) · « Propositions de métiers » · « Métiers ». Détail des onglets du lot 4.8 : `RM-AVIS-IHM.md`. Compteur orange du nombre en attente sur « Accords à vérifier » et « Propositions de métiers », mis à jour après chaque décision. L'onglet choisi est dans l'adresse (ex. `?onglet=metiers`).
 3. (erreur de chargement) bandeau rouge.
 
 ## Onglet « Accords à vérifier » (par défaut)
@@ -52,3 +52,6 @@ Texte sous le tableau : « Du plus récent au plus ancien. « Valider le SIRET �
 ## Onglet « Absences contestées » (lot 4.6)
 Une carte par contestation à trancher, la plus ancienne d'abord : titre « Dépannage fuite · 13/10/2026 à 10 h 00 » + badge « à trancher » ; deux encadrés côte à côte (l'un sous l'autre sur téléphone) : « **Marie Dupont (client)** a signalé : « Karim Benali n'est pas venu ». » et « **Karim Benali (prestataire)** a contesté le 14/10/2026 à 9 h 12 : « … » » ; [L'absence compte] (danger) / [Elle ne compte pas] → « Décision enregistrée : l'absence compte. Les deux sont prévenus. » Vide : « Aucune absence contestée. »
 Plus bas, carte « Annulations de dernière minute (6 mois) » : « Rendez-vous annulés par le prestataire moins de 24 h avant. », une ligne par prestataire (lien vers sa page) · nombre, les plus nombreux d'abord ; vide : « Aucune. »
+
+## Onglet « Problèmes de devis » (lot 5.4, 03/10/2026)
+Fichier : `frontend/src/components/admin/OngletProblemesDevis.vue`. Une carte par problème non traité : « D-2026-0001 · Terrasse en bois » + badge orange « problème » ; Client, Prestataire, Signalé le « 02/10/2026 à 9 h 12 » ; bandeau « « Le muret penche de 5 cm » » ; « Contactez le client et le prestataire (téléphones dans « Comptes »), puis : » [Marquer comme traité] → « Problème traité. » Vide : « Aucun problème signalé. »

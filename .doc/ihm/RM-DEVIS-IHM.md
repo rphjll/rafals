@@ -1,0 +1,38 @@
+# Devis — Interface
+
+> Fichiers : `frontend/src/pages/DevisPage.vue` (« Mes devis », onglets, retour de Stripe), `frontend/src/components/devis/` (`FenetreDemandeDevis`, `TableauDevis`, `FenetreEcrireDevis`, `FenetreAccepterDevis`, `OngletMesDemandes`, `OngletDevisRecus`), `frontend/src/outils/devis.ts` (types, états, quantités) ; fenêtre commune `FenetreTexte` (autre date, refuser, décliner, problème, annuler). Construit au lot 5.4 (03/10/2026). Règles : `RM-DEVIS.md`. Maquette : `maquette-lot-5.4-devis.html`.
+
+## Demander un devis (page d'une annonce « sur devis », voir `RM-ANNONCE-IHM.md`)
+[Demander un devis] (principal). Pas connecté : « Connectez-vous pour demander un devis : vous reviendrez ici. » puis la connexion ; sa propre annonce : pas de bouton, « Vos clients vous écriront ici (« Mes devis ») ».
+Fenêtre « Demander un devis à Paul Petit » : « Muret de jardin. Décrivez votre besoin : Paul Petit vous répond par un devis. » ; « Votre besoin * » (compteur « 0 / 2000 », aide « ex. « Muret de 5 mètres au fond du jardin, hauteur 1 m ». De 10 à 2000 caractères. ») ; « Photos (2 / 5) » (zone « Choisir un fichier », JPG ou PNG, 5 Mo ; chaque photo en pastille avec ×) ; carte « Lieu des travaux : votre adresse » (la carte d'adresse commune, quand le prestataire vient chez le client ; sans adresse, le bouton est 🔒 « Ajoutez d'abord votre adresse, juste au-dessus. ») ; erreur dans la fenêtre ; [Envoyer ma demande] → « Demande envoyée : Paul Petit va vous répondre. » puis « Mes devis ».
+
+## Page « Mes devis » (`/devis`, menu « Mes devis »)
+Pas connecté : carte « Connectez-vous pour voir vos devis. » + [Se connecter]. Titre « Mes devis » ; pour un prestataire, onglets « Mes demandes » · « Devis reçus » (`?onglet=recus`), avec compteur orange de ce qui attend une action.
+**Retour de Stripe** (`?devis=2&paiement=fait`) : « Paiement en cours de confirmation… » (relu toutes les 2 s, 30 s au plus) puis « Arrhes payées : devis accepté. » ou « Solde payé : merci ! » ; revenu sans payer : « Paiement non terminé : rien n'a été pris. Vous pouvez recommencer dans 30 minutes au plus tard. »
+
+**Un devis** (le même tableau des deux côtés) : « Devis D-2026-0002 » ; tableau Désignation · Quantité (« 40 », « 2,5 ») · Prix unitaire (HT si TVA) · TVA (si TVA) · Montant ; « Total » + « TVA non applicable, art. 293 B du CGI », ou Total HT, TVA, Total TTC ; puis Travaux « du lundi 19/10/2026 au mardi 20/10/2026 », Arrhes « 357,00 € (30 %) — payées en acceptant, gardées par Paul Petit si le client annule », Solde, Valable « jusqu'au … ». Défile sur le côté sur téléphone.
+
+### Onglet « Mes demandes » (client), une carte par demande, la plus récente d'abord
+Titre « Muret de jardin · Paul Petit » + badge (demande envoyée gris, devis à étudier orange, autre date demandée gris, accepté vert, travaux terminés orange, payé vert, refusé / déclinée / annulé par le prestataire rouge, expiré / annulée gris) ; « Votre demande du 02/10/2026 : « … » · 2 photos · 8 allée des Pins, 33400 Talence ».
+- Demande envoyée : « Paul Petit n'a pas encore répondu. » + [Annuler la demande] (danger) → « Demande annulée. »
+- Déclinée : bandeau rouge « Paul Petit ne peut pas faire ce devis. Motif : « … ». »
+- Devis à étudier : [Accepter…] [Demander une autre date…] [Refuser…] (danger).
+  - Fenêtre « Accepter le devis D-2026-0002 ? » : rappel ; « Paiement * » [Par carte sur rafals | En direct avec Paul Petit] (un mode refusé est 🔒 avec la raison) ; bandeau : « Arrhes : 357,00 € — payées maintenant sur la page sécurisée de Stripe, gardées par Paul Petit si vous annulez. Le solde (833,00 €) se paie après les travaux. » ou « Vous réglez Paul Petit directement (espèces, chèque, virement). rafals ne prend rien. » ; [Accepter et payer 357,00 € d'arrhes] (→ Stripe) ou [Accepter le devis] → « Devis accepté : Paul Petit est prévenu. »
+  - « Demander une autre date » : « Les dates qui vous iraient * » → « Demande envoyée : Paul Petit va proposer d'autres dates. »
+  - « Refuser ce devis ? » : « Pourquoi ? » facultatif → « Devis refusé : Paul Petit est prévenu. »
+- Autre date demandée : bandeau orange « Vous avez demandé : « … ». Paul Petit va proposer d'autres dates. »
+- Accepté : téléphone du prestataire ; bandeau vert « Accepté le 03/10/2026, arrhes payées par carte. » ; [Signaler un problème…] [Annuler le devis…] (danger ; fenêtre « Annuler le devis D-2026-0002 ? » : « … est prévenu et les jours des travaux se libèrent. Il garde les arrhes (357,00 €). » → « Devis annulé : Paul Petit est prévenu. »).
+- Travaux terminés : bandeau orange « Paul Petit a terminé le 20/10/2026. Vérifiez le travail, puis payez le solde. » (en direct : « Réglez le montant restant directement à Paul Petit. ») ; [Payer le solde : 833,00 €] (→ Stripe) ; [Signaler un problème…] → fenêtre « Le problème * » (ex. « Le muret penche de 5 cm ») → « Problème signalé : l'administrateur va regarder. »
+- Payé : bandeau vert « Payé le 21/10/2026 (chèque, en direct). Merci ! » ; annulé par le prestataire : « … a annulé le devis. Motif : « … ». Vos arrhes vous sont rendues en entier. » ; expiré : « Ce devis a expiré : demandez-en un nouveau depuis l'annonce… »
+- Problème signalé : bandeau orange « Problème signalé le … : « … ». L'administrateur de rafals regarde. »
+- Vide : « Aucune demande de devis. » + [Trouver un prestataire].
+
+### Onglet « Devis reçus » (prestataire)
+Titre « Muret de jardin · Marie Dupont » + badge (à répondre orange, devis envoyé gris, autre date demandée orange, accepté / travaux terminés / payé vert…) ; le texte du client, ses photos (vignettes, clic = en grand), « 8 allée des Pins, 33400 Talence · 06 12 34 56 78 · reçue le 02/10/2026 ».
+- À répondre : [Écrire le devis…] [Décliner…] (danger ; « Pourquoi ? » facultatif → « Demande déclinée : le client est prévenu. »).
+- Fenêtre « Devis pour Marie Dupont » : rappel de la demande ; lignes (Désignation, Quantité, Prix unit. € ou HT €, TVA 5,5 / 10 / 20 % si la case TVA est cochée, × pour retirer) ; [+ Ajouter une ligne] (20 au plus) ; total calculé en direct (« Total : 1 190,00 € » + mention 293 B, ou HT · TVA · Total TTC) ; Travaux du * / au * (dans 7 jours au départ), Arrhes (%) * (30 au départ, aide « 0 si vous n'en demandez pas. »), Valable jusqu'au * (dans 30 jours) ; « Arrhes : 357,00 €… Seuls des jours libres dans votre agenda ; ils seront bloqués quand le client acceptera. » ; erreur dans la fenêtre (ex. « Le 19/10/2026 n'est pas libre dans votre agenda (rendez-vous ou congés) : choisissez d'autres jours. ») ; [Envoyer le devis] → « Devis envoyé à Marie Dupont. »
+- Devis envoyé : « En attente de la réponse du client. » ; autre date demandée : bandeau orange « Le client demande : « … » » + [Proposer d'autres dates…] (fenêtre Travaux du / au → « Nouvelles dates envoyées au client. »).
+- Accepté : bandeau vert « Accepté, arrhes payées par carte · jours bloqués dans votre agenda. » ; [Travail terminé] (🔒 avant le 1er jour : « Vous pourrez déclarer le travail terminé à partir du lundi 19/10/2026. ») → « Travail déclaré terminé : le client est prévenu. » ; [Payé…] (en direct) ; [Annuler le devis…] (danger, motif obligatoire ; « Les arrhes payées par carte sont rendues en entier au client (reprises sur vos prochains paiements). »).
+- Fenêtre « Payé en direct ? » : « Vous avez reçu tout l'argent (900,00 €) hors de rafals. » ; « Comment ? * » [Espèces | Chèque | Virement] → « Devis payé. »
+- Travaux terminés par carte : « En attente du solde (833,00 €)… » ; payé, refusé, annulé par le client (« Vous gardez les arrhes ») : une phrase ; problème signalé : bandeau orange.
+- Vide : « Aucune demande de devis pour l'instant : vos clients vous écrivent depuis vos annonces « sur devis ». »

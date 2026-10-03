@@ -10,6 +10,7 @@ import AppSection from '../components/ui/AppSection.vue'
 import AppSelection from '../components/ui/AppSelection.vue'
 import ChoixHoraire from '../components/rendez-vous/ChoixHoraire.vue'
 import FenetreReservation from '../components/rendez-vous/FenetreReservation.vue'
+import FenetreDemandeDevis from '../components/devis/FenetreDemandeDevis.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 import type { RendezVousVisible } from '../outils/rendez_vous'
@@ -60,6 +61,22 @@ function reserve(rdv: RendezVousVisible) {
   debutChoisi.value = null
   afficherMessage(rdv.statut === 'confirme' ? 'Rendez-vous confirmé.' : 'Demande envoyée : le prestataire a 24 h pour répondre.')
   routeur.push('/rendez-vous')
+}
+
+// ---------- Demander un devis (lot 5.4) ----------
+const demandeOuverte = ref(false)
+function demanderDevis() {
+  if (!compte.value) {
+    afficherMessage('Connectez-vous pour demander un devis : vous reviendrez ici.')
+    routeur.push({ path: '/connexion', query: { retour: route.fullPath } })
+    return
+  }
+  demandeOuverte.value = true
+}
+function demandeEnvoyee() {
+  demandeOuverte.value = false
+  afficherMessage(`Demande envoyée : ${annonce.value?.prestataire.nom_affiche} va vous répondre.`)
+  routeur.push('/devis')
 }
 
 const monAnnonce = computed(() => !!annonce.value && compte.value?.prestataire_id === annonce.value.prestataire.id)
@@ -129,9 +146,8 @@ const prix = computed(() => {
         </dl>
         <p v-if="annonce.description" class="whitespace-pre-line">{{ annonce.description }}</p>
         <div v-if="annonce.forme_prix === 'devis'" class="pt-10 sm:pt-0">
-          <AppBouton variante="verrouille" raison-verrou="Les demandes de devis arrivent bientôt (niveau 5).">
-            Demander un devis
-          </AppBouton>
+          <p v-if="monAnnonce" class="text-[14px] text-texte-doux">Vos clients vous écriront ici (« Mes devis »).</p>
+          <AppBouton v-else @click="demanderDevis">Demander un devis</AppBouton>
         </div>
       </AppSection>
 
@@ -148,6 +164,13 @@ const prix = computed(() => {
         />
         <ChoixHoraire :annonce-id="annonce.id" :heures="annonce.forme_prix === 'heure' ? heures : null" @choisir="choisir" />
       </AppSection>
+      <FenetreDemandeDevis
+        v-if="annonce.forme_prix === 'devis'"
+        :annonce="annonce"
+        :ouverte="demandeOuverte"
+        @fermer="demandeOuverte = false"
+        @envoyee="demandeEnvoyee"
+      />
       <FenetreReservation
         :annonce="annonce"
         :debut="debutChoisi"

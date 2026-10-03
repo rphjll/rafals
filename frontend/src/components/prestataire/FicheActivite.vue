@@ -15,6 +15,7 @@ import AvatarPrestataire from './AvatarPrestataire.vue'
 import CarteMesAnnonces from './CarteMesAnnonces.vue'
 import CarteMetiers from './CarteMetiers.vue'
 import CartePaiementCarte from './CartePaiementCarte.vue'
+import CarteTva from './CarteTva.vue'
 
 const props = defineProps<{ profil: ProfilPrestataire }>()
 const emit = defineEmits<{ maj: [profil: ProfilPrestataire]; modifier: [] }>()
@@ -120,6 +121,7 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
     <template v-if="profil.statut !== 'arrete'">
       <CarteMesAnnonces />
       <CartePaiementCarte />
+      <CarteTva :facture-tva="profil.facture_tva" @maj="(v) => emit('maj', { ...profil, facture_tva: v })" />
       <CarteMetiers :profil="profil" @maj="(p) => emit('maj', p)" />
       <CarteAdresse
         titre="Mon local"

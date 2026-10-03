@@ -31,6 +31,8 @@ export interface ProfilPrestataire {
   distance_km: number
   siret: string | null
   siret_statut: 'absent' | 'a_verifier' | 'verifie' | 'refuse'
+  /** Case « Je facture la TVA » (lot 5.4) */
+  facture_tva: boolean
   statut: 'actif' | 'en_pause' | 'bloque' | 'arrete'
   a_une_photo: boolean
 }
