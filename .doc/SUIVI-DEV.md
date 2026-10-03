@@ -4,13 +4,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 5.4 — Écrans des devis : construit, en attente du regard de Raphael
-- **Étapes** :
-  - [x] 1. Maquette validée
-  - [x] 2. Écrans construits, vue-tsc sans erreur, essai par le port 5174
-  - [ ] 3. Raphael regarde avec les comptes d'essai zz-paul@example.com et zz-marie@example.com (mot de passe 123), puis nettoyage  ← on en est là
-- **Question en attente** : validation du lot 5.4
-- **En pause** : aucune
+_(vide)_
 
 ## Définition de « terminé »
 
@@ -83,7 +77,7 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 | 5.1 | Serveur | Paiement par carte (Stripe Connect) : relier le compte Stripe du prestataire (avec le mandat de facturation), paiement à la réservation, 5 % pour rafals, versement 48 h après la fin, remboursements (refus, expiration, annulation, absence) avec les frais pour celui qui annule, 48 h pour signaler l'absence du prestataire si payé par carte ; faux Stripe pour les tests | RM-PAIEMENTS | 5.0 | ✅ |
 | 5.2 | Écrans | « Activer le paiement par carte » (prestataire), payer en réservant, remboursements visibles, « Mes paiements » | RM-PAIEMENTS | 5.1 | ✅ |
 | 5.3 | Serveur | Devis : demande écrite avec photos, lignes, TVA (case du profil), arrhes, dates des travaux, [Demander une autre date], accepter / refuser, expiration, [Travail terminé], solde, [Signaler un problème], annulation, [Payé] ; « sur devis » réservé au SIRET | RM-DEVIS | 5.1 | ✅ |
-| 5.4 | Écrans | Devis côté client et côté prestataire | RM-DEVIS | 5.3, 5.2 | 🔎 |
+| 5.4 | Écrans | Devis côté client et côté prestataire | RM-DEVIS | 5.3, 5.2 | ✅ |
 | 5.5 | Serveur | Factures : numéros par prestataire, PDF, avoirs, [Payé] pour les rendez-vous en espèces, facture mensuelle des commissions de rafals | RM-FACTURES | 5.3 | ⬜ |
 | 5.6 | Écrans | « Mes factures » (client et prestataire), télécharger le PDF | RM-FACTURES | 5.5, 5.4 | ⬜ |
 
@@ -180,3 +174,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **03/10/2026** — Lot 5.3 construit → 🔎 à vérifier. MLD des devis validé (avec 5 choix : décliner une demande, un devis par demande, jours de travaux bloqués, « en direct » = un seul [Payé], 5 photos et 20 lignes au plus) ; `schema_v13.sql` exécuté (sauvegarde avant). Correction demandée à Raphael : `schema_v14.sql` (un paiement remboursé après avoir été versé garde sa date de versement ; choix « Assouplir la règle »), exécuté après sauvegarde. Serveur : `services/devis.py` (demande avec photos, devis en lignes numérotés D-2026-0001 par prestataire, TVA figée, autre date, refus, acceptation en direct ou avec arrhes par carte, jours bloqués, travaux terminés, solde par carte, [Payé] en direct, problème vu par l'administrateur, annulations, expiration et rappels du solde toutes les heures), `routes/devis.py`, case « Je facture la TVA » ; `services/paiements.py` étendu aux arrhes et au solde (versés sans attendre ; arrhes rendues si le prestataire annule, même déjà versées) ; un paiement en erreur ne bloque plus les autres dans la tâche de fond ; « sur devis » réservé au SIRET vérifié ; le nettoyage des données d'essai efface aussi les devis. Décision de Claude : rappels du solde 3 puis 10 jours après les travaux. Tests : 277 OK (devis, tests de fiche des 4 nouvelles tables) ; 4 anciens tests adaptés (annonce « sur devis » avec SIRET). Vraie base : 1 compte, 0 demande, 0 devis, 0 paiement. Interface : sans objet (lot serveur, écrans au lot 5.4).
 - **03/10/2026** — Lot 5.3 validé par Raphael (« je valide ») → ✅.
 - **03/10/2026** — Lot 5.4 construit → 🔎 à vérifier. Maquette `maquette-lot-5.4-devis.html` validée. Écrans : [Demander un devis] sur l'annonce (fenêtre : besoin, 5 photos, adresse) ; page « Mes devis » (`/devis`, dans le menu) avec « Mes demandes » (accepter par carte ou en direct, autre date, refuser, payer le solde, signaler un problème, annuler) et « Devis reçus » pour un prestataire (écrire le devis avec lignes, TVA et total calculé, décliner, autres dates, travail terminé, payé en direct, annuler) ; retour de Stripe ; carte « TVA » dans Mon activité ; Administration › « Problèmes de devis ». Réutilisation : `TableauDevis` des deux côtés, `outils/devis.ts`, `FenetreTexte` (texte facultatif ajouté), `AppSelection` pour le taux de TVA, `versCentimes` pour les quantités. vue-tsc sans erreur. Essai par le port 5174 (comptes d'essai zz-paul et zz-marie, mot de passe 123, gardés pour que Raphael regarde) : « sur devis » refusé sans SIRET, demande, devis D-2026-0001 à 1 190 €, carte refusée faute de Stripe, pages OK. Non vérifié par Claude : affichage sur 4 formats (pas de navigateur).
+- **03/10/2026** — Lot 5.4 validé par Raphael (« cb je valide ») → ✅. Comptes d'essai n° 31 et 32 effacés après sauvegarde. Comptage : 2 comptes — le n° 5 de Raphael et un n° 33 « raphael.jallu1@gmail.com » créé le 03/10 à 9 h 46, non marqué comme essai : laissé en place, question posée à Raphael.
