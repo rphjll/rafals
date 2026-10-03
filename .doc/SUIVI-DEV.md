@@ -4,13 +4,7 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Lot 5.6 — Écrans des factures : construit, en attente du regard de Raphael
-- **Étapes** :
-  - [x] 1. Maquette validée
-  - [x] 2. Écrans construits, vue-tsc sans erreur, 307 tests OK, essai par le port 5174
-  - [ ] 3. Raphael regarde avec les comptes d'essai zz-paul@example.com et zz-marie@example.com (mot de passe 123), puis nettoyage  ← on en est là
-- **Question en attente** : validation du lot 5.6
-- **En pause** : aucune
+_(vide)_
 
 ## Définition de « terminé »
 
@@ -85,7 +79,7 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 | 5.3 | Serveur | Devis : demande écrite avec photos, lignes, TVA (case du profil), arrhes, dates des travaux, [Demander une autre date], accepter / refuser, expiration, [Travail terminé], solde, [Signaler un problème], annulation, [Payé] ; « sur devis » réservé au SIRET | RM-DEVIS | 5.1 | ✅ |
 | 5.4 | Écrans | Devis côté client et côté prestataire | RM-DEVIS | 5.3, 5.2 | ✅ |
 | 5.5 | Serveur | Factures : numéros par prestataire, PDF, avoirs, [Payé] pour les rendez-vous en espèces, facture mensuelle des commissions de rafals | RM-FACTURES | 5.3 | ✅ |
-| 5.6 | Écrans | « Mes factures » (client et prestataire), télécharger le PDF | RM-FACTURES | 5.5, 5.4 | 🔎 |
+| 5.6 | Écrans | « Mes factures » (client et prestataire), télécharger le PDF | RM-FACTURES | 5.5, 5.4 | ✅ |
 
 ## Niveau 6 — à découper après l'écriture de ses règles
 | Lot | Type | Description | Règle source | Dépend de | État |
@@ -188,3 +182,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **03/10/2026** — Lot 5.5 validé par Raphael (« oui je valide ») → ✅. Constat : la refonte du calendrier (autre conversation, `schema_v16.sql`) est arrivée entre-temps ; relue, elle est cohérente avec les lots 5.1 à 5.5 (onglet « Paiements » gardé, jours de travaux d'un devis bloqués dans le calendrier du métier de l'annonce).
 - **03/10/2026** — Compte n° 34 « raphael.jallu1@gmail.com » : gardé à la demande de Raphael (« b ») comme compte d'essai pour ses prochains essais à la main. Ne pas l'effacer ni reposer la question aux prochains comptages ; il n'est pas marqué `@example.com`, donc `nettoyer-donnees-test.bat` ne le touche pas.
 - **03/10/2026** — Lot 5.6 construit → 🔎 à vérifier. Maquette `maquette-lot-5.6-factures.html` validée. Écrans : page « Mes factures » (`/factures`, dans le menu ; client : un tableau ; prestataire : onglets Reçues / Émises / Commission de rafals ; bouton [PDF] qui ouvre la facture dans un nouvel onglet) ; [Payé…] sur un rendez-vous en espèces (prestataire avec SIRET vérifié) et [Facture (PDF)] ; ligne « Prix » « payé en espèces le … · facture F-… » ; [Voir mes factures] dans Mon compte. Réutilisation : `TableauFactures` pour les 3 listes, `FenetrePayeDirect` commune aux rendez-vous et aux devis (la fenêtre du lot 5.4 a été regroupée), `outils/factures.ts`. Serveur, en plus : chaque rendez-vous indique sa facture. Tests : 307 OK ; vue-tsc sans erreur. Essai par le port 5174 (comptes d'essai zz-paul et zz-marie, mot de passe 123, gardés pour que Raphael regarde) : devis accepté en direct, payé par chèque → facture F-2026-0001 de 1 190,00 € visible des deux côtés, PDF ouvert et relu (vendeur, SIRET, client, 3 lignes, total, mention 293 B, mandat). Non vérifié par Claude : affichage sur 4 formats (pas de navigateur).
+- **03/10/2026** — Lot 5.6 validé par Raphael (« le niveau 5 est fini ») → ✅. **Niveau 5 (Argent) terminé** : lots 5.0 à 5.6. Comptes d'essai n° 35 et 36 effacés après sauvegarde ; comptage : 0 facture, 0 devis, 0 demande, 0 paiement ; 2 comptes (n° 5 de Raphael, et n° 34 « raphael.jallu1@gmail.com », compte d'essai de Raphael pour le calendrier, laissé en place). Restent avant la mise en ligne : compte Stripe et essai réel du paiement ; identité de rafals (`RAFALS_NOM`, `RAFALS_SIRET`, `RAFALS_ADRESSE`) ; avis sur les prestataires sans SIRET ; avis d'un comptable sur la TVA (rendez-vous à 20 %, arrhes) ; facture électronique 2027. Prochain lot : 6.0 (règles des sujets 13 à 16).
