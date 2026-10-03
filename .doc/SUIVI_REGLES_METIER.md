@@ -26,10 +26,10 @@
 | 10 | 5 — Argent | Devis | Création, acceptation, passage en facture | validé et formalisé (02/10/2026) | `regles-metier/RM-DEVIS.md` |
 | 11 | 5 — Argent | Factures | Numérotation, mentions obligatoires, facture électronique / e-reporting | validé et formalisé (02/10/2026) | `regles-metier/RM-FACTURES.md` |
 | 12 | 5 — Argent | Paiements et commission | Carte sur le site, espèces, pourcentage de rafals, remboursements | validé et formalisé (02/10/2026) | `regles-metier/RM-PAIEMENTS.md` |
-| 13 | 6 — Services | Sites vitrines | Modèles (vitrine-express), sous-domaine, prix (abonnement ou à vie) | à faire | — |
-| 14 | 6 — Services | Aide à la création d'auto-entreprise | Parcours de Karim jusqu'au SIRET | à faire | — |
-| 15 | 6 — Services | Démarches administratives | Déclarations URSSAF, rappels, automatisation | à faire | — |
-| 16 | 6 — Services | Administration de la plateforme | Validation des prestataires, litiges, signalements | à faire | — |
+| 13 | 6 — Services | Sites vitrines | Modèles (vitrine-express), sous-domaine, prix (abonnement ou à vie) | rédigé par Claude le 03/10/2026 (choix proposés 🟡), à valider par Raphael | `regles-metier/RM-SITES-VITRINES.md` |
+| 14 | 6 — Services | Aide à la création d'auto-entreprise | Parcours de Karim jusqu'au SIRET | rédigé par Claude le 03/10/2026 (choix proposés 🟡), à valider par Raphael | `regles-metier/RM-CREATION-AUTO-ENTREPRISE.md` |
+| 15 | 6 — Services | Démarches administratives | Déclarations URSSAF, rappels, automatisation | rédigé par Claude le 03/10/2026 (choix proposés 🟡), à valider par Raphael | `regles-metier/RM-DEMARCHES.md` |
+| 16 | 6 — Services | Administration de la plateforme | Validation des prestataires, litiges, signalements | rédigé par Claude le 03/10/2026 (choix proposés 🟡), à valider par Raphael | `regles-metier/RM-ADMINISTRATION.md` |
 
 ## Décisions en attente
 - ⚠️ Prestataires sans SIRET payés en espèces : à faire vérifier juridiquement (sujets 02, 05, 12).

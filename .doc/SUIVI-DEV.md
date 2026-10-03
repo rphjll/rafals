@@ -4,7 +4,17 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-_(vide)_
+- **Demande** : Niveau 6 « tout seul » pendant le sommeil de Raphael (03/10/2026 : « fais tout ce que tu peux avant de me poser les questions car je vais dormir » ; questions à la toute fin)
+- **Commencé le** : 03/10/2026
+- **Limite fixée par Claude** : aucune modification de la structure de la vraie base sans l'accord de Raphael → les lots avec nouvelles tables (6.3, 6.5) s'arrêtent au MLD
+- **Étapes** :
+  - [x] 1. Lot 6.0 : règles des sujets 13 à 16 (choix proposés 🟡) et découpage
+  - [ ] 2. Lot 6.1 : serveur sans nouvelle table (tableau de bord, paiements, chiffre d'affaires à déclarer)  ← on en est là
+  - [ ] 3. Lot 6.2 : maquette puis écrans (administration, Mes démarches, guide auto-entreprise)
+  - [ ] 4. MLD des lots 6.3 et 6.5, maquette du lot 6.6 (préparés, non exécutés)
+  - [ ] 5. Tests, suivi, sauvegarde git, bilan avec toutes les questions
+- **Question en attente** : aucune avant le bilan
+- **En pause** : aucune
 
 ## Définition de « terminé »
 
@@ -81,10 +91,16 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 | 5.5 | Serveur | Factures : numéros par prestataire, PDF, avoirs, [Payé] pour les rendez-vous en espèces, facture mensuelle des commissions de rafals | RM-FACTURES | 5.3 | ✅ |
 | 5.6 | Écrans | « Mes factures » (client et prestataire), télécharger le PDF | RM-FACTURES | 5.5, 5.4 | ✅ |
 
-## Niveau 6 — à découper après l'écriture de ses règles
+## Niveau 6 — Services (découpage proposé par Claude le 03/10/2026, à valider par Raphael)
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 6.0 | Règles | Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6 | SUIVI_REGLES_METIER | niveau 5 | ⬜ |
+| 6.0 | Règles | Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6 | SUIVI_REGLES_METIER | niveau 5 | 🔎 |
+| 6.1 | Serveur | Sans nouvelle table : chiffres du tableau de bord de l'administration, liste de tous les paiements ; chiffre d'affaires à déclarer par mois et par trimestre (d'après les factures) | RM-ADMINISTRATION, RM-DEMARCHES | 6.0 | ⬜ |
+| 6.2 | Écrans | Administration › Tableau de bord et Paiements ; « Mes démarches » ; guide « Créer mon auto-entreprise » (5 étapes) | RM-ADMINISTRATION, RM-DEMARCHES, RM-CREATION-AUTO-ENTREPRISE | 6.1 | ⬜ |
+| 6.3 | Serveur | Avec nouvelles tables (MLD à valider) : signalements d'annonces et de prestataires ; choix « chaque mois / chaque trimestre » et rappels URSSAF par mail | RM-ADMINISTRATION, RM-DEMARCHES | 6.1 | ⬜ |
+| 6.4 | Écrans | [Signaler] sur une annonce et un prestataire ; Administration › Signalements ; réglage et rappels dans « Mes démarches » | RM-ADMINISTRATION, RM-DEMARCHES | 6.3, 6.2 | ⬜ |
+| 6.5 | Serveur | Sites vitrines (MLD à valider) : adresse choisie, modèle, style, accroche, en ligne / hors ligne, page servie sur le sous-domaine | RM-SITES-VITRINES | 6.1 | ⬜ |
+| 6.6 | Écrans | « Mon site » (choisir l'adresse, le modèle, le style, aperçu) et le site lui-même (3 modèles × 5 styles) | RM-SITES-VITRINES | 6.5 | ⬜ |
 
 ## Journal
 - **28/09/2026** — Démarrage — Plan de développement écrit (phase 8). Décisions : niveaux 3 à 6 découpés plus tard, juste après l'écriture de leurs règles (méthode § 0.5, précision phase 6) ; mails de test en local par un conteneur dédié (détail au lot 1.1).
@@ -183,3 +199,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **03/10/2026** — Compte n° 34 « raphael.jallu1@gmail.com » : gardé à la demande de Raphael (« b ») comme compte d'essai pour ses prochains essais à la main. Ne pas l'effacer ni reposer la question aux prochains comptages ; il n'est pas marqué `@example.com`, donc `nettoyer-donnees-test.bat` ne le touche pas.
 - **03/10/2026** — Lot 5.6 construit → 🔎 à vérifier. Maquette `maquette-lot-5.6-factures.html` validée. Écrans : page « Mes factures » (`/factures`, dans le menu ; client : un tableau ; prestataire : onglets Reçues / Émises / Commission de rafals ; bouton [PDF] qui ouvre la facture dans un nouvel onglet) ; [Payé…] sur un rendez-vous en espèces (prestataire avec SIRET vérifié) et [Facture (PDF)] ; ligne « Prix » « payé en espèces le … · facture F-… » ; [Voir mes factures] dans Mon compte. Réutilisation : `TableauFactures` pour les 3 listes, `FenetrePayeDirect` commune aux rendez-vous et aux devis (la fenêtre du lot 5.4 a été regroupée), `outils/factures.ts`. Serveur, en plus : chaque rendez-vous indique sa facture. Tests : 307 OK ; vue-tsc sans erreur. Essai par le port 5174 (comptes d'essai zz-paul et zz-marie, mot de passe 123, gardés pour que Raphael regarde) : devis accepté en direct, payé par chèque → facture F-2026-0001 de 1 190,00 € visible des deux côtés, PDF ouvert et relu (vendeur, SIRET, client, 3 lignes, total, mention 293 B, mandat). Non vérifié par Claude : affichage sur 4 formats (pas de navigateur).
 - **03/10/2026** — Lot 5.6 validé par Raphael (« le niveau 5 est fini ») → ✅. **Niveau 5 (Argent) terminé** : lots 5.0 à 5.6. Comptes d'essai n° 35 et 36 effacés après sauvegarde ; comptage : 0 facture, 0 devis, 0 demande, 0 paiement ; 2 comptes (n° 5 de Raphael, et n° 34 « raphael.jallu1@gmail.com », compte d'essai de Raphael pour le calendrier, laissé en place). Restent avant la mise en ligne : compte Stripe et essai réel du paiement ; identité de rafals (`RAFALS_NOM`, `RAFALS_SIRET`, `RAFALS_ADRESSE`) ; avis sur les prestataires sans SIRET ; avis d'un comptable sur la TVA (rendez-vous à 20 %, arrhes) ; facture électronique 2027. Prochain lot : 6.0 (règles des sujets 13 à 16).
+- **03/10/2026** — Niveau 6 commencé « tout seul » (Raphael : « ce que j'ai a faire je le ferai a la fin avant la mise en ligne […] fais tout ce que tu peux avant de me poser les questions car je vais dormir »). Lot 6.0 rédigé → 🔎 : `RM-SITES-VITRINES.md`, `RM-CREATION-AUTO-ENTREPRISE.md`, `RM-DEMARCHES.md`, `RM-ADMINISTRATION.md`. Décisions de Claude, toutes marquées 🟡 dans les règles et à valider : (13) site pour tout prestataire actif, adresse choisie (3 à 30 caractères), contenu rempli tout seul depuis le profil, 3 modèles × 5 styles pour commencer, hors ligne tout seul si le profil est en pause, construit d'abord sans paiement — le prix reste à décider par Raphael ; (14) rafals guide en 5 étapes mais ne fait pas la démarche, guide ouvert à tous, avancement gardé dans le navigateur ; (15) rafals prépare le chiffre d'affaires à déclarer (factures moins avoirs) mais ne déclare pas, par mois et par trimestre, rappels par mail après validation ; (16) pas de validation avant publication, tableau de bord, suivi des paiements, signalements après validation. Découpage en 6 lots (6.1 à 6.6). Limite que Claude s'est fixée : aucun changement de la structure de la vraie base sans l'accord de Raphael (règle « Raphael garde la main sur la structure de la base ») : les lots 6.3 et 6.5 s'arrêtent au MLD.
