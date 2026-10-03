@@ -100,6 +100,13 @@ DEVIS_TAUX_TVA_POUR_MILLE = (55, 100, 200)  # 5,5 %, 10 %, 20 %
 DEVIS_MENTION_SANS_TVA = "TVA non applicable, art. 293 B du CGI"
 DEVIS_RELANCES_SOLDE = (timedelta(days=3), timedelta(days=10))  # rappels au client qui n'a pas payé le solde (choix de Claude)
 
+# Factures (RM-FACTURES.md, validé par Raphael le 02/10/2026 ; MLD 5.5 du 03/10/2026)
+FACTURE_MENTION_SANS_TVA = DEVIS_MENTION_SANS_TVA
+# ⚠️ À confirmer par un comptable : taux appliqué aux rendez-vous d'un prestataire qui facture la TVA (les annonces
+# n'ont pas de taux ; le prix affiché est toutes taxes comprises). Choix de Claude : le taux normal, 20 %.
+FACTURE_TVA_RENDEZ_VOUS_POUR_MILLE = 200
+FACTURE_MOYENS_DIRECTS = ("especes", "cheque", "virement")
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

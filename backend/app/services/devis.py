@@ -474,6 +474,9 @@ def paye_en_direct(db: Session, prestataire: Prestataire, devis: Devis, moyen: s
     if devis.termine_le is None:
         devis.termine_le = maintenant
     _paye(db, devis, maintenant, moyen)
+    from app.services import factures  # (import ici : factures dépend de ce module)
+
+    factures.pour_devis_en_direct(db, devis, maintenant)  # la facture du total, « Payé par chèque »
     return devis
 
 

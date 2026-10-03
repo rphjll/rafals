@@ -1,0 +1,329 @@
+<title>Maquette calendrier simple</title>
+<style>
+:root{--vif:#5FD38A;--vif-t:#0F2A1A;--fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;--prim:#2F6B4F;--prim-t:#FFFFFF;--prim-doux:#E2EEE7;--accent:#D9793A;--ok:#2E7D4F;--ok-doux:#E3F2E8;--att:#B26A00;--att-doux:#FCF0DC;--err:#B3261E;--err-doux:#FBE4E2;--neu:#5B6573;--neu-doux:#E8ECF1;--sur:#FFFFFF;--voile:rgb(10 14 20 / .55)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--vif:#1F8A4A;--vif-t:#F2FFF6;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}}
+:root[data-theme="dark"]{color-scheme:dark;--vif:#1F8A4A;--vif-t:#F2FFF6;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:"Segoe UI",system-ui,sans-serif;font-size:15px;margin:0}
+.bandeau{background:var(--surface);border-bottom:1px dashed var(--bord);padding:10px 16px;font-size:13px;color:var(--doux);display:flex;flex-direction:column;gap:4px}
+.bandeau b{color:var(--texte)} .bandeau ul{margin:0;padding-left:18px}
+header{background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px}
+.entete{max-width:1080px;margin:0 auto;height:60px;display:flex;align-items:center}
+.logo{font-weight:700;font-size:24px;color:var(--prim)} .logo span{color:var(--accent)}
+main{padding-inline:16px;padding-block:28px 60px}
+.contenu{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:28px;margin:0} h2{font-size:20px;margin:0} h3{margin:0;font-size:17px}
+.onglets{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--bord)}
+.onglets button{font:inherit;border:0;background:transparent;color:var(--doux);padding:10px 12px;border-bottom:3px solid transparent;font-weight:600;min-height:42px;cursor:pointer}
+.onglets button[aria-pressed="true"]{color:var(--prim);border-bottom-color:var(--prim)}
+.compteur{margin-left:4px;background:var(--accent);color:var(--sur);border-radius:999px;padding:1px 7px;font-size:12px}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.tete{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid transparent;min-height:42px;padding:9px 16px;cursor:pointer}
+.petit{min-height:36px;padding:6px 12px;font-size:14px}
+.prim{background:var(--prim);color:var(--prim-t);border-color:var(--prim)} .sec{background:var(--surface);color:var(--prim);border-color:var(--prim)} .dan{background:var(--surface);color:var(--err);border-color:var(--err)}
+.mode{background:var(--surface);color:var(--texte);border-color:var(--bord)}
+.mode.f[aria-pressed="true"]{background:var(--att);color:var(--sur);border-color:var(--att)}
+.mode.o[aria-pressed="true"]{background:var(--ok);color:var(--sur);border-color:var(--ok)}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.b-ok{background:var(--ok-doux);color:var(--ok)} .b-att{background:var(--att-doux);color:var(--att)} .b-neu{background:var(--neu-doux);color:var(--neu)}
+.note{font-size:13.5px;color:var(--doux);margin:0}
+.alerte{border-radius:8px;padding:10px 12px;font-weight:500;font-size:14px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.a-att{background:var(--att-doux);color:var(--att)} .a-ok{background:var(--ok-doux);color:var(--ok)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* Calendrier + panneau du jour à droite */
+.disposition{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
+.panneau{position:sticky;top:12px}
+@media (max-width:900px){.disposition{grid-template-columns:1fr}.panneau{position:static}}
+.grille{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;user-select:none}
+.grille.glisser{touch-action:none;cursor:crosshair}
+.nomjour{text-align:center;font-size:12px;font-weight:600;color:var(--doux);padding-bottom:2px}
+.case{position:relative;font:inherit;color:inherit;text-align:center;align-items:center;justify-content:center;min-height:64px;border:1px solid var(--bord);border-radius:8px;padding:4px 5px;display:flex;flex-direction:column;gap:1px;font-size:12px;overflow:hidden;cursor:pointer;background:var(--neu-doux)}
+.case.ouvert{background:var(--vif);color:var(--vif-t);border-color:var(--vif)}
+.case.ouvert .t-att,.case.ouvert .t-ok,.case.ouvert .t-prim{background:var(--surface);border-radius:4px;padding:0 4px;align-self:flex-start;max-width:100%}
+.case.ferme{color:var(--doux)}
+.case.passe{opacity:.55}
+.case.choisi{outline:3px solid var(--prim);outline-offset:-1px}
+.case.bloque{border-color:var(--att);background:repeating-linear-gradient(135deg,var(--att-doux) 0 6px,var(--surface) 6px 12px)}
+.case.exc{background:var(--vif)}
+.case.sel-f{outline:3px solid var(--att);outline-offset:-1px}
+.case.sel-o{outline:3px solid var(--ok);outline-offset:-1px}
+.case > *{position:relative}
+.hachure{position:absolute!important;top:0;bottom:0;background:repeating-linear-gradient(135deg,var(--att-doux) 0 6px,transparent 6px 12px);border-left:2px solid var(--att);border-right:2px solid var(--att)}
+.case b{font-size:17px}
+.point{font-size:11px;font-weight:700;background:var(--surface);color:var(--prim);border-radius:999px;padding:0 6px}
+.aide{font-size:14px;color:var(--doux);margin:0}
+.lien{font:inherit;font-weight:600;font-size:14px;background:none;border:0;color:var(--prim);cursor:pointer;padding:8px 0;min-height:42px;text-align:left;text-decoration:underline}
+.gros{flex:1 1 220px}
+.t-att{color:var(--att);font-weight:700} .t-ok{color:var(--ok);font-weight:700} .t-prim{color:var(--prim);font-weight:700} .t-err{color:var(--err);font-weight:700}
+.long{display:inline} .court{display:none}
+@media (max-width:560px){.long{display:none}.court{display:inline}.cache-tel{display:none}.case{min-height:62px}}
+.deux-listes{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+@media (max-width:700px){.deux-listes{grid-template-columns:1fr}}
+.legende{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--doux)}
+.legende span{display:inline-flex;align-items:center;gap:6px} .legende i{width:14px;height:14px;border-radius:4px;display:inline-block}
+.lignes{display:flex;flex-direction:column}
+.ligne{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;padding:10px 0;border-top:1px solid var(--bord)}
+.ligne:first-child{border-top:0}
+.pastilles{display:flex;flex-wrap:wrap;gap:6px} .pastilles span{background:var(--prim-doux);color:var(--prim);border-radius:999px;padding:4px 10px;font-size:13px;font-weight:600}
+select,input{min-height:42px;border:1px solid var(--bord);border-radius:10px;background:var(--fond);color:var(--texte);font:inherit;padding:8px 10px;width:100%}
+label.champ{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13px}
+.periode{display:grid;grid-template-columns:auto 1fr 130px;gap:8px;align-items:end}
+.periode span{padding-bottom:11px;font-weight:600;font-size:14px}
+@media (max-width:480px){.periode{grid-template-columns:1fr 1fr}.periode span{grid-column:1/-1;padding:0}}
+.voile{position:fixed;inset:0;background:var(--voile);display:grid;place-items:center;padding:16px;z-index:5}
+.fenetre{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:22px;width:min(560px,100%);max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.fenetre h3{font-size:20px} .pied{display:flex;gap:10px;flex-wrap:wrap}
+.semaine{display:grid;grid-template-columns:90px 1fr;gap:8px 12px;align-items:center;font-size:14px}
+.plage{display:inline-flex;gap:6px;align-items:center;background:var(--fond);border:1px solid var(--bord);border-radius:8px;padding:4px 8px;margin:2px 4px 2px 0}
+.choix{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.choix button{font:inherit;border:1px solid var(--bord);background:var(--surface);color:var(--texte);border-radius:10px;min-height:44px;cursor:pointer}
+.choix button[aria-pressed="true"]{border-color:var(--prim);background:var(--prim-doux);font-weight:600}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--ok);color:var(--sur);padding:12px 18px;border-radius:10px;font-weight:600;z-index:9}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+
+<div class="bandeau">
+  <div><b>Maquette — calendrier simple</b> (exemple : Léa, coiffeuse, aujourd'hui samedi 3 octobre 2026). Tout est cliquable. Une case = une couleur, sans texte ; les détails se lisent à droite en cliquant un jour.</div>
+</div>
+<header><div class="entete"><span class="logo">rafals<span>.</span></span><span class="note" style="margin-left:auto">menu : … · <b>Mon agenda</b> · Mon compte</span></div></header>
+<main><div class="contenu" id="ecran"></div></main>
+<div id="couche"></div><div class="toast" id="toast" hidden></div>
+
+<script>
+const AUJ = '2026-10-03';
+const JOURS = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+const MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+// Semaine type de Léa (1 = lundi)
+let semaine = {1:[],2:[['09:00','12:00'],['14:00','19:00']],3:[['09:00','12:00'],['14:00','19:00']],4:[['09:00','12:00'],['14:00','19:00']],5:[['09:00','12:00'],['14:00','19:00']],6:[['09:00','12:00']],7:[]};
+// Fermetures (= blocages) et ouvertures exceptionnelles : début et fin « AAAA-MM-JJ HH:MM », fin exclue
+let periodes = [
+  {id:1,type:'f',debut:'2026-10-09 16:00',fin:'2026-10-09 20:00',motif:'Dentiste'},
+  {id:2,type:'f',debut:'2026-10-20 00:00',fin:'2026-10-25 00:00',motif:'Congés'},
+  {id:3,type:'o',debut:'2026-10-18 10:00',fin:'2026-10-18 13:00',motif:'Mariage de Julie'},
+];
+const rdv = [
+  {jour:'2026-10-06',h:'10 h 00 – 10 h 45',titre:'Coupe femme',client:'Marie Dupont'},
+  {jour:'2026-10-06',h:'14 h 30 – 15 h 15',titre:'Coupe femme',client:'Nadia Benali',attente:true},
+  {jour:'2026-10-07',h:'9 h 00 – 10 h 30',titre:'Couleur',client:'Paul Petit'},
+];
+let mois = '2026-10', choisi = AUJ, mode = null, selection = null, onglet = 'calendrier', annonce = 45;
+
+const $ = (s) => document.querySelector(s);
+const pad = (n) => String(n).padStart(2,'0');
+function ajouter(j,n){const [a,m,d]=j.split('-').map(Number);return new Date(Date.UTC(a,m-1,d+n)).toISOString().slice(0,10)}
+function js(j){const [a,m,d]=j.split('-').map(Number);return (new Date(Date.UTC(a,m-1,d)).getUTCDay()+6)%7+1}
+function lisible(j){const [,m,d]=j.split('-').map(Number);return `${JOURS[js(j)-1]} ${d} ${MOIS[m-1]}`}
+function court(j){const [a,m,d]=j.split('-');return `${d}/${m}/${a}`}
+function h(t){const [a,b]=t.split(':');return `${Number(a)} h ${b}`}
+function hc(t){const [a,b]=t.split(':');return b==='00'?String(Number(a)):`${Number(a)}h${b}`}
+const min = (t)=>{const [a,b]=t.split(':').map(Number);return a*60+b};
+const enHeure = (m)=>`${pad(Math.floor(m/60))}:${pad(m%60)}`;
+function periodeLisible(p){
+  const [dj,dh]=p.debut.split(' '),[fj,fh]=p.fin.split(' ');
+  if(dh==='00:00'&&fh==='00:00'){const der=ajouter(fj,-1);return der===dj?`Le ${court(dj)}`:`Du ${court(dj)} au ${court(der)}`}
+  if(dj===fj||(fh==='00:00'&&ajouter(dj,1)===fj))return `${court(dj)}, de ${h(dh)} à ${fh==='00:00'?'24 h 00':h(fh)}`;
+  return `Du ${court(dj)} à ${h(dh)} jusqu'au ${court(fj)} à ${h(fh)}`;
+}
+// Morceau d'une période qui tombe ce jour-là, en minutes [0, 1440]
+function morceau(p,j){
+  const d=`${j} 00:00`,f=`${ajouter(j,1)} 00:00`;
+  if(p.debut>=f||p.fin<=d)return null;
+  const a=p.debut<=d?0:min(p.debut.slice(11)), b=p.fin>=f?1440:min(p.fin.slice(11));
+  return [a,b];
+}
+function decrire(j){
+  const plages=semaine[js(j)];
+  const ferm=periodes.filter(p=>p.type==='f').map(p=>({p,m:morceau(p,j)})).filter(x=>x.m);
+  const ouv=periodes.filter(p=>p.type==='o').map(p=>({p,m:morceau(p,j)})).filter(x=>x.m);
+  const entier=ferm.find(x=>x.m[0]===0&&x.m[1]===1440);
+  return {j,plages,ferm,ouv,entier,rdv:rdv.filter(r=>r.jour===j)};
+}
+// Plages réellement ouvertes ce jour : semaine type + ouvertures, moins les fermetures
+function ouvertes(d){
+  let l=d.plages.map(([a,b])=>[min(a),min(b)]).concat(d.ouv.map(x=>x.m));
+  l.sort((x,y)=>x[0]-y[0]);const fus=[];for(const x of l){const der=fus[fus.length-1];if(der&&x[0]<=der[1])der[1]=Math.max(der[1],x[1]);else fus.push([...x])}
+  for(const {m} of d.ferm){const res=[];for(const [a,b] of fus){if(m[1]<=a||m[0]>=b){res.push([a,b]);continue}if(a<m[0])res.push([a,m[0]]);if(b>m[1])res.push([m[1],b])}fus.splice(0,fus.length,...res)}
+  return fus;
+}
+
+function rendre(){
+  const ec=$('#ecran');
+  const n=rdv.filter(r=>r.attente).length;
+  ec.innerHTML=`<h1>Mon agenda</h1>
+  <div class="onglets">${[['calendrier','Calendrier'],['rdv',`Rendez-vous<span class="compteur">${n}</span>`],['paiements','Paiements']].map(([id,t])=>`<button data-onglet="${id}" aria-pressed="${onglet===id}">${t}</button>`).join('')}</div>
+  ${onglet==='calendrier'?calendrier():`<div class="carte"><p class="note">Onglet inchangé (voir les maquettes 4.4 et 5.2).</p></div>`}`;
+  ec.querySelectorAll('[data-onglet]').forEach(b=>b.onclick=()=>{onglet=b.dataset.onglet;rendre()});
+  if(onglet==='calendrier')brancher();
+}
+
+function calendrier(){
+  const [a,m]=mois.split('-').map(Number);
+  const prem=`${mois}-01`;const cases=[];for(let j=prem;j.startsWith(mois);j=ajouter(j,1))cases.push(decrire(j));
+  const nomM=(e)=>MOIS[((m-1+e)%12+12)%12];
+  const d=decrire(choisi);
+  const ouv=ouvertes(d);
+  const sel=selection?[selection.a,selection.b].sort():null;
+  return `
+  <div class="disposition">
+    <div class="carte">
+      <div class="tete">
+        <button class="btn sec petit" id="prec" aria-label="Mois précédent">‹</button>
+        <h2 style="text-transform:capitalize">${MOIS[m-1]} ${a}</h2>
+        <button class="btn sec petit" id="suiv" aria-label="Mois suivant">›</button>
+      </div>
+      <div class="grille ${mode?'glisser':''}" id="grille">
+        ${JOURS.map(n=>`<div class="nomjour">${n.slice(0,3)}</div>`).join('')}
+        ${'<div></div>'.repeat(js(prem)-1)}
+        ${cases.map(c=>caseJour(c,sel)).join('')}
+      </div>
+      <div class="legende">
+        <span><i style="background:var(--vif)"></i>ouvert</span>
+        <span><i style="background:var(--neu-doux)"></i>fermé</span>
+        <span><i style="background:repeating-linear-gradient(135deg,var(--att-doux) 0 3px,var(--surface) 3px 6px);border:1px solid var(--att)"></i>fermeture exceptionnelle</span>
+      </div>
+      ${mode?`<div class="alerte ${mode==='f'?'a-att':'a-ok'}"><span>Appuyez sur le premier jour à ${mode==='f'?'fermer':'ouvrir'} et glissez jusqu'au dernier.</span><button class="btn petit sec" id="m-fin">Arrêter</button></div>`
+      :`<div class="actions">
+        <button class="btn mode f gros" id="m-f" aria-pressed="false">Fermeture exceptionnelle</button>
+        <button class="btn mode o gros" id="m-o" aria-pressed="false">Ouverture exceptionnelle</button>
+      </div>`}
+    </div>
+    <div class="carte panneau">
+      <div class="tete"><h2 style="text-transform:capitalize">${lisible(choisi)}</h2>${badge(d,ouv)}</div>
+      ${detailJour(d,ouv)}
+      ${d.rdv.length?`<div class="lignes">${d.rdv.map(r=>`<div class="ligne" style="font-size:14px"><span><b>${r.h}</b><br>${r.titre} · ${r.client} ${r.attente?'<span class="t-att">(demande en attente)</span>':''}</span></div>`).join('')}</div>`:''}
+      ${choisi>=AUJ?`<button class="lien" id="b-client">Voir les horaires proposés aux clients ce jour-là</button>`:''}
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn sec" id="b-semaine">Mes horaires de la semaine</button>
+    <button class="btn sec" id="b-reglages">Réglages</button>
+  </div>
+  ${periodes.length?`<div class="deux-listes">${liste('o')}${liste('f')}</div>`:''}`;
+}
+function liste(type){
+  const f=type==='f';
+  const l=periodes.filter(p=>p.type===type).sort((x,y)=>x.debut<y.debut?-1:1);
+  return `<div class="carte">
+    <div class="tete"><h2>${f?'Fermetures':'Ouvertures'} exceptionnelles</h2><span class="badge ${f?'b-att':'b-ok'}">${l.length}</span></div>
+    <div class="lignes">${l.map(p=>`<div class="ligne"><span><b>${periodeLisible(p)}</b>${p.motif?`<br><span class="note" style="display:inline">${p.motif}</span>`:''}</span><button class="btn dan petit" data-retirer="${p.id}">Retirer</button></div>`).join('')||`<p class="note">Aucune ${f?'fermeture':'ouverture'} à venir.</p>`}</div>
+  </div>`;
+}
+
+function caseJour(c,sel){
+  const cl=['case'];
+  const ouvert=c.plages.length||c.ouv.length;
+  cl.push(ouvert?'ouvert':'ferme');
+  if(c.entier)cl.push('bloque');
+  if(c.ouv.length)cl.push('exc');
+  if(c.j<AUJ)cl.push('passe');
+  if(c.j===choisi&&!mode)cl.push('choisi');
+  if(sel&&c.j>=sel[0]&&c.j<=sel[1])cl.push(mode==='f'?'sel-f':'sel-o');
+  // Partie hachurée : fenêtre d'affichage 7 h → 21 h (les heures hors de cette fenêtre sont collées aux bords)
+  const hach=c.entier?'':c.ferm.map(({m})=>{const A=7*60,B=21*60;const t=Math.max(0,Math.min(1,(m[0]-A)/(B-A))),f=Math.max(0,Math.min(1,(m[1]-A)/(B-A)));return f>t?`<span class="hachure" style="left:${(t*100).toFixed(1)}%;width:${((f-t)*100).toFixed(1)}%"></span>`:''}).join('');
+  return `<button class="${cl.join(' ')}" data-jour="${c.j}" aria-label="${lisible(c.j)}">${hach}<b>${Number(c.j.slice(8))}</b>${c.rdv.length?`<span class="point">${c.rdv.length} rdv</span>`:''}</button>`;
+}
+
+function badge(d,ouv){
+  if(d.entier)return '<span class="badge b-att">fermé</span>';
+  if(d.ferm.length)return '<span class="badge b-att">partiellement fermé</span>';
+  if(d.ouv.length)return '<span class="badge b-ok">ouvert</span>';
+  return ouv.length?'<span class="badge b-ok">ouvert</span>':'<span class="badge b-neu">fermé</span>';
+}
+function detailJour(d,ouv){
+  const l=[];
+  const phrase=(x)=>x.map(([a,b])=>`de ${h(enHeure(a))} à ${h(enHeure(b))}`).join(' et ');
+  if(d.entier)l.push(`<p style="margin:0">Fermé toute la journée${d.entier.p.motif?` (${d.entier.p.motif})`:''}.</p>`);
+  else if(ouv.length)l.push(`<p style="margin:0">Ouvert ${phrase(ouv)}.</p>`);
+  else l.push(`<p style="margin:0">Fermé ce jour-là.</p>`);
+  if(!d.entier)d.ferm.forEach(({p,m})=>l.push(`<p class="aide">Fermé exceptionnellement de ${h(enHeure(m[0]))} à ${m[1]===1440?'24 h 00':h(enHeure(m[1]))}${p.motif?` (${p.motif})`:''}.</p>`));
+  d.ouv.forEach(({p,m})=>l.push(`<p class="aide">Ouvert exceptionnellement de ${h(enHeure(m[0]))} à ${h(enHeure(m[1]))}${p.motif?` (${p.motif})`:''}.</p>`));
+  const touche=periodes.filter(p=>morceau(p,d.j));
+  if(choisi>=AUJ)l.push(`<div class="actions">${touche.map(p=>`<button class="btn dan petit" data-retirer="${p.id}">Retirer ${p.type==='f'?'la fermeture':"l'ouverture"}</button>`).join('')}${touche.length?'':`<button class="btn sec petit" data-ouvrir="f">Fermer ce jour</button><button class="btn sec petit" data-ouvrir="o">Ouvrir ce jour</button>`}</div>`);
+  return l.join('');
+}
+function horairesLibres(ouv){
+  if(choisi<AUJ)return '<p class="note">Jour passé.</p>';
+  const res=[];for(const [a,b] of ouv)for(let t=a;t+annonce<=b;t+=15)res.push(t);
+  return res.length?`<p class="note">${res.length} horaires proposés :</p><div class="pastilles">${res.slice(0,60).map(t=>`<span>${h(enHeure(t))}</span>`).join('')}</div>`:'<p class="note">Aucun horaire libre ce jour-là.</p>';
+}
+
+function brancher(){
+  $('#prec').onclick=()=>{changerMois(-1)};$('#suiv').onclick=()=>{changerMois(1)};
+  if($('#m-f')){$('#m-f').onclick=()=>{mode='f';rendre()};$('#m-o').onclick=()=>{mode='o';rendre()}}
+  if($('#m-fin'))$('#m-fin').onclick=()=>{mode=null;rendre()};
+  $('#b-semaine').onclick=fenetreSemaine;$('#b-reglages').onclick=fenetreReglages;
+  if($('#b-client'))$('#b-client').onclick=fenetreClient;
+  document.querySelectorAll('[data-ouvrir]').forEach(b=>b.onclick=()=>fenetrePeriode(b.dataset.ouvrir,choisi,choisi));
+  document.querySelectorAll('[data-retirer]').forEach(b=>b.onclick=()=>{const p=periodes.find(x=>x.id==b.dataset.retirer);periodes=periodes.filter(x=>x!==p);rendre();toast(p.type==='f'?'Fermeture retirée : ces horaires sont de nouveau réservables.':'Ouverture retirée.')});
+  const g=$('#grille');
+  g.querySelectorAll('[data-jour]').forEach(b=>b.onclick=()=>{if(!mode){choisi=b.dataset.jour;rendre()}});
+  if(!mode)return;
+  // Glisser d'un jour à un autre (souris ou doigt)
+  const sous=(e)=>document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-jour]')?.dataset.jour;
+  g.onpointerdown=(e)=>{const j=sous(e);if(!j||j<AUJ)return;e.preventDefault();selection={a:j,b:j};rendreSel()};
+  g.onpointermove=(e)=>{if(!selection)return;const j=sous(e);if(j&&j>=AUJ&&j!==selection.b){selection.b=j;rendreSel()}};
+  window.onpointerup=()=>{if(!selection)return;const [a,b]=[selection.a,selection.b].sort();selection=null;fenetrePeriode(mode,a,b)};
+}
+function rendreSel(){const [a,b]=[selection.a,selection.b].sort();document.querySelectorAll('#grille [data-jour]').forEach(c=>{const on=c.dataset.jour>=a&&c.dataset.jour<=b;c.classList.toggle(mode==='f'?'sel-f':'sel-o',on)})}
+function changerMois(e){const [a,m]=mois.split('-').map(Number);mois=new Date(Date.UTC(a,m-1+e,1)).toISOString().slice(0,7);rendre()}
+
+// ---------- Fenêtres ----------
+const HEURES=[];for(let t=0;t<=1440;t+=15)HEURES.push(t);
+const optH=(v,sauf)=>HEURES.filter(t=>t!==sauf).map(t=>`<option value="${t}" ${t===v?'selected':''}>${t===1440?'24 h 00 (fin de journée)':h(enHeure(t))}</option>`).join('');
+function couche(html){$('#couche').innerHTML=`<div class="voile" id="voile"><div class="fenetre" role="dialog">${html}</div></div>`;$('#voile').onclick=(e)=>{if(e.target.id==='voile')fermer()}}
+function fermer(){$('#couche').innerHTML='';rendre()}
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&$('#voile'))fermer()});
+
+function fenetrePeriode(type,a,b){
+  const f=type==='f';
+  // Fermeture : jours entiers au départ (0 h → 24 h). Ouverture : 9 h → 12 h au départ.
+  const de=f?0:540, jusqua=f?1440:720;
+  couche(`<h3>${f?'Fermeture':'Ouverture'} exceptionnelle</h3>
+    <div class="periode"><span>Du</span><label class="champ">Jour<input type="date" id="p-du" value="${a}" min="${AUJ}"></label><label class="champ">à<select id="p-de">${optH(de,1440)}</select></label></div>
+    <div class="periode"><span>Jusqu'au</span><label class="champ">Jour<input type="date" id="p-au" value="${b}" min="${AUJ}"></label><label class="champ">à<select id="p-a">${optH(jusqua,0)}</select></label></div>
+    <p class="note" id="p-resume"></p>
+    <label class="champ">Motif (pour vous seul)<input id="p-motif" maxlength="120" placeholder="${f?'ex. Congés, dentiste…':'ex. Mariage, salon…'}"></label>
+    <p class="note">${f?"Les clients ne verront plus d'horaires pendant cette période. Si des rendez-vous y tombent, vous choisirez de les annuler ou de les garder.":"Les clients pourront réserver pendant ces heures, même si votre semaine type est fermée. Une fermeture exceptionnelle passe avant."}</p>
+    <div class="pied"><button class="btn prim" id="p-ok"></button><button class="btn sec" id="p-annuler">Annuler</button></div>`);
+  const maj=()=>{
+    const p=lire();$('#p-ok').textContent=`${f?'Fermer':'Ouvrir'} : ${periodeLisible(p).replace(/^Le /,'le ').replace(/^Du /,'du ')}`;
+    $('#p-resume').textContent=p.debut.slice(0,10)===ajouter(p.fin.slice(0,10),p.fin.endsWith('00:00')?-1:0)?'Un seul jour : seules ces heures sont concernées.':'';
+  };
+  const lire=()=>{const du=$('#p-du').value,au=$('#p-au').value,x=Number($('#p-de').value),y=Number($('#p-a').value);
+    return {type,debut:`${du} ${enHeure(x)}`,fin:y===1440?`${ajouter(au,1)} 00:00`:`${au} ${enHeure(y)}`,motif:$('#p-motif').value}};
+  ['#p-du','#p-au','#p-de','#p-a'].forEach(s=>$(s).onchange=maj);maj();
+  $('#p-annuler').onclick=fermer;
+  $('#p-ok').onclick=()=>{const p=lire();if(p.fin<=p.debut){$('#p-resume').textContent='La fin doit être après le début.';return}
+    p.id=Date.now();periodes.push(p);mode=null;choisi=p.debut.slice(0,10);fermer();toast(`${f?'Fermeture':'Ouverture'} enregistrée : ${periodeLisible(p).toLowerCase()}.`)};
+}
+function fenetreClient(){
+  const dessin=()=>{couche(`<h3>Horaires proposés aux clients</h3><p class="note" style="text-transform:capitalize">${lisible(choisi)}</p>
+    <label class="champ">Annonce<select id="annonce"><option value="45" ${annonce==45?'selected':''}>Coupe femme — 35 € · 45 min</option><option value="90" ${annonce==90?'selected':''}>Couleur — 60 € · 1 h 30</option></select></label>
+    ${horairesLibres(ouvertes(decrire(choisi)))}
+    <div class="pied"><button class="btn sec" id="c-fermer">Fermer</button></div>`);
+    $('#annonce').onchange=(e)=>{annonce=Number(e.target.value);dessin()};$('#c-fermer').onclick=fermer};
+  dessin();
+}
+function fenetreSemaine(){
+  couche(`<h3>Mes horaires de la semaine</h3><p class="note">Vos horaires de chaque semaine, heure de Paris. Plusieurs plages possibles par jour. Un jour sans plage est fermé.</p>
+  <div class="semaine">${JOURS.map((n,i)=>`<b style="text-transform:capitalize">${n}</b><div>${semaine[i+1].length?semaine[i+1].map(([a,b])=>`<span class="plage">${h(a)} – ${h(b)} <span aria-hidden="true">×</span></span>`).join(''):'<span class="note" style="display:inline">Fermé</span>'} <button class="btn sec petit">+ Plage</button></div>`).join('')}</div>
+  <p class="note">(Même contenu que l'ancien onglet « Semaine type », dans une fenêtre.)</p>
+  <div class="pied"><button class="btn prim" id="s-ok">Enregistrer la semaine</button><button class="btn sec" id="s-annuler">Annuler</button></div>`);
+  $('#s-ok').onclick=()=>{fermer();toast('Semaine type enregistrée.')};$('#s-annuler').onclick=fermer;
+}
+function fenetreReglages(){
+  couche(`<h3>Réglages</h3>
+  <label class="champ">Quand un client réserve<select><option>Confirmé aussitôt</option><option>J'accepte chaque demande (24 h pour répondre)</option></select></label>
+  <label class="champ">Annulation gratuite par le client jusqu'à<select><option>24 h avant</option></select></label>
+  <div class="champ" style="display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13px">Heures de début proposées aux clients<div class="choix"><button aria-pressed="true">toutes les 15 min</button><button>toutes les 30 min</button><button>toutes les heures</button></div></div>
+  <label class="champ">Pause après chaque rendez-vous<select><option>aucune</option></select></label>
+  <label class="champ">Réservation au plus tôt<select><option>2 h avant</option></select></label>
+  <label class="champ">Réservation au plus tard<select><option>2 mois à l'avance</option></select></label>
+  <p class="note">(Mêmes réglages que l'ancien onglet, réunis dans une fenêtre.)</p>
+  <div class="pied"><button class="btn prim" id="r-ok">Enregistrer les réglages</button><button class="btn sec" id="r-annuler">Annuler</button></div>`);
+  $('#r-ok').onclick=()=>{fermer();toast('Réglages enregistrés.')};$('#r-annuler').onclick=fermer;
+}
+function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(toast.m);toast.m=setTimeout(()=>e.hidden=true,3000)}
+rendre();
+</script>

@@ -14,12 +14,14 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.db import moteur
 from app.routes import (
-    accords, administration, agenda, annonces, avis, clients, comptes, devis, metiers, paiements, prestataires, recherche,
+    accords, administration, agenda, annonces, avis, clients, comptes, devis, factures, metiers, paiements, prestataires,
+    recherche,
     rendez_vous,
 )
 from app.services import avis as service_avis
 from app.services import clients as service_clients
 from app.services import devis as service_devis
+from app.services import factures as service_factures
 from app.services import paiements as service_paiements
 from app.services import prestataires as service_prestataires
 from app.services import rendez_vous as service_rendez_vous
@@ -81,6 +83,10 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
         asyncio.create_task(_tache_periodique(
             "devis (expirations, rappels du solde)", 60 * 60, _dans_une_session(service_devis.traiter),
         )),
+        # Commissions du mois passé : une facture de rafals par prestataire, faite une seule fois (lot 5.5)
+        asyncio.create_task(_tache_periodique(
+            "factures de commission", 60 * 60, _dans_une_session(service_factures.facturer_les_commissions),
+        )),
         # Rappel « Comment s'est passé votre rendez-vous ? » le lendemain (lot 4.7)
         asyncio.create_task(_tache_periodique(
             "rappels d'avis", 60 * 60, _dans_une_session(service_avis.envoyer_rappels),
@@ -105,6 +111,7 @@ app.include_router(avis.routeur)
 app.include_router(clients.routeur)
 app.include_router(paiements.routeur)
 app.include_router(devis.routeur)
+app.include_router(factures.routeur)
 
 
 @app.exception_handler(ErreurRegle)

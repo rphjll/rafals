@@ -29,7 +29,7 @@ def test_fiche_paiement(base: Session, decor) -> None:  # noqa: F811
         "commune_id": None, "adresse_ligne": None, "code_postal": None, "debut": LE_14, "fin": LE_14 + timedelta(hours=1),
         "prix_centimes": 5000, "heures": None, "lieu": "chez_moi", "mode_paiement": "carte", "statut": "confirme",
         "absent": None, "absence_signalee_le": None, "contestation": None, "contestee_le": None, "absence_decision": None,
-        "absence_decide_par_id": None, "absence_decide_le": None}))
+        "absence_decide_par_id": None, "absence_decide_le": None, "paye_direct_le": None, "paye_direct_moyen": None}))
     base.add(rdv)
     base.commit()
     # Valeurs imposées par les contraintes : versé (date de versement, pas de remboursement), puis remboursé

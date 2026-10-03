@@ -107,6 +107,8 @@ class RendezVousVisible(BaseModel):
     peut_noter: bool  # client : rendez-vous tenu, dans les 30 jours, pas encore d'avis
     autre: dict  # le prestataire (vu par le client) ou le client (vu par le prestataire)
     paiement: dict | None = None  # payé par carte (voir routes/paiements.py, PaiementVisible)
+    paye_direct_le: datetime | None = None  # [Payé] : argent reçu hors de rafals (lot 5.5)
+    paye_direct_moyen: str | None = None
     paiement_adresse: str | None = None  # juste après une réservation par carte : la page de paiement de Stripe
 
 
@@ -156,6 +158,7 @@ def vu_par_le_client(db: Base, rdv: RendezVous) -> RendezVousVisible:
         peut_noter=service_avis.peut_noter(rdv, maintenant()) and service_avis.avis_du_rendez_vous(db, rdv.id) is None,
         autre={"prestataire_id": prestataire.id, "nom": prestataire.nom_affiche, "telephone": telephone},
         paiement=_paiement(db, rdv, prestataire=False),
+        paye_direct_le=rdv.paye_direct_le, paye_direct_moyen=rdv.paye_direct_moyen,
     )
 
 
@@ -173,6 +176,7 @@ def vu_par_le_prestataire(db: Base, prestataire: Prestataire, rdv: RendezVous) -
                "telephone": client.telephone if visibles else None,
                "absences": len(absences.absences_du_client(db, client.id, maintenant()))},
         paiement=_paiement(db, rdv, prestataire=True),
+        paye_direct_le=rdv.paye_direct_le, paye_direct_moyen=rdv.paye_direct_moyen,
     )
 
 

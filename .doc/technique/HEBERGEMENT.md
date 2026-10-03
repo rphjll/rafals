@@ -45,3 +45,6 @@ Service extérieur choisi par Raphael (Stripe Connect, « Stripe gère la tarifi
 - **Clés** : `STRIPE_CLE_SECRETE` et `STRIPE_SECRET_WEBHOOK` dans le fichier `.env` (jamais dans git). Sur le PC : les clés du **mode test** de Stripe (cartes d'essai, aucun argent réel).
 - **Messages de Stripe** (« webhook ») : Stripe appelle `https://<site>/api/stripe/evenements`, qui vérifie la signature. Sur le PC, Stripe ne peut pas joindre `localhost` : on utilise l'outil « Stripe CLI » (`stripe listen --forward-to localhost:8001/api/stripe/evenements`), à installer au moment de l'essai à la main.
 - **Pas de bibliothèque Stripe** dans le serveur : quelques appels web suffisent, donc aucune reconstruction du conteneur `backend`.
+
+## Identité de rafals sur ses factures (lot 5.5, 03/10/2026)
+`RAFALS_NOM`, `RAFALS_SIRET`, `RAFALS_ADRESSE` dans le fichier `.env` : à remplir quand rafals sera une entreprise. Vides : les factures de commission (R-…) ne sont pas créées. Les PDF sont fabriqués par le serveur lui-même (aucune bibliothèque ajoutée, aucune reconstruction du conteneur).

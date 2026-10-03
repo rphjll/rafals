@@ -47,10 +47,15 @@ RATTACHEES: dict[str, list[str]] = {
         " OR (table_cible = 'paiement' AND ligne_id IN (SELECT pa.id FROM paiement pa JOIN rendez_vous r ON r.id = pa.rendez_vous_id"
         " WHERE r.client_id = :id OR r.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
         " OR (table_cible = 'paiement' AND ligne_id IN (SELECT pa.id FROM paiement pa WHERE pa.devis_id IN (SELECT v.id FROM devis v WHERE v.demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))))"
+        " OR (table_cible = 'facture' AND ligne_id IN (SELECT f.id FROM facture f WHERE f.client_id = :id OR f.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
         " OR (table_cible = 'demande_devis' AND ligne_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
         " OR (table_cible = 'devis' AND ligne_id IN (SELECT v.id FROM devis v WHERE v.demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))))",
         "DELETE FROM avis WHERE client_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM mot_interdit WHERE ajoute_par_id = :id",
+        # Factures et avoirs d'essai (lot 5.5), comme client ou comme prestataire : lignes, avoirs, puis factures
+        "DELETE FROM ligne_facture WHERE facture_id IN (SELECT f.id FROM facture f WHERE f.client_id = :id OR f.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",
+        "DELETE FROM facture WHERE avoir_de_id IS NOT NULL AND (client_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",
+        "DELETE FROM facture WHERE client_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         # Demandes de devis et devis (lot 5.3), comme client ou comme prestataire : paiements, lignes, devis, photos, demandes
         "DELETE FROM paiement WHERE devis_id IN (SELECT v.id FROM devis v WHERE v.demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))",
         "DELETE FROM ligne_devis WHERE devis_id IN (SELECT v.id FROM devis v WHERE v.demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))",

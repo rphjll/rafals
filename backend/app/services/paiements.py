@@ -276,6 +276,7 @@ def marquer_paye(db: Session, paiement: Paiement, paiement_stripe: str, maintena
                         "le paiement est arrivé après l'annulation de la réservation", maintenant)
         else:
             rendez_vous.annoncer_reservation(db, s.rdv, maintenant)
+            _facturer(db, paiement, maintenant)
         return
     from app.services import devis as service_devis  # (même raison)
 
@@ -283,6 +284,15 @@ def marquer_paye(db: Session, paiement: Paiement, paiement_stripe: str, maintena
     if not service_devis.apres_paiement(db, s.devis, paiement, maintenant):
         _rembourser(db, paiement, s, paiement.montant_centimes,
                     "le paiement est arrivé trop tard, le devis n'est plus valable", maintenant)
+    else:
+        _facturer(db, paiement, maintenant)
+
+
+def _facturer(db: Session, paiement: Paiement, maintenant: datetime) -> None:
+    """Après chaque paiement par carte, rafals crée la facture au nom du prestataire (RM-FACTURES)."""
+    from app.services import factures  # (import ici : factures dépend des devis, qui dépendent de ce module)
+
+    factures.pour_paiement(db, paiement, maintenant)
 
 
 def _abandonner(db: Session, paiement: Paiement, rdv: RendezVous | None, maintenant: datetime) -> None:
@@ -342,6 +352,9 @@ def _rembourser(db: Session, paiement: Paiement, s: Sujet, montant: int, raison:
     paiement.stripe_remboursement = rembourse.get("id")
     journal.noter(db, auteur_id=None, action="rembourser_paiement", table_cible="paiement", ligne_id=paiement.id,
                   apres={"rembourse_centimes": montant, "raison": raison}, maintenant=maintenant)
+    from app.services import factures  # (import ici : voir _facturer)
+
+    factures.avoir_pour_remboursement(db, paiement, maintenant)  # un avoir du montant rendu
     _prevenir(db, s, objet="rafals : vous êtes remboursé",
               client=f"« {s.titre} », {s.quand} : {raison}. Vous êtes remboursé de {euros(montant)} ; l'argent revient "
                      "sur votre carte sous 5 à 10 jours.")

@@ -35,6 +35,12 @@ STRIPE_CLE_SECRETE = os.environ.get("STRIPE_CLE_SECRETE", "")
 STRIPE_SECRET_WEBHOOK = os.environ.get("STRIPE_SECRET_WEBHOOK", "")
 STRIPE_VERSION = os.environ.get("STRIPE_VERSION", "")  # vide : la version choisie dans le compte Stripe
 
+# Identité de rafals sur ses factures de commission (lot 5.5). Vides tant que rafals n'est pas une entreprise :
+# les factures de commission ne sont alors pas créées (les commissions restent comptées).
+RAFALS_NOM = os.environ.get("RAFALS_NOM", "")
+RAFALS_SIRET = os.environ.get("RAFALS_SIRET", "")
+RAFALS_ADRESSE = os.environ.get("RAFALS_ADRESSE", "")
+
 # Adresse des écrans, pour fabriquer les liens envoyés par mail
 ADRESSE_SITE = os.environ.get("ADRESSE_SITE", "http://localhost:5174")
 

@@ -29,3 +29,14 @@ Réponse de Raphael, mot pour mot : « j'ai pas compris juste quand il pay un tr
 
 ## Facture électronique (à prévoir)
 - La réforme française de la facture électronique oblige les petites entreprises à émettre leurs factures entre entreprises par une plateforme agréée à partir du 01/09/2027, et à déclarer les ventes aux particuliers (« e-reporting »). Dates et détail à revérifier avant le niveau 5 ; ça concerne surtout la facture de commission de rafals (de rafals à une entreprise).
+
+## Mise en œuvre (lot 5.5, 03/10/2026 ; MLD `MLD-lot-5.5-factures.html` validé avec 6 choix)
+- **Tout est figé** sur la facture le jour où elle est créée : nom du vendeur (la personne, et son enseigne si elle est différente, ex. « Léa Martin — Net & Clair »), SIRET, adresse (son local, sinon sa commune), nom et adresse du client, mention de TVA, lignes.
+- **Le PDF est fabriqué à la demande** à partir de ces rubriques figées : toujours le même, rien d'autre n'est stocké. Il porte la phrase « Facture établie par rafals au nom et pour le compte de … (mandat de facturation). »
+- **Avoirs dans la même suite de numéros** que les factures du prestataire. Ex. F-2026-0001 (facture), F-2026-0002 (son avoir).
+- **Remboursement entier** (le prestataire refuse, annule, est absent) : l'avoir reprend chaque ligne en négatif (−50,00 €). **Le client annule à temps** : avoir du montant rendu (−49,00 €), ligne « Remboursement (frais de paiement non rendus) ».
+- **[Payé] sur un rendez-vous** : pour un prestataire avec SIRET vérifié, à partir de l'heure du rendez-vous, une seule fois ; il choisit espèces, chèque ou virement. Sans SIRET : pas de bouton, pas de facture.
+- **Facture de solde d'un devis** : les lignes du devis, puis une ligne négative « Arrhes déjà payées (30 % du devis D-2026-0002) ».
+- **Commission de rafals** : vérifiée toutes les heures, la facture du mois passé est créée une seule fois par prestataire (R-2026-0001…), sur les paiements par carte du mois qui n'ont pas été remboursés. **Tant que le nom, le SIRET et l'adresse de rafals ne sont pas dans le fichier `.env`, aucune facture de commission n'est créée** (les commissions restent comptées).
+  - Exemple : Léa a 12 paiements par carte en octobre, dont 1 remboursé → « Commission de 5 % sur 11 paiements par carte ».
+- ⚠️ À confirmer par un comptable avant la mise en ligne (seulement pour les prestataires qui facturent la TVA) : (1) la TVA d'un rendez-vous est calculée à 20 % à partir du prix payé (50,00 € = 41,67 € HT + 8,33 € de TVA), car les annonces n'ont pas de taux ; (2) la facture d'arrhes répartit la TVA comme le devis.

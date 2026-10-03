@@ -1,4 +1,4 @@
-"""Miroir exact de la table rendez_vous (db/schema_v9.sql, v10). Aucun calcul ici."""
+"""Miroir exact de la table rendez_vous (db/schema_v9.sql, v10, v15). Aucun calcul ici."""
 
 from datetime import datetime
 
@@ -40,3 +40,5 @@ class RendezVous(Base):
     absence_decision: Mapped[str | None] = mapped_column(Text)
     absence_decide_par_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("compte.id"))
     absence_decide_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    paye_direct_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    paye_direct_moyen: Mapped[str | None] = mapped_column(Text)
