@@ -4,18 +4,16 @@ On avance lot par lot, dans l'ordre de `PLAN-DEV.md`. Un lot ne démarre que si 
 
 ## Travail en cours (tenu à jour par Claude à chaque étape, vidé quand la tâche est finie)
 
-- **Demande** : Niveau 6 « tout seul » pendant le sommeil de Raphael (03/10/2026) — **arrêté ici : tout ce qui pouvait se faire sans lui est fait**
-- **Fait** : lot 6.0 (règles proposées, 🔎), lots 6.1 et 6.2 (construits, 🔎), MLD des lots 6.3 et 6.5 et maquette du lot 6.6 (préparés, non validés, rien d'exécuté)
-- **Questions en attente pour Raphael** (à poser une par une à son retour, dans cet ordre) :
-  1. Valides-tu les règles proposées des 4 sujets (les choix marqués 🟡 dans `RM-SITES-VITRINES.md`, `RM-CREATION-AUTO-ENTREPRISE.md`, `RM-DEMARCHES.md`, `RM-ADMINISTRATION.md`) et le découpage en lots 6.1 à 6.6 ?
-  2. Le prix du site vitrine : abonnement (ex. 5 € par mois), prix payé une fois (ex. 49 €), ou gratuit au lancement ?
-  3. Un prestataire sans SIRET peut-il avoir un site vitrine ?
-  4. Sites vitrines : 3 modèles pour commencer (Classique, Cartes, Impact), ou les 10 de vitrine-express tout de suite ?
-  5. Valides-tu le MLD du lot 6.5 (table `site_vitrine`) et la maquette du lot 6.6 ?
-  6. Les signalements d'annonces et de prestataires : on les construit ? Les rappels URSSAF par mail aussi ? (MLD du lot 6.3 à valider)
-  7. Guide « Créer mon auto-entreprise » : l'avancement gardé dans le navigateur te convient, ou veux-tu l'enregistrer dans le compte ?
-  8. Valides-tu les lots 6.1 et 6.2 après avoir regardé les écrans (maquette `maquette-lot-6.2-services.html`) ?
-- **En pause** : lots 6.3 à 6.6 (attendent les réponses 2 à 6)
+- **Demande** : Niveau 6, suite (Raphael, 04/10/2026 : « je les valides toute sauf celle de […] la création du site vitrine […] il faut que y'ai plus de trucs », puis « continue »)
+- **Validé par Raphael** : règles des 4 sujets, découpage, lots 6.1 et 6.2, MLD du lot 6.3 (signalements et rappels URSSAF), guide auto-entreprise (avancement dans le navigateur)
+- **Pas validé** : l'écran « Mon site » (maquette du lot 6.6) : il faut l'enrichir → le MLD du lot 6.5 changera aussi, donc pas exécuté
+- **Étapes** :
+  - [ ] 1. Savoir ce qu'il faut ajouter à « Mon site »  ← on en est là (question posée)
+  - [ ] 2. Nouvelle maquette du lot 6.6 et nouveau MLD du lot 6.5, à valider
+  - [ ] 3. Lot 6.3 : `schema_v17.sql` (à exécuter avec l'accord de Raphael), serveur, tests ; puis lot 6.4 (écrans)
+  - [ ] 4. Lots 6.5 et 6.6 (sites vitrines)
+- **Questions restantes** : prix du site vitrine ; site possible sans SIRET ?
+- **En pause** : aucune
 
 ## Définition de « terminé »
 
@@ -95,9 +93,9 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 ## Niveau 6 — Services (découpage proposé par Claude le 03/10/2026, à valider par Raphael)
 | Lot | Type | Description | Règle source | Dépend de | État |
 |---|---|---|---|---|---|
-| 6.0 | Règles | Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6 | SUIVI_REGLES_METIER | niveau 5 | 🔎 |
-| 6.1 | Serveur | Sans nouvelle table : chiffres du tableau de bord de l'administration, liste de tous les paiements ; chiffre d'affaires à déclarer par mois et par trimestre (d'après les factures) | RM-ADMINISTRATION, RM-DEMARCHES | 6.0 | 🔎 |
-| 6.2 | Écrans | Administration › Tableau de bord et Paiements ; « Mes démarches » ; guide « Créer mon auto-entreprise » (5 étapes) | RM-ADMINISTRATION, RM-DEMARCHES, RM-CREATION-AUTO-ENTREPRISE | 6.1 | 🔎 |
+| 6.0 | Règles | Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6 | SUIVI_REGLES_METIER | niveau 5 | ✅ |
+| 6.1 | Serveur | Sans nouvelle table : chiffres du tableau de bord de l'administration, liste de tous les paiements ; chiffre d'affaires à déclarer par mois et par trimestre (d'après les factures) | RM-ADMINISTRATION, RM-DEMARCHES | 6.0 | ✅ |
+| 6.2 | Écrans | Administration › Tableau de bord et Paiements ; « Mes démarches » ; guide « Créer mon auto-entreprise » (5 étapes) | RM-ADMINISTRATION, RM-DEMARCHES, RM-CREATION-AUTO-ENTREPRISE | 6.1 | ✅ |
 | 6.3 | Serveur | Avec nouvelles tables (MLD à valider) : signalements d'annonces et de prestataires ; choix « chaque mois / chaque trimestre » et rappels URSSAF par mail | RM-ADMINISTRATION, RM-DEMARCHES | 6.1 | ⬜ |
 | 6.4 | Écrans | [Signaler] sur une annonce et un prestataire ; Administration › Signalements ; réglage et rappels dans « Mes démarches » | RM-ADMINISTRATION, RM-DEMARCHES | 6.3, 6.2 | ⬜ |
 | 6.5 | Serveur | Sites vitrines (MLD à valider) : adresse choisie, modèle, style, accroche, en ligne / hors ligne, page servie sur le sous-domaine | RM-SITES-VITRINES | 6.1 | ⬜ |
@@ -202,3 +200,4 @@ L'annulation des rendez-vous déjà pris (blocage, changement d'horaires, date d
 - **03/10/2026** — Lot 5.6 validé par Raphael (« le niveau 5 est fini ») → ✅. **Niveau 5 (Argent) terminé** : lots 5.0 à 5.6. Comptes d'essai n° 35 et 36 effacés après sauvegarde ; comptage : 0 facture, 0 devis, 0 demande, 0 paiement ; 2 comptes (n° 5 de Raphael, et n° 34 « raphael.jallu1@gmail.com », compte d'essai de Raphael pour le calendrier, laissé en place). Restent avant la mise en ligne : compte Stripe et essai réel du paiement ; identité de rafals (`RAFALS_NOM`, `RAFALS_SIRET`, `RAFALS_ADRESSE`) ; avis sur les prestataires sans SIRET ; avis d'un comptable sur la TVA (rendez-vous à 20 %, arrhes) ; facture électronique 2027. Prochain lot : 6.0 (règles des sujets 13 à 16).
 - **03/10/2026** — Niveau 6 commencé « tout seul » (Raphael : « ce que j'ai a faire je le ferai a la fin avant la mise en ligne […] fais tout ce que tu peux avant de me poser les questions car je vais dormir »). Lot 6.0 rédigé → 🔎 : `RM-SITES-VITRINES.md`, `RM-CREATION-AUTO-ENTREPRISE.md`, `RM-DEMARCHES.md`, `RM-ADMINISTRATION.md`. Décisions de Claude, toutes marquées 🟡 dans les règles et à valider : (13) site pour tout prestataire actif, adresse choisie (3 à 30 caractères), contenu rempli tout seul depuis le profil, 3 modèles × 5 styles pour commencer, hors ligne tout seul si le profil est en pause, construit d'abord sans paiement — le prix reste à décider par Raphael ; (14) rafals guide en 5 étapes mais ne fait pas la démarche, guide ouvert à tous, avancement gardé dans le navigateur ; (15) rafals prépare le chiffre d'affaires à déclarer (factures moins avoirs) mais ne déclare pas, par mois et par trimestre, rappels par mail après validation ; (16) pas de validation avant publication, tableau de bord, suivi des paiements, signalements après validation. Découpage en 6 lots (6.1 à 6.6). Limite que Claude s'est fixée : aucun changement de la structure de la vraie base sans l'accord de Raphael (règle « Raphael garde la main sur la structure de la base ») : les lots 6.3 et 6.5 s'arrêtent au MLD.
 - **03/10/2026** — Lots 6.1 et 6.2 construits « tout seul » → 🔎 à vérifier. Serveur (6.1, sans nouvelle table) : `services/tableau_de_bord.py` (ce qui attend une décision, activité du mois, tous les paiements par pages de 30), `services/demarches.py` (chiffre d'affaires à déclarer par mois et par trimestre : ventes moins avoirs à la date de la facture, hors taxe si TVA ; dates limites : fin du mois suivant, ou 30/04, 31/07, 31/10, 31/01), `routes/services_en_plus.py`. Écrans (6.2) : Administration › « Tableau de bord » (premier onglet, boutons vers ce qui attend) et « Paiements » ; page « Mes démarches » (dans le menu des prestataires) ; guide « Créer mon auto-entreprise » en 5 étapes, ouvert à tous, avancement gardé dans le navigateur, liens depuis « Proposer mes services », « Mon activité » et « Mes démarches ». Réutilisation : `AppChiffre` (regroupe les chiffres de Mon agenda › Paiements et du tableau de bord), `AppSegment`, `GardePrestataire`. Décisions de Claude : maquette `maquette-lot-6.2-services.html` construite et suivie **sans validation** (Raphael dort) ; adresse `/creer-mon-auto-entreprise` ; liens officiels formalites.entreprises.gouv.fr et autoentrepreneur.urssaf.fr ; contenu du guide et dates URSSAF à faire relire par un professionnel (⚠️ dans les règles). Tests : 315 OK ; vue-tsc sans erreur. Essai par le port 5174 (compte d'essai n° 37, effacé après sauvegarde) : pages OK, démarches d'un prestataire sans SIRET, tableau de bord et paiements refusés (403) à un non-administrateur ; les écrans d'administration n'ont pas pu être regardés par Claude (seul Raphael est administrateur). Comptage : 2 comptes (n° 5 et n° 34 de Raphael), 0 donnée d'essai. Préparés sans rien exécuter : `MLD-lot-6.3-signalements-rappels.html`, `MLD-lot-6.5-sites-vitrines.html`, `maquette-lot-6.6-sites-vitrines.html`. Non fait, volontairement : aucun changement de structure de la vraie base (lots 6.3 à 6.6 en pause).
+- **04/10/2026** — Raphael a regardé les pages préparées pendant son sommeil : « je les valides toute sauf celle de l'aide a la création de site […] il faut que y'ai plus de trucs », précisé : « non la création du site vitrine ». → Lots 6.0, 6.1 et 6.2 ✅ ; MLD du lot 6.3 validé ; choix 🟡 des règles 14, 15 et 16 validés ; l'écran « Mon site » (lot 6.6) est à enrichir, le MLD du lot 6.5 n'est donc pas exécuté.
