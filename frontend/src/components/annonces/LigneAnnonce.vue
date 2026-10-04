@@ -56,6 +56,7 @@ async function statut(action: 'pause' | 'retirer' | 'republier') {
       <p v-else-if="annonce.metier_arrete" class="text-[13.5px] text-texte-doux">
         Cachée : vous avez arrêté le métier {{ annonce.metier.nom }}.
       </p>
+      <AppAlerte v-if="annonce.retiree_par_administrateur">Retirée par l'administrateur de rafals : elle ne peut pas être remise en ligne.</AppAlerte>
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
       <div class="flex flex-wrap items-center gap-2 pt-1">
         <AppBouton variante="secondaire" @click="routeur.push(`/mes-annonces/${annonce.id}`)">Modifier</AppBouton>
@@ -63,6 +64,14 @@ async function statut(action: 'pause' | 'retirer' | 'republier') {
           <AppBouton variante="secondaire" @click="routeur.push(`/annonces/${annonce.id}`)">Voir comme un client</AppBouton>
           <AppBouton variante="secondaire" @click="statut('pause')">Mettre en pause</AppBouton>
         </template>
+        <!-- Retirée par l'administrateur : jamais republiable par le prestataire (bouton visible, verrouillé) -->
+        <AppBouton
+          v-else-if="annonce.retiree_par_administrateur"
+          variante="verrouille"
+          raison-verrou="Cette annonce a été retirée par l'administrateur de rafals : vous ne pouvez pas la remettre en ligne."
+        >
+          Republier
+        </AppBouton>
         <!-- Métier arrêté : republier est refusé tant qu'il n'est pas repris (bouton visible, verrouillé) -->
         <AppBouton
           v-else-if="annonce.metier_arrete"

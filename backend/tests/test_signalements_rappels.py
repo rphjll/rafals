@@ -47,6 +47,11 @@ def test_signaler_une_annonce_puis_la_retirer(lea, dupont, fabrique_compte, clie
     mail = next(m for m in mails_envoyes if m["a"] == lea.email and "retirée" in m["sujet"])
     assert "Prix mensonger" in mail["texte"] and "ZZTEST" not in mail["texte"]
     assert dupont.client.get("/api/admin/signalements").status_code == 403
+    # Léa ne peut pas remettre en ligne une annonce retirée par l'administrateur (demande de Raphael, 04/10/2026)
+    republier = lea.client.post(f"/api/moi/annonces/{lea.annonce}/statut", json={"action": "republier"})
+    mienne = next(x for x in lea.client.get("/api/moi/annonces").json() if x["id"] == lea.annonce)
+    assert republier.status_code == 403 and "retirée par l'administrateur" in republier.json()["detail"]
+    assert mienne["statut"] == "retiree" and mienne["retiree_par_administrateur"] is True
 
 
 def test_signaler_un_prestataire_puis_classer_ou_bloquer(lea, dupont, fabrique_compte) -> None:  # noqa: F811

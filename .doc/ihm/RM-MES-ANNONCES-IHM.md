@@ -37,3 +37,6 @@ Un prix s'écrit « 50 » ou « 45,50 ».
 **Carte « Photos »** : à l'écriture, « Vous pourrez ajouter jusqu'à 5 photos juste après avoir publié. » ; en modification : « 3 / 5 », les photos numérotées avec × (retirer → « Photo retirée. », les suivantes remontent d'un rang), case [+ Ajouter une photo] (jusqu'à 5) → choix d'un fichier → « Photo ajoutée. » ; erreur dans la carte (ex. « Au plus 5 photos… », fichier qui n'est pas une photo) ; « JPG ou PNG, 5 Mo au plus. La n° 1 est montrée en premier. »
 
 **Bas de page** : erreur du serveur en bandeau rouge (ex. « Indiquez la durée du service (ex. 2 h) : elle bloque votre agenda. », « Vous avez déjà 20 annonces en ligne : mettez-en une en pause pour publier celle-ci. ») ; [Publier l'annonce] → « Annonce publiée : les clients peuvent la voir. Ajoutez des photos. » et la page passe en modification (pour ajouter les photos) ; en modification [Enregistrer] → « Annonce enregistrée. » et retour à la liste ; [Annuler] → la liste.
+
+## Annonce retirée par l'administrateur (lot 6.4, 04/10/2026)
+Dans « Annonces retirées » : bandeau rouge « Retirée par l'administrateur de rafals : elle ne peut pas être remise en ligne. » ; [Republier] est verrouillé 🔒 : « Cette annonce a été retirée par l'administrateur de rafals : vous ne pouvez pas la remettre en ligne. » [Modifier] reste possible, sans effet sur son état.

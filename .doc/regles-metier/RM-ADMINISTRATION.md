@@ -51,4 +51,6 @@ Chaque décision de l'administrateur est déjà inscrite au journal des actions 
   - Exemple : « L'administrateur de rafals a retiré votre annonce « Plomberie ». Motif : « Prix mensonger ». »
   - Exemple : bloquer annule aussi les rendez-vous à venir du prestataire (règle déjà en place, `RM-PRESTATAIRES.md`).
 - L'administrateur voit combien de fois le prestataire a déjà été signalé (« déjà signalé 1 fois »).
-- Une annonce retirée par l'administrateur n'est plus visible ; rien n'est effacé.
+- Une annonce retirée par l'administrateur n'est plus visible ; rien n'est effacé. **Le prestataire ne peut pas la remettre en ligne** (correction demandée par Raphael le 04/10/2026 : « j'ai suprimé l'annonce de paul mais il peut la remettre en ligne »).
+  - Exemple : Paul clique [Republier] sur « Plomberie — 5 € » retirée par l'administrateur → bouton 🔒 : « Cette annonce a été retirée par l'administrateur de rafals : vous ne pouvez pas la remettre en ligne. »
+  - Exemple : une annonce que Paul a retirée lui-même reste republiable comme avant.

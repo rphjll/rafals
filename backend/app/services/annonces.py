@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.modeles.annonces import Annonce, Local, PhotoAnnonce
 from app.modeles.comptes import Compte
+from app.modeles.journal import JournalAction
 from app.modeles.prestataires import Prestataire
 from app.services import communes, droits, fichiers, journal
 from app.services.erreurs import ErreurRegle
@@ -229,6 +230,8 @@ def changer_statut(db: Session, prestataire: Prestataire, annonce: Annonce, acti
         messages = {"pause": "Cette annonce n'est pas en ligne.", "retirer": "Cette annonce est déjà retirée.",
                     "republier": "Cette annonce est déjà en ligne."}
         raise ErreurRegle(messages[action])
+    if action == "republier" and retiree_par_administrateur(db, annonce):
+        raise ErreurRegle("Cette annonce a été retirée par l'administrateur de rafals : vous ne pouvez pas la remettre en ligne.", 403)
     if arrivee == "en_ligne":
         # Republier : l'annonce doit toujours respecter les règles (métier encore exercé, local, SIRET pour la carte…)
         _verifier(db, prestataire, DonneesAnnonce(
@@ -245,6 +248,20 @@ def changer_statut(db: Session, prestataire: Prestataire, annonce: Annonce, acti
         avant={"statut": ancien}, apres={"statut": arrivee}, maintenant=maintenant,
     )
     return annonce
+
+
+ACTIONS_SUR_LE_STATUT = ("annonce_pause", "annonce_retirer", "annonce_republier", "annonce_retiree_par_administrateur")
+
+
+def retiree_par_administrateur(db: Session, annonce: Annonce) -> bool:
+    """L'annonce est retirée, et c'est l'administrateur qui l'a retirée (dernière action sur son état, lue dans le
+    journal) : le prestataire ne peut pas la remettre en ligne (correction demandée par Raphael le 04/10/2026)."""
+    if annonce.statut != "retiree":
+        return False
+    derniere = db.scalar(select(JournalAction.action).where(
+        JournalAction.table_cible == "annonce", JournalAction.ligne_id == annonce.id,
+        JournalAction.action.in_(ACTIONS_SUR_LE_STATUT)).order_by(JournalAction.id.desc()).limit(1))
+    return derniere == "annonce_retiree_par_administrateur"
 
 
 def retirer_par_administrateur(db: Session, administrateur: Compte, annonce: Annonce, maintenant: datetime) -> Annonce:
@@ -324,6 +341,8 @@ def raison_cachee(db: Session, annonce: Annonce, prestataire: Prestataire, maint
     if prestataire.statut in ("en_pause", "arrete"):
         return "Votre activité est en pause." if prestataire.statut == "en_pause" else "Votre activité est arrêtée."
     if annonce.statut != "en_ligne":
+        if retiree_par_administrateur(db, annonce):
+            return "Annonce retirée par l'administrateur de rafals."
         return "Annonce en pause." if annonce.statut == "en_pause" else "Annonce retirée."
     if annonce.metier_id not in metiers_exerces(db, prestataire, aujourd_hui(maintenant)):
         return "Vous avez arrêté ce métier (date de fin passée)."

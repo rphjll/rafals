@@ -29,6 +29,8 @@ export interface AnnonceVisible extends Omit<DonneesAnnonce, 'metier_id'> {
   statut: StatutAnnonce
   /** Pourquoi les clients ne la voient pas ; vide = visible de tous */
   raison_cachee: string | null
+  /** Retirée par l'administrateur (après un signalement) : le prestataire ne peut pas la remettre en ligne */
+  retiree_par_administrateur: boolean
   /** Son métier a passé sa date de fin : republier est refusé tant qu'il n'est pas repris */
   metier_arrete: boolean
   nombre_photos: number

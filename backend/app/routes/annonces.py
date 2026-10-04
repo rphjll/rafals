@@ -68,6 +68,7 @@ class AnnonceVisible(BaseModel):
     statut: str
     raison_cachee: str | None
     metier_arrete: bool
+    retiree_par_administrateur: bool = False  # il ne peut pas la remettre en ligne (lot 6.3)
     nombre_photos: int
     cree_le: datetime
     modifiee_le: datetime
@@ -111,6 +112,7 @@ def visible(db: Base, annonce: Annonce, prestataire: Prestataire) -> AnnonceVisi
         modes_de_paiement=service.modes_de_paiement(annonce, prestataire), statut=annonce.statut,
         raison_cachee=service.raison_cachee(db, annonce, prestataire, maintenant()),
         metier_arrete=annonce.metier_id not in metiers_exerces(db, prestataire, aujourd_hui(maintenant())),
+        retiree_par_administrateur=service.retiree_par_administrateur(db, annonce),
         nombre_photos=len(service.photos_de(db, annonce)), cree_le=annonce.cree_le, modifiee_le=annonce.modifiee_le,
     )
 
