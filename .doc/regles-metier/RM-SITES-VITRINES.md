@@ -2,6 +2,8 @@
 
 > Rédigé au lot 6.0 le 03/10/2026, **pendant l'absence de Raphael** (« fais tout ce que tu peux avant de me poser les questions »). Tout ce qui est marqué 🟡 est un choix **proposé par Claude, à valider** ; les questions restantes sont à la fin. Point de départ : `PRESENTATION.md` (vitrine-express) et `GLOSSAIRE-METIER.md`.
 
+> **Reporté par Raphael le 04/10/2026** : « pour le moment […] on vas faire sans et apres si mon site devien connu […] on le rajoutera peux etre ». Rien n'est construit. La maquette validée « pas mal » est `ihm/maquette-lot-6.6-sites-vitrines.html` (version 2 : 10 modèles, styles, couleur libre, textes, rubriques, photos) ; elle remplace les « 3 modèles pour commencer » décrits plus bas.
+
 ## À quoi ça sert
 Un prestataire a son propre petit site internet, à une adresse à lui, fabriqué tout seul à partir de ce qu'il a déjà mis sur rafals. Il le donne à ses clients (carte de visite, camionnette, réseaux sociaux).
 - Exemple : Julie Martin, ménage à domicile → `julie-menage.rafals.fr`.
