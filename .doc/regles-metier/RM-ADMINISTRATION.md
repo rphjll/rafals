@@ -2,6 +2,15 @@
 
 > Rédigé au lot 6.0 le 03/10/2026, **pendant l'absence de Raphael**. Tout ce qui est marqué 🟡 est un choix **proposé par Claude, à valider**. Ce qui existe déjà est rappelé avec son lot.
 
+## Sans annonces (décision de Raphael du 04/10/2026, pas encore construit)
+Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Après les lots 8.3 et 8.4, ce fichier se lira ainsi (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
+- **On signale** un prestataire, une demande ou une conversation ; plus une annonce.
+  - Exemple 1 : Mme Dupont signale le profil « Plombier pas cher » : « Photos volées sur un autre site » → l'administrateur le bloque.
+  - Exemple 2 : Karim signale la demande « Travail au noir, pas de facture » → l'administrateur la cache.
+- **Décisions possibles** : « Rien à faire », « Bloquer le prestataire », « Cacher la demande ». « Retirer l'annonce » disparaît, avec la règle « le prestataire ne peut pas la remettre en ligne ».
+- **Tableau de bord** : le chiffre « annonces en ligne » est remplacé par « demandes ouvertes ».
+- Un prestataire est visible dès que son profil est rempli ; l'administrateur agit toujours après coup.
+
 ## À quoi ça sert
 L'administrateur (Raphael) surveille rafals et règle ce que les règles automatiques ne règlent pas.
 - Exemple : un client signale une annonce mensongère → l'administrateur la regarde et la retire.

@@ -2,6 +2,15 @@
 
 > Validé et formalisé le 30/09/2026 (lot 4.0).
 
+## Sans annonces (décision de Raphael du 04/10/2026, pas encore construit)
+Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Après les lots 8.3 et 8.4, ce fichier se lira ainsi (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
+- **Un rendez-vous naît seulement d'une proposition acceptée** (`RM-DEMANDES.md`). Le client ne réserve plus lui-même un horaire libre.
+  - Exemple 1 : Mme Dupont accepte « 35 € · samedi 10/10 à 10 h » de Tom → rendez-vous confirmé aussitôt.
+  - Exemple 2 : M. Petit écrit à Karim depuis son profil ; Karim propose « 60 € · lundi 12/10 à 8 h 30 » ; M. Petit accepte → rendez-vous confirmé.
+- **Le titre, le prix, la durée et le métier** sont recopiés de la proposition (et non plus de l'annonce). Le métier dit dans quel calendrier tombe le rendez-vous.
+- **Ne servent plus** : « Confirmation : au choix du prestataire » et « Demande sans réponse : annulée après 24 h » (le rendez-vous est confirmé dès que le client accepte la proposition).
+- **Ne changent pas** : l'annulation et son délai, les absences et leur compteur, le déplacement, le rappel, les coordonnées montrées après le rendez-vous.
+
 ## Objectif
 Réserver un horaire, le confirmer, l'annuler, et ce qui se passe si quelqu'un ne vient pas.
 

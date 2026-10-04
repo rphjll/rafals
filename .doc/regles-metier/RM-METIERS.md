@@ -6,7 +6,7 @@
 La grande liste des métiers de rafals, rangée dans des catégories (« dossiers »), et la façon dont clients et prestataires y trouvent un métier.
 
 ## Principes
-- Chaque Annonce est rangée sous un Métier ; chaque prestataire a un métier principal et peut avoir des métiers secondaires (voir `RM-PRESTATAIRES.md`).
+- Chaque Annonce est rangée sous un Métier (annonces retirées le 04/10/2026, pas encore construit : ce seront les demandes, les propositions et les rendez-vous qui porteront un métier ; partout dans ce fichier, « annonce » se lira alors « demande ou rendez-vous », voir `RM-PRESTATAIRES.md` § « Sans annonces ») ; chaque prestataire a un métier principal et peut avoir des métiers secondaires (voir `RM-PRESTATAIRES.md`).
 - Recherche d'un métier : en ouvrant une catégorie, ou en tapant les premières lettres (voir `GLOSSAIRE-METIER.md`).
 
 ## Source de la liste : triée (décidé le 28/09/2026)

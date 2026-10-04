@@ -2,6 +2,15 @@
 
 > Validé et formalisé le 29/09/2026 (lot 3.0). Modifié le 03/10/2026 (refonte du calendrier : un calendrier par métier, ouvertures exceptionnelles).
 
+## Sans annonces (décision de Raphael du 04/10/2026, pas encore construit)
+Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). **L'écran « Mon agenda » ne change pas.** Après les lots 8.3 et 8.4 (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
+- Le client **ne voit plus les horaires libres** : c'est le prestataire qui propose un jour et une heure. Une proposition est refusée si elle tombe sur un autre de ses rendez-vous (`RM-DEMANDES.md`).
+  - Exemple 1 : Karim a un rendez-vous lundi 12/10 de 8 h 30 à 9 h 30 → il ne peut pas proposer lundi à 9 h à un autre client.
+  - Exemple 2 : Tom propose samedi à 15 h, hors de ses horaires habituels → accepté, c'est lui qui a choisi l'heure.
+- Le calendrier par métier, les congés, les fermetures, les ouvertures exceptionnelles et la date d'arrêt d'un métier restent ; ils servent au prestataire pour s'organiser.
+- Un rendez-vous tombe dans le calendrier du **métier écrit dans le rendez-vous** (avant : le métier de l'annonce) ; les jours de travaux d'un devis, dans celui du métier de la demande de devis.
+- Date d'arrêt d'un métier : les rendez-vous d'après sont toujours annulés ; il n'y a plus d'annonce à cacher.
+
 ## Objectif
 Quand un prestataire travaille, et donc quels horaires un client peut réserver.
 

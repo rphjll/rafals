@@ -1,6 +1,10 @@
 # Règle métier — Annonces (sujet 05)
 
 > Validé et formalisé le 29/09/2026 (lot 3.0).
+>
+> ⚠️ **Annonces retirées : décision de Raphael du 04/10/2026** (« je vais enlever le sistème d'annonce car c trop dur », puis choix « b » : les enlever vraiment). La règle qui les remplace est dans `RM-PRESTATAIRES.md` § « Sans annonces ». MLD validé : `.doc/mld/MLD-retrait-annonces.html`.
+> **Pas encore construit** : le retrait se fait après les lots 8.3 et 8.4. D'ici là, le code suit encore ce fichier.
+> Après le retrait, il restera valable seulement : « Arrêter un métier » (la date d'arrêt dans le calendrier, sans la partie sur les annonces cachées) et « Adresse du lieu “chez moi” » (la rue du local montrée seulement après un rendez-vous). Ces deux parties seront alors recopiées dans `RM-AGENDA.md` et `RM-PRESTATAIRES.md`, et ce fichier sera rangé dans les archives.
 
 ## Objectif
 Ce qu'un prestataire met en ligne pour être trouvé et réservé : nom du service, prix, lieu, modes de paiement.

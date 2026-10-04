@@ -27,6 +27,10 @@ Exemple : Mme Dupont, Nantes, prend rendez-vous avec Julie Martin le mardi 14/10
 À ne pas confondre avec : **Prestataire**.
 
 ## Annonce
+⚠️ **Mot retiré : décision de Raphael du 04/10/2026.** Il n'y a plus d'annonce : le Prestataire se présente par son profil, le Client publie une **Demande**, et le prix, le jour et l'heure sont dans la **Proposition** du prestataire (`RM-PRESTATAIRES.md` § « Sans annonces », `RM-DEMANDES.md`). Pas encore construit (après les lots 8.3 et 8.4) : la définition ci-dessous décrit le code actuel.
+Exemple 1 : Mme Dupont publie la demande « Tondre ma pelouse samedi à Pessac, 40 € » ; Tom propose « 35 € · samedi 10/10 à 10 h ».
+Exemple 2 : M. Petit écrit à Karim depuis son profil ; Karim propose « 60 € · lundi 12/10 à 8 h 30 ».
+
 Un service qu'un Prestataire met en ligne pour être trouvé et réservé, avec un nom, une durée ou un tarif, une ville, et les modes de paiement qu'il accepte pour ce service. Appartient à un seul Prestataire. Mot choisi par Raphael le 27/09/2026 : on dit **annonce** partout (écrans, code, documents), jamais « publication » ni « prestation ».
 Exemple 1 : « Ménage 2 h — 50 € — Nantes — carte sur le site ou espèces » (Julie Martin, avec SIRET).
 Exemple 2 : « Plomberie, dépannage fuite — 40 €/h — Pessac — espèces seulement » (Karim, sans SIRET).

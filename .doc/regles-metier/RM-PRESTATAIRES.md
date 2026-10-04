@@ -8,7 +8,34 @@ Ce qu'un prestataire renseigne sur rafals (métiers, zone, SIRET) et quand les c
 ## Principes
 - On devient prestataire depuis son compte, par « Proposer mes services » (voir `RM-COMPTES.md`).
 - Un calendrier par métier du prestataire, jamais un par salarié, même pour une société (voir `GLOSSAIRE-METIER.md` ; « un calendrier par métier » décidé le 03/10/2026, `RM-AGENDA.md`).
-- Sans SIRET : annonces payables en espèces seulement ; rafals lui conseille de se déclarer (voir `GLOSSAIRE-METIER.md`, ⚠️ à vérifier juridiquement).
+- Sans SIRET : payé en espèces seulement ; rafals lui conseille de se déclarer (voir `GLOSSAIRE-METIER.md`, ⚠️ à vérifier juridiquement).
+
+## Sans annonces : le prestataire se présente (décision de Raphael du 04/10/2026)
+Réponse de Raphael, mot pour mot : « je vais enlever le sistème d'annonce car c trop dur je vais plutot faire en sorte que ca soit les comptes qui se présentent et les clients qui postes des demandes et les prestataires qui acceptent ou non ou ne font rien ». Puis choix « b » : enlever vraiment les annonces. MLD validé par Raphael le 04/10/2026 (« oui ») : `.doc/mld/MLD-retrait-annonces.html`. Les lignes « (choix de Claude) » ont été proposées avec le MLD.
+
+⚠️ **Pas encore construit** : à faire après les lots 8.3 et 8.4 (demandes et propositions). D'ici là, le code suit encore `RM-ANNONCES.md`.
+
+**Le principe.** Il n'y a plus d'annonce. Le profil dit **qui** est le prestataire ; le **prix, le jour et l'heure** sont dans la proposition qu'il fait à un client précis (`RM-DEMANDES.md`).
+- Exemple 1 : avant, Julie publiait « Ménage 2 h — 50 € ». Après, son profil dit « Julie Martin — Ménage, Nantes, jusqu'à 10 km », avec 3 photos ; quand Mme Dupont publie « Ménage de printemps, 3 pièces », Julie lui propose « 50 € · mardi 14/10 à 9 h · 2 h ».
+- Exemple 2 : avant, Karim publiait « Dépannage fuite — 40 € de l'heure ». Après, il répond à la demande « Fuite sous l'évier » de M. Petit par « 60 € · lundi 12/10 à 8 h 30 · 1 h ».
+
+**Trois façons d'arriver à un rendez-vous ou à un devis** (choix de Claude) :
+1. Le client **publie une demande** ; les prestataires du métier et du coin répondent, ou ne font rien (`RM-DEMANDES.md`).
+2. Le client trouve un prestataire par la recherche et clique **[Écrire à Karim]** sur son profil ; Karim lui fait une proposition dans la conversation, sans demande publiée (`RM-MESSAGERIE.md`).
+3. Le client clique **[Demander un devis]** sur le profil d'un prestataire avec SIRET vérifié, en choisissant un de ses métiers (`RM-DEVIS.md`).
+
+**Visible dès que le profil est rempli** (choix de Claude ; remplace « visible dès la première annonce ») : nom affiché, métier principal, ville et distance renseignés, activité ni en pause, ni arrêtée, ni bloquée.
+- Exemple 1 : Julie remplit son profil le 01/10 à 10 h → elle apparaît dans la recherche « Ménage + Nantes » à 10 h.
+- Exemple 2 : Karim, « en création », veut seulement être aidé à se déclarer → il met son activité **en pause** : aucun client ne le voit, et il la reprend quand il a son SIRET.
+
+**Ce que le profil reçoit à la place des annonces** (choix de Claude) :
+- jusqu'à **10 photos** de son travail (JPG ou PNG, 5 Mo chacune, même vérification que la photo du profil) ;
+- le **lieu** : « chez le client », « chez moi / dans mon local » ou « les deux » ; pour « chez moi » ou « les deux », l'adresse du local est obligatoire, et la rue n'est montrée au client qu'après un rendez-vous ;
+- **pas de prix** : il peut écrire ses tarifs habituels dans sa présentation (1 000 caractères).
+
+**Ce qui disparaît** : la réservation directe d'un horaire par le client, les prix affichés, la limite de 20 annonces, le réglage « confirmation automatique ».
+
+**Les moyens de paiement** se choisissent dans chaque proposition : espèces ; carte seulement avec un SIRET vérifié et le paiement par carte activé (`RM-PAIEMENTS.md`).
 
 ## Un métier principal et des métiers secondaires (décidé le 27/09/2026)
 Un prestataire choisit **un métier principal** et peut ajouter **des métiers secondaires**. Il apparaît dans les recherches de tous ses métiers, mais pour un métier secondaire, il apparaît **après** les prestataires dont c'est le métier principal. Dans chaque groupe, les mieux notés d'abord.
@@ -32,13 +59,13 @@ Quand un prestataire écrit son SIRET, rafals le cherche aussitôt dans le répe
 **Pourquoi :** empêcher un faux SIRET d'ouvrir le paiement par carte.
 **Cas limite tranché :** si le répertoire de l'État ne répond pas (panne), le SIRET est mis « en attente » et revérifié automatiquement plus tard ; en attendant, espèces seulement.
 
-## Lieu du service : au choix, pour chaque annonce (décidé le 27/09/2026)
+## Lieu du service : au choix, pour chaque annonce (décidé le 27/09/2026 ; remplacé le 04/10/2026 par un seul lieu dans le profil, voir « Sans annonces »)
 Pour chaque annonce, le prestataire indique où a lieu le service : « chez le client », « chez moi / dans mon local » (adresse du local écrite une fois dans le profil, voir `RM-ANNONCES.md`), ou « les deux ».
 - Exemple 1 : Karim, « Plomberie, dépannage fuite » → chez le client (la zone d'intervention s'applique).
 - Exemple 2 : Léa, coiffeuse à Mérignac : « Coupe femme — au salon, 12 rue des Lilas » et « Coupe à domicile — chez le client, +10 € ».
 **Cas limite tranché :** pour un service « chez moi », la zone d'intervention sert seulement à la recherche (les clients dans le rayon voient l'annonce) ; le client se déplace.
 
-## Visible tout de suite (décidé le 27/09/2026)
+## Visible tout de suite (décidé le 27/09/2026 ; « dès sa première annonce » remplacé le 04/10/2026 par « dès que le profil est rempli », voir « Sans annonces »)
 Un prestataire est visible des clients dès qu'il publie sa première annonce, sans attendre l'administrateur. L'administrateur voit chaque nouveau prestataire dans son écran « Administration » et peut le bloquer à tout moment.
 - Exemple 1 : Julie remplit son profil le 01/10 à 10 h, publie « Ménage 2 h — 50 € » à 10 h 05 → visible à 10 h 05.
 - Exemple 2 : le 02/10, Raphael voit un profil « Plombier pas cher » avec des photos volées → il le bloque ; ses annonces disparaissent aussitôt.

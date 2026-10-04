@@ -2,6 +2,15 @@
 
 > Validé et formalisé le 30/09/2026 (lot 4.0).
 
+## Sans annonces (décision de Raphael du 04/10/2026, pas encore construit)
+Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Après les lots 8.3 et 8.4, ce fichier se lira ainsi (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
+- **Qui apparaît** : un prestataire dont l'activité est active, qui exerce le métier cherché (principal ou secondaire, pas arrêté) et dont le rayon couvre la ville du client. La condition « au moins une annonce en ligne » disparaît.
+- **Carte d'un résultat** : nom, photo, ville, distance, « Nouveau » ou la note et le nombre d'avis, « vient chez vous » et « carte bancaire acceptée ». Plus de « à partir de 40 € » ni de nombre d'annonces.
+  - Exemple 1 : « Karim Benali · Plombier · 4,5 ★ (8 avis) · à 5 km · vient chez vous ».
+  - Exemple 2 : « Julie Martin · Ménage · Nouveau · à 2 km · carte bancaire acceptée ».
+- **Page publique** : profil, photos de son travail, avis, et les boutons [Écrire à Karim] et [Demander un devis] (SIRET vérifié seulement). Plus de liste d'annonces.
+- L'ordre des résultats ne change pas (métier principal d'abord, puis les mieux notés).
+
 ## Objectif
 Comment un client trouve un prestataire : un métier + une ville, et l'ordre des résultats.
 

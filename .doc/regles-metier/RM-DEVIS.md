@@ -2,6 +2,15 @@
 
 > Rédigé au lot 5.0, à partir des réponses de Raphael. En cours d'écriture. Point de départ : `RM-ANNONCES.md` § « Sur devis » (le client envoie une demande écrite, avec photos, et le prestataire répond par un devis).
 
+## Sans annonces (décision de Raphael du 04/10/2026, pas encore construit)
+Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Après les lots 8.3 et 8.4, seule la **porte d'entrée** du devis change (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
+- Le client clique **[Demander un devis]** sur le profil d'un prestataire avec SIRET vérifié, et choisit un de ses métiers.
+  - Exemple : Mme Dupont ouvre le profil de Paul, maçon, choisit « Maçon » et écrit « Muret de 5 mètres au fond du jardin », avec 2 photos.
+- Ou le prestataire répond à une **demande publiée** par un devis au lieu d'une proposition simple.
+  - Exemple : M. Petit publie « Refaire ma salle de bain » ; Karim clique [Répondre], puis [Faire un devis] : 1 800 €, arrhes de 30 %.
+- **Moyens de paiement** : le prestataire les choisit en écrivant le devis (avant, ils venaient de l'annonce).
+- Tout le reste ne change pas : lignes, arrhes, acceptation, jours de travaux, facture.
+
 ## Paiement d'un devis accepté : arrhes, puis solde (choix de Raphael le 02/10/2026)
 - Le prestataire fixe des **arrhes** dans son devis (un pourcentage du total). Elles sont payées par carte **dès que le client accepte** le devis, et versées au prestataire sans attendre, pour qu'il puisse acheter ses matériaux.
 - Le **reste (le solde)** est payé quand le prestataire déclare le travail terminé.
