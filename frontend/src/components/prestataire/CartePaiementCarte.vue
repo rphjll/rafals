@@ -74,7 +74,7 @@ async function allerChezStripe() {
         </AppBouton>
       </div>
       <div>
-        <AppBouton variante="secondaire" @click="routeur.push('/creer-mon-auto-entreprise')">Pas de SIRET ? Créer mon auto-entreprise : le guide</AppBouton>
+        <AppBouton variante="secondaire" @click="routeur.push('/creer-mon-auto-entreprise')">Pas de SIRET ? Créer mon auto-entreprise</AppBouton>
       </div>
     </template>
 

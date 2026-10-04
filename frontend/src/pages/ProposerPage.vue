@@ -66,7 +66,7 @@ async function enregistre(nouveau: ProfilPrestataire) {
         <FormulaireProfil @enregistre="enregistre" />
         <p class="text-[14px] text-texte-doux">
           Pas encore d'entreprise ?
-          <AppBouton variante="secondaire" @click="routeur.push('/creer-mon-auto-entreprise')">Créer mon auto-entreprise : le guide</AppBouton>
+          <AppBouton variante="secondaire" @click="routeur.push('/creer-mon-auto-entreprise')">Créer mon auto-entreprise</AppBouton>
         </p>
       </template>
     </template>

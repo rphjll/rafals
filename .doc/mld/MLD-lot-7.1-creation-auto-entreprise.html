@@ -1,0 +1,167 @@
+<title>MLD rafals création</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+  .note + .note { margin-top:8px; }
+  .etapes { margin:0; padding-left:20px; font-size:14px; }
+  .etapes li { margin:3px 0; }
+</style>
+<div class="page">
+  <header>
+    <h1>MLD — lot 7.1 « Créer une auto-entreprise depuis rafals »</h1>
+    <p class="sous">rafals · proposé le 04/10/2026 · <b>pas encore validé, rien n'est exécuté</b> · sources : <code>RM-CREATION-AUTO-ENTREPRISE.md</code>, <code>technique/API-EXTERNES.md</code> · 2 tables nouvelles, aucune table existante modifiée</p>
+    <p class="sous"><b>Complément du 04/10/2026 (schema_v19, à valider)</b> : 3 rubriques oubliées et 1 contrôle trop strict, marqués « v19 » ci-dessous.</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  METIER["<b>METIER</b><br/>id (PK)"]
+  COMMUNE["<b>COMMUNE</b><br/>id (PK)"]
+  FICHIER["<b>FICHIER</b><br/>id (PK)"]
+  DOSSIER_CREATION["<b>DOSSIER_CREATION</b><br/>id (PK)<br/>compte_id (FK)<br/>metier_id (FK)<br/>commune_id (FK)<br/>naissance_commune_id (FK)<br/>local_commune_id (FK)"]
+  PIECE_DOSSIER["<b>PIECE_DOSSIER</b><br/>id (PK)<br/>dossier_id (FK)<br/>fichier_id (FK)"]
+  COMPTE -- "ouvre · (0,n) —— (1,1)" --- DOSSIER_CREATION
+  METIER -- "est le métier de · (0,n) —— (0,1)" --- DOSSIER_CREATION
+  COMMUNE -- "est l'adresse de · (0,n) —— (0,1)" --- DOSSIER_CREATION
+  COMMUNE -- "est le lieu de naissance de · (0,n) —— (0,1)" --- DOSSIER_CREATION
+  COMMUNE -- "est la ville du local de · (0,n) —— (0,1)" --- DOSSIER_CREATION
+  DOSSIER_CREATION -- "contient · (0,n) —— (1,1)" --- PIECE_DOSSIER
+  FICHIER -- "est le papier de · (0,1) —— (0,1)" --- PIECE_DOSSIER
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>« ouvre · (0,n) —— (1,1) » : un compte a zéro, un ou plusieurs dossiers (un seul ouvert à la fois) ; un dossier appartient à un seul compte.</span>
+      <b>lecture</b><span>« est le papier de · (0,1) —— (0,1) » : une pièce pointe vers un fichier, ou vers rien une fois le fichier effacé.</span>
+      <b>🔒</b><span>rubrique sensible : vidée dès que le dossier est accepté, refusé ou fermé.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>DOSSIER_CREATION <span class="nouveau">nouvelle</span> · étape 1 « Vous »</h3>
+        <ul>
+          <li><code>civilite</code> — monsieur · madame</li>
+          <li><code>nom_naissance</code>, <code>nom_usage</code>, <code>prenoms</code></li>
+          <li><code>naissance_le</code></li>
+          <li><code>naissance_pays</code> — rempli seulement si né à l'étranger (sinon <code>naissance_commune_id</code>)</li>
+          <li><code>nationalite</code> — française · Union européenne · autre</li>
+          <li><code>situation_famille</code> — célibataire · concubinage · pacsé · marié · divorcé · veuf</li>
+          <li><code>numero_secu</code> 🔒 — 15 caractères <span class="nouveau">corrigé v19</span> : une personne née en Corse a « 2A » ou « 2B » dedans</li>
+          <li><code>adresse_rue</code> (la ville : <code>commune_id</code>)</li>
+          <li><code>code_postal</code> <span class="nouveau">ajout v19</span> — une ville peut en avoir plusieurs (Bordeaux : 33000, 33100…)</li>
+          <li><code>mail</code>, <code>telephone</code></li>
+          <li><code>pere_nom</code>, <code>mere_nom</code> 🔒 — pour l'attestation sur l'honneur</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>DOSSIER_CREATION · étapes 2 et 3</h3>
+        <ul>
+          <li><code>description</code> — 10 à 250 caractères</li>
+          <li><code>debut_le</code> — date de début d'activité</li>
+          <li><code>lieu_travail</code> — chez mes clients · chez moi · dans un local</li>
+          <li><code>local_adresse</code> — seulement « dans un local »</li>
+          <li><code>local_code_postal</code> et la ville du local (<code>local_commune_id</code>, FK) <span class="nouveau">ajout v19</span></li>
+          <li><code>nom_commercial</code> — facultatif</li>
+          <li><code>activite_en_meme_temps</code> — aucune · salarié · retraité</li>
+          <li><code>ancien_siren</code> — s'il a déjà été à son compte</li>
+          <li><code>periodicite</code> — mois · trimestre</li>
+          <li><code>impot_avec_cotisations</code> — oui / non</li>
+          <li><code>acre_demandee</code> — oui / non</li>
+          <li><code>adresse_non_publique</code> — oui / non</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>DOSSIER_CREATION · envoi et suivi</h3>
+        <ul>
+          <li><code>statut</code> — brouillon · envoyé · en examen · à corriger · accepté · refusé · fermé</li>
+          <li><code>cree_le</code>, <code>modifie_le</code>, <code>statut_change_le</code></li>
+          <li><code>certifie_le</code> — la case « je certifie »</li>
+          <li><code>pouvoir_le</code>, <code>pouvoir_texte</code> — le pouvoir donné à rafals, mot pour mot</li>
+          <li><code>envoye_le</code></li>
+          <li><code>guichet_id</code>, <code>guichet_numero</code> — les numéros donnés par l'État</li>
+          <li><code>motif</code> — ce que l'administration demande ou reproche</li>
+          <li><code>corriger_avant_le</code></li>
+          <li><code>siret_recu</code></li>
+          <li><code>sensible_efface_le</code> — quand les rubriques 🔒 et les papiers ont été effacés</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PIECE_DOSSIER <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Un papier du dossier. Le fichier lui-même est dans le placard à fichiers (table FICHIER, qui existe déjà).</p>
+        <ul>
+          <li><code>sorte</code> — identité · titre de séjour · diplôme · attestation · pouvoir · autorisation des parents · bail</li>
+          <li><code>depose_le</code></li>
+          <li><code>a_refaire</code> — oui / non (l'administration l'a refusé)</li>
+          <li><code>efface_le</code> — quand le fichier a été effacé</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Quatre choix expliqués</h2>
+    <p class="note"><b>Le dossier est lié au compte, pas au profil de prestataire</b> : Karim peut créer son entreprise avant d'avoir un profil sur rafals. Quand le SIRET arrive, il est recopié dans son profil s'il existe.</p>
+    <p class="note"><b>« J'ai déjà une entreprise » ne demande aucune table</b> : le SIRET va dans le profil, comme aujourd'hui dans « Mon activité ». Un profil qui a déjà un SIRET ne peut pas ouvrir de dossier.</p>
+    <p class="note"><b>Une rubrique par réponse</b>, et pas un gros bloc de texte : chaque réponse peut être contrôlée par la base (ex. <code>periodicite</code> ne peut valoir que « mois » ou « trimestre »).</p>
+    <p class="note"><b>Les données sensibles s'effacent toutes seules</b> à la fin du dossier (et un brouillon abandonné depuis 30 jours est effacé) : c'est un effacement automatique de données. Si tu préfères qu'on les garde, dis-le.</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>DOSSIER_CREATION</code> n° 1 : compte Karim Benali, métier Plombier, commune Mérignac, né le 14/03/1998 à Bordeaux, <code>situation_famille</code> célibataire, <code>debut_le</code> 01/11/2026, <code>lieu_travail</code> « chez mes clients », <code>periodicite</code> trimestre, <code>statut</code> « en examen », <code>envoye_le</code> 04/10/2026 15 h 20, <code>guichet_numero</code> J00012345678.
+      <p class="trad"><b>Traduction :</b> Karim a envoyé son dossier le 4 octobre ; l'administration l'examine.</p>
+    </div>
+    <div class="exemple">
+      <code>PIECE_DOSSIER</code> n° 1 : dossier n° 1, fichier n° 88, <code>sorte</code> identité, <code>depose_le</code> 04/10/2026, <code>a_refaire</code> oui.
+      <p class="trad"><b>Traduction :</b> la copie de la carte d'identité de Karim est illisible : il doit en déposer une autre.</p>
+    </div>
+    <div class="exemple">
+      <code>DOSSIER_CREATION</code> n° 1, trois semaines plus tard : <code>statut</code> accepté, <code>siret_recu</code> 912 345 678 00012, <code>numero_secu</code> vide, <code>sensible_efface_le</code> 20/10/2026.
+      <p class="trad"><b>Traduction :</b> l'entreprise de Karim existe ; son SIRET est dans son profil ; son numéro de sécurité sociale et ses papiers ont été effacés.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ensuite, si tu valides</h2>
+    <ol class="etapes">
+      <li>J'écris <code>schema_v18.sql</code> et je te demande l'accord avant de l'exécuter (sauvegarde de la base avant).</li>
+      <li>Serveur, avec un faux guichet dans les tests ; puis les écrans de la maquette.</li>
+    </ol>
+  </section>
+</div>

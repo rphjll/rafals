@@ -56,6 +56,12 @@ def assembler(page: Page, titre: str) -> bytes:
         police % b"Helvetica", police % b"Helvetica-Bold", police % b"Courier",
         b"<< /Title (%s) /Producer (rafals) >>" % _texte(titre),
     ]
+    return fichier_pdf(objets, avec_infos=True)
+
+
+def fichier_pdf(objets: list[bytes], *, avec_infos: bool = False) -> bytes:
+    """Range les morceaux (« objets ») dans un fichier PDF, avec la table qui dit où trouver chacun.
+    `avec_infos` : le dernier objet est la fiche d'informations (titre, auteur)."""
     sortie = bytearray(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
     positions = []
     for rang, objet in enumerate(objets, start=1):
@@ -65,7 +71,8 @@ def assembler(page: Page, titre: str) -> bytes:
     sortie += b"xref\n0 %d\n0000000000 65535 f \n" % (len(objets) + 1)
     for position in positions:
         sortie += b"%010d 00000 n \n" % position
-    sortie += b"trailer\n<< /Size %d /Root 1 0 R /Info %d 0 R >>\nstartxref\n%d\n%%%%EOF\n" % (len(objets) + 1, len(objets), table)
+    infos = b" /Info %d 0 R" % len(objets) if avec_infos else b""
+    sortie += b"trailer\n<< /Size %d /Root 1 0 R%s >>\nstartxref\n%d\n%%%%EOF\n" % (len(objets) + 1, infos, table)
     return bytes(sortie)
 
 

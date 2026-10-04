@@ -111,6 +111,37 @@ FACTURE_MOYENS_DIRECTS = ("especes", "cheque", "virement")
 SIGNALEMENT_MOTIF = (10, 1000)
 RAPPEL_URSSAF_AVANT = timedelta(days=7)  # premier rappel 7 jours avant la date limite, le second la veille
 
+# Création d'auto-entreprise depuis rafals (RM-CREATION-AUTO-ENTREPRISE.md, validé par Raphael le 04/10/2026)
+CREATION_DESCRIPTION = (10, 250)
+CREATION_DEBUT_MAX = timedelta(days=30)  # date de début : d'aujourd'hui à dans 1 mois
+CREATION_PIECE_TYPES = {"application/pdf", "image/jpeg"}  # la photo JPG est rangée dans un PDF
+CREATION_PIECE_TAILLE_MAX_OCTETS = 10 * 1024 * 1024  # limite du guichet de l'État
+CREATION_BROUILLON_ABANDONNE = timedelta(days=30)  # un brouillon sans modification depuis 30 jours est effacé
+CREATION_DELAI_CORRECTION = timedelta(days=15)  # ⚠️ à confirmer : délai laissé par l'administration pour corriger
+CREATION_RAPPEL_CORRECTION = timedelta(days=3)  # rappel 3 jours avant la date limite de correction
+CREATION_SIRET_DEMONSTRATION = "00000000000000"  # faux SIRET du mode démonstration, jamais recopié dans un profil
+# ⚠️ Les 4 listes ci-dessous sont à faire relire par un professionnel avant la mise en ligne (codes de la table METIER).
+# Métiers où il faut un diplôme ou 3 ans d'expérience : rafals demande le papier
+CREATION_METIERS_REGLEMENTES = frozenset({
+    "coiffure", "coiffure-domicile", "barbier", "estheticienne", "plombier", "electricien", "chauffagiste", "climatisation",
+    "macon", "couvreur", "carreleur", "menuisier", "peintre", "plaquiste", "facadier", "ramoneur", "vitrier", "serrurier",
+    "poseur-sols", "terrassier", "pisciniste", "mecanicien", "mecanicien-domicile", "carrossier", "moto", "velo",
+    "marechal-ferrant", "depannage-auto",
+})
+# Métiers que rafals ne sait pas déclarer (agrément, ordre professionnel, statut à part) : renvoi vers le site de l'État
+CREATION_CATEGORIES_RENVOYEES = frozenset({"sante"})
+CREATION_METIERS_RENVOYES = frozenset({
+    "veterinaire", "comptable", "assistante-maternelle", "moniteur-conduite", "controle-technique", "chauffeur",
+    "diagnostiqueur", "elagueur", "paysagiste", "autre",
+})
+# Forme de l'activité pour le guichet, par dossier de métiers ; ARTISANALE devient « réglementée » si le métier l'est
+CREATION_FORME_PAR_CATEGORIE = {
+    "maison-travaux": "ARTISANALE", "beaute-bien-etre": "ARTISANALE", "auto-transport": "ARTISANALE",
+    "menage-entretien": "ARTISANALE", "jardin-exterieur": "COMMERCIALE", "animaux": "COMMERCIALE",
+    "evenements": "COMMERCIALE", "services-personne": "COMMERCIALE", "enfants-famille": "COMMERCIALE",
+    "cours-formation": "INDEPENDANTE", "numerique-bureau": "INDEPENDANTE", "sport-loisirs": "INDEPENDANTE",
+}
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

@@ -2,6 +2,7 @@
 // Formulaire du profil prestataire, pour le créer ou le modifier (.doc/ihm/RM-PROPOSER-IHM.md).
 // Règles : RM-PRESTATAIRES.md (100 km, 5 métiers secondaires, 80 / 1 000 caractères, SIRET).
 import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
 import type { MetierVisible } from '../../composables/useMetiers'
 import { useMetiers } from '../../composables/useMetiers'
@@ -21,6 +22,7 @@ const PRESENTATION_MAX = 1000
 const props = defineProps<{ existant?: ProfilPrestataire | null }>()
 const emit = defineEmits<{ enregistre: [profil: ProfilPrestataire]; annuler: [] }>()
 const { rechercher } = useMetiers()
+const route = useRoute()
 
 // Préremplissage à partir du profil existant (modification)
 const e = props.existant
@@ -30,7 +32,9 @@ const secondaires = ref<{ id: number; nom: string }[]>(e ? [...e.metiers_seconda
 const commune = ref<CommuneVisible | null>(e?.commune ?? null)
 const distance = ref(String(e?.distance_km ?? 15))
 const presentation = ref(e?.presentation ?? '')
-const siret = ref(siretLisible(e?.siret ?? null))
+// Création : le SIRET peut arriver de « Créer mon auto-entreprise » (/proposer?siret=91234567800017)
+const siretAnnonce = typeof route.query.siret === 'string' ? route.query.siret : null
+const siret = ref(siretLisible(e ? e.siret : siretAnnonce))
 const erreur = ref('')
 const envoiEnCours = ref(false)
 

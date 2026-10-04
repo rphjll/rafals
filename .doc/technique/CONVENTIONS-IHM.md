@@ -50,6 +50,7 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AppRecherche` — champ de recherche avec propositions (un seul pour toutes les recherches), `AppElementChoisi` — élément choisi, `AppZoneTexte` — texte long avec compteur (lot 2.5).
 - `AppChoixCommune` (dans `components/`) — choix d'une commune (lot 2.5).
 - `AppSection` — bloc d'une page avec titre et bouton facultatif à droite ; `danger` = bord rouge (lot 2.7).
+- `ChampsAdresse` (dans `components/`) — les 3 champs d'une adresse (rue, ville, code postal seulement si la ville en a plusieurs) ; utilisé par `CarteAdresse` et par le dossier de création d'auto-entreprise (lot 7.2).
 - `CarteAdresse` (dans `components/`) — carte d'une adresse unique (ajouter, modifier, effacer) : adresse du client, local du prestataire (lot 3.2).
 - `AppChoix` — une réponse parmi quelques-unes, en cases côte à côte, case verrouillée 🔒 possible ; `AppCase` — case à cocher, verrouillable (lot 3.2).
 - `AppOnglets` — onglets d'une page, l'onglet choisi est dans l'adresse (`?onglet=…`) : Administration, Mon agenda (lot 3.4).

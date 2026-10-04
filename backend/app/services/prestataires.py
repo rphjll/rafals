@@ -34,6 +34,10 @@ class Profil:
 # ---------- SIRET ----------
 
 
+SIRET_NON_VALIDE = ("Ce SIRET n'est pas valide : il fait 14 chiffres, et le dernier sert de contrôle. "
+                    "Recopiez-le depuis votre avis de situation INSEE ou vos factures.")
+
+
 def normaliser_siret(texte: str | None) -> str | None:
     """« 912 345 678 00014 » → « 91234567800014 » ; vide → None."""
     chiffres = "".join(c for c in (texte or "") if not c.isspace())
@@ -62,6 +66,25 @@ def _controler_siret(siret: str | None, compte: Compte, maintenant: datetime) ->
     if resultat.statut == "refuse":
         raise ErreurRegle(resultat.message)
     return resultat.statut, (maintenant if resultat.statut == "verifie" else None)
+
+
+def ajouter_siret(db: Session, compte: Compte, prestataire: Prestataire, siret: str, maintenant: datetime) -> Prestataire:
+    """« J'ai déjà une entreprise » (demande de Raphael du 04/10/2026) : le SIRET est ajouté au profil, sans rien créer.
+    Même contrôle que dans « Mon activité » : 14 chiffres, clé, puis vérification auprès de l'État."""
+    if prestataire.statut == "arrete":
+        raise ErreurRegle("Votre activité est arrêtée : ce profil ne peut plus être modifié.")
+    if prestataire.siret:
+        raise ErreurRegle(f"Votre profil a déjà un SIRET ({prestataire.siret}) : changez-le dans « Mon activité ».")
+    propre = normaliser_siret(siret)
+    if propre is None or not siret_valide(propre):
+        raise ErreurRegle(SIRET_NON_VALIDE)
+    prestataire.siret_statut, prestataire.siret_verifie_le = _controler_siret(propre, compte, maintenant)
+    prestataire.siret = propre
+    journal.noter(
+        db, auteur_id=compte.id, action="ajouter_siret", table_cible="prestataire", ligne_id=prestataire.id,
+        avant={"siret": None}, apres={"siret": propre, "siret_statut": prestataire.siret_statut}, maintenant=maintenant,
+    )
+    return prestataire
 
 
 def reverifier_sirets_en_attente(db: Session, maintenant: datetime) -> int:
@@ -168,10 +191,7 @@ def _verifier(db: Session, profil: Profil) -> Profil:
 
     siret = normaliser_siret(profil.siret)
     if siret is not None and not siret_valide(siret):
-        raise ErreurRegle(
-            "Ce SIRET n'est pas valide : il fait 14 chiffres, et le dernier sert de contrôle. "
-            "Recopiez-le depuis votre avis de situation INSEE ou vos factures."
-        )
+        raise ErreurRegle(SIRET_NON_VALIDE)
     return Profil(nom, profil.metier_principal_id, profil.commune_id, profil.distance_km, presentation, siret, secondaires)
 
 

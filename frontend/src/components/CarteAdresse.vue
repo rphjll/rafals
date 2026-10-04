@@ -1,17 +1,16 @@
 <script setup lang="ts">
 // Carte d'une adresse unique, ajoutée, modifiée ou effacée : adresse du client (Mon compte, RM-CLIENTS.md)
 // et local du prestataire (Mon activité, RM-ANNONCES.md). `chemin` : GET chemin, POST chemin, POST chemin/effacer.
-// Le code postal vient de la ville choisie ; une liste apparaît seulement si la ville en a plusieurs (ex. Marseille).
-import { computed, onMounted, ref, watch } from 'vue'
+// Les champs eux-mêmes (rue, ville, code postal) sont dans ChampsAdresse.
+import { onMounted, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../api'
 import { useMessage } from '../composables/useMessage'
 import type { CommuneVisible } from '../outils/prestataires'
-import AppChoixCommune from './AppChoixCommune.vue'
+import ChampsAdresse from './ChampsAdresse.vue'
 import AppAlerte from './ui/AppAlerte.vue'
 import AppBouton from './ui/AppBouton.vue'
 import AppChamp from './ui/AppChamp.vue'
 import AppSection from './ui/AppSection.vue'
-import AppSelection from './ui/AppSelection.vue'
 
 interface Adresse {
   ligne: string
@@ -51,18 +50,6 @@ onMounted(async () => {
   } finally {
     chargee.value = true
   }
-})
-
-const codesPostaux = computed(() => commune.value?.codes_postaux ?? [])
-// Ville changée : on garde le code postal s'il est à elle, sinon on prend son seul code, sinon on laisse choisir
-watch(commune, (nouvelle) => {
-  const codes = nouvelle?.codes_postaux ?? []
-  if (!codes.includes(codePostal.value)) codePostal.value = codes.length === 1 ? (codes[0] ?? '') : ''
-})
-// La liste déroulante travaille avec des numéros : 0 = premier code postal de la ville
-const rangCodePostal = computed({
-  get: () => (codesPostaux.value.includes(codePostal.value) ? codesPostaux.value.indexOf(codePostal.value) : null),
-  set: (rang) => (codePostal.value = rang === null ? '' : (codesPostaux.value[rang] ?? '')),
 })
 
 function ouvrir() {
@@ -117,16 +104,9 @@ async function effacer() {
 <template>
   <AppSection v-if="chargee" :titre="titre">
     <form v-if="enModification" class="flex flex-col gap-3.5" @submit.prevent="enregistrer">
-      <AppChamp v-model="ligne" etiquette="Numéro et rue" obligatoire autocomplete="address-line1" placeholder="ex. 8 allée des Pins" />
-      <AppChamp v-model="complement" etiquette="Complément" autocomplete="address-line2" placeholder="Bâtiment, étage, code…" />
-      <AppChoixCommune v-model="commune" obligatoire />
-      <AppSelection
-        v-if="codesPostaux.length > 1"
-        v-model="rangCodePostal"
-        etiquette="Code postal"
-        obligatoire
-        :options="codesPostaux.map((code, rang) => ({ valeur: rang, texte: code }))"
-      />
+      <ChampsAdresse v-model:ligne="ligne" v-model:commune="commune" v-model:code-postal="codePostal">
+        <AppChamp v-model="complement" etiquette="Complément" autocomplete="address-line2" placeholder="Bâtiment, étage, code…" />
+      </ChampsAdresse>
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
       <div class="flex flex-wrap gap-2">
         <AppBouton type="submit" :occupe="envoiEnCours">Enregistrer</AppBouton>

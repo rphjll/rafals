@@ -41,6 +41,13 @@ RAFALS_NOM = os.environ.get("RAFALS_NOM", "")
 RAFALS_SIRET = os.environ.get("RAFALS_SIRET", "")
 RAFALS_ADRESSE = os.environ.get("RAFALS_ADRESSE", "")
 
+# Guichet unique de l'État (API de l'INPI, lot 7.1) : compte e-procedures de rafals, dans le fichier .env (jamais dans git).
+# Sans identifiants, rafals est en « démonstration » : rien n'est envoyé à l'État (services/guichet.py).
+# Adresse par défaut : l'espace d'essai de l'INPI ; la vraie (https://guichet-unique.inpi.fr) se met à la mise en ligne.
+INPI_ADRESSE = os.environ.get("INPI_ADRESSE", "https://guichet-unique-demo.inpi.fr")
+INPI_IDENTIFIANT = os.environ.get("INPI_IDENTIFIANT", "")
+INPI_MOT_DE_PASSE = os.environ.get("INPI_MOT_DE_PASSE", "")
+
 # Adresse des écrans, pour fabriquer les liens envoyés par mail
 ADRESSE_SITE = os.environ.get("ADRESSE_SITE", "http://localhost:5174")
 

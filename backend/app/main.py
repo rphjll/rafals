@@ -14,11 +14,12 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.db import moteur
 from app.routes import (
-    accords, administration, agenda, annonces, avis, clients, comptes, devis, factures, metiers, paiements, prestataires,
-    recherche, rendez_vous, services_en_plus,
+    accords, administration, agenda, annonces, avis, clients, comptes, creation_entreprise, devis, factures, metiers, paiements,
+    prestataires, recherche, rendez_vous, services_en_plus,
 )
 from app.services import avis as service_avis
 from app.services import clients as service_clients
+from app.services import creation_entreprise as service_creation
 from app.services import demarches as service_demarches
 from app.services import devis as service_devis
 from app.services import factures as service_factures
@@ -91,6 +92,10 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
         asyncio.create_task(_tache_periodique(
             "rappels URSSAF", 60 * 60, _dans_une_session(service_demarches.envoyer_rappels),
         )),
+        # Dossiers de création d'auto-entreprise : réponse du guichet de l'État, rappels, brouillons abandonnés (lot 7.1)
+        asyncio.create_task(_tache_periodique(
+            "dossiers de création d'entreprise", 60 * 60, _dans_une_session(service_creation.suivre),
+        )),
         # Rappel « Comment s'est passé votre rendez-vous ? » le lendemain (lot 4.7)
         asyncio.create_task(_tache_periodique(
             "rappels d'avis", 60 * 60, _dans_une_session(service_avis.envoyer_rappels),
@@ -117,6 +122,7 @@ app.include_router(paiements.routeur)
 app.include_router(devis.routeur)
 app.include_router(factures.routeur)
 app.include_router(services_en_plus.routeur)
+app.include_router(creation_entreprise.routeur)
 
 
 @app.exception_handler(ErreurRegle)

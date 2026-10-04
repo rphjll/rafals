@@ -30,6 +30,7 @@ MARQUES: list[tuple[str, str, str]] = [
 RATTACHEES: dict[str, list[str]] = {
     "compte": [
         "DELETE FROM journal_action WHERE auteur_id = :id OR (table_cible = 'compte' AND ligne_id = :id)"
+        " OR (table_cible = 'dossier_creation' AND ligne_id IN (SELECT id FROM dossier_creation WHERE compte_id = :id))"
         " OR (table_cible = 'accord_parental' AND ligne_id IN (SELECT id FROM accord_parental WHERE compte_id = :id))"
         " OR (table_cible = 'proposition_metier' AND ligne_id IN (SELECT id FROM proposition_metier WHERE propose_par_id = :id))"
         " OR (table_cible = 'prestataire' AND ligne_id IN (SELECT id FROM prestataire WHERE compte_id = :id))"
@@ -52,6 +53,9 @@ RATTACHEES: dict[str, list[str]] = {
         " OR (table_cible = 'facture' AND ligne_id IN (SELECT f.id FROM facture f WHERE f.client_id = :id OR f.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
         " OR (table_cible = 'demande_devis' AND ligne_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
         " OR (table_cible = 'devis' AND ligne_id IN (SELECT v.id FROM devis v WHERE v.demande_devis_id IN (SELECT d.id FROM demande_devis d WHERE d.client_id = :id OR d.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))))",
+        # Dossiers de création d'auto-entreprise d'essai (lot 7.1) : papiers, puis dossiers
+        "DELETE FROM piece_dossier WHERE dossier_id IN (SELECT id FROM dossier_creation WHERE compte_id = :id)",
+        "DELETE FROM dossier_creation WHERE compte_id = :id",
         "DELETE FROM avis WHERE client_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM mot_interdit WHERE ajoute_par_id = :id",
         # Signalements et rappels URSSAF d'essai (lot 6.3)

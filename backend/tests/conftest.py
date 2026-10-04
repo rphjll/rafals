@@ -305,3 +305,69 @@ def faux_stripe(monkeypatch: pytest.MonkeyPatch) -> FauxStripe:
     monkeypatch.setattr(config, "STRIPE_SECRET_WEBHOOK", FauxStripe.SECRET)
     monkeypatch.setattr(stripe_api, "appeler", faux.appeler)
     return faux
+
+
+class FauxGuichet:
+    """Le guichet de l'État simulé (API de l'INPI) : dépôt, signature, suivi, correction. `appels` garde chaque demande ;
+    `panne = True` simule un guichet injoignable. Les méthodes du bas jouent le rôle de l'administration."""
+
+    def __init__(self) -> None:
+        self.appels: list[dict] = []
+        self.panne = False
+        self.dossiers: dict[str, dict] = {}
+
+    def appeler(self, methode: str, chemin: str, donnees: dict | None = None) -> dict:
+        from app.services.guichet import GuichetIndisponible
+
+        self.appels.append({"methode": methode, "chemin": chemin, "donnees": donnees})
+        if self.panne:
+            raise GuichetIndisponible("guichet simulé en panne")
+        morceaux = chemin.strip("/").split("/")
+        if chemin == "/api/formalities" and methode == "POST":
+            identifiant = str(uuid4().int % 10**9)  # unique d'un test à l'autre
+            self.dossiers[identifiant] = {"id": int(identifiant), "liasseNumber": f"J{identifiant.zfill(11)}",
+                                          "status": "SIGNATURE_PENDING", "content": (donnees or {}).get("content")}
+            return self.dossiers[identifiant]
+        if chemin == "/api/signatures":
+            self.dossiers[(donnees or {})["formality"].rsplit("/", 1)[1]]["status"] = "VALIDATION_PENDING"
+            return {"id": 1}
+        if morceaux[:2] == ["api", "formalities"] and methode == "GET":
+            return self.dossiers[morceaux[2]]
+        if morceaux[:2] == ["api", "formalities"] and methode == "PUT":
+            self.dossiers[morceaux[2]].update(status="SIGNATURE_PENDING", content=(donnees or {}).get("content"),
+                                              regularizationObjects=[])
+            return self.dossiers[morceaux[2]]
+        raise AssertionError(f"Appel au guichet non prévu dans le faux guichet : {methode} {chemin}")
+
+    # ---------- Ce que fait l'administration, pour les tests ----------
+
+    def demander_correction(self, identifiant: str, observation: str, piece: str | None = "PJ_11") -> None:
+        """Ex. « Fichier illisible » sur la carte d'identité (PJ_11)."""
+        demande = {"type": "INVALID_ATTACHMENT" if piece else "ADDITIONAL_INFORMATION", "observation": observation,
+                   "attachment": {"typeDocument": piece} if piece else None}
+        self.dossiers[identifiant].update(status="AMENDMENT_PENDING", regularizationObjects=[demande])
+
+    def valider(self, identifiant: str, siret: str) -> None:
+        dossier = self.dossiers[identifiant]
+        dossier.update(status="VALIDATED", siren=siret[:9])
+        dossier["content"]["personnePhysique"]["etablissementPrincipal"]["descriptionEtablissement"]["siret"] = siret
+
+    def rejeter(self, identifiant: str, observation: str) -> None:
+        self.dossiers[identifiant].update(status="REJECTED", regularizationObjects=[{"type": "REJECT", "observation": observation}])
+
+    def expirer(self, identifiant: str) -> None:
+        self.dossiers[identifiant].update(status="EXPIRED", regularizationObjects=[])
+
+
+@pytest.fixture(autouse=True)
+def faux_guichet(monkeypatch: pytest.MonkeyPatch) -> FauxGuichet:
+    """Les tests n'appellent jamais le vrai guichet de l'État ; les identifiants sont faux. Un test peut repasser en
+    « démonstration » (aucun identifiant) : monkeypatch.setattr(config, "INPI_IDENTIFIANT", "")."""
+    from app import config
+    from app.services import guichet
+
+    faux = FauxGuichet()
+    monkeypatch.setattr(config, "INPI_IDENTIFIANT", "zztest")
+    monkeypatch.setattr(config, "INPI_MOT_DE_PASSE", "zztest")
+    monkeypatch.setattr(guichet, "appeler", faux.appeler)
+    return faux

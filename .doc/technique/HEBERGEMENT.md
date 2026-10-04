@@ -48,3 +48,9 @@ Service extérieur choisi par Raphael (Stripe Connect, « Stripe gère la tarifi
 
 ## Identité de rafals sur ses factures (lot 5.5, 03/10/2026)
 `RAFALS_NOM`, `RAFALS_SIRET`, `RAFALS_ADRESSE` dans le fichier `.env` : à remplir quand rafals sera une entreprise. Vides : les factures de commission (R-…) ne sont pas créées. Les PDF sont fabriqués par le serveur lui-même (aucune bibliothèque ajoutée, aucune reconstruction du conteneur).
+
+## Guichet unique de l'État (API de l'INPI, lot 7.1, 04/10/2026)
+- **Sur le PC, rien à régler** : sans identifiants, rafals est en « démonstration » (rien n'est envoyé à l'État, faux SIRET jamais recopié dans un profil).
+- **À la mise en ligne** (à la charge de Raphael) : créer le compte e-procedures de l'INPI au nom de l'entreprise rafals, accepter ses conditions d'utilisation, puis ajouter dans `.env` (jamais dans git) : `INPI_IDENTIFIANT`, `INPI_MOT_DE_PASSE`, et `INPI_ADRESSE=https://guichet-unique.inpi.fr`. Sans `INPI_ADRESSE`, c'est l'espace d'essai de l'INPI (`https://guichet-unique-demo.inpi.fr`) qui est utilisé.
+- **Avant d'ouvrir au public** : faire un dossier complet dans l'espace d'essai de l'INPI (le contenu envoyé suit leur dictionnaire de données mais n'a encore jamais été envoyé pour de vrai) ; faire relire par un professionnel les listes de métiers réglementés et renvoyés (`backend/app/reglages.py`, `CREATION_*`), les frais, et la conservation des données sensibles (RGPD).
+- Fichiers concernés : `backend/app/config.py` (3 réglages lus dans `.env`), `backend/app/services/guichet.py`. `docker-compose.yml` et `.env` ne changent pas aujourd'hui.
