@@ -19,6 +19,7 @@ from app.routes import (
 )
 from app.services import avis as service_avis
 from app.services import clients as service_clients
+from app.services import demarches as service_demarches
 from app.services import devis as service_devis
 from app.services import factures as service_factures
 from app.services import paiements as service_paiements
@@ -85,6 +86,10 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
         # Commissions du mois passé : une facture de rafals par prestataire, faite une seule fois (lot 5.5)
         asyncio.create_task(_tache_periodique(
             "factures de commission", 60 * 60, _dans_une_session(service_factures.facturer_les_commissions),
+        )),
+        # Rappels de déclaration URSSAF : 7 jours avant la date limite, puis la veille (lot 6.3)
+        asyncio.create_task(_tache_periodique(
+            "rappels URSSAF", 60 * 60, _dans_une_session(service_demarches.envoyer_rappels),
         )),
         # Rappel « Comment s'est passé votre rendez-vous ? » le lendemain (lot 4.7)
         asyncio.create_task(_tache_periodique(

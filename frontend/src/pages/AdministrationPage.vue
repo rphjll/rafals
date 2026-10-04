@@ -12,6 +12,7 @@ import OngletMetiers from '../components/admin/OngletMetiers.vue'
 import OngletMotsInterdits from '../components/admin/OngletMotsInterdits.vue'
 import OngletProblemesDevis from '../components/admin/OngletProblemesDevis.vue'
 import OngletPrestataires from '../components/admin/OngletPrestataires.vue'
+import OngletSignalements from '../components/admin/OngletSignalements.vue'
 import OngletTableauDeBord from '../components/admin/OngletTableauDeBord.vue'
 import OngletTousLesPaiements from '../components/admin/OngletTousLesPaiements.vue'
 import OngletPropositions from '../components/admin/OngletPropositions.vue'
@@ -30,6 +31,7 @@ const onglets = [
   { id: 'prestataires', texte: 'Prestataires', composant: OngletPrestataires },
   { id: 'absences', texte: 'Absences contestées', composant: OngletAbsences },
   { id: 'avis', texte: 'Avis signalés', composant: OngletAvisSignales },
+  { id: 'signalements', texte: 'Signalements', composant: OngletSignalements },
   { id: 'mots', texte: 'Mots interdits', composant: OngletMotsInterdits },
   { id: 'devis', texte: 'Problèmes de devis', composant: OngletProblemesDevis },
   { id: 'propositions', texte: 'Propositions de métiers', composant: OngletPropositions },
@@ -43,16 +45,17 @@ const onglet = computed(() => onglets.find((o) => o.id === ongletActif.value) ??
 const enAttente = ref<Record<string, number>>({})
 async function compter() {
   if (!compte.value?.est_administrateur) return
-  const [accords, propositions, contestations, signales, problemes] = await Promise.all([
+  const [accords, propositions, contestations, signales, problemes, signalements] = await Promise.all([
     appelerServeur<unknown[]>('/api/admin/accords'),
     appelerServeur<unknown[]>('/api/admin/propositions'),
     appelerServeur<unknown[]>('/api/admin/contestations'),
     appelerServeur<unknown[]>('/api/admin/avis-signales'),
     appelerServeur<unknown[]>('/api/admin/devis-problemes'),
+    appelerServeur<unknown[]>('/api/admin/signalements'),
   ])
   enAttente.value = {
     accords: accords.length, propositions: propositions.length, absences: contestations.length, avis: signales.length,
-    devis: problemes.length,
+    devis: problemes.length, signalements: signalements.length,
   }
 }
 onMounted(compter)

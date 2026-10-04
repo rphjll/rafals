@@ -4,6 +4,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
+import { useMessage } from '../composables/useMessage'
 import GardePrestataire from '../components/prestataire/GardePrestataire.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
@@ -27,6 +28,8 @@ interface Demarches {
   annee: number
   siret_verifie: boolean
   facture_tva: boolean
+  /** Déclare chaque mois, chaque trimestre, ou pas de rappel (lot 6.4) */
+  periodicite: 'mois' | 'trimestre' | null
   mois: Periode[]
   trimestres: Periode[]
 }
@@ -35,6 +38,7 @@ const SITE_URSSAF = 'https://www.autoentrepreneur.urssaf.fr'
 const NOMS_MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 const routeur = useRouter()
 const { compte } = useCompte()
+const { afficherMessage } = useMessage()
 const aujourdhui = aParis(new Date().toISOString()).jour
 const anneeEnCours = Number(aujourdhui.slice(0, 4))
 const annee = ref(anneeEnCours)
@@ -46,6 +50,8 @@ async function charger() {
   if (!compte.value?.prestataire_id) return
   try {
     demarches.value = await appelerServeur<Demarches>(`/api/moi/prestataire/demarches?annee=${annee.value}`)
+    rappels.value = demarches.value.periodicite ?? 'aucun'
+    if (demarches.value.periodicite) vue.value = demarches.value.periodicite === 'mois' ? 'mois' : 'trimestres'
   } catch (e) {
     erreur.value = messageErreur(e)
   }
@@ -63,6 +69,23 @@ const prochaine = computed(() => periodes.value.find(aDeclarer) ?? null)
 const annees = computed(() =>
   Array.from({ length: anneeEnCours - 2026 + 1 }, (_, n) => ({ valeur: 2026 + n, texte: String(2026 + n) })),
 )
+// ---------- Rappels par mail (lot 6.4) : le choix s'enregistre au clic ----------
+const rappels = ref<'mois' | 'trimestre' | 'aucun'>('aucun')
+async function choisirRappels(valeur: 'mois' | 'trimestre' | 'aucun') {
+  if (!demarches.value || valeur === (demarches.value.periodicite ?? 'aucun')) return
+  try {
+    const periodicite = valeur === 'aucun' ? null : valeur
+    await appelerServeur('/api/moi/prestataire/demarches/periodicite', { periodicite })
+    demarches.value.periodicite = periodicite
+    if (periodicite) vue.value = periodicite === 'mois' ? 'mois' : 'trimestres'
+    afficherMessage(periodicite ? `Rappels activés : chaque ${periodicite}.` : 'Rappels arrêtés.')
+  } catch (e) {
+    rappels.value = demarches.value.periodicite ?? 'aucun'
+    afficherMessage(messageErreur(e), 'erreur')
+  }
+}
+watch(rappels, choisirRappels)
+
 function ouvrirUrssaf() {
   window.open(SITE_URSSAF, '_blank', 'noopener')
 }
@@ -119,6 +142,22 @@ function ouvrirUrssaf() {
       <p class="text-[13.5px] text-texte-doux">
         Seulement ce qui est passé par rafals : ajoutez ce que vous avez encaissé ailleurs. La commission de rafals et les
         frais de paiement ne se déduisent pas.<template v-if="demarches.facture_tva"> Vous facturez la TVA : les montants sont hors taxe.</template>
+      </p>
+    </AppSection>
+    <AppSection v-if="demarches?.siret_verifie" titre="Rappels par mail">
+      <p class="text-[14px] text-texte-doux">
+        Dites à rafals comment vous déclarez à l'URSSAF : vous recevrez un mail 7 jours avant la date limite, puis la veille,
+        avec le montant à déclarer.
+      </p>
+      <div>
+        <AppSegment
+          v-model="rappels"
+          etiquette="Rappels par mail"
+          :options="[{ valeur: 'mois', texte: 'Chaque mois' }, { valeur: 'trimestre', texte: 'Chaque trimestre' }, { valeur: 'aucun', texte: 'Pas de rappel' }]"
+        />
+      </div>
+      <p v-if="demarches.periodicite && prochaine" class="text-[13.5px] text-texte-doux">
+        Prochain rappel : 7 jours avant le {{ jourCourt(prochaine.a_declarer_avant) }}, puis la veille, pour {{ nom(prochaine).toLowerCase() }}.
       </p>
     </AppSection>
   </GardePrestataire>

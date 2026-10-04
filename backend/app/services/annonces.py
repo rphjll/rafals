@@ -247,6 +247,15 @@ def changer_statut(db: Session, prestataire: Prestataire, annonce: Annonce, acti
     return annonce
 
 
+def retirer_par_administrateur(db: Session, administrateur: Compte, annonce: Annonce, maintenant: datetime) -> Annonce:
+    """Après un signalement (RM-ADMINISTRATION) : l'annonce n'est plus visible ; rien n'est effacé."""
+    ancien = annonce.statut
+    annonce.statut, annonce.statut_change_le = "retiree", maintenant
+    journal.noter(db, auteur_id=administrateur.id, action="annonce_retiree_par_administrateur", table_cible="annonce",
+                  ligne_id=annonce.id, avant={"statut": ancien}, apres={"statut": "retiree"}, maintenant=maintenant)
+    return annonce
+
+
 # ---------- Photos (5 au plus, la n° 1 montrée en premier) ----------
 
 

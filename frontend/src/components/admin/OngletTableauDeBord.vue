@@ -42,6 +42,7 @@ const TEXTES: Record<string, [string, string]> = {
   avis: ['avis signalé', 'avis signalés'],
   devis: ['problème de devis', 'problèmes de devis'],
   propositions: ['proposition de métier', 'propositions de métiers'],
+  signalements: ['signalement', 'signalements'],
 }
 const aTraiter = computed(() =>
   Object.entries(tableau.value?.a_traiter ?? {})

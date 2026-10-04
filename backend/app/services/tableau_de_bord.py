@@ -15,7 +15,7 @@ from app.modeles.metiers import PropositionMetier
 from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import absences, avis, devis
+from app.services import absences, avis, devis, signalements
 
 PARIS = reglages.FUSEAU_AFFICHAGE
 PAYES = ("paye", "verse")  # paiements par carte gardés (ni abandonnés, ni remboursés)
@@ -31,6 +31,7 @@ class ATraiter:
     avis: int
     devis: int
     propositions: int
+    signalements: int
 
 
 @dataclass
@@ -59,6 +60,7 @@ def a_traiter(db: Session) -> ATraiter:
         avis=len(avis.avis_signales(db)),
         devis=len(devis.problemes_a_traiter(db)),
         propositions=compter(select(func.count()).select_from(PropositionMetier).where(PropositionMetier.statut == "en_attente")),
+        signalements=len(signalements.a_traiter(db)),
     )
 
 

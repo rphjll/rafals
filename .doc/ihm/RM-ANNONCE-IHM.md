@@ -14,3 +14,6 @@ Ouverte à tous, même sans compte. Une annonce cachée (en pause, retirée, mé
    - la description ;
    - « sur devis » : bouton [Demander un devis] → fenêtre de demande (lot 5.4, voir `RM-DEVIS-IHM.md`).
 4. (prix fixe ou à l'heure) Carte « Choisir un horaire » et fenêtre de réservation : voir `RM-RENDEZ-VOUS-IHM.md` (lot 4.4).
+
+## [Signaler cette annonce…] (lot 6.4, 04/10/2026)
+En bas de la carte de l'annonce, à droite (absent sur sa propre annonce) : voir `RM-SIGNALEMENTS-IHM.md`.

@@ -44,3 +44,11 @@ Chaque décision de l'administrateur est déjà inscrite au journal des actions 
 ## Questions pour Raphael
 1. Les signalements d'annonces et de prestataires : on les construit (une table de plus) ?
 2. Le tableau de bord et le suivi des paiements te conviennent-ils tels quels ?
+
+## Mise en œuvre des signalements (lots 6.3 et 6.4, 04/10/2026 ; validé par Raphael : « Oui, on ajoute »)
+- Un même utilisateur ne peut pas signaler deux fois la même annonce (ou le même prestataire) tant que son signalement n'est pas traité : « Vous l'avez déjà signalé : l'administrateur va regarder. » On ne se signale pas soi-même.
+- L'administrateur choisit : **Rien à faire** (classé), **Retirer l'annonce** ou **Bloquer le prestataire**, avec un motif d'au moins 5 caractères envoyé par mail au prestataire. Le nom de celui qui a signalé n'y figure jamais.
+  - Exemple : « L'administrateur de rafals a retiré votre annonce « Plomberie ». Motif : « Prix mensonger ». »
+  - Exemple : bloquer annule aussi les rendez-vous à venir du prestataire (règle déjà en place, `RM-PRESTATAIRES.md`).
+- L'administrateur voit combien de fois le prestataire a déjà été signalé (« déjà signalé 1 fois »).
+- Une annonce retirée par l'administrateur n'est plus visible ; rien n'est effacé.

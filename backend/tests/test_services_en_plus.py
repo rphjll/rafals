@@ -21,7 +21,7 @@ def test_tableau_de_bord_reserve_a_l_administrateur(paye, dupont, fabrique_compt
     tableau = admin.client.get("/api/admin/tableau-de-bord").json()
 
     assert dupont.client.get("/api/admin/tableau-de-bord").status_code == 403
-    assert set(tableau["a_traiter"]) == {"accords", "absences", "avis", "devis", "propositions"}
+    assert set(tableau["a_traiter"]) == {"accords", "absences", "avis", "devis", "propositions", "signalements"}
     activite = tableau["activite"]
     assert activite["mois"] == f"{AUJOURD_HUI:%Y-%m}"
     # La base de test contient aussi les paiements des autres tests : au moins celui-ci (50,00 €, commission 2,50 €)

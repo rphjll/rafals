@@ -4,6 +4,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
+import BoutonSignaler from '../components/BoutonSignaler.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppSection from '../components/ui/AppSection.vue'
@@ -149,6 +150,7 @@ const prix = computed(() => {
           <p v-if="monAnnonce" class="text-[14px] text-texte-doux">Vos clients vous écriront ici (« Mes devis »).</p>
           <AppBouton v-else @click="demanderDevis">Demander un devis</AppBouton>
         </div>
+        <BoutonSignaler v-if="!monAnnonce" :annonce-id="annonce.id" :nom-prestataire="annonce.prestataire.nom_affiche" />
       </AppSection>
 
       <!-- Réserver (RM-RENDEZ-VOUS) : les horaires libres des 14 prochains jours, puis la fenêtre de confirmation -->

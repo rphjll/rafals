@@ -7,7 +7,7 @@ Entrée de menu visible seulement des administrateurs. **(pas administrateur, ou
 
 **Ordre des éléments :**
 1. Titre « Administration ».
-2. Onglets : « Accords à vérifier » · « Comptes » · « Prestataires » (lot 2.5) · « Absences contestées » (lot 4.6, compteur orange) · « Avis signalés » (lot 4.8, compteur orange) · « Tableau de bord » (lot 6.2, en premier, ouvert à l'arrivée) · « Paiements » (lot 6.2, en dernier) · « Mots interdits » (lot 4.8) · « Problèmes de devis » (lot 5.4, compteur orange) · « Propositions de métiers » · « Métiers ». Détail des onglets du lot 4.8 : `RM-AVIS-IHM.md`. Compteur orange du nombre en attente sur « Accords à vérifier » et « Propositions de métiers », mis à jour après chaque décision. L'onglet choisi est dans l'adresse (ex. `?onglet=metiers`).
+2. Onglets : « Accords à vérifier » · « Comptes » · « Prestataires » (lot 2.5) · « Absences contestées » (lot 4.6, compteur orange) · « Avis signalés » (lot 4.8, compteur orange) · « Tableau de bord » (lot 6.2, en premier, ouvert à l'arrivée) · « Paiements » (lot 6.2, en dernier) · « Signalements » (lot 6.4, compteur orange : voir `RM-SIGNALEMENTS-IHM.md`) · « Mots interdits » (lot 4.8) · « Problèmes de devis » (lot 5.4, compteur orange) · « Propositions de métiers » · « Métiers ». Détail des onglets du lot 4.8 : `RM-AVIS-IHM.md`. Compteur orange du nombre en attente sur « Accords à vérifier » et « Propositions de métiers », mis à jour après chaque décision. L'onglet choisi est dans l'adresse (ex. `?onglet=metiers`).
 3. (erreur de chargement) bandeau rouge.
 
 ## Onglet « Accords à vérifier » (par défaut)

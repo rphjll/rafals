@@ -107,6 +107,10 @@ FACTURE_MENTION_SANS_TVA = DEVIS_MENTION_SANS_TVA
 FACTURE_TVA_RENDEZ_VOUS_POUR_MILLE = 200
 FACTURE_MOYENS_DIRECTS = ("especes", "cheque", "virement")
 
+# Signalements et rappels URSSAF (RM-ADMINISTRATION.md, RM-DEMARCHES.md, validés par Raphael le 04/10/2026)
+SIGNALEMENT_MOTIF = (10, 1000)
+RAPPEL_URSSAF_AVANT = timedelta(days=7)  # premier rappel 7 jours avant la date limite, le second la veille
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

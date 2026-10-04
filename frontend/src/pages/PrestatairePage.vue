@@ -10,6 +10,7 @@ import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppSection from '../components/ui/AppSection.vue'
+import BoutonSignaler from '../components/BoutonSignaler.vue'
 import { useCompte } from '../composables/useCompte'
 import { lieuPourLeClient, paiement, prixCourt } from '../outils/annonces'
 import { type AvisPublic, etoiles } from '../outils/avis'
@@ -138,6 +139,7 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
         <p v-else class="text-[14px] text-texte-doux">Pas encore d'avis.</p>
       </AppSection>
       <p class="text-[13px] text-texte-doux">Le téléphone et l'adresse sont donnés après une réservation.</p>
+      <BoutonSignaler v-if="!monProfil" :prestataire-id="prestataire.id" :nom-prestataire="prestataire.nom_affiche" />
     </template>
   </div>
 </template>

@@ -38,3 +38,9 @@ Ni la déclaration elle-même, ni le calcul des cotisations (le taux dépend de 
 ## Questions pour Raphael
 1. Veux-tu les rappels par mail (il faudra ajouter au prestataire le choix « chaque mois / chaque trimestre ») ?
 2. Plus tard : demander l'habilitation « tierce déclaration » pour déclarer à la place du prestataire ?
+
+## Mise en œuvre des rappels (lots 6.3 et 6.4, 04/10/2026 ; validé par Raphael : « Oui, on ajoute »)
+- Le prestataire choisit dans « Mes démarches » : « Chaque mois », « Chaque trimestre » ou « Pas de rappel » (au départ : pas de rappel).
+- Rappels envoyés (vérifié toutes les heures) aux prestataires avec un SIRET vérifié, actifs ou en pause : un mail entre 7 jours et 2 jours avant la date limite, un autre la veille ou le jour même ; jamais deux fois le même.
+  - Exemple, chaque mois : « Déclaration URSSAF d'octobre 2026 : 1 250,00 € à déclarer avant le 30/11/2026 » le 23/11, puis le 29/11.
+  - Exemple, chaque trimestre : pour juillet à septembre 2026, le 24/10 puis le 30/10.

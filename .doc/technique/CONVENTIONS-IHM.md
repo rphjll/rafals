@@ -62,6 +62,7 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - Devis (dans `components/devis/`) : `TableauDevis` (le même tableau pour le client et le prestataire), `FenetreDemandeDevis`, `FenetreEcrireDevis`, `FenetreAccepterDevis` ; types, états et quantités : `frontend/src/outils/devis.ts` ; `FenetreTexte` accepte un texte facultatif (motif d'un refus) (lot 5.4).
 - Factures : `TableauFactures` (dans `components/factures/`), `FenetrePayeDirect` (dans `components/`, commune aux rendez-vous en espèces et aux devis en direct) ; types, moyens de paiement et ouverture du PDF : `frontend/src/outils/factures.ts` (lot 5.6).
 - `AppChiffre` — un chiffre mis en avant (titre, grande valeur, détail) : Mon agenda › Paiements, tableau de bord de l'administration (lot 6.2).
+- `BoutonSignaler` (dans `components/`) — [Signaler cette annonce…] / [Signaler ce prestataire…], avec la connexion si besoin et la fenêtre du motif (lot 6.4).
 - `GardePrestataire` (dans `components/prestataire/`) — pages réservées aux prestataires (lot 3.2).
 - Prix, durées, lieux et paiements des annonces : toujours par `frontend/src/outils/annonces.ts` (« 50 € · 2 h », « 40 €/h · de 1 h à 3 h ») (lot 3.2).
 - Libellés et couleurs des états du prestataire : `frontend/src/outils/prestataires.ts`.

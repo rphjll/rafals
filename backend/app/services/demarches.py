@@ -5,15 +5,18 @@ Rien n'est enregistré : tout se calcule à partir des factures."""
 
 import calendar
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.factures import Facture
+from app.modeles.comptes import Compte
 from app.modeles.prestataires import Prestataire
-from app.services import factures
+from app.modeles.signalements import RappelDeclaration
+from app.services import factures, journal, mails
+from app.services.erreurs import ErreurRegle
 
 PARIS = reglages.FUSEAU_AFFICHAGE
 
@@ -72,3 +75,64 @@ def chiffre_d_affaires(db: Session, prestataire: Prestataire, annee: int, mainte
                                   sum(m.nombre_factures for m in les_mois), limite_du_trimestre(annee, rang),
                                   les_mois[-1].terminee))
     return mois, trimestres
+
+
+# ---------- Mois ou trimestre, rappels par mail (lot 6.3) ----------
+
+MOIS = ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre")
+
+
+def choisir_periodicite(db: Session, prestataire: Prestataire, periodicite: str | None, maintenant: datetime) -> Prestataire:
+    """« Je déclare chaque mois » ou « chaque trimestre » (comme choisi à l'URSSAF) ; vide : pas de rappel."""
+    if periodicite not in (None, "mois", "trimestre"):
+        raise ErreurRegle("Choisissez : chaque mois, chaque trimestre, ou pas de rappel.")
+    avant = prestataire.declaration_periodicite
+    prestataire.declaration_periodicite = periodicite
+    journal.noter(db, auteur_id=prestataire.compte_id, action="choisir_periodicite_urssaf", table_cible="prestataire",
+                  ligne_id=prestataire.id, avant={"declaration_periodicite": avant}, apres={"declaration_periodicite": periodicite},
+                  maintenant=maintenant)
+    return prestataire
+
+
+def periode_a_declarer(periodicite: str, aujourd_hui: date) -> tuple[date, date, str]:
+    """La dernière période finie : son 1er jour, sa date limite, son nom. Ex. le 23/11/2026, chaque mois →
+    (01/10/2026, 30/11/2026, « octobre 2026 ») ; chaque trimestre → (01/07/2026, 31/10/2026, « 3e trimestre 2026 »)."""
+    if periodicite == "mois":
+        annee, mois = (aujourd_hui.year - 1, 12) if aujourd_hui.month == 1 else (aujourd_hui.year, aujourd_hui.month - 1)
+        return date(annee, mois, 1), limite_du_mois(annee, mois), f"{MOIS[mois - 1]} {annee}"
+    trimestre = (aujourd_hui.month - 1) // 3  # trimestre en cours, de 0 à 3 → le précédent est fini
+    annee, rang = (aujourd_hui.year - 1, 4) if trimestre == 0 else (aujourd_hui.year, trimestre)
+    return date(annee, (rang - 1) * 3 + 1, 1), limite_du_trimestre(annee, rang), f"{rang}{'er' if rang == 1 else 'e'} trimestre {annee}"
+
+
+def envoyer_rappels(db: Session, maintenant: datetime) -> dict[str, int]:
+    """Lancé toutes les heures : un mail 7 jours avant la date limite, un autre la veille, jamais deux fois le même.
+    Ex. « Déclaration URSSAF d'octobre 2026 : 1 250,00 € à déclarer avant le 30/11/2026. »"""
+    from app.services import paiements  # (import ici : même raison que dans factures)
+
+    compte = {"rappels": 0}
+    aujourd_hui = maintenant.astimezone(PARIS).date()
+    concernes = db.scalars(select(Prestataire).where(Prestataire.declaration_periodicite.is_not(None),
+                                                     Prestataire.siret_statut == "verifie",
+                                                     Prestataire.statut.in_(("actif", "en_pause"))))
+    for prestataire in concernes:
+        debut, limite, nom = periode_a_declarer(prestataire.declaration_periodicite or "mois", aujourd_hui)
+        if aujourd_hui > limite or aujourd_hui < limite - reglages.RAPPEL_URSSAF_AVANT:
+            continue
+        sorte = "veille" if aujourd_hui >= limite - timedelta(days=1) else "sept_jours"
+        deja = db.scalar(select(RappelDeclaration.id).where(RappelDeclaration.prestataire_id == prestataire.id,
+                                                            RappelDeclaration.periode_debut == debut,
+                                                            RappelDeclaration.sorte == sorte))
+        if deja is not None:
+            continue
+        mois, trimestres = chiffre_d_affaires(db, prestataire, debut.year, maintenant)
+        periode = mois[debut.month - 1] if prestataire.declaration_periodicite == "mois" else trimestres[(debut.month - 1) // 3]
+        db.add(RappelDeclaration(prestataire_id=prestataire.id, periode_debut=debut, sorte=sorte, envoye_le=maintenant))
+        apostrophe = "d'" if nom[0] in "ao" else "de "
+        mails.envoyer_mail(
+            db.get_one(Compte, prestataire.compte_id).email, f"rafals : déclaration URSSAF {apostrophe}{nom}",
+            f"Déclaration URSSAF {apostrophe}{nom} : {paiements.euros(periode.encaisse_centimes)} à déclarer avant le "
+            f"{limite:%d/%m/%Y} (d'après vos factures sur rafals ; ajoutez ce que vous avez encaissé ailleurs). "
+            "La déclaration se fait sur le site de l'URSSAF, même pour 0 €.")
+        compte["rappels"] += 1
+    return compte

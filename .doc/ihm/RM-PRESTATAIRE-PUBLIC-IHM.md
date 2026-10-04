@@ -11,3 +11,6 @@ Ouverte à tous, même sans compte. Visible seulement si l'activité du prestata
 4. Carte « Ses annonces » : une ligne par annonce en ligne — titre, « **50 € · 2 h** · Chez vous (Marc vient de Pessac) · carte bancaire ou espèces », [Voir l'annonce] → `/annonces/12` ; aucune : « Marc n'a pas d'annonce en ligne pour l'instant. »
 5. Carte « Avis » (lot 4.8) : voir `RM-AVIS-IHM.md`.
 6. « Le téléphone et l'adresse sont donnés après une réservation. » — jamais de téléphone, de mail ni de rue sur cette page.
+
+## [Signaler ce prestataire…] (lot 6.4, 04/10/2026)
+En bas de la page, à droite (absent sur son propre profil) : voir `RM-SIGNALEMENTS-IHM.md`.
