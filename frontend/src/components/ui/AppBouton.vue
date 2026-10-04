@@ -5,7 +5,8 @@ import { computed, ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
-    variante?: 'principal' | 'secondaire' | 'danger' | 'verrouille'
+    // « accent » : orange, pour l'action principale posée sur le bandeau foncé de l'accueil
+    variante?: 'principal' | 'secondaire' | 'danger' | 'verrouille' | 'accent'
     raisonVerrou?: string
     type?: 'button' | 'submit'
     pleineLargeur?: boolean
@@ -24,6 +25,7 @@ const classesVariante: Record<string, string> = {
   secondaire: 'bg-surface text-primaire border-primaire hover:bg-primaire-doux',
   danger: 'bg-surface text-erreur border-erreur hover:bg-erreur-doux',
   verrouille: 'bg-neutre-doux text-neutre border-neutre-doux cursor-not-allowed',
+  accent: 'bg-accent-vif text-accent-vif-texte border-accent-vif hover:brightness-105',
 }
 
 function clic(evenement: MouseEvent) {

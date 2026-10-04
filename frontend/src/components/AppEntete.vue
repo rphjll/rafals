@@ -1,38 +1,45 @@
 <script setup lang="ts">
-// En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md).
+// En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md) : 3 entrées, puis le menu du compte.
 // Sous 768 px de large, le menu se replie derrière le bouton ☰.
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { messageErreur } from '../api'
 import { useCompte } from '../composables/useCompte'
+import { useMenu } from '../composables/useMenu'
 import { useMessage } from '../composables/useMessage'
 import AppBouton from './ui/AppBouton.vue'
 
 const menuOuvert = ref(false)
+const compteOuvert = ref(false)
+const zoneCompte = ref<HTMLElement | null>(null)
 const route = useRoute()
 const routeur = useRouter()
 const { compte, chargementFait, seDeconnecter } = useCompte()
+const { groupe, estPrestataire, estSur } = useMenu()
 const { afficherMessage } = useMessage()
-watch(() => route.fullPath, () => (menuOuvert.value = false))
+watch(
+  () => route.fullPath,
+  () => (menuOuvert.value = compteOuvert.value = false),
+)
 
+// Les pages de chaque groupe sont dans le sous-menu (AppSousMenu), sous l'en-tête
 const liens = computed(() => [
-  { vers: '/trouver', texte: 'Trouver un prestataire' },
-  { vers: '/proposer', texte: compte.value?.prestataire_id ? 'Mon activité' : 'Proposer mes services' },
-  // Visibles seulement des prestataires (lots 3.2 et 3.4)
-  ...(compte.value?.prestataire_id
-    ? [
-        { vers: '/mes-annonces', texte: 'Mes annonces' },
-        { vers: '/mon-agenda', texte: 'Mon agenda' },
-        { vers: '/demarches', texte: 'Mes démarches' },
-      ]
-    : []),
-  { vers: '/rendez-vous', texte: 'Mes rendez-vous' },
-  { vers: '/devis', texte: 'Mes devis' },
-  { vers: '/factures', texte: 'Mes factures' },
+  { vers: '/trouver', texte: 'Trouver un prestataire', actif: estSur('/trouver') },
+  { vers: '/rendez-vous', texte: 'Mes réservations', actif: groupe.value === 'reservations' },
+  { vers: '/proposer', texte: estPrestataire.value ? 'Mon activité' : 'Proposer mes services', actif: groupe.value === 'activite' },
+])
+const liensCompte = computed(() => [
   { vers: '/compte', texte: 'Mon compte' },
   // Visible seulement des administrateurs (lot 1.4)
   ...(compte.value?.est_administrateur ? [{ vers: '/administration', texte: 'Administration' }] : []),
 ])
+const initiales = computed(() => `${compte.value?.prenom[0] ?? ''}${compte.value?.nom[0] ?? ''}`.toUpperCase())
+const surCompte = computed(() => liensCompte.value.some((lien) => estSur(lien.vers)))
+
+// Un clic ou une tabulation hors du menu du compte le referme
+function sortieCompte(evenement: FocusEvent) {
+  if (!zoneCompte.value?.contains(evenement.relatedTarget as Node | null)) compteOuvert.value = false
+}
 
 async function deconnexion() {
   try {
@@ -70,17 +77,56 @@ async function deconnexion() {
           v-for="lien in liens"
           :key="lien.vers"
           :to="lien.vers"
-          class="rounded-rafals px-2.5 py-2.5 font-medium text-texte-doux hover:bg-primaire-doux hover:text-primaire md:py-2"
-          active-class="bg-primaire-doux text-primaire"
+          class="rounded-rafals px-3 py-2.5 font-semibold hover:bg-primaire-doux hover:text-primaire md:py-2"
+          :class="lien.actif ? 'bg-primaire-doux text-primaire' : 'text-texte'"
         >
           {{ lien.texte }}
         </RouterLink>
         <!-- Tant qu'on ne sait pas si quelqu'un est connecté, on n'affiche rien (évite un clignotement) -->
-        <div v-if="chargementFait" class="flex flex-wrap items-center gap-2 pt-2 md:pt-0 md:pl-2">
-          <template v-if="compte">
-            <span class="px-1 font-semibold">{{ compte.prenom }}</span>
-            <AppBouton variante="secondaire" @click="deconnexion">Se déconnecter</AppBouton>
-          </template>
+        <div v-if="chargementFait" class="flex flex-col pt-2 md:pt-0 md:pl-2">
+          <div
+            v-if="compte"
+            ref="zoneCompte"
+            class="relative flex flex-col"
+            @focusout="sortieCompte"
+            @keydown.esc="compteOuvert = false"
+          >
+            <button
+              type="button"
+              class="hidden min-h-[42px] items-center gap-2 rounded-full border bg-surface py-1 pr-3 pl-1 font-semibold md:inline-flex"
+              :class="surCompte ? 'border-primaire text-primaire' : 'border-bord text-texte'"
+              :aria-expanded="compteOuvert"
+              aria-controls="menu-compte"
+              @click="compteOuvert = !compteOuvert"
+            >
+              <span
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-primaire-doux text-[13px] font-bold text-primaire"
+                aria-hidden="true"
+              >
+                {{ initiales }}
+              </span>
+              {{ compte.prenom }}
+              <span aria-hidden="true">▾</span>
+            </button>
+            <!-- Téléphone : la liste est toujours dépliée dans le menu ☰ ; ordinateur : elle s'ouvre sous le prénom -->
+            <div
+              id="menu-compte"
+              class="flex flex-col gap-1 border-t border-bord pt-2 md:absolute md:top-[calc(100%+8px)] md:right-0 md:w-56 md:rounded-rafals md:border md:bg-surface md:p-1.5"
+              :class="compteOuvert ? '' : 'md:hidden'"
+            >
+              <span class="px-3 text-[13px] text-texte-doux md:hidden">{{ compte.prenom }}</span>
+              <RouterLink
+                v-for="lien in liensCompte"
+                :key="lien.vers"
+                :to="lien.vers"
+                class="rounded-rafals px-3 py-2.5 font-semibold hover:bg-primaire-doux hover:text-primaire"
+                :class="estSur(lien.vers) ? 'bg-primaire-doux text-primaire' : 'text-texte'"
+              >
+                {{ lien.texte }}
+              </RouterLink>
+              <AppBouton variante="secondaire" pleine-largeur @click="deconnexion">Se déconnecter</AppBouton>
+            </div>
+          </div>
           <AppBouton v-else @click="routeur.push('/connexion')">Se connecter</AppBouton>
         </div>
       </nav>

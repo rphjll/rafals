@@ -11,19 +11,19 @@ defineProps<{ resultat: CarteResultat; metier: string }>()
 <template>
   <RouterLink
     :to="`/prestataires/${resultat.prestataire_id}`"
-    class="grid grid-cols-[auto_1fr] items-center gap-3.5 rounded-rafals border border-bord bg-surface px-4 py-3.5 hover:border-primaire sm:grid-cols-[auto_1fr_auto]"
+    class="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 rounded-rafals border border-bord bg-surface p-4 hover:border-primaire hover:bg-primaire-doux sm:grid-cols-[auto_1fr_auto] sm:p-5"
   >
     <AvatarPrestataire :id="resultat.prestataire_id" :nom="resultat.nom_affiche" :a-une-photo="resultat.a_une_photo" />
-    <div class="flex min-w-0 flex-col gap-1">
-      <div class="flex flex-wrap items-center gap-2">
-        <h3 class="text-[17px] font-bold">{{ resultat.nom_affiche }}</h3>
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h3 class="text-[19px] font-bold">{{ resultat.nom_affiche }}</h3>
         <AppBadge v-if="resultat.nouveau" etat="attente">Nouveau sur rafals</AppBadge>
-        <span v-else class="text-[14px]">
+        <span v-else class="tabular-nums">
           <b class="text-accent">★ {{ noteLisible(resultat.note ?? 0) }}</b>
           <span class="text-texte-doux"> ({{ resultat.nombre_avis }} avis)</span>
         </span>
       </div>
-      <p class="text-[13.5px] text-texte-doux">
+      <p class="text-texte-doux">
         {{ resultat.principal ? metier : `aussi ${metier.toLowerCase()}` }} · {{ resultat.ville }} · à {{ resultat.distance_km }} km
       </p>
       <div v-if="resultat.vient_chez_vous || resultat.carte_possible" class="flex flex-wrap gap-1.5">
@@ -31,9 +31,9 @@ defineProps<{ resultat: CarteResultat; metier: string }>()
         <AppBadge v-if="resultat.carte_possible">carte acceptée</AppBadge>
       </div>
     </div>
-    <div class="col-start-2 text-[13.5px] text-texte-doux sm:col-start-3 sm:text-right">
-      <b class="block text-[17px] text-primaire">{{ aPartirDe(resultat) }}</b>
-      {{ pluriel(resultat.nombre_annonces, 'annonce') }}
+    <div class="col-start-2 flex flex-col text-texte-doux sm:col-start-3 sm:items-end sm:text-right">
+      <b class="font-titre text-[22px] leading-tight text-primaire tabular-nums">{{ aPartirDe(resultat) }}</b>
+      <span>{{ pluriel(resultat.nombre_annonces, 'annonce') }} · voir la fiche ›</span>
     </div>
   </RouterLink>
 </template>

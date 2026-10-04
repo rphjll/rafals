@@ -10,7 +10,6 @@ import AppChoixMetier from '../components/AppChoixMetier.vue'
 import CarteResultat from '../components/recherche/CarteResultat.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
-import AppCase from '../components/ui/AppCase.vue'
 import AppSection from '../components/ui/AppSection.vue'
 import type { MetierVisible } from '../composables/useMetiers'
 import type { CommuneVisible } from '../outils/prestataires'
@@ -83,7 +82,14 @@ async function charger() {
 }
 watch(() => route.fullPath, charger, { immediate: true })
 
-// Une case cochée relance la recherche aussitôt ; le prix maximum, après une petite pause de frappe
+// Filtres en pastilles : verte et pleine quand le filtre est actif
+const PASTILLES = [
+  { cle: 'chez_moi', champ: 'chezMoi', texte: 'Vient chez moi' },
+  { cle: 'carte', champ: 'carte', texte: 'Paiement par carte' },
+  { cle: 'libre', champ: 'libre', texte: 'Libre dans les 7 jours' },
+] as const
+
+// Un clic sur une pastille relance la recherche aussitôt ; le prix maximum, après une petite pause de frappe
 function filtre(cle: 'chez_moi' | 'carte' | 'libre', coche: boolean) {
   aller({ [cle]: coche ? '1' : undefined })
 }
@@ -103,22 +109,23 @@ function enleverFiltres() {
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-[880px] flex-col gap-5">
-    <h1 class="text-[28px] font-bold">Trouver un prestataire</h1>
-
-    <AppSection>
-      <form class="grid items-end gap-3 md:grid-cols-[1fr_1fr_auto]" @submit.prevent="chercher">
-        <AppChoixMetier v-model="metier" etiquette="Quel métier ?" obligatoire />
-        <AppChoixCommune v-model="commune" etiquette="Votre ville" obligatoire />
-        <AppBouton type="submit">Chercher</AppBouton>
-      </form>
-      <p class="text-[13px] text-texte-doux">Métier : par les premières lettres ou par dossier ; ville : par le nom ou le code postal.</p>
-      <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
-    </AppSection>
+  <div class="flex flex-col gap-5">
+    <section class="flex flex-col gap-4 rounded-rafals bg-fonce px-4 py-6 text-sur-fonce md:px-8 md:py-8">
+      <h1 class="text-[clamp(26px,4vw,34px)] leading-tight font-bold">Trouver un prestataire</h1>
+      <div class="flex flex-col gap-3 rounded-rafals bg-surface p-4 text-texte">
+        <form class="grid items-end gap-3 md:grid-cols-[1fr_1fr_auto]" @submit.prevent="chercher">
+          <AppChoixMetier v-model="metier" etiquette="Quel métier ?" obligatoire />
+          <AppChoixCommune v-model="commune" etiquette="Votre ville" obligatoire />
+          <AppBouton type="submit" variante="accent">Chercher</AppBouton>
+        </form>
+        <p class="text-[13px] text-texte-doux">Métier : par les premières lettres ou par dossier ; ville : par le nom ou le code postal.</p>
+        <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+      </div>
+    </section>
 
     <template v-if="page">
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <h2 class="text-xl font-bold">
+        <h2 class="text-[clamp(20px,3vw,26px)] font-bold">
           {{ pluriel(page.total, 'prestataire') }} « {{ page.metier.nom }} » pour {{ page.ville.nom }}
         </h2>
         <div class="inline-flex overflow-hidden rounded-rafals border border-bord" role="group" aria-label="Ordre des résultats">
@@ -136,24 +143,32 @@ function enleverFiltres() {
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-x-5">
-        <AppCase :model-value="filtres.chezMoi" texte="Vient chez moi" @update:model-value="(v) => filtre('chez_moi', v)" />
-        <AppCase :model-value="filtres.carte" texte="Paiement par carte" @update:model-value="(v) => filtre('carte', v)" />
-        <AppCase :model-value="filtres.libre" texte="Libre dans les 7 jours" @update:model-value="(v) => filtre('libre', v)" />
-        <label class="flex min-h-[42px] items-center gap-2 text-[14.5px] font-medium">
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          v-for="pastille in PASTILLES"
+          :key="pastille.cle"
+          type="button"
+          class="min-h-[42px] rounded-full border border-primaire px-4 font-semibold"
+          :class="filtres[pastille.champ] ? 'bg-primaire text-primaire-texte' : 'bg-surface text-primaire hover:bg-primaire-doux'"
+          :aria-pressed="filtres[pastille.champ]"
+          @click="filtre(pastille.cle, !filtres[pastille.champ])"
+        >
+          {{ pastille.texte }}
+        </button>
+        <label class="flex min-h-[42px] items-center gap-2 rounded-full border border-bord bg-surface px-4 font-medium">
           Prix maximum
           <input
             v-model="filtres.prixMax"
             inputmode="decimal"
             placeholder="ex. 60"
-            class="w-20 rounded-rafals border border-bord bg-fond px-2.5 py-1.5 text-texte outline-none focus:border-primaire focus:ring-2 focus:ring-primaire"
+            class="w-16 border-b border-bord bg-transparent py-0.5 text-texte focus:border-primaire"
           />
           €
         </label>
       </div>
 
       <p v-if="chargement" class="text-texte-doux">Recherche…</p>
-      <div v-else-if="page.resultats.length" class="flex flex-col gap-2.5">
+      <div v-else-if="page.resultats.length" class="flex flex-col gap-3">
         <CarteResultat v-for="r in page.resultats" :key="r.prestataire_id" :resultat="r" :metier="page.metier.nom" />
       </div>
       <AppSection v-else-if="avecFiltres">

@@ -142,6 +142,11 @@ CREATION_FORME_PAR_CATEGORIE = {
     "cours-formation": "INDEPENDANTE", "numerique-bureau": "INDEPENDANTE", "sport-loisirs": "INDEPENDANTE",
 }
 
+# Déclarer à l'URSSAF depuis rafals (RM-DEMARCHES.md, lot 7.3). Taux utilisés SEULEMENT en mode démonstration (sans accès
+# à l'URSSAF, c'est rafals qui estime) : 21,2 % pour les prestations de services, 25,6 % pour les activités libérales.
+# ⚠️ À faire relire : les taux changent chaque année ; en vrai, c'est l'URSSAF qui répond le montant.
+URSSAF_TAUX_DEMONSTRATION_POUR_MILLE = {"services": 212, "liberale": 256}
+
 # SIRET resté « à vérifier » (service de l'État en panne) : nouvel essai automatique (lot 2.4)
 SIRET_REVERIFICATION_MINUTES = 30
 

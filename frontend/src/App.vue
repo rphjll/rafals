@@ -2,6 +2,7 @@
 // Structure commune : l'en-tête en haut, la page en dessous, le message court par-dessus.
 import { onMounted } from 'vue'
 import AppEntete from './components/AppEntete.vue'
+import AppSousMenu from './components/AppSousMenu.vue'
 import AppMessage from './components/ui/AppMessage.vue'
 import { useCompte } from './composables/useCompte'
 
@@ -12,6 +13,7 @@ onMounted(chargerCompte)
 <template>
   <div class="min-h-screen bg-fond text-texte">
     <AppEntete />
+    <AppSousMenu />
     <main class="px-4 pt-7 pb-16">
       <div class="mx-auto max-w-[1080px]">
         <RouterView />

@@ -9,10 +9,10 @@
 3. S'il est interdit, le bouton reste visible, grisé, avec un cadenas et une bulle qui dit pourquoi et quoi faire. Ex. « 🔒 Payer par carte » chez Karim : « Karim n'a pas encore de SIRET : il ne peut être payé qu'en espèces… ».
 
 ## Structure des pages
-- En-tête fixe en haut : logo « rafals. » à gauche (retour à l'accueil), menu à droite (Trouver un prestataire · Proposer mes services · Mes rendez-vous · Mon compte).
+- En-tête fixe en haut : logo « rafals. » à gauche (retour à l'accueil), menu à droite (Trouver un prestataire · Mes réservations · Proposer mes services / Mon activité · pastille du compte). Sous l'en-tête, un sous-menu montre les pages du groupe (`AppSousMenu`, liste dans `composables/useMenu.ts`) ; détail : `ihm/RM-ENTETE-IHM.md` (refait le 04/10/2026).
 - Contenu centré, largeur maximale 1080 px, marges d'au moins 16 px sur les côtés.
 - Fil d'Ariane en haut des pages profondes. Ex. « Accueil › Électricien › Pessac › Karim Benali ».
-- Écrans d'administration : même en-tête, avec une entrée « Administration » visible seulement des administrateurs.
+- Écrans d'administration : même en-tête ; l'entrée « Administration » est dans la liste du compte (sous le prénom), visible seulement des administrateurs.
 
 ## Formats d'écran
 Ordinateur, tablette, téléphone debout, téléphone couché. Sous 768 px : menu burger (☰). Un tableau trop large défile sur le côté au lieu d'écraser ses colonnes. Zones cliquables d'au moins 42 px de haut.
@@ -36,7 +36,7 @@ Une action = un bouton, jamais un lien souligné. Actions fréquentes à gauche,
 
 ## Composants communs
 Un seul composant par élément répété (dossier `frontend/src/components/ui/`). Liste de départ :
-- `AppBouton` — 4 variantes : principal, secondaire, danger, verrouillé (avec cadenas et bulle).
+- `AppBouton` — 5 variantes : principal, secondaire, danger, verrouillé (avec cadenas et bulle), accent (orange, sur le bandeau foncé de l'accueil).
 - `AppChamp` — étiquette au-dessus, astérisque si obligatoire, message d'erreur dessous.
 - `AppFenetre` — fenêtre de confirmation de rafals.
 - `AppBadge` — étiquette d'état (OK, en attente, erreur, neutre).

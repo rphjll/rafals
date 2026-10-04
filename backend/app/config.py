@@ -48,6 +48,14 @@ INPI_ADRESSE = os.environ.get("INPI_ADRESSE", "https://guichet-unique-demo.inpi.
 INPI_IDENTIFIANT = os.environ.get("INPI_IDENTIFIANT", "")
 INPI_MOT_DE_PASSE = os.environ.get("INPI_MOT_DE_PASSE", "")
 
+# URSSAF, « API Tierce Déclaration auto-entrepreneur » (lot 7.3) : identifiants donnés par l'URSSAF, dans le fichier .env
+# (jamais dans git). Sans identifiants, rafals est en « démonstration » : rien n'est envoyé (services/urssaf.py).
+# ⚠️ Adresses provisoires : la documentation technique de l'URSSAF n'est pas publique.
+URSSAF_ADRESSE = os.environ.get("URSSAF_ADRESSE", "https://api.urssaf.fr/tiersdecl/v1")
+URSSAF_ADRESSE_JETON = os.environ.get("URSSAF_ADRESSE_JETON", "https://api.urssaf.fr/api/oauth/v1/token")
+URSSAF_IDENTIFIANT = os.environ.get("URSSAF_IDENTIFIANT", "")
+URSSAF_SECRET = os.environ.get("URSSAF_SECRET", "")
+
 # Adresse des écrans, pour fabriquer les liens envoyés par mail
 ADRESSE_SITE = os.environ.get("ADRESSE_SITE", "http://localhost:5174")
 

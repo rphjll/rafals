@@ -15,6 +15,7 @@ from app.modeles.factures import Facture
 from app.modeles.comptes import Compte
 from app.modeles.prestataires import Prestataire
 from app.modeles.signalements import RappelDeclaration
+from app.modeles.urssaf import DeclarationUrssaf
 from app.services import factures, journal, mails
 from app.services.erreurs import ErreurRegle
 
@@ -124,6 +125,11 @@ def envoyer_rappels(db: Session, maintenant: datetime) -> dict[str, int]:
                                                             RappelDeclaration.periode_debut == debut,
                                                             RappelDeclaration.sorte == sorte))
         if deja is not None:
+            continue
+        declaree = db.scalar(select(DeclarationUrssaf.id).where(
+            DeclarationUrssaf.prestataire_id == prestataire.id, DeclarationUrssaf.periode_debut == debut,
+            DeclarationUrssaf.periodicite == prestataire.declaration_periodicite))
+        if declaree is not None:  # déjà déclarée depuis rafals (lot 7.3) : plus de rappel
             continue
         mois, trimestres = chiffre_d_affaires(db, prestataire, debut.year, maintenant)
         periode = mois[debut.month - 1] if prestataire.declaration_periodicite == "mois" else trimestres[(debut.month - 1) // 3]

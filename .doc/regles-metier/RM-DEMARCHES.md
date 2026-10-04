@@ -7,7 +7,7 @@ Un auto-entrepreneur doit déclarer à l'URSSAF l'argent qu'il a encaissé (son 
 - Exemple : Léa a encaissé 1 250,00 € en octobre sur rafals → « À déclarer pour octobre 2026 : 1 250,00 €, avant le 30/11/2026 ».
 - Exemple : Karim n'a rien encaissé en août → « À déclarer pour août 2026 : 0,00 € (la déclaration reste obligatoire) ».
 
-## rafals prépare, il ne déclare pas 🟡
+## rafals prépare, il ne déclare pas 🟡 (COMPLÉTÉ le 04/10/2026 : voir « Déclarer d'un clic » en bas ; sans accord, cette règle reste vraie)
 rafals **n'envoie rien à l'URSSAF** : déclarer à la place du prestataire demande une habilitation (« tierce déclaration », noté dans `PRESENTATION.md`). rafals donne le montant à recopier et un lien vers le site de l'URSSAF.
 - Exemple : un bouton [Aller sur le site de l'URSSAF] ouvre autoentrepreneur.urssaf.fr dans un nouvel onglet.
 - Exemple : rafals ne connaît jamais le mot de passe URSSAF du prestataire.
@@ -44,3 +44,30 @@ Ni la déclaration elle-même, ni le calcul des cotisations (le taux dépend de 
 - Rappels envoyés (vérifié toutes les heures) aux prestataires avec un SIRET vérifié, actifs ou en pause : un mail entre 7 jours et 2 jours avant la date limite, un autre la veille ou le jour même ; jamais deux fois le même.
   - Exemple, chaque mois : « Déclaration URSSAF d'octobre 2026 : 1 250,00 € à déclarer avant le 30/11/2026 » le 23/11, puis le 29/11.
   - Exemple, chaque trimestre : pour juillet à septembre 2026, le 24/10 puis le 30/10.
+
+## Déclarer d'un clic depuis rafals (lot 7.3, 04/10/2026 ; demande de Raphael : « ils clicent sur un bonton et ca l'envoie a l'urasaf » ; maquette `maquette-lot-7.3-declarer-urssaf.html` validée : « oui je valide »)
+rafals envoie la déclaration à l'URSSAF à la place du prestataire, par l'« API Tierce Déclaration auto-entrepreneur » (étude : `technique/API-EXTERNES.md`). ⚠️ La documentation technique de l'URSSAF n'est pas publique : construit avec un faux URSSAF, à brancher avant la mise en ligne.
+
+### L'accord (le « mandat »)
+- Le prestataire donne son accord une fois : numéro de sécurité sociale (15 caractères, clé vérifiée) et une case « Je donne mandat à rafals… ». rafals le signale à l'URSSAF. Il faut un SIRET vérifié.
+  - Exemple : Léa donne son accord le 04/10/2026 → badge vert « accord donné le 04/10/2026 ».
+  - Exemple : l'URSSAF répond qu'elle ne connaît pas Léa → « L'URSSAF ne vous connaît pas encore comme auto-entrepreneur : créez d'abord votre espace sur son site. » ; rien n'est enregistré.
+- Il peut le retirer quand il veut : rafals le signale à l'URSSAF, efface le numéro de sécurité sociale, et la page redevient comme avant. Les déclarations déjà envoyées restent.
+- Sans accord, rien ne change : rafals donne le montant, le prestataire déclare sur le site de l'URSSAF.
+
+### La déclaration
+- **Rien ne part sans un clic** : même avec l'accord, c'est le prestataire qui clique [Déclarer à l'URSSAF…] pour chaque période.
+- On ne déclare qu'une période **finie**, dans l'ordre choisi dans « Rappels par mail » (chaque mois ou chaque trimestre) ; ce choix est obligatoire pour déclarer.
+  - Exemple : le 24/10/2026, Léa (chaque trimestre) peut déclarer juillet à septembre ; pas encore octobre à décembre.
+- Montant déclaré = encaissé sur rafals (calculé, non modifiable) + « encaissé ailleurs » (saisi, 0 par défaut).
+  - Exemple : 1 250,00 € + 200,00 € = 1 450,00 € déclarés.
+  - Exemple : rien encaissé du tout → 0,00 € déclaré (la déclaration reste obligatoire).
+- Avant l'envoi, rafals montre les cotisations estimées par l'URSSAF ; il faut cocher « Je certifie que ce montant est exact. »
+- **Une période déclarée ne se redéclare pas depuis rafals** : pour corriger, passer par le site de l'URSSAF.
+- **rafals déclare, il ne paie pas** : les cotisations se paient sur le site de l'URSSAF.
+- Après l'envoi : mail « Votre déclaration du 3e trimestre 2026 est envoyée : 1 450,00 €, cotisations 307,40 € », et les rappels de cette période s'arrêtent.
+- Refus ou panne de l'URSSAF : le message est montré, rien n'est enregistré comme déclaré, on peut réessayer sans risque de double envoi.
+- Nature de l'activité envoyée à l'URSSAF (« prestations de services » ou « activité libérale ») : d'après le métier principal, même correspondance que pour la création d'entreprise (`reglages.py`). ⚠️ À faire relire.
+
+### Mode démonstration
+Tant que rafals n'a pas d'accès à l'API de l'URSSAF : tout marche à l'écran, rien n'est envoyé, un bandeau le dit ; les cotisations affichées sont une estimation de rafals (taux dans `reglages.py`, ⚠️ à faire relire).

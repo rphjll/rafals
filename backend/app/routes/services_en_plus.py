@@ -15,7 +15,7 @@ from app.modeles.prestataires import Prestataire
 from app.modeles.signalements import Signalement
 from app.routes.dependances import Administrateur, Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
-from app.services import demarches, paiements, signalements, tableau_de_bord
+from app.services import declarations_urssaf, demarches, paiements, signalements, tableau_de_bord, urssaf
 from app.services.erreurs import ErreurRegle
 
 routeur = APIRouter(prefix="/api")
@@ -85,6 +85,28 @@ class PeriodeVisible(BaseModel):
     nombre_factures: int
     a_declarer_avant: date
     terminee: bool
+    # Déclarée à l'URSSAF depuis rafals (lot 7.3) : total envoyé, cotisations répondues, date
+    declaree_centimes: int | None = None
+    cotisations_centimes: int | None = None
+    declaree_le: datetime | None = None
+
+
+class PeriodeADeclarer(BaseModel):
+    periodicite: str
+    debut: date
+    nom: str  # « 3e trimestre 2026 »
+    limite: date
+    montant_rafals_centimes: int
+    nombre_factures: int
+
+
+class Urssaf(BaseModel):
+    """Déclarer d'un clic depuis rafals (lot 7.3)."""
+
+    mandat_le: datetime | None  # l'accord en cours, ou vide
+    texte_mandat: str
+    demonstration: bool  # rafals n'est pas branché à l'URSSAF : rien n'est envoyé
+    a_declarer: PeriodeADeclarer | None
 
 
 class Demarches(BaseModel):
@@ -94,6 +116,7 @@ class Demarches(BaseModel):
     periodicite: str | None  # « mois », « trimestre », ou vide (pas de rappel)
     mois: list[PeriodeVisible]
     trimestres: list[PeriodeVisible]
+    urssaf: Urssaf
 
 
 @routeur.get("/moi/prestataire/demarches")
@@ -105,9 +128,27 @@ def mes_demarches(db: Base, compte: CompteConnecte, annee: int | None = None) ->
     if not 2026 <= annee <= maintenant_.year + 1:
         raise ErreurRegle("Choisissez une année entre 2026 et l'an prochain.")
     mois, trimestres = demarches.chiffre_d_affaires(db, prestataire, annee, maintenant_)
-    return Demarches(annee=annee, siret_verifie=prestataire.siret_statut == "verifie", facture_tva=prestataire.facture_tva,
-                     periodicite=prestataire.declaration_periodicite,
-                     mois=[PeriodeVisible(**asdict(m)) for m in mois], trimestres=[PeriodeVisible(**asdict(t)) for t in trimestres])
+    declarees = {(d.periodicite, d.periode_debut): d for d in declarations_urssaf.declarations(db, prestataire)}
+
+    def visible(periode: demarches.Periode, periodicite: str) -> PeriodeVisible:
+        d = declarees.get((periodicite, periode.debut))
+        return PeriodeVisible(**asdict(periode), declaree_centimes=d.montant_rafals_centimes + d.montant_ailleurs_centimes if d else None,
+                              cotisations_centimes=d.cotisations_centimes if d else None, declaree_le=d.declaree_le if d else None)
+
+    mandat = declarations_urssaf.mandat_en_cours(db, prestataire)
+    periode = declarations_urssaf.a_declarer(db, prestataire, maintenant_)
+    return Demarches(
+        annee=annee, siret_verifie=prestataire.siret_statut == "verifie", facture_tva=prestataire.facture_tva,
+        periodicite=prestataire.declaration_periodicite,
+        mois=[visible(m, "mois") for m in mois], trimestres=[visible(t, "trimestre") for t in trimestres],
+        urssaf=Urssaf(
+            mandat_le=mandat.donne_le if mandat else None, texte_mandat=declarations_urssaf.TEXTE_MANDAT,
+            demonstration=not urssaf.disponible(),
+            a_declarer=PeriodeADeclarer(periodicite=periode.periodicite, debut=periode.debut, nom=periode.nom, limite=periode.limite,
+                                        montant_rafals_centimes=periode.montant_rafals_centimes,
+                                        nombre_factures=periode.nombre_factures) if periode else None,
+        ),
+    )
 
 
 class Periodicite(BaseModel):
@@ -120,6 +161,56 @@ def choisir_periodicite(donnees: Periodicite, db: Base, compte: CompteConnecte) 
     prestataire = demarches.choisir_periodicite(db, mon_profil_ou_404(db, compte), donnees.periodicite, maintenant())
     db.commit()
     return Periodicite(periodicite=prestataire.declaration_periodicite)  # type: ignore[arg-type]
+
+
+# ---------- Déclarer à l'URSSAF depuis rafals (lot 7.3) ----------
+
+
+class MandatDemande(BaseModel):
+    numero_secu: str
+    accepte: bool
+
+
+class DeclarationDemande(BaseModel):
+    ailleurs_centimes: int = 0
+    certifie: bool = False
+
+
+class Estimation(BaseModel):
+    total_centimes: int
+    cotisations_centimes: int
+
+
+@routeur.post("/moi/prestataire/urssaf/mandat")
+def donner_mandat(donnees: MandatDemande, db: Base, compte: CompteConnecte) -> Demarches:
+    """L'accord donné à rafals pour déclarer à la place du prestataire ; signalé à l'URSSAF."""
+    declarations_urssaf.donner_mandat(db, compte, mon_profil_ou_404(db, compte), numero_secu=donnees.numero_secu,
+                                      accepte=donnees.accepte, maintenant=maintenant())
+    db.commit()
+    return mes_demarches(db, compte)
+
+
+@routeur.post("/moi/prestataire/urssaf/mandat/retirer")
+def retirer_mandat(db: Base, compte: CompteConnecte) -> Demarches:
+    declarations_urssaf.retirer_mandat(db, compte, mon_profil_ou_404(db, compte), maintenant())
+    db.commit()
+    return mes_demarches(db, compte)
+
+
+@routeur.post("/moi/prestataire/urssaf/estimation")
+def estimer(donnees: DeclarationDemande, db: Base, compte: CompteConnecte) -> Estimation:
+    """Le total et les cotisations, montrés avant d'envoyer. Rien n'est déclaré."""
+    total, cotisations = declarations_urssaf.estimer(db, mon_profil_ou_404(db, compte), donnees.ailleurs_centimes, maintenant())
+    return Estimation(total_centimes=total, cotisations_centimes=cotisations)
+
+
+@routeur.post("/moi/prestataire/urssaf/declaration")
+def declarer(donnees: DeclarationDemande, db: Base, compte: CompteConnecte) -> Demarches:
+    """[Envoyer à l'URSSAF] : la déclaration de la dernière période finie."""
+    declarations_urssaf.declarer(db, compte, mon_profil_ou_404(db, compte), ailleurs_centimes=donnees.ailleurs_centimes,
+                                 certifie=donnees.certifie, maintenant=maintenant())
+    db.commit()
+    return mes_demarches(db, compte)
 
 
 # ---------- Signalements (lot 6.3) ----------

@@ -1,0 +1,125 @@
+<title>MLD rafals URSSAF</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+  .note + .note { margin-top:8px; }
+  .etapes { margin:0; padding-left:20px; font-size:14px; }
+  .etapes li { margin:3px 0; }
+</style>
+<div class="page">
+  <header>
+    <h1>MLD — lot 7.3 « Déclarer à l'URSSAF depuis rafals »</h1>
+    <p class="sous">rafals · proposé le 04/10/2026 · <b>pas encore validé, rien n'est exécuté</b> · source : <code>RM-DEMARCHES.md</code> · 2 tables nouvelles, aucune table existante modifiée</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  MANDAT_URSSAF["<b>MANDAT_URSSAF</b><br/>id (PK)<br/>prestataire_id (FK)"]
+  DECLARATION_URSSAF["<b>DECLARATION_URSSAF</b><br/>id (PK)<br/>prestataire_id (FK)<br/>mandat_id (FK)"]
+  PRESTATAIRE -- "donne · (0,n) —— (1,1)" --- MANDAT_URSSAF
+  PRESTATAIRE -- "déclare · (0,n) —— (1,1)" --- DECLARATION_URSSAF
+  MANDAT_URSSAF -- "permet · (0,n) —— (1,1)" --- DECLARATION_URSSAF
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>lecture</b><span>« donne · (0,n) —— (1,1) » : un prestataire a donné zéro, un ou plusieurs accords au fil du temps (un seul en cours) ; un accord appartient à un seul prestataire.</span>
+      <b>lecture</b><span>« permet · (0,n) —— (1,1) » : chaque déclaration a été envoyée grâce à un accord précis.</span>
+      <b>🔒</b><span>rubrique sensible : vidée dès que l'accord est retiré.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les autres rubriques</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>MANDAT_URSSAF <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">L'accord donné à rafals. Jamais effacé : on garde la preuve de ce qui a été accepté.</p>
+        <ul>
+          <li><code>numero_secu</code> 🔒 — 15 caractères, demandé par l'URSSAF pour reconnaître la personne</li>
+          <li><code>texte</code> — l'accord, mot pour mot, tel qu'il a été coché</li>
+          <li><code>donne_le</code></li>
+          <li><code>retire_le</code> — vide tant que l'accord est en cours</li>
+          <li><code>demonstration</code> — oui / non : donné pendant que rafals n'était pas branché à l'URSSAF</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>DECLARATION_URSSAF <span class="nouveau">nouvelle</span></h3>
+        <p class="note" style="margin-bottom:6px">Une déclaration envoyée. Jamais modifiée ni effacée. Une seule par prestataire et par période.</p>
+        <ul>
+          <li><code>periodicite</code> — mois · trimestre</li>
+          <li><code>periode_debut</code> — le 1er jour du mois ou du trimestre</li>
+          <li><code>nature</code> — prestations de services · activité libérale</li>
+          <li><code>montant_rafals_centimes</code> — encaissé sur rafals</li>
+          <li><code>montant_ailleurs_centimes</code> — encaissé ailleurs, saisi par le prestataire</li>
+          <li><code>cotisations_centimes</code> — ce que l'URSSAF a répondu</li>
+          <li><code>declaree_le</code></li>
+          <li><code>reference_urssaf</code> — le numéro donné par l'URSSAF</li>
+          <li><code>demonstration</code> — oui / non : rien n'a été envoyé pour de vrai</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Trois choix expliqués</h2>
+    <p class="note"><b>Le total déclaré n'est pas enregistré</b> : c'est toujours « sur rafals » + « ailleurs », calculé à l'affichage.</p>
+    <p class="note"><b>Le montant « sur rafals » est figé dans la déclaration</b> : si une facture change plus tard, on sait toujours ce qui a été envoyé à l'URSSAF ce jour-là.</p>
+    <p class="note"><b>Le numéro de sécurité sociale reste tant que l'accord est en cours</b> (l'URSSAF le demande à chaque envoi), et il est effacé dès que l'accord est retiré.</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>MANDAT_URSSAF</code> n° 1 : prestataire Léa Martin, <code>donne_le</code> 04/10/2026 10 h 12, <code>retire_le</code> vide, <code>texte</code> « Je donne mandat à rafals pour déclarer mon chiffre d'affaires à l'URSSAF… ».
+      <p class="trad"><b>Traduction :</b> Léa a donné son accord le 4 octobre ; il est toujours en cours.</p>
+    </div>
+    <div class="exemple">
+      <code>DECLARATION_URSSAF</code> n° 1 : prestataire Léa Martin, mandat n° 1, <code>periodicite</code> trimestre, <code>periode_debut</code> 01/07/2026, <code>montant_rafals_centimes</code> 125000, <code>montant_ailleurs_centimes</code> 20000, <code>cotisations_centimes</code> 30740, <code>declaree_le</code> 24/10/2026.
+      <p class="trad"><b>Traduction :</b> le 24 octobre, Léa a déclaré 1 450,00 € pour juillet à septembre (1 250,00 € sur rafals + 200,00 € ailleurs) ; l'URSSAF lui demande 307,40 €.</p>
+    </div>
+    <div class="exemple">
+      <code>MANDAT_URSSAF</code> n° 1, plus tard : <code>retire_le</code> 15/01/2027, <code>numero_secu</code> vide.
+      <p class="trad"><b>Traduction :</b> Léa a retiré son accord ; son numéro de sécurité sociale est effacé, ses déclarations passées restent.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ensuite, si tu valides</h2>
+    <ol class="etapes">
+      <li>J'écris <code>schema_v20.sql</code> et je te demande l'accord avant de l'exécuter (sauvegarde de la base avant).</li>
+      <li>Serveur avec un faux URSSAF dans les tests, puis l'écran de la maquette.</li>
+    </ol>
+  </section>
+</div>

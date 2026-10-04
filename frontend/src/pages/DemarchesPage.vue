@@ -1,10 +1,12 @@
 <script setup lang="ts">
 // Mes démarches (.doc/ihm/RM-DEMARCHES-IHM.md ; RM-DEMARCHES.md, lot 6.2) : le chiffre d'affaires à déclarer à
-// l'URSSAF, par mois ou par trimestre, préparé d'après les factures. rafals prépare, il ne déclare pas.
+// l'URSSAF, par mois ou par trimestre, préparé d'après les factures. Depuis le lot 7.3, le prestataire qui a donné
+// son accord peut déclarer d'un clic (components/demarches/DeclarerUrssaf.vue) ; sinon il déclare sur le site de l'URSSAF.
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import { useMessage } from '../composables/useMessage'
+import DeclarerUrssaf, { type EtatUrssaf } from '../components/demarches/DeclarerUrssaf.vue'
 import GardePrestataire from '../components/prestataire/GardePrestataire.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
@@ -13,6 +15,7 @@ import AppSection from '../components/ui/AppSection.vue'
 import AppSegment from '../components/ui/AppSegment.vue'
 import { useCompte } from '../composables/useCompte'
 import { aParis, jourCourt } from '../outils/agenda'
+import { formaterDate } from '../outils/dates'
 import { montant } from '../outils/paiements'
 
 interface Periode {
@@ -23,6 +26,10 @@ interface Periode {
   nombre_factures: number
   a_declarer_avant: string
   terminee: boolean
+  /** Déclarée à l'URSSAF depuis rafals (lot 7.3) : total envoyé, cotisations, date ; vide sinon */
+  declaree_centimes: number | null
+  cotisations_centimes: number | null
+  declaree_le: string | null
 }
 interface Demarches {
   annee: number
@@ -32,6 +39,7 @@ interface Demarches {
   periodicite: 'mois' | 'trimestre' | null
   mois: Periode[]
   trimestres: Periode[]
+  urssaf: EtatUrssaf
 }
 
 const SITE_URSSAF = 'https://www.autoentrepreneur.urssaf.fr'
@@ -66,6 +74,8 @@ const periodes = computed(() => (demarches.value?.[vue.value] ?? []).filter((p) 
 // Période finie dont la date limite n'est pas passée : c'est celle qu'il faut déclarer maintenant
 const aDeclarer = (p: Periode) => p.terminee && p.a_declarer_avant >= aujourdhui
 const prochaine = computed(() => periodes.value.find(aDeclarer) ?? null)
+// La même période, une fois déclarée depuis rafals : on montre ce qui a été envoyé
+const declaree = computed(() => (prochaine.value?.declaree_le ? prochaine.value : null))
 const annees = computed(() =>
   Array.from({ length: anneeEnCours - 2026 + 1 }, (_, n) => ({ valeur: 2026 + n, texte: String(2026 + n) })),
 )
@@ -77,6 +87,7 @@ async function choisirRappels(valeur: 'mois' | 'trimestre' | 'aucun') {
     const periodicite = valeur === 'aucun' ? null : valeur
     await appelerServeur('/api/moi/prestataire/demarches/periodicite', { periodicite })
     demarches.value.periodicite = periodicite
+    await charger() // la période à déclarer dépend de ce choix
     if (periodicite) vue.value = periodicite === 'mois' ? 'mois' : 'trimestres'
     afficherMessage(periodicite ? `Rappels activés : chaque ${periodicite}.` : 'Rappels arrêtés.')
   } catch (e) {
@@ -102,13 +113,23 @@ function ouvrirUrssaf() {
     <AppSection v-else-if="demarches" titre="Déclaration à l'URSSAF">
       <p class="text-[14px] text-texte-doux">
         Un auto-entrepreneur déclare à l'URSSAF ce qu'il a encaissé, chaque mois ou chaque trimestre, même 0 €. rafals prépare
-        le chiffre d'après vos factures ; la déclaration se fait sur le site de l'URSSAF.
+        le chiffre d'après vos factures ; vous déclarez sur le site de l'URSSAF, ou d'un clic depuis rafals.
       </p>
-      <AppAlerte v-if="prochaine" etat="attente">
+      <template v-if="declaree">
+        <AppAlerte etat="ok">
+          {{ nom(declaree) }} déclaré le {{ formaterDate(declaree.declaree_le ?? '') }} : <b>{{ montant(declaree.declaree_centimes ?? 0) }}</b>.
+          Cotisations à payer à l'URSSAF : <b>{{ montant(declaree.cotisations_centimes ?? 0) }}</b>.
+        </AppAlerte>
+        <p class="text-[13.5px] text-texte-doux">
+          rafals a déclaré, il n'a pas payé : le paiement des cotisations se fait sur le site de l'URSSAF (ou par le
+          prélèvement que vous y avez réglé). Pour corriger cette déclaration, passez aussi par le site de l'URSSAF.
+        </p>
+      </template>
+      <AppAlerte v-else-if="prochaine" etat="attente">
         À déclarer pour {{ nom(prochaine).toLowerCase() }} : <b>{{ montant(prochaine.encaisse_centimes) }}</b>, avant le
         {{ jourCourt(prochaine.a_declarer_avant) }}.
       </AppAlerte>
-      <div><AppBouton @click="ouvrirUrssaf">Aller sur le site de l'URSSAF</AppBouton></div>
+      <DeclarerUrssaf :urssaf="demarches.urssaf" :periodicite="demarches.periodicite" @change="charger" @site="ouvrirUrssaf" />
       <div class="flex flex-wrap items-center gap-3">
         <AppSegment v-model="vue" etiquette="Voir" :options="[{ valeur: 'mois', texte: 'Par mois' }, { valeur: 'trimestres', texte: 'Par trimestre' }]" />
         <AppSegment v-if="annees.length > 1" v-model="annee" etiquette="Année" :options="annees" />
@@ -131,7 +152,8 @@ function ouvrirUrssaf() {
               <td class="px-1.5 py-2 text-right tabular-nums">{{ p.nombre_factures }}</td>
               <td class="px-1.5 py-2">{{ jourCourt(p.a_declarer_avant) }}</td>
               <td class="px-1.5 py-2">
-                <AppBadge v-if="!p.terminee" etat="neutre">en cours</AppBadge>
+                <AppBadge v-if="p.declaree_le" etat="ok">déclaré : {{ montant(p.declaree_centimes ?? 0) }}</AppBadge>
+                <AppBadge v-else-if="!p.terminee" etat="neutre">en cours</AppBadge>
                 <AppBadge v-else-if="aDeclarer(p)" etat="attente">à déclarer</AppBadge>
                 <span v-else class="text-[13px] text-texte-doux">date passée</span>
               </td>

@@ -371,3 +371,49 @@ def faux_guichet(monkeypatch: pytest.MonkeyPatch) -> FauxGuichet:
     monkeypatch.setattr(config, "INPI_MOT_DE_PASSE", "zztest")
     monkeypatch.setattr(guichet, "appeler", faux.appeler)
     return faux
+
+
+class FauxUrssaf:
+    """L'URSSAF simulé : mandats, estimations, déclarations. Cotisations : 21,2 % du montant. `appels` garde chaque
+    demande ; `panne = True` simule un URSSAF injoignable ; `refus = "…"` lui fait refuser la demande suivante."""
+
+    def __init__(self) -> None:
+        self.appels: list[dict] = []
+        self.panne = False
+        self.refus: str | None = None
+        self._deja: dict[str, dict] = {}
+
+    def appeler(self, methode: str, chemin: str, donnees: dict | None = None, *, cle_unique: str | None = None) -> dict:
+        from app.services.urssaf import UrssafIndisponible, UrssafRefus
+
+        self.appels.append({"methode": methode, "chemin": chemin, "donnees": donnees, "cle": cle_unique})
+        if self.panne:
+            raise UrssafIndisponible("URSSAF simulé en panne")
+        if self.refus:
+            raise UrssafRefus(self.refus)
+        if cle_unique and cle_unique in self._deja:  # même demande refaite : pas déclarée deux fois
+            return self._deja[cle_unique]
+        if chemin in ("/mandats", "/mandats/annulation"):
+            return {}
+        if chemin in ("/estimations", "/declarations"):
+            montant = sum((donnees or {})["chiffreAffaires"].values())
+            reponse = {"montantCotisations": round(montant * 0.212, 2)}
+            if chemin == "/declarations":
+                reponse["reference"] = f"ZZTEST-{uuid4().hex[:8]}"
+                if cle_unique:
+                    self._deja[cle_unique] = reponse
+            return reponse
+        raise AssertionError(f"Appel à l'URSSAF non prévu dans le faux URSSAF : {methode} {chemin}")
+
+
+@pytest.fixture(autouse=True)
+def faux_urssaf(monkeypatch: pytest.MonkeyPatch) -> FauxUrssaf:
+    """Les tests n'appellent jamais le vrai URSSAF ; les identifiants sont faux."""
+    from app import config
+    from app.services import urssaf
+
+    faux = FauxUrssaf()
+    monkeypatch.setattr(config, "URSSAF_IDENTIFIANT", "zztest")
+    monkeypatch.setattr(config, "URSSAF_SECRET", "zztest")
+    monkeypatch.setattr(urssaf, "appeler", faux.appeler)
+    return faux

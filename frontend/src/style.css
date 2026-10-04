@@ -25,6 +25,25 @@
   --ouvert: #5fd38a; /* calendrier : jour ouvert, vert vif (refonte du 03/10/2026) */
   --ouvert-texte: #0f2a1a;
   --voile: rgb(10 14 20 / 0.55); /* fond assombri derrière une fenêtre */
+  /* Nouvelle présentation (04/10/2026) : bandeau foncé de l'accueil, bouton orange, tuiles de couleur */
+  --fonce: #1f4d38;
+  --sur-fonce: #ffffff;
+  --sur-fonce-doux: #d5e6dc;
+  --fonce-vif: #5fd38a;
+  --accent-vif: #e8863f;
+  --accent-vif-texte: #1d2620;
+  --teinte-orange: #fbe7d8;
+  --teinte-orange-texte: #7a3a0e;
+  --teinte-vert: #d8ecdf;
+  --teinte-vert-texte: #1f4d38;
+  --teinte-jaune: #fbebc6;
+  --teinte-jaune-texte: #6e4300;
+  --teinte-bleu: #dceaf7;
+  --teinte-bleu-texte: #1d4a72;
+  --teinte-rose: #f8dfe4;
+  --teinte-rose-texte: #7f2238;
+  --teinte-violet: #e8e1f6;
+  --teinte-violet-texte: #49317f;
   color-scheme: light;
 }
 
@@ -51,6 +70,24 @@
     --sur-etat: #0f1a13;
     --ouvert: #1f8a4a;
     --ouvert-texte: #f2fff6;
+    --fonce: #1c3024;
+    --sur-fonce: #e7ecf2;
+    --sur-fonce-doux: #a3aebd;
+    --fonce-vif: #79c49c;
+    --accent-vif: #f0955a;
+    --accent-vif-texte: #1d2620;
+    --teinte-orange: #3a2616;
+    --teinte-orange-texte: #f4b48a;
+    --teinte-vert: #1c3024;
+    --teinte-vert-texte: #8fd5ae;
+    --teinte-jaune: #33290f;
+    --teinte-jaune-texte: #efcb73;
+    --teinte-bleu: #17293a;
+    --teinte-bleu-texte: #93c2ec;
+    --teinte-rose: #3a1b24;
+    --teinte-rose-texte: #f0a3b4;
+    --teinte-violet: #271f3d;
+    --teinte-violet-texte: #c2adf0;
     color-scheme: dark;
   }
 }
@@ -77,6 +114,24 @@
   --color-ouvert: var(--ouvert);
   --color-ouvert-texte: var(--ouvert-texte);
   --color-voile: var(--voile);
+  --color-fonce: var(--fonce);
+  --color-sur-fonce: var(--sur-fonce);
+  --color-sur-fonce-doux: var(--sur-fonce-doux);
+  --color-fonce-vif: var(--fonce-vif);
+  --color-accent-vif: var(--accent-vif);
+  --color-accent-vif-texte: var(--accent-vif-texte);
+  --color-teinte-orange: var(--teinte-orange);
+  --color-teinte-orange-texte: var(--teinte-orange-texte);
+  --color-teinte-vert: var(--teinte-vert);
+  --color-teinte-vert-texte: var(--teinte-vert-texte);
+  --color-teinte-jaune: var(--teinte-jaune);
+  --color-teinte-jaune-texte: var(--teinte-jaune-texte);
+  --color-teinte-bleu: var(--teinte-bleu);
+  --color-teinte-bleu-texte: var(--teinte-bleu-texte);
+  --color-teinte-rose: var(--teinte-rose);
+  --color-teinte-rose-texte: var(--teinte-rose-texte);
+  --color-teinte-violet: var(--teinte-violet);
+  --color-teinte-violet-texte: var(--teinte-violet-texte);
 
   --font-titre: 'Bricolage Grotesque Variable', 'Segoe UI', system-ui, sans-serif;
   --font-corps: 'Figtree Variable', 'Segoe UI', system-ui, sans-serif;
