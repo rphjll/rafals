@@ -89,6 +89,18 @@ def _date(valeur: datetime | Any) -> str | None:
     return None if valeur is None else valeur.isoformat()
 
 
+def _conversations(db: Session, compte: Compte) -> list[dict[str, Any]]:
+    """Mes conversations pour « Télécharger mes données » : l'autre personne et tous les messages, en clair."""
+    from app.services import messagerie  # (import ici : messagerie importe les avis, qui importent ce module indirectement)
+
+    return [
+        {"avec": messagerie.nom_de_l_autre(db, compte, conversation),
+         "messages": [{"de_moi": m.auteur_id == compte.id and m.genre == "texte", "texte": m.texte, "le": _date(m.cree_le)}
+                      for m in messagerie.messages_de(db, conversation)]}
+        for conversation in messagerie.mes_conversations(db, compte)
+    ]
+
+
 def exporter(db: Session, compte: Compte, maintenant: datetime) -> dict[str, Any]:
     """Tout ce que rafals sait sur la personne, lisible (pas de mot de passe ni de jeton secret)."""
     adresse = adresse_de(db, compte)
@@ -184,6 +196,7 @@ def exporter(db: Session, compte: Compte, maintenant: datetime) -> dict[str, Any
                 "rendez_vous_bloque_autres_metiers": prestataire.rendez_vous_bloque_autres_metiers,
             },
         }
+    donnees["conversations"] = _conversations(db, compte)
     journal.noter(
         db, auteur_id=compte.id, action="telecharger_mes_donnees", table_cible="compte", ligne_id=compte.id, maintenant=maintenant
     )

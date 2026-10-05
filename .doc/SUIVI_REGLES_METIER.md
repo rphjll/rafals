@@ -18,7 +18,7 @@
 | 02 | 2 — Objets communs | Prestataires | Profil, SIRET, « en création », visibilité, désactivation | validé et formalisé (28/09/2026) | `regles-metier/RM-PRESTATAIRES.md` |
 | 03 | 2 — Objets communs | Clients et données personnelles | Profil du particulier, ce qu'on garde, effacement (RGPD) | validé et formalisé (28/09/2026) | `regles-metier/RM-CLIENTS.md` |
 | 04 | 2 — Objets communs | Métiers et catégories | La grande liste, les dossiers, la recherche par lettres | validé et formalisé (28/09/2026) | `regles-metier/RM-METIERS.md` |
-| 05 | 3 — Cœur | Annonces | Contenu, prix, ville, modes de paiement (espèces seulement sans SIRET) | validé et formalisé (29/09/2026) | `regles-metier/RM-ANNONCES.md` |
+| 05 | 3 — Cœur | Annonces | Contenu, prix, ville, modes de paiement (espèces seulement sans SIRET) | validé et formalisé (29/09/2026) ; **annonces retirées par Raphael le 04/10/2026** (pas encore construit) : remplacées par `RM-PRESTATAIRES.md` § « Sans annonces » | `regles-metier/RM-ANNONCES.md` |
 | 06 | 3 — Cœur | Agenda et disponibilités | Horaires, congés, créneaux libres | validé et formalisé (29/09/2026), modifié le 03/10/2026 (un calendrier par métier, ouvertures exceptionnelles) | `regles-metier/RM-AGENDA.md` |
 | 07 | 4 — Action principale | Recherche | Métier + ville, ordre des résultats | validé et formalisé (30/09/2026) | `regles-metier/RM-RECHERCHE.md` |
 | 08 | 4 — Action principale | Rendez-vous | Réservation, confirmation, annulation, absence | validé et formalisé (30/09/2026) | `regles-metier/RM-RENDEZ-VOUS.md` |
@@ -30,6 +30,11 @@
 | 14 | 6 — Services | Aide à la création d'auto-entreprise | Parcours de Karim jusqu'au SIRET | validé et formalisé (04/10/2026) | `regles-metier/RM-CREATION-AUTO-ENTREPRISE.md` |
 | 15 | 6 — Services | Démarches administratives | Déclarations URSSAF, rappels, automatisation | validé et formalisé (04/10/2026) | `regles-metier/RM-DEMARCHES.md` |
 | 16 | 6 — Services | Administration de la plateforme | Validation des prestataires, litiges, signalements | validé et formalisé (04/10/2026) | `regles-metier/RM-ADMINISTRATION.md` |
+| 17 | 8 — Comme AlloVoisins | Demandes publiées par les clients | Le client écrit son besoin (« Tondre ma pelouse samedi à Pessac, 40 € »), les prestataires du coin répondent | validé et formalisé (04/10/2026) | `regles-metier/RM-DEMANDES.md` |
+| 18 | 8 — Comme AlloVoisins | Alertes des prestataires | Prévenir un prestataire dès qu'une demande de son métier est publiée près de chez lui | validé et formalisé (04/10/2026) | `regles-metier/RM-ALERTES.md` |
+| 19 | 8 — Comme AlloVoisins | Messagerie | Messages privés entre un client et un prestataire | validé et formalisé (04/10/2026) | `regles-metier/RM-MESSAGERIE.md` |
+| 20 | 8 — Comme AlloVoisins | Notation dans les deux sens | Le prestataire note aussi le client | validé et formalisé (04/10/2026) | `regles-metier/RM-AVIS.md` (section « Notation dans les deux sens ») |
+| 21 | 8 — Comme AlloVoisins | Application à installer | rafals sur l'écran d'accueil du téléphone, avec les notifications | validé et formalisé (04/10/2026) | `regles-metier/RM-APPLICATION.md` |
 
 ## Décisions en attente
 - ⚠️ Prestataires sans SIRET payés en espèces : à faire vérifier juridiquement (sujets 02, 05, 12).

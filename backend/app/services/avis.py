@@ -38,10 +38,12 @@ def mot_interdit_dans(db: Session, texte: str) -> str | None:
     return next((m for m in db.scalars(select(MotInterdit.mot)) if m in mots), None)
 
 
-def _verifier_texte(db: Session, texte: str, mini: int, quoi: str) -> str:
+def verifier_texte(db: Session, texte: str, mini: int, quoi: str, maxi: int = reglages.AVIS_TEXTE_MAX) -> str:
+    """Le filtre commun à tout texte écrit par un utilisateur et lu par un autre (avis, réponses, messages, demandes) :
+    longueur, mots interdits, IA de modération. Rend le texte nettoyé de ses espaces autour."""
     texte = (texte or "").strip()
-    if not mini <= len(texte) <= reglages.AVIS_TEXTE_MAX:
-        raise ErreurRegle(f"{quoi} doit faire entre {mini} et {reglages.AVIS_TEXTE_MAX} caractères.")
+    if not mini <= len(texte) <= maxi:
+        raise ErreurRegle(f"{quoi} doit faire entre {mini} et {maxi} caractères.")
     if mot_interdit_dans(db, texte):
         raise ErreurRegle(f"{quoi} contient un mot interdit : reformulez-le, s'il vous plaît.")
     # L'IA lit aussi le texte : une injure sans gros mot est refusée (ex. « un gros nul qui arnaque les vieux »)
@@ -49,6 +51,9 @@ def _verifier_texte(db: Session, texte: str, mini: int, quoi: str) -> str:
     if note is not None and note >= reglages.AVIS_SEUIL_TOXICITE:
         raise ErreurRegle(f"{quoi} semble injurieux : reformulez-le calmement, s'il vous plaît.")
     return texte
+
+
+_verifier_texte = verifier_texte  # ancien nom, gardé pour les appels de ce fichier
 
 
 def mots_interdits(db: Session) -> list[MotInterdit]:

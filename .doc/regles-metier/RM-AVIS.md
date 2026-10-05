@@ -55,6 +55,31 @@ Réponse de Raphael, mot pour mot : « je vais pas taper a la main chaques mots 
 - Les avis ne sortent jamais de rafals (données personnelles).
 - **Limite constatée** (essai du 02/10/2026, `scripts/essayer_moderation.py`) : les insultes sont bien refusées (« gros nul qui arnaque les vieux » 0,98 ; « espèce d'incapable » 0,80), les avis négatifs mais polis passent (« travail bâclé » 0,004) ; une **menace** sans insulte (« je vais te retrouver et tu vas le regretter » 0,01) n'est **pas** repérée : elle passe par le signalement à l'administrateur.
 
+## Notation dans les deux sens : le prestataire note aussi le client (sujet 20 ; rédigé par Claude le 04/10/2026 sur le modèle d'AlloVoisins, **validé par Raphael le 04/10/2026** sur la maquette `maquette-niveau-8-demandes.html`)
+Demandé par Raphael le 04/10/2026 (« je veux faire le 1,2,3,5,6 »). Sur AlloVoisins, les membres s'évaluent mutuellement après une prestation. Tout ce qui suit est un choix de Claude.
+- **Après un rendez-vous tenu**, le prestataire peut noter le client : **1 à 5 ★** et un petit texte (10 à 500 caractères), pendant **30 jours**, comme le client. Un avis par rendez-vous ; mêmes filtres (mots interdits + IA) ; modifiable pendant les 30 jours.
+  - Exemple 1 : Karim note Mme Dupont « ★★★★★ Accueillante, la fuite était bien décrite, payé tout de suite. »
+  - Exemple 2 : Tom note M. Petit « ★★ Pelouse deux fois plus grande qu'annoncé, a discuté le prix sur place. »
+- **Les avis sont sur le compte, avec la moyenne, et un bouton [Voir les avis]** (Raphael, 04/10/2026, mot pour mot : « les avis ils se meterons sur le compte et y'aura la moyenne et si les autres veulent voir il faut qu'il puissent clicer sur voir les avis et la y'a tout les avis »). Partout où le nom d'une personne est affiché à quelqu'un d'autre : « Marie D. · 4,8 ★ · 6 avis [Voir les avis] » ; le bouton ouvre la liste de tous ses avis (note, auteur, mois, texte, réponse), les plus récents d'abord. Sans avis : « Aucun avis pour l'instant », sans bouton.
+  - Exemple 1 (prestataire) : dans la conversation, Mme Dupont lit « Karim B. · 4,7 ★ · 3 avis [Voir les avis] » ; c'est aussi ce que montre déjà sa page publique.
+  - Exemple 2 (client) : sur la demande « Tondre ma pelouse », Karim lit « Marie D. · 5,0 ★ · 1 avis [Voir les avis] ».
+  - Chacun voit sa propre moyenne et tous ses avis sur son compte (« Mes avis reçus »).
+- **Les avis sur un client sont visibles de tout le monde** (décidé par Raphael le 04/10/2026 : choix « B. Tout le monde », contre la proposition de Claude « seulement les prestataires concernés »). Chaque client a une **page publique** (`/clients/12`), visible même sans compte.
+  - Ce que la page montre (choix de Claude, pour montrer le moins possible) : « Marie D. » (prénom et initiale, jamais le nom complet), « membre depuis septembre 2026 », la moyenne, et tous les avis reçus avec les réponses. **Jamais** : nom complet, ville, adresse, téléphone, mail, demandes, rendez-vous.
+  - Exemple 1 : un visiteur sans compte ouvre la page de Marie D. : « 5,0 ★ · 1 avis — ★★★★★ Léa M., coiffeuse, septembre 2026 : À l'heure, très agréable. »
+  - Exemple 2 : Karim clique [Voir les avis] sur une demande : il arrive sur la même liste.
+  - On arrive sur cette page par [Voir les avis] à côté du nom du client ; elle n'est pas dans la recherche de rafals (qui cherche des prestataires).
+  - **Moteurs de recherche** (choix de Claude) : la page demande à Google de ne pas l'enregistrer (*noindex*), pour qu'on ne tombe pas dessus en tapant un prénom.
+  - **Loi sur les données personnelles** (à vérifier avant la mise en ligne, comme les autres points juridiques) : rendre publique la note d'un particulier doit être annoncé clairement à l'inscription et dans la page « Données personnelles » ; le client garde le droit de répondre, de signaler un avis, et de tout effacer en fermant son compte.
+- **Le client voit ses propres avis reçus** dans « Mon compte › Mes avis reçus », peut **répondre une fois** à chacun et le **signaler** à l'administrateur (qui le laisse ou le cache), exactement comme un prestataire le fait pour les siens.
+- **Les deux avis sont indépendants** : chacun paraît dès qu'il est écrit, sans attendre l'autre. (AlloVoisins ne dit pas s'il attend les deux ; choix le plus simple, comme les avis actuels.)
+- **Absence** : pas d'avis sur un rendez-vous où une absence a été signalée (règle actuelle) ; l'absence du client reste comptée à part (`RM-RENDEZ-VOUS.md`).
+- **Compte fermé** : la page publique du client et les avis qu'il a reçus disparaissent avec lui ; ceux qu'il a écrits restent, signés « Client ayant quitté rafals » (règle actuelle).
+- **Pas d'onglet « Noter mes clients »** (Raphael, 04/10/2026, mot pour mot : « noter les clients ca ne doit pas etre un onglet comme ca ca doit juste aparaitre quand un rdv est passé enfin il faut que ca fasse comme sur allo voisin »). Dès que le rendez-vous est passé, une carte apparaît toute seule **dans la conversation** des deux personnes : « Rendez-vous passé · Remplacer un robinet · mardi 29/09 — Comment ça s'est passé avec Marie D. ? [Noter Marie D.] · encore 25 jours ». Le client voit la même carte avec [Noter Karim B.]. Une fois l'avis laissé : « avis laissé ». Le même bouton est aussi sur la ligne du rendez-vous passé (« Mon agenda › Rendez-vous » pour le prestataire, « Mes rendez-vous » pour le client, comme aujourd'hui).
+  - Exemple 1 : rendez-vous mardi 29/09 à 9 h → mardi à 9 h 45 (fin du rendez-vous), la carte apparaît chez Karim et chez Mme Dupont ; « Messages (1) » s'allume.
+  - Exemple 2 : après 30 jours sans avis, la carte reste mais sans bouton : « Le délai pour noter est passé. »
+- **Rappel** : le lendemain du rendez-vous, le prestataire reçoit « Comment s'est passé votre rendez-vous avec Mme D. ? » (une seule fois), comme le client.
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|
@@ -62,6 +87,9 @@ Réponse de Raphael, mot pour mot : « je vais pas taper a la main chaques mots 
 | Retirer son avis | Client | À tout moment |
 | Répondre une fois | Prestataire | Sur un avis le concernant |
 | Signaler un avis | Prestataire | Sur un avis le concernant |
+| Noter un client (sujet 20) | Prestataire | Rendez-vous tenu avec lui, dans les 30 jours |
+| Voir la moyenne et les avis d'un client | Tout le monde, même sans compte | Compte du client pas fermé |
+| Répondre une fois, signaler un avis reçu | Client | Sur un avis le concernant |
 | Cacher un avis, modifier la liste des gros mots, effacer un nom dans un texte | Administrateur | — |
 
 ## Questions ouvertes

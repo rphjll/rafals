@@ -159,3 +159,12 @@ ECHECS_AVANT_BLOCAGE = 5
 BLOCAGE_DUREE = timedelta(minutes=15)
 
 NOM_COOKIE_SESSION = "rafals_session"
+
+# Messagerie (RM-MESSAGERIE.md, validé par Raphael le 04/10/2026)
+MESSAGE_TEXTE_MAX = 2000
+MESSAGE_PHOTOS_MAX = 5
+MESSAGE_MAIL_APRES = timedelta(minutes=15)  # mail seulement si le message n'est pas lu au bout de 15 minutes
+MESSAGE_MAIL_ECART = timedelta(hours=1)  # au plus un mail par conversation et par heure
+MESSAGE_MAIL_AU_PLUS_TARD = timedelta(days=2)  # au-delà, on ne prévient plus pour un vieux message
+MESSAGE_CONSERVATION = timedelta(days=3 * 365)  # une conversation sans message depuis 3 ans est effacée
+TACHE_MESSAGERIE_MINUTES = 5

@@ -13,8 +13,9 @@ class Signalement(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     auteur_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("compte.id"))
-    prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
+    prestataire_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("prestataire.id"))  # facultatif depuis schema_v21
     annonce_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("annonce.id"))
+    conversation_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("conversation.id"))  # schema_v21
     traite_par_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("compte.id"))
     motif: Mapped[str] = mapped_column(Text)
     cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

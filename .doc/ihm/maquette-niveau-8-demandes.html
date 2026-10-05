@@ -1,0 +1,351 @@
+<title>Maquette rafals demandes</title>
+<style>
+:root{--fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;--prim:#2F6B4F;--prim-t:#FFFFFF;--prim-doux:#E2EEE7;--accent:#D9793A;--ok:#2E7D4F;--ok-doux:#E3F2E8;--att:#B26A00;--att-doux:#FCF0DC;--err:#B3261E;--err-doux:#FBE4E2;--neu:#5B6573;--neu-doux:#E8ECF1;--sur:#FFFFFF;--voile:rgb(10 14 20 / .55)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}}
+:root[data-theme="dark"]{color-scheme:dark;--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--prim:#79C49C;--prim-t:#0F1A13;--prim-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--att:#F0B35A;--att-doux:#33260F;--err:#F08A82;--err-doux:#3A1A18;--neu:#A3AEBD;--neu-doux:#262E39;--sur:#0F1A13}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:"Segoe UI",system-ui,sans-serif;font-size:15px;margin:0;line-height:1.45}
+p{margin:0} h1{font-size:26px;margin:0} h2{font-size:19px;margin:0} h3{font-size:16px;margin:0}
+.bandeau{background:var(--surface);border-bottom:1px dashed var(--bord);padding:10px 16px;font-size:13px;color:var(--doux);display:flex;flex-direction:column;gap:8px}
+.bandeau b{color:var(--texte)}
+.qui{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.segment{display:inline-flex;border:1px solid var(--prim);border-radius:10px;overflow:hidden}
+.segment button{font:inherit;font-weight:600;border:0;background:var(--surface);color:var(--prim);min-height:42px;padding:8px 14px;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--prim);color:var(--prim-t)}
+header{background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px;position:relative}
+.entete{max-width:1000px;margin:0 auto;min-height:60px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-block:6px}
+.logo{font-weight:700;font-size:24px;color:var(--prim);margin-right:auto} .logo span{color:var(--accent)}
+.nav{font:inherit;border:0;background:transparent;color:var(--doux);font-weight:600;padding:8px 10px;min-height:42px;cursor:pointer;border-bottom:3px solid transparent}
+.nav[aria-current="true"]{color:var(--prim);border-bottom-color:var(--prim)}
+.pastille{display:inline-block;margin-left:4px;background:var(--err);color:var(--sur);border-radius:999px;padding:0 7px;font-size:12px;font-weight:700}
+.cloche{position:relative}
+.liste-notifs{position:absolute;right:16px;top:100%;width:min(360px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--bord);border-radius:10px;z-index:4;padding:8px;display:flex;flex-direction:column;gap:2px}
+.notif{font:inherit;text-align:left;border:0;background:transparent;color:var(--texte);padding:8px;border-radius:8px;cursor:pointer;font-size:14px}
+.notif.neuve{background:var(--prim-doux);font-weight:600} .notif small{display:block;color:var(--doux);font-weight:400}
+main{padding-inline:16px;padding-block:24px 70px}
+.contenu{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.tete{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid transparent;min-height:42px;padding:9px 16px;cursor:pointer}
+.petit{min-height:36px;padding:6px 12px;font-size:14px}
+.prim{background:var(--prim);color:var(--prim-t);border-color:var(--prim)} .sec{background:var(--surface);color:var(--prim);border-color:var(--prim)} .dan{background:var(--surface);color:var(--err);border-color:var(--err)}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.b-ok{background:var(--ok-doux);color:var(--ok)} .b-att{background:var(--att-doux);color:var(--att)} .b-neu{background:var(--neu-doux);color:var(--neu)} .b-err{background:var(--err-doux);color:var(--err)}
+.note{font-size:13.5px;color:var(--doux)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.alerte{border-radius:8px;padding:10px 12px;font-size:14px;font-weight:500} .a-att{background:var(--att-doux);color:var(--att)} .a-ok{background:var(--ok-doux);color:var(--ok)} .a-neu{background:var(--neu-doux);color:var(--texte)}
+.etoiles{color:var(--accent);letter-spacing:1px;white-space:nowrap}
+label.champ{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13px}
+input,select,textarea{font:inherit;min-height:42px;border:1px solid var(--bord);border-radius:10px;background:var(--fond);color:var(--texte);padding:8px 10px;width:100%}
+textarea{min-height:84px;resize:vertical}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:10px} @media (max-width:520px){.deux{grid-template-columns:1fr}}
+.choix{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.choix button{font:inherit;border:1px solid var(--bord);background:var(--surface);color:var(--texte);border-radius:10px;min-height:44px;padding:6px 10px;cursor:pointer;text-align:left}
+.choix button[aria-pressed="true"]{border-color:var(--prim);background:var(--prim-doux);font-weight:600;color:var(--prim)}
+/* Conversation */
+.fil{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow-y:auto;padding:4px}
+.bulle{max-width:82%;padding:8px 12px;border-radius:14px;font-size:14.5px;background:var(--neu-doux);align-self:flex-start;overflow-wrap:anywhere}
+.bulle.moi{background:var(--prim);color:var(--prim-t);align-self:flex-end}
+.bulle small{display:block;font-size:11.5px;opacity:.75;margin-top:2px}
+.masque{font-style:italic;opacity:.85}
+.rappel{align-self:center;max-width:100%;border:1px dashed var(--bord);border-radius:10px;padding:8px 12px;font-size:13.5px;color:var(--doux);text-align:center}
+.offre{align-self:stretch;border:2px solid var(--prim);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--surface)}
+.offre.finie{border-color:var(--bord)}
+.offre .prix{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.ecrire{display:flex;gap:8px;align-items:flex-end} .ecrire textarea{min-height:44px;height:44px}
+.question{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-top:1px solid var(--bord)} .question:first-of-type{border-top:0;padding-top:0}
+.ligne{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;padding:12px 0;border-top:1px solid var(--bord)}
+.ligne:first-child{border-top:0;padding-top:0}
+.cliquable{cursor:pointer}
+.bascule{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--bord)} .bascule:first-child{border-top:0}
+.interrupteur{font:inherit;min-width:64px;min-height:36px;border-radius:999px;border:1px solid var(--bord);background:var(--neu-doux);color:var(--neu);font-weight:700;cursor:pointer}
+.interrupteur[aria-pressed="true"]{background:var(--ok);color:var(--sur);border-color:var(--ok)}
+/* Téléphone */
+.tel{width:230px;border:3px solid var(--texte);border-radius:28px;padding:14px 10px;background:var(--fond);display:flex;flex-direction:column;gap:10px;margin:0 auto}
+.tel .notif-tel{background:var(--surface);border:1px solid var(--bord);border-radius:12px;padding:8px 10px;font-size:12.5px}
+.icones{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:10.5px;text-align:center;color:var(--doux)}
+.icones i{display:grid;place-items:center;height:42px;border-radius:11px;background:var(--neu-doux);font-style:normal;font-weight:700;font-size:20px;margin-bottom:2px}
+.icones .r i{background:var(--prim);color:var(--prim-t)}
+.tableau{overflow-x:auto} table{border-collapse:collapse;width:100%;font-size:14px;min-width:480px} th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bord);vertical-align:top} th{color:var(--doux);font-size:13px}
+.voile{position:fixed;inset:0;background:var(--voile);display:grid;place-items:center;padding:16px;z-index:5}
+.fenetre{background:var(--surface);border:1px solid var(--bord);border-radius:10px;padding:22px;width:min(480px,100%);max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.pied{display:flex;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ok);color:var(--sur);padding:12px 18px;border-radius:10px;font-weight:600;z-index:9;max-width:calc(100vw - 32px)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+
+<div class="bandeau">
+  <div><b>Maquette — niveau 8 « comme AlloVoisins »</b> : demandes publiées par les clients, alertes, messagerie, notation dans les deux sens, application à installer. Tout est cliquable, et ce que fait l'un se voit chez l'autre.</div>
+  <div class="qui"><span>Je regarde le site en tant que :</span>
+    <div class="segment" role="group" aria-label="Personne"><button id="q-client" aria-pressed="true">Mme Dupont, cliente</button><button id="q-presta" aria-pressed="false">Karim, plombier et jardinier</button></div>
+  </div>
+  <div>Parcours conseillé : 1) Karim › « Demandes près de chez moi » › [Répondre] à la pelouse, écrire, [Faire une proposition]. 2) Mme Dupont › « Messages » (compteur rouge), puis [Accepter]. 3) Karim › « Messages » › Marie D. : le rendez-vous du 29/09 est passé, la carte [Noter Marie D.] est apparue toute seule. 4) « Application ».</div>
+</div>
+<header><div class="entete" id="entete"></div><div id="notifs"></div></header>
+<main><div class="contenu" id="ecran"></div></main>
+<div id="couche"></div><div class="toast" id="toast" hidden></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const etoiles = (n) => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n));
+const euros = (n) => `${n} €`;
+// ---------- Données d'exemple (marquées comme exemples : rien n'est réel) ----------
+let qui = 'client', ecran = 'demandes', notifsOuvertes = false, numero = 100;
+const demandes = [
+  {id:1, de:'moi', client:'Marie D.', metier:'Jardinier', titre:'Tondre ma pelouse', desc:"200 m², terrain plat, j'ai une prise dehors.", ville:'Pessac', km:2, quand:'samedi 10/10', ou:'chez moi', budget:40, etat:'ouverte', reste:28, reponses:1},
+  {id:2, de:'autre', client:'Paul P.', noteClient:null, metier:'Plombier', titre:"Fuite sous l'évier", desc:'Le siphon goutte depuis hier soir.', ville:'Talence', km:5, quand:'dès que possible', ou:'chez moi', budget:null, etat:'ouverte', reste:30, reponses:0, photo:true},
+  {id:3, de:'moi', client:'Marie D.', metier:'Bricoleur', titre:'Monter une armoire', desc:'Armoire 3 portes en kit, notice fournie.', ville:'Pessac', km:2, quand:'le 26/09', ou:'chez moi', budget:50, etat:'pourvue', reste:0, reponses:3},
+];
+// Une conversation par couple client / prestataire. cote : 'c' = client, 'p' = prestataire.
+const conversations = [
+  {id:1, presta:'Tom L.', prestaNote:'Nouveau sur rafals', client:'Marie D.', rdvEnsemble:false, nonLu:{c:1,p:0}, fil:[
+    {rappel:1},
+    {de:'p', texte:"Bonjour, je peux samedi à 10 h, j'apporte ma tondeuse.", h:'hier 18:12'},
+    {de:'p', texte:'Sinon appelez-moi au 06 12 34 56 78', h:'hier 18:13'},
+    {offre:{id:1, prix:35, quand:'samedi 10/10 à 10 h 00', duree:'1 h', ou:'chez vous', paiement:'espèces', etat:'attente'}},
+  ]},
+];
+conversations.push({id:2, presta:'Karim B.', prestaNote:'4,5 ★ · 8 avis', client:'Marie D.', rdvEnsemble:true, nonLu:{c:0,p:1}, fil:[
+  {de:'c', texte:'Bonjour, mon robinet de cuisine fuit, pouvez-vous passer mardi ?', h:'28/09 9:10'},
+  {de:'p', texte:'Oui, mardi 29/09 à 9 h. À mardi !', h:'28/09 9:25'},
+  {rdv:'mardi 29/09 à 9 h 00 · 45 € · en espèces'},
+  {passe:{titre:'Remplacer un robinet', quand:'mardi 29/09', p:false, c:false}},
+]});
+const notifs = {
+  c:[{texte:'Tom L. a répondu à votre demande « Tondre ma pelouse »', quand:'hier 18:12', va:'conv:1', neuve:true}],
+  p:[{texte:"Nouvelle demande : Fuite sous l'évier, Talence (5 km)", quand:'ce matin 8:02', va:'pres', neuve:true},
+     {texte:'Nouvelle demande : Tondre ma pelouse, Pessac (2 km)', quand:'hier 17:40', va:'pres', neuve:true}],
+};
+// Avis reçus par Mme Dupont (jamais publics)
+const avisRecus = [{de:'Léa M., coiffeuse', note:5, texte:"À l'heure, très agréable.", quand:'septembre 2026', reponse:''}];
+const avisDe = {
+  'Karim B.': [{de:'Sophie R.', note:5, texte:'Ponctuel et soigneux, fuite réparée en 20 minutes.', quand:'septembre 2026'}, {de:'Paul P.', note:4, texte:'Bon travail, un peu de retard.', quand:'août 2026'}, {de:'Client ayant quitté rafals', note:5, texte:'Très bien, je recommande.', quand:'juillet 2026'}],
+  'Tom L.': [], 'Paul P.': [],
+  get 'Marie D.'() { return avisRecus; },
+};
+const moyenne = (nom) => { const l = avisDe[nom] || []; return l.length ? `${(l.reduce((t,a)=>t+a.note,0)/l.length).toFixed(1).replace('.',',')} ★ · ${l.length} avis` : "Aucun avis pour l'instant"; };
+// « Marie D. · 5,0 ★ · 1 avis [Voir les avis] » : la moyenne, et un bouton qui ouvre tous les avis
+const profil = (nom) => `<b>${nom}</b> · ${moyenne(nom)} ${(avisDe[nom]||[]).length ? `<button class="btn sec petit" data-voir-avis="${nom}">Voir les avis</button>` : ''}`;
+function voirAvis() { document.querySelectorAll('[data-voir-avis]').forEach(b => b.onclick = (e) => { e.stopPropagation(); const nom = b.dataset.voirAvis;
+  fenetre(`<h3>${nom}</h3><p class="note">Page publique · membre depuis septembre 2026</p><p><span class="prix" style="font-size:22px;font-weight:700">${moyenne(nom)}</span></p>
+    <div>${avisDe[nom].map(a => `<div class="ligne" style="display:block"><span class="etoiles">${etoiles(a.note)}</span> <b>${a.de}</b> <span class="note">· ${a.quand}</span><p>${a.texte}</p>${a.reponse?`<p class="note" style="border-left:3px solid var(--prim-doux);padding-left:10px;margin-top:4px">Réponse de ${nom} : ${a.reponse}</p>`:''}</div>`).join('')}</div>`, 'Fermer', () => {}, 'sec', true); }); }
+const alertes = {Plombier:true, Jardinier:true, mail:'chaque', appareil:false};
+const cote = () => (qui === 'client' ? 'c' : 'p');
+const noteMarie = () => { const n = avisRecus.map(a => a.note); return n.length ? `${(n.reduce((a,b)=>a+b,0)/n.length).toFixed(1).replace('.',',')} ★ · ${n.length} avis de prestataires` : 'Nouveau client'; };
+
+// Coordonnées masquées tant qu'il n'y a pas de rendez-vous entre les deux (RM-MESSAGERIE)
+const masquer = (texte) => texte.replace(/(\+33|0)[\s.]?[1-9]([\s.]?\d{2}){4}|[\w.+-]+@[\w-]+\.[\w.]+/g, '<span class="masque">(coordonnées masquées jusqu\'à la réservation)</span>');
+const propre = (t) => t.replace(/[&<>]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+function aller(e) { ecran = e; notifsOuvertes = false; rendre(); window.scrollTo(0, 0); }
+function prevenir(c, texte, va, v) { if (c === 'c' && v && v.client !== 'Marie D.') return; notifs[c].unshift({texte, quand:"à l'instant", va, neuve:true}); }
+function toast(t) { const e = $('#toast'); e.textContent = t; e.hidden = false; clearTimeout(toast.m); toast.m = setTimeout(() => e.hidden = true, 3500); }
+
+function rendre() {
+  const c = cote();
+  const nonLus = conversations.filter(v => v.nonLu[c] && (c === 'c' ? v.client === 'Marie D.' : v.presta === 'Karim B.')).length;
+  // Pas de liste de notifications : chaque onglet porte son compteur rouge, remis à zéro quand on l'ouvre
+  notifs[c].forEach(n => { if (n.va === ecran.split(':')[0]) n.neuve = false; });
+  const neuves = (va) => notifs[c].filter(n => n.neuve && n.va === va).length;
+  const liens = qui === 'client'
+    ? [['demandes','Mes demandes'],['messages','Messages'],['avis','Mes avis reçus'],['appli','Application']]
+    : [['pres','Demandes près de chez moi'],['messages','Messages'],['alertes','Alertes'],['appli','Application']];
+  $('#entete').innerHTML = `<span class="logo">rafals<span>.</span></span>` +
+    liens.map(([id,t]) => `<button class="nav" data-va="${id}" aria-current="${ecran.split(':')[0] === id || (id==='messages' && ecran.startsWith('conv'))}">${t}${(id==='messages'?nonLus:neuves(id))?`<span class="pastille">${id==='messages'?nonLus:neuves(id)}</span>`:''}</button>`).join('') +
+    '';
+  const [nom, id] = ecran.split(':');
+  $('#ecran').innerHTML = (VUES[nom] || VUES.demandes)(Number(id));
+  document.querySelectorAll('[data-va]').forEach(b => b.onclick = () => aller(b.dataset.va));
+  (BRANCHER[nom] || (() => {}))(Number(id));
+  voirAvis();
+  $('#q-client').setAttribute('aria-pressed', qui === 'client'); $('#q-presta').setAttribute('aria-pressed', qui === 'presta');
+  const fil = $('.fil'); if (fil) fil.scrollTop = fil.scrollHeight;
+}
+$('#q-client').onclick = () => { qui = 'client'; aller('demandes'); };
+$('#q-presta').onclick = () => { qui = 'presta'; aller('pres'); };
+
+const badgeEtat = (d) => ({ouverte:`<span class="badge b-ok">ouverte · encore ${d.reste} jours</span>`, pourvue:'<span class="badge b-neu">pourvue</span>', fermee:'<span class="badge b-neu">fermée</span>'}[d.etat]);
+const resume = (d) => `${d.metier} · ${d.ville} · ${d.quand} · ${d.ou}${d.budget ? ` · budget ${euros(d.budget)}` : ''}`;
+
+const VUES = {
+  // ---------- Cliente ----------
+  demandes: () => `<div class="tete"><h1>Mes demandes</h1><button class="btn prim" data-va="publier">Publier une demande</button></div>
+    <p class="note">Décrivez votre besoin : les prestataires du métier qui viennent dans votre ville sont prévenus et vous répondent. Gratuit.</p>
+    ${demandes.filter(d => d.de === 'moi').map(d => `<div class="carte"><div class="tete"><h2>${d.titre}</h2>${badgeEtat(d)}</div>
+      <p class="note">${resume(d)}</p><p>${d.desc}</p>
+      <div class="actions">${d.etat === 'ouverte' ? `<button class="btn sec petit" data-va="messages">${d.reponses} réponse${d.reponses>1?'s':''} sur 10 · voir</button><button class="btn dan petit" data-fermer="${d.id}">Fermer ma demande</button>` : `<span class="note">${d.etat==='pourvue'?'Un prestataire a été choisi : voir « Mes rendez-vous ».':'Vous avez fermé cette demande.'}</span>`}</div></div>`).join('')}`,
+  publier: () => `<h1>Publier une demande</h1><div class="carte">
+    <label class="champ">Métier *<select id="d-metier"><option>Plombier</option><option>Jardinier</option><option>Bricoleur</option><option>Ménage</option><option>Coiffeur</option></select></label>
+    <label class="champ">Titre *<input id="d-titre" maxlength="80" placeholder="ex. Tailler une haie de 10 m"></label>
+    <label class="champ">Description *<textarea id="d-desc" maxlength="1000" placeholder="Décrivez le travail. Pas de téléphone ni de mail ici : le prestataire que vous choisirez les recevra."></textarea></label>
+    <div class="deux"><label class="champ">Ville *<input id="d-ville" value="Pessac (33600)"></label>
+      <label class="champ">Budget (facultatif)<input id="d-budget" inputmode="numeric" placeholder="ex. 40"></label></div>
+    <div class="champ" style="display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13px">Quand ? *<div class="choix" id="d-quand">${['dès que possible','dans les 7 jours','un jour précis','pas pressé'].map((q,i)=>`<button aria-pressed="${i===1}">${q}</button>`).join('')}</div></div>
+    <div class="champ" style="display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13px">Où ? *<div class="choix" id="d-ou">${['chez moi','chez le prestataire'].map((q,i)=>`<button aria-pressed="${i===0}">${q}</button>`).join('')}</div></div>
+    <p class="note">Photos (5 au plus) : [Choisir des photos]. Votre rue n'est jamais montrée : seule la ville l'est. Les prestataires vous voient comme « Marie D. ».</p>
+    <p class="alerte a-att" id="d-erreur" hidden></p>
+    <div class="actions"><button class="btn prim" id="d-ok">Publier ma demande</button><button class="btn sec" data-va="demandes">Annuler</button></div></div>`,
+  avis: () => `<h1>Mes avis reçus</h1><div class="carte"><span class="note">Ma note, affichée sur mon compte</span><span style="font-size:26px;font-weight:700">${moyenne('Marie D.')}</span><span class="note">Cette moyenne s'affiche à côté de votre nom, avec le bouton [Voir les avis] qui ouvre tous les avis ci-dessous.</span></div><p class="note">Après un rendez-vous passé, une carte apparaît dans votre conversation : le prestataire peut vous noter, comme vous le notez. <b>Ils sont visibles de tout le monde</b>, sur votre page publique « Marie D. » : prénom et initiale, « membre depuis septembre 2026 », la moyenne et les avis. Jamais votre nom complet, votre ville, votre adresse ni votre téléphone.</p>
+    <div class="carte">${avisRecus.map((a,i) => `<div class="ligne" style="align-items:flex-start"><div style="flex:1;min-width:200px"><span class="etoiles">${etoiles(a.note)}</span> <b>${a.de}</b> <span class="note">· ${a.quand}</span><p>${a.texte}</p>${a.reponse?`<p class="note" style="border-left:3px solid var(--prim-doux);padding-left:10px;margin-top:4px">Votre réponse : ${a.reponse}</p>`:''}</div>
+      <div class="actions">${a.reponse?'':`<button class="btn sec petit" data-repondre="${i}">Répondre</button>`}<button class="btn dan petit" data-signaler>Signaler</button></div></div>`).join('')}</div>`,
+  // ---------- Prestataire ----------
+  pres: () => `<h1>Demandes près de chez moi</h1><p class="note">Les demandes de vos métiers (Plombier, Jardinier) dans votre rayon de 15 km autour de Pessac. Répondre est gratuit ; rafals garde 5 % seulement si le client paie par carte.</p>
+    ${demandes.filter(d => d.etat === 'ouverte' && ['Plombier','Jardinier'].includes(d.metier)).map(d => { const conv = conversations.find(v => v.presta === 'Karim B.' && v.fil.some(m => m.rappel === d.id));
+      return `<div class="carte"><div class="tete"><h2>${d.titre}</h2><span class="badge b-neu">${d.reponses} réponse${d.reponses>1?'s':''} sur 10</span></div>
+      <p class="note">${resume(d).replace('chez moi','chez le client')} · à ${d.km} km</p><p>${d.desc}${d.photo?' <span class="note">(1 photo)</span>':''}</p>
+      <p class="note">${profil(d.client)}</p>
+      <div class="actions">${conv?`<button class="btn sec" data-va="conv:${conv.id}">Voir la conversation</button>`:`<button class="btn prim" data-repondre-demande="${d.id}">Répondre</button>`}<button class="btn sec petit" data-signaler>Signaler</button></div></div>`; }).join('') || '<div class="carte"><p class="note">Aucune demande ouverte pour vos métiers en ce moment. Vous serez prévenu dès qu\'il y en a une.</p></div>'}`,
+  alertes: () => `<h1>Alertes : être prévenu des nouvelles demandes</h1>
+    <p class="note">Quand un client publie une demande près de chez vous, rafals peut vous prévenir tout de suite, pour que vous répondiez avant les autres. Exemple : M. Petit publie « Fuite sous l'évier » à Talence à 8 h 02 ; à 8 h 02 votre téléphone affiche « Nouvelle demande : Fuite sous l'évier, Talence (5 km) ».</p>
+    <div class="carte"><h2>1. Pour quels métiers voulez-vous être prévenu ?</h2>
+      ${['Plombier','Jardinier'].map(m => `<div class="question"><p>Un client cherche un <b>${m.toLowerCase()}</b> près de chez vous :</p>
+        <div class="choix" data-metier-alerte="${m}"><button data-v="1" aria-pressed="${alertes[m]}">Me prévenir</button><button data-v="" aria-pressed="${!alertes[m]}">Ne pas me prévenir</button></div>
+        <p class="note">${alertes[m] ? `Vous êtes prévenu de chaque demande de ${m.toLowerCase()} dans votre rayon de 15 km.` : `Vous ne recevez rien pour ${m.toLowerCase()}. Les demandes restent visibles dans « Demandes près de chez moi ».`}</p></div>`).join('')}</div>
+    <div class="carte"><h2>2. Comment voulez-vous être prévenu ?</h2>
+      <div class="question"><p><b>Sur ce téléphone</b> (une notification, même quand rafals est fermé) :</p>
+        <div class="choix" data-metier-alerte="appareil"><button data-v="1" aria-pressed="${alertes.appareil}">Oui</button><button data-v="" aria-pressed="${!alertes.appareil}">Non</button></div></div>
+      <div class="question"><p><b>Par mail</b> :</p>
+        <div class="choix" id="a-mail">${[['chaque','Un mail à chaque demande'],['resume','Un seul mail le soir à 18 h, avec toutes les demandes du jour'],['jamais','Aucun mail']].map(([v,t]) => `<button data-v="${v}" aria-pressed="${alertes.mail===v}">${t}</button>`).join('')}</div>
+        <p class="note">Exemple : 15 demandes de ménage dans la journée. « À chaque demande » = 15 mails ; « un seul mail le soir » = 1 mail à 18 h.</p></div>
+      <p class="note">Dans tous les cas, un compteur rouge s'affiche sur « Demandes près de chez moi » quand il y a du nouveau.</p></div>`,
+  // ---------- Commun ----------
+  messages: () => { const c = cote(); const liste = conversations.filter(v => c === 'c' ? v.client === 'Marie D.' : v.presta === 'Karim B.');
+    return `<h1>Messages</h1><p class="note">Une seule conversation par ${c==='c'?'prestataire':'client'} : tous vos échanges au même endroit.</p>
+    <div class="carte">${liste.map(v => { const der = [...v.fil].reverse().find(m => m.texte || m.offre || m.passe || m.contre); const apercu = der?.contre ? `Prix proposé : ${euros(der.contre.prix)} au lieu de ${euros(der.contre.ancien)}` : der?.passe ? `Rendez-vous passé : notez ${c==='c'?v.presta:v.client}` : der?.offre ? `Proposition : ${euros(der.offre.prix)} · ${der.offre.quand}` : (der?.texte || '').replace(/(\+33|0)[\s.]?[1-9]([\s.]?\d{2}){4}/g,'…');
+      return `<div class="ligne cliquable" data-va="conv:${v.id}"><div style="min-width:0"><b>${c==='c'?v.presta:v.client}</b>${v.nonLu[c]?`<span class="pastille">${v.nonLu[c]}</span>`:''}<p class="note" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw">${propre(apercu)}</p></div><span class="note">ouvrir ›</span></div>`; }).join('') || '<p class="note">Aucune conversation. ' + (c==='c' ? 'Publiez une demande, ou écrivez à un prestataire depuis sa page.' : 'Répondez à une demande pour commencer.') + '</p>'}</div>`; },
+  conv: (id) => { const v = conversations.find(x => x.id === id); const c = cote(); v.nonLu[c] = 0;
+    return `<div class="tete"><div><button class="btn sec petit" data-va="messages">‹ Messages</button></div><div class="actions"><button class="btn sec petit" data-signaler>Signaler</button><button class="btn dan petit" data-bloquer>Bloquer</button></div></div>
+    <div class="carte"><div class="tete"><span style="font-size:17px">${profil(c==='c'?v.presta:v.client)}</span></div>
+    <div class="fil">${v.fil.map(m => {
+      if (m.rappel) { const d = demandes.find(x => x.id === m.rappel); return `<div class="rappel">Demande : <b>${d.titre}</b> · ${d.ville} · ${d.quand}${d.budget?` · budget ${euros(d.budget)}`:''}</div>`; }
+      if (m.rdv) return `<div class="rappel" style="border-style:solid;border-color:var(--ok);color:var(--ok)"><b>Rendez-vous confirmé</b> · ${m.rdv}</div>`;
+      if (m.info) return `<div class="rappel">${m.info}</div>`;
+      // Le client a proposé un autre prix : le prestataire accepte ou refuse ce prix
+      if (m.contre) { const k = m.contre; return `<div class="offre ${k.etat!=='attente'?'finie':''}" style="border-color:${k.etat==='attente'?'var(--accent)':'var(--bord)'}"><div class="tete"><span class="note">Prix proposé par ${v.client}</span><span class="badge ${k.etat==='attente'?'b-att':k.etat==='acceptee'?'b-ok':'b-err'}">${{attente:'en attente',acceptee:'accepté',refusee:'refusé'}[k.etat]}</span></div>
+        <span class="prix">${euros(k.prix)} <span class="note" style="font-weight:400">au lieu de ${euros(k.ancien)}</span></span><span class="note">Le jour, l'heure et le reste ne changent pas.</span>
+        ${k.etat==='attente' && c==='p' ? `<div class="actions"><button class="btn prim" data-contre-oui="${k.id}">Accepter ${euros(k.prix)}</button><button class="btn dan" data-contre-non="${k.id}">Refuser ce prix</button></div>` : ''}
+        ${k.etat==='attente' && c==='c' ? `<span class="note">En attente de la réponse de ${v.presta}.</span>` : ''}</div>`; }
+      // Rendez-vous passé : la carte pour se noter apparaît toute seule, chez les deux (30 jours)
+      if (m.passe) { const r = m.passe, fait = r[c]; return `<div class="offre ${fait?'finie':''}"><span class="note">Rendez-vous passé · ${r.titre} · ${r.quand}</span>
+        <b>Comment ça s'est passé avec ${c==='c'?v.presta:v.client} ?</b>
+        ${fait ? '<span class="badge b-ok" style="align-self:flex-start">avis laissé</span>' : `<div class="actions"><button class="btn prim" data-noter="${v.id}">Noter ${c==='c'?v.presta:v.client}</button><span class="note">encore 25 jours</span></div>`}</div>`; }
+      if (m.offre) { const o = m.offre; return `<div class="offre ${o.etat!=='attente'?'finie':''}"><div class="tete"><span class="note">Proposition de ${v.presta}</span><span class="badge ${o.etat==='attente'?'b-att':o.etat==='acceptee'?'b-ok':o.etat==='refusee'?'b-err':'b-neu'}">${{attente:'en attente',acceptee:'acceptée',retiree:'retirée',perdue:'non retenue',refusee:'refusée',negociee:'prix en négociation',remplacee:'remplacée'}[o.etat]}</span></div>
+        <span class="prix">${euros(o.prix)}</span><span>${o.quand} · ${o.duree} · ${c==='c'?o.ou:o.ou.replace('chez vous','chez le client')}</span><span class="note">Paiement : ${o.paiement}</span>
+        ${o.etat==='attente' ? (c==='c' ? `<div class="actions"><button class="btn prim" data-accepter="${v.id}:${o.id}">Accepter ${euros(o.prix)} · ${o.quand}</button><button class="btn sec" data-negocier="${v.id}:${o.id}">Négocier le prix</button><button class="btn dan" data-refuser="${v.id}:${o.id}">Refuser</button></div>` : `<div class="actions"><button class="btn dan petit" data-retirer="${v.id}:${o.id}">Retirer ma proposition</button></div>`) : ''}</div>`; }
+      return `<div class="bulle ${m.de===c?'moi':''}">${v.rdvEnsemble ? propre(m.texte) : masquer(propre(m.texte))}<small>${m.h}${m.de===c?' · '+(m.lu===false?'envoyé':'lu'):''}</small></div>`; }).join('')}</div>
+    ${v.bloque ? '<p class="alerte a-neu">Conversation bloquée : plus aucun message ne passe.</p>' : `<div class="ecrire"><textarea id="m-texte" placeholder="Écrire un message…" aria-label="Message"></textarea><button class="btn prim" id="m-envoyer">Envoyer</button></div>
+    ${c==='p' ? '<div class="actions"><button class="btn sec" id="m-offre">Faire une proposition…</button></div>' : ''}`}
+    ${v.rdvEnsemble ? '' : '<p class="note">Téléphone et mail sont masqués dans les messages tant qu\'il n\'y a pas de rendez-vous entre vous.</p>'}</div>`; },
+  appli: () => `<h1>Application</h1>
+    <div class="carte"><h2>rafals sur l'écran d'accueil</h2>
+      <div class="tel"><div class="notif-tel"><b>rafals</b> · maintenant<br>${qui==='presta'?"Nouvelle demande : Fuite sous l'évier, Talence (5 km)":'Karim B. vous a fait une proposition'}</div>
+        <div class="icones"><span><i>✉</i>Mail</span><span><i>☎</i>Tél.</span><span class="r"><i>r.</i>rafals</span><span><i>⚙</i>Réglages</span></div></div>
+      <p class="note" style="text-align:center">Exemple : l'icône « rafals » parmi les autres applications, et une notification reçue site fermé.</p>
+      <div class="actions" style="justify-content:center"><button class="btn prim" id="installer">Installer rafals</button><button class="btn sec" id="accord">Activer les notifications</button></div>
+      <p class="note">Sur iPhone : « Partager », puis « Sur l'écran d'accueil » (rafals montre ces deux gestes en image). Sans réseau : « Pas de connexion : rafals a besoin d'Internet. »</p></div>
+    <div class="carte"><h2>Deux façons de faire une application</h2><div class="tableau"><table>
+      <thead><tr><th></th><th>A. Le site devient installable (proposé)</th><th>B. Applications des magasins</th></tr></thead><tbody>
+      <tr><td><b>Où la trouver</b></td><td>Bouton [Installer rafals] sur le site</td><td>App Store et Google Play</td></tr>
+      <tr><td><b>Notifications</b></td><td>Oui (iPhone : une fois installée)</td><td>Oui</td></tr>
+      <tr><td><b>Coût</b></td><td>0 €</td><td>Apple 99 $ par an + Google 25 $ une fois (à revérifier)</td></tr>
+      <tr><td><b>Travail</b></td><td>Le même code que le site</td><td>Deux applications de plus à entretenir</td></tr>
+      <tr><td><b>Mise à jour</b></td><td>Immédiate</td><td>Attend l'accord d'Apple et de Google</td></tr></tbody></table></div>
+      <p class="note">La solution B reste possible plus tard, en emballant le même site.</p></div>`,
+};
+
+const BRANCHER = {
+  demandes: () => document.querySelectorAll('[data-fermer]').forEach(b => b.onclick = () => { demandes.find(d => d.id == b.dataset.fermer).etat = 'fermee'; rendre(); toast('Demande fermée : elle n\'est plus proposée aux prestataires.'); }),
+  publier: () => {
+    ['#d-quand','#d-ou'].forEach(s => $(s).querySelectorAll('button').forEach(b => b.onclick = () => $(s).querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b))));
+    $('#d-ok').onclick = () => {
+      const titre = $('#d-titre').value.trim(), desc = $('#d-desc').value.trim(), err = $('#d-erreur');
+      const refus = titre.length < 5 ? 'Écrivez un titre (5 caractères au moins).' : desc.length < 20 ? 'Décrivez le travail (20 caractères au moins).' : /(\+33|0)[\s.]?[1-9]([\s.]?\d{2}){4}|@/.test(titre + desc) ? 'Ne mettez pas vos coordonnées ici : le prestataire que vous choisirez les recevra.' : '';
+      if (refus) { err.textContent = refus; err.hidden = false; return; }
+      const metier = $('#d-metier').value;
+      const d = {id: ++numero, de:'moi', client:'Marie D.', metier, titre: propre(titre), desc: propre(desc), ville: $('#d-ville').value.split(' (')[0], km:2, quand: $('#d-quand [aria-pressed="true"]').textContent, ou: $('#d-ou [aria-pressed="true"]').textContent, budget: Number($('#d-budget').value) || null, etat:'ouverte', reste:30, reponses:0};
+      demandes.unshift(d);
+      const concerne = ['Plombier','Jardinier'].includes(metier) && alertes[metier];
+      if (concerne) prevenir('p', `Nouvelle demande : ${d.titre}, ${d.ville} (2 km)`, 'pres');
+      aller('demandes'); toast(`Demande publiée : ${concerne ? '3' : '2'} prestataires prévenus.`);
+    };
+  },
+  avis: () => {
+    document.querySelectorAll('[data-repondre]').forEach(b => b.onclick = () => fenetre(`<h3>Répondre à cet avis</h3><p class="note">Une seule réponse, vue par les prestataires qui lisent cet avis.</p><textarea id="f-texte" placeholder="Votre réponse"></textarea>`, 'Envoyer ma réponse', () => { avisRecus[b.dataset.repondre].reponse = propre($('#f-texte').value.trim() || 'Merci !'); toast('Réponse enregistrée.'); }));
+    signaler();
+  },
+  pres: () => { signaler();
+    document.querySelectorAll('[data-repondre-demande]').forEach(b => b.onclick = () => {
+      const d = demandes.find(x => x.id == b.dataset.repondreDemande);
+      let v = conversations.find(x => x.presta === 'Karim B.' && x.client === d.client);
+      if (!v) { v = {id: ++numero, presta:'Karim B.', prestaNote:'4,5 ★ · 8 avis', client: d.client, rdvEnsemble:false, nonLu:{c:0,p:0}, fil:[]}; conversations.push(v); }
+      v.fil.push({rappel: d.id}); d.reponses++;
+      aller(`conv:${v.id}`); toast('Conversation ouverte : écrivez au client, puis faites une proposition.');
+    }); },
+  alertes: () => {
+    document.querySelectorAll('[data-metier-alerte] button').forEach(b => b.onclick = () => { alertes[b.parentElement.dataset.metierAlerte] = !!b.dataset.v; rendre(); toast('Réglage enregistré.'); });
+    $('#a-mail').querySelectorAll('button').forEach(b => b.onclick = () => { alertes.mail = b.dataset.v; rendre(); toast('Réglage enregistré.'); });
+  },
+  messages: () => {},
+  conv: (id) => { const v = conversations.find(x => x.id === id); const c = cote(), autre = c === 'c' ? 'p' : 'c'; signaler();
+    document.querySelectorAll('[data-bloquer]').forEach(b => b.onclick = () => fenetre(`<h3>Bloquer cette personne ?</h3><p>Plus aucun message ne passera, dans les deux sens. Les rendez-vous déjà pris restent.</p>`, 'Bloquer', () => { v.bloque = true; toast('Personne bloquée.'); }, 'dan'));
+    document.querySelectorAll('[data-noter]').forEach(b => b.onclick = () => { let note = 5; const r = v.fil.find(m => m.passe).passe; const nom = c === 'c' ? v.presta : v.client;
+      fenetre(`<h3>Noter ${nom}</h3><p class="note">${r.titre} · ${r.quand}. ${c==='p' ? "Votre avis n'est pas public : seuls les prestataires à qui ce client s'adresse le voient." : 'Votre avis sera affiché sur la page du prestataire.'}</p>
+        <div class="actions" id="f-etoiles">${[1,2,3,4,5].map(n => `<button class="btn sec petit" data-n="${n}" aria-label="${n} étoiles">★</button>`).join('')}<span id="f-note" class="note">5 sur 5</span></div>
+        <textarea id="f-texte" placeholder="${c==='p' ? 'ex. Accueillante, la fuite était bien décrite, payé tout de suite.' : 'ex. Ponctuel et soigneux.'} (10 caractères au moins)"></textarea>`, 'Publier mon avis', () => {
+          r[c] = true;
+          if (c === 'p') { avisRecus.unshift({de:'Karim B., plombier', note, texte: propre($('#f-texte').value.trim() || 'Accueillante, la fuite était bien décrite.'), quand:"à l'instant", reponse:''}); prevenir('c', 'Karim B. vous a laissé un avis', 'avis'); }
+          toast(`Avis publié : ${nom} est prévenu${c==='p'?'e':''}.`); });
+      $('#f-etoiles').querySelectorAll('[data-n]').forEach(e => e.onclick = () => { note = Number(e.dataset.n); $('#f-note').textContent = `${note} sur 5`; $('#f-etoiles').querySelectorAll('[data-n]').forEach(x => x.style.opacity = Number(x.dataset.n) <= note ? 1 : .35); }); });
+    if ($('#m-envoyer')) $('#m-envoyer').onclick = () => { const t = $('#m-texte').value.trim(); if (!t) return;
+      v.fil.push({de: c, texte: t, h: "à l'instant", lu: false}); v.nonLu[autre]++;
+      prevenir(autre, `${c==='c' ? 'Marie D.' : v.presta} vous a écrit`, `conv:${v.id}`, v); rendre(); };
+    if ($('#m-offre')) $('#m-offre').onclick = () => fenetre(`<h3>Faire une proposition</h3>
+      <div class="deux"><label class="champ">Prix (€) *<input id="o-prix" inputmode="numeric" value="60"></label><label class="champ">Durée *<select id="o-duree"><option>30 min</option><option selected>1 h</option><option>1 h 30</option><option>2 h</option><option>3 h</option></select></label></div>
+      <div class="deux"><label class="champ">Jour *<input id="o-jour" type="date" value="2026-10-12"></label><label class="champ">Heure de début *<select id="o-heure"><option>8 h 00</option><option selected>8 h 30</option><option>9 h 00</option><option>10 h 00</option><option>14 h 00</option></select></label></div>
+      <label class="champ">Paiement accepté *<select id="o-paiement"><option>carte ou espèces</option><option>carte</option><option>espèces</option></select></label>
+      <p class="note">Si le client accepte, un rendez-vous confirmé est créé dans votre agenda, même hors de votre semaine type. Par carte : 5 % pour rafals, versement 48 h après.</p>`, 'Envoyer la proposition', () => {
+        const [a, m, j] = $('#o-jour').value.split('-'); const prix = Number($('#o-prix').value) || 60;
+        v.fil.push({offre:{id: ++numero, prix, quand: `le ${j}/${m} à ${$('#o-heure').value}`, duree: $('#o-duree').value, ou:'chez vous', paiement: $('#o-paiement').value, etat:'attente'}});
+        v.nonLu.c++; prevenir('c', `${v.presta} vous a fait une proposition : ${euros(prix)}`, `conv:${v.id}`, v); toast('Proposition envoyée : le client est prévenu.'); });
+    document.querySelectorAll('[data-retirer]').forEach(b => b.onclick = () => { const o = v.fil.find(m => m.offre?.id == b.dataset.retirer.split(':')[1]).offre; o.etat = 'retiree'; rendre(); toast('Proposition retirée.'); });
+    document.querySelectorAll('[data-negocier]').forEach(b => b.onclick = () => { const o = v.fil.find(m => m.offre?.id == b.dataset.negocier.split(':')[1]).offre;
+      fenetre(`<h3>Négocier le prix</h3><p>${v.presta} propose <b>${euros(o.prix)}</b> · ${o.quand}.</p>
+        <label class="champ">Votre prix (€) *<input id="f-prix" inputmode="numeric" value="${Math.round(o.prix * 0.85)}"></label>
+        <p class="note">${v.presta} pourra accepter ou refuser votre prix. Le jour et l'heure ne changent pas.</p>`, 'Proposer ce prix', () => {
+          const prix = Number($('#f-prix').value); if (!prix || prix >= o.prix) { toast(`Écrivez un prix plus bas que ${euros(o.prix)}.`); return; }
+          o.etat = 'negociee'; v.fil.push({contre:{id: ++numero, prix, ancien: o.prix, offre: o.id, etat:'attente'}});
+          v.nonLu.p++; prevenir('p', `${v.client} propose ${euros(prix)} au lieu de ${euros(o.prix)}`, `conv:${v.id}`); toast(`Prix proposé : ${euros(prix)}. Le prestataire est prévenu.`); }); });
+    const contre = (id) => v.fil.find(m => m.contre?.id == id).contre;
+    const offreDe = (k) => v.fil.find(m => m.offre?.id === k.offre).offre;
+    document.querySelectorAll('[data-contre-oui]').forEach(b => b.onclick = () => { const k = contre(b.dataset.contreOui), o = offreDe(k);
+      k.etat = 'acceptee'; o.etat = 'remplacee'; v.fil.push({offre:{...o, id: ++numero, prix: k.prix, etat:'attente'}});
+      v.nonLu.c++; prevenir('c', `${v.presta} accepte votre prix de ${euros(k.prix)}`, `conv:${v.id}`, v); rendre(); toast(`Prix accepté : nouvelle proposition à ${euros(k.prix)} envoyée au client.`); });
+    document.querySelectorAll('[data-contre-non]').forEach(b => b.onclick = () => { const k = contre(b.dataset.contreNon), o = offreDe(k);
+      k.etat = 'refusee'; o.etat = 'attente'; v.fil.push({info: `${v.presta} garde son prix de ${euros(o.prix)}. La proposition ci-dessus reste valable.`});
+      v.nonLu.c++; prevenir('c', `${v.presta} garde son prix de ${euros(o.prix)}`, `conv:${v.id}`, v); rendre(); toast('Prix refusé : votre proposition de départ reste valable.'); });
+    document.querySelectorAll('[data-refuser]').forEach(b => b.onclick = () => { const o = v.fil.find(m => m.offre?.id == b.dataset.refuser.split(':')[1]).offre;
+      o.etat = 'refusee'; v.fil.push({info: `${v.client} a refusé la proposition de ${euros(o.prix)}. ${v.presta} peut en faire une autre.`});
+      v.nonLu.p++; prevenir('p', `${v.client} a refusé votre proposition de ${euros(o.prix)}`, `conv:${v.id}`); rendre(); toast('Proposition refusée : le prestataire est prévenu. La conversation reste ouverte.'); });
+    document.querySelectorAll('[data-accepter]').forEach(b => b.onclick = () => { const o = v.fil.find(m => m.offre?.id == b.dataset.accepter.split(':')[1]).offre;
+      fenetre(`<h3>Accepter la proposition de ${v.presta}</h3><p><b>${euros(o.prix)}</b> · ${o.quand} · ${o.duree} · ${o.ou}</p>
+        <label class="champ">Votre adresse (donnée seulement à ${v.presta}) *<input value="8 allée des Pins, 33600 Pessac"></label>
+        <label class="champ">Paiement *<select id="f-paiement">${o.paiement.includes('carte')?'<option>par carte, maintenant</option>':''}${o.paiement.includes('espèces')?'<option>en espèces, sur place</option>':''}</select></label>
+        <p class="note">Un rendez-vous confirmé est créé. Votre demande est pourvue : les autres prestataires sont prévenus que vous avez choisi.</p>`, `Accepter ${euros(o.prix)} · ${o.quand}`, () => {
+          o.etat = 'acceptee'; v.rdvEnsemble = true; v.fil.push({rdv: `${o.quand} · ${euros(o.prix)} · ${$('#f-paiement').value}`});
+          const rap = [...v.fil].reverse().find(m => m.rappel); const d = demandes.find(x => x.id === rap?.rappel); if (d) d.etat = 'pourvue';
+          conversations.filter(x => x !== v).forEach(x => { if (d && x.fil.some(m => m.rappel === d.id)) { x.fil.forEach(m => { if (m.offre?.etat === 'attente') m.offre.etat = 'perdue'; }); x.fil.push({info: `${c==='c'?'Vous avez':'Le client a'} choisi un autre prestataire pour « ${d.titre} ».`}); } });
+          v.nonLu.p++; prevenir('p', `Marie D. a accepté : ${o.quand}`, `conv:${v.id}`);
+          toast(`Rendez-vous confirmé · ${o.quand}`); }); });
+  },
+  appli: () => { $('#installer').onclick = () => toast('rafals est installé sur l\'écran d\'accueil.'); $('#accord').onclick = () => { alertes.appareil = true; toast('Notifications activées sur cet appareil.'); }; },
+};
+function signaler() { document.querySelectorAll('[data-signaler]').forEach(b => b.onclick = () => fenetre(`<h3>Signaler à l'administrateur</h3><label class="champ">Raison *<textarea placeholder="ex. demande d'argent avant de venir, propos déplacés…"></textarea></label><p class="note">L'administrateur ne lit une conversation que si elle est signalée.</p>`, 'Envoyer le signalement', () => toast('Signalement envoyé à l\'administrateur.'))); }
+function fenetre(html, bouton, action, variante = 'prim', seul = false) {
+  $('#couche').innerHTML = `<div class="voile" id="voile"><div class="fenetre" role="dialog" aria-modal="true">${html}<div class="pied"><button class="btn ${variante}" id="f-ok">${bouton}</button><button class="btn sec" id="f-non" ${seul?'hidden':''}>Annuler</button></div></div></div>`;
+  const fermer = () => { $('#couche').innerHTML = ''; };
+  $('#f-non').onclick = fermer; $('#voile').onclick = (e) => { if (e.target.id === 'voile') fermer(); };
+  $('#f-ok').onclick = () => { action(); fermer(); rendre(); };
+}
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#couche').innerHTML = ''; });
+rendre();
+</script>

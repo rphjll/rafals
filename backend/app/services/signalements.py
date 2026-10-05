@@ -10,12 +10,13 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
+from app.modeles.messagerie import Conversation
 from app.modeles.prestataires import Prestataire
 from app.modeles.signalements import Signalement
 from app.services import annonces, journal, mails, prestataires
 from app.services.erreurs import ErreurRegle
 
-ACTIONS = ("classer", "retirer_annonce", "bloquer_prestataire")
+ACTIONS = ("classer", "retirer_annonce", "bloquer_prestataire", "prevenir")
 
 
 def signaler(db: Session, auteur: Compte, *, annonce_id: int | None, prestataire_id: int | None, motif: str,
@@ -67,9 +68,22 @@ def traiter(db: Session, administrateur: Compte, signalement_id: int, *, action:
     if action not in ACTIONS:
         raise ErreurRegle("Action inconnue.")
     decision = (decision or "").strip()
-    prestataire = db.get_one(Prestataire, signalement.prestataire_id)
+    # Conversation signalée par le prestataire : c'est le client qui est visé, il n'y a pas de prestataire à bloquer
+    prestataire = db.get_one(Prestataire, signalement.prestataire_id) if signalement.prestataire_id else None
     if action == "classer":
         decision = decision or "Rien à faire"
+    elif action == "prevenir":
+        # Avertissement par mail à la personne visée par une conversation signalée (lot 8.1)
+        if signalement.conversation_id is None:
+            raise ErreurRegle("Ce signalement ne porte pas sur une conversation.")
+        if len(decision) < 5:
+            raise ErreurRegle("Écrivez l'avertissement : il est envoyé à la personne signalée (ex. « Restez courtois »).")
+        conversation = db.get_one(Conversation, signalement.conversation_id)
+        vise = prestataire.compte_id if prestataire else conversation.client_id
+        mails.envoyer_mail(db.get_one(Compte, vise).email, "rafals : avertissement de l'administrateur",
+                           f"Une de vos conversations sur rafals a été signalée. Message de l'administrateur : « {decision} ».")
+    elif prestataire is None:
+        raise ErreurRegle("Ce signalement vise un client : classez-le ou prévenez-le.")
     else:
         if len(decision) < 5:
             raise ErreurRegle("Écrivez le motif : il est envoyé au prestataire (ex. « Prix mensonger »).")
