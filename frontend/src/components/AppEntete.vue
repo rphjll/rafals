@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md) : 3 entrées, puis le menu du compte.
+// En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md) : 4 entrées, puis le menu du compte.
 // Sous 768 px de large, le menu se replie derrière le bouton ☰.
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -24,6 +24,7 @@ watch(
 
 // Les pages de chaque groupe sont dans le sous-menu (AppSousMenu), sous l'en-tête
 const liens = computed(() => [
+  { vers: '/', texte: 'Accueil', actif: route.path === '/' },
   { vers: '/trouver', texte: 'Trouver un prestataire', actif: estSur('/trouver') },
   { vers: '/rendez-vous', texte: 'Mes réservations', actif: groupe.value === 'reservations' },
   { vers: '/proposer', texte: estPrestataire.value ? 'Mon activité' : 'Proposer mes services', actif: groupe.value === 'activite' },

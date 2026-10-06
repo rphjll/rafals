@@ -14,12 +14,14 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.db import moteur
 from app.routes import (
-    accords, administration, agenda, annonces, avis, clients, comptes, creation_entreprise, devis, factures, messagerie, metiers, paiements,
+    accords, administration, agenda, annonces, avis, clients, comptes, creation_entreprise, demandes, devis, factures, messagerie, metiers,
+    paiements,
     prestataires, recherche, rendez_vous, services_en_plus,
 )
 from app.services import avis as service_avis
 from app.services import clients as service_clients
 from app.services import creation_entreprise as service_creation
+from app.services import demandes as service_demandes
 from app.services import demarches as service_demarches
 from app.services import devis as service_devis
 from app.services import factures as service_factures
@@ -86,6 +88,11 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
             "messagerie (mails, effacement)", reglages.TACHE_MESSAGERIE_MINUTES * 60,
             _dans_une_session(service_messagerie.traiter),
         )),
+        # Demandes arrivées à leur fin : expirées ; 3 jours avant, un mail « prolongez-la » (lot 8.3)
+        asyncio.create_task(_tache_periodique(
+            "demandes (expirations, rappels)", reglages.TACHE_DEMANDES_MINUTES * 60,
+            _dans_une_session(service_demandes.traiter),
+        )),
         # Devis sans réponse après « Valable jusqu'au », rappels du solde (lot 5.3)
         asyncio.create_task(_tache_periodique(
             "devis (expirations, rappels du solde)", 60 * 60, _dans_une_session(service_devis.traiter),
@@ -130,6 +137,7 @@ app.include_router(factures.routeur)
 app.include_router(services_en_plus.routeur)
 app.include_router(creation_entreprise.routeur)
 app.include_router(messagerie.routeur)
+app.include_router(demandes.routeur)
 
 
 @app.exception_handler(ErreurRegle)

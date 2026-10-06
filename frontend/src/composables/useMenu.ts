@@ -17,7 +17,6 @@ const RESERVATIONS: LienMenu[] = [
 // Visible seulement des prestataires
 const ACTIVITE: LienMenu[] = [
   { vers: '/proposer', texte: 'Ma fiche' },
-  { vers: '/mes-annonces', texte: 'Mes annonces' },
   { vers: '/mon-agenda', texte: 'Mon agenda' },
   { vers: '/devis', texte: 'Devis' },
   { vers: '/factures', texte: 'Factures' },

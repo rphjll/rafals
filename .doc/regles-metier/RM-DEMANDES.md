@@ -41,6 +41,32 @@ Réponse de Raphael, mot pour mot : « sur la page d'acceuille je veux que y'ai 
 - ⚠️ À faire vérifier avant la mise en ligne (données personnelles) : une demande décrit la vie privée d'une personne (« le siphon goutte depuis hier ») et devient lisible par tous. Le formulaire devra le dire au client avant qu'il publie.
 - **La barre « De quoi avez-vous besoin ? »** de l'accueil **filtre la liste** (choix « b » de Raphael le 05/10/2026) : ne restent que les demandes dont le titre ou la description contient le texte tapé. Ex. « pelouse » → « Tondre ma pelouse » reste ; « chien » → « Promener mon chien le midi » reste. On publie par la carte « Publier une demande », à droite de la liste (demande de Raphael du 05/10/2026 : « sur le coté a droite comme sur allo voisin il faut que je puisse mettre mon texte pour publier ma demande ») : le client y écrit son besoin, clique [Publier ma demande], puis complète le métier, la ville et le « quand » (choix de Claude : ces rubriques restent obligatoires, sinon on ne sait pas quels prestataires prévenir).
 
+## L'adresse est demandée dès la publication, avec un plan (décision de Raphael du 05/10/2026)
+Réponse de Raphael, mot pour mot : « faut que on pussie metre l'adresse et que y'ai une carte google maps qui aparaise et on puisse mettre des photos ». Pas encore construit côté serveur (lot 8.3).
+- **Cela change « Publier une demande »** : le client écrit son adresse complète en publiant (avant : seulement la ville, et la rue au moment d'accepter une proposition). Un plan avec un repère lui confirme l'endroit.
+  - Exemple 1 : Mme Dupont tape « 8 allée des Pins, Pessac », choisit « 8 Allée des Pins 33600 Pessac » : le plan s'affiche avec un repère sur sa rue.
+  - Exemple 2 : M. Petit se trompe de ville, le voit sur le plan, clique [Changer] et corrige.
+- **Ce qui ne change pas** (choix de Claude) : **la rue n'est montrée qu'au prestataire choisi**, après acceptation d'une proposition. Sur l'accueil et pour les prestataires qui répondent, on ne voit que la ville (« Pessac »). La ville de la demande est celle de l'adresse.
+- **Photos** : inchangé, 5 au plus, JPG ou PNG, 5 Mo chacune ; elles se choisissent dans la même carte.
+- **Plan OpenStreetMap et non Google Maps** (choix de Claude, à confirmer par Raphael) : Google Maps demande un compte Google avec une carte bancaire et une clé, et envoie l'adresse des visiteurs à Google ; OpenStreetMap marche tout de suite, sans compte. Détail : `.doc/technique/API-EXTERNES.md` § 3.
+
+## Précisions prises au lot 8.3, première partie (choix de Claude le 06/10/2026, en mode « sans question » ; à relire par Raphael)
+Construit : publier, lister sur l'accueil, « mes demandes », modifier, fermer, prolonger, expirer, photos. **Pas encore construit** : répondre, propositions, négociation, rendez-vous, demande « pourvue », cacher par l'administrateur.
+- **Qui peut publier** : compte connecté, adresse mail vérifiée (et accord des parents avant 18 ans), comme pour réserver. Sinon : « Vérifiez votre adresse mail (et, avant 18 ans, l'accord de vos parents) pour publier une demande. »
+- **La liste de l'accueil se lit sans compte** ; elle montre 100 demandes au plus, la plus récente en haut. Une demande cachée, fermée, expirée, ou d'un compte fermé n'y est plus.
+- **Les photos demandent d'être connecté** (elles montrent souvent l'intérieur d'un logement). Sans compte, on lit seulement « 2 photos (connectez-vous pour les voir) ».
+- **Adresse** : choisie dans les propositions du service d'adresses de l'État. « Chez moi » : la rue est obligatoire. « Chez le prestataire » : la ville suffit.
+  - Exemple 1 : Mme Dupont, chez elle, « 8 Allée des Pins 33600 Pessac » → acceptée ; l'accueil affiche « Pessac ».
+  - Exemple 2 : M. Petit cherche un coiffeur « chez le prestataire » et choisit seulement « Talence » → acceptée, sans rue.
+- **La ville est retrouvée** par son code officiel ; s'il est inconnu de rafals (ex. un arrondissement de Paris), par le code postal.
+- **Un jour précis** ne peut pas être passé ; la demande se ferme à la fin de ce jour (minuit, heure de Paris). Ex. publiée le 06/10 pour le 10/10 → expire le 11/10 à 0 h 00.
+- **Pas de rappel « se ferme dans 3 jours »** pour une demande qui dure moins de 3 jours (ex. publiée jeudi pour samedi).
+- **Prolonger** : 30 jours de plus pour une demande ouverte ; une demande expirée redevient ouverte, s'il reste de la place parmi les 5. Un jour précis déjà passé ne se prolonge pas.
+- **Modifier** : tant que la demande est ouverte (la condition « tant que personne n'a répondu » viendra avec les réponses). Les photos ne se changent pas : fermer et republier.
+- **Budget** : en euros dans l'écran (« 40 » ou « 40,50 »), gardé en centimes.
+- Publier, modifier, fermer et prolonger sont écrits au journal des actions.
+- **Table des photos** : `photo_demande_publiee` (le nom `photo_demande` est déjà pris par les demandes de devis).
+
 ## Répondre : une conversation, puis une proposition
 - [Répondre] ouvre la conversation entre ce prestataire et ce client (`RM-MESSAGERIE.md`), avec la demande rappelée en haut.
 - Dans la conversation, le prestataire envoie une **proposition** : prix, jour, heure de début, durée, lieu, et les moyens de paiement qu'il accepte (espèces ; carte seulement s'il a un SIRET vérifié et le paiement par carte activé, `RM-PAIEMENTS.md`).

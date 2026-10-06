@@ -1,52 +1,60 @@
 <script setup lang="ts">
-// Accueil (.doc/ihm/RM-ACCUEIL-IHM.md) : recherche métier + ville, dossiers de métiers en tuiles de couleur.
-import { onMounted, ref } from 'vue'
+// Accueil (.doc/ihm/RM-ACCUEIL-IHM.md) : « Bonjour Julie », la barre « De quoi avez-vous besoin ? » qui filtre les
+// demandes des clients listées dessous, et à droite, sur toute la hauteur, la carte où l'on écrit sa propre demande.
+// La recherche d'un prestataire est sur « Trouver un prestataire ».
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
-import AppChoixCommune from '../components/AppChoixCommune.vue'
-import AppChoixMetier from '../components/AppChoixMetier.vue'
+import CartePublierDemande from '../components/demandes/CartePublierDemande.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
+import AppChamp from '../components/ui/AppChamp.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
-import { type Dossier, type MetierVisible, useMetiers } from '../composables/useMetiers'
-import type { CommuneVisible } from '../outils/prestataires'
+import { type DemandeVisible, texteBudget, texteQuand } from '../outils/demandes'
 
 const routeur = useRouter()
 const { compte, renvoyerLienVerification } = useCompte()
 const { afficherMessage } = useMessage()
-const { dossiers, chargerDossiers } = useMetiers()
 const etatServeur = ref('Vérification du serveur…')
 const serveurOk = ref<boolean | null>(null)
 
-const metier = ref<MetierVisible | null>(null)
-const commune = ref<CommuneVisible | null>(null)
-const erreur = ref('')
-const dossierOuvert = ref<Dossier | null>(null)
+const demandes = ref<DemandeVisible[]>([])
+const chargementDemandes = ref(true)
+const erreurDemandes = ref('')
+const besoin = ref('')
+// La barre ne garde que les demandes qui contiennent le texte tapé (titre, description, métier ou ville)
+const demandesFiltrees = computed(() => {
+  const mot = besoin.value.trim().toLowerCase()
+  if (!mot) return demandes.value
+  return demandes.value.filter((d) => `${d.titre} ${d.description} ${d.metier} ${d.ville}`.toLowerCase().includes(mot))
+})
 
-// Une couleur par tuile, dans l'ordre, puis on recommence (noms écrits en entier pour Tailwind)
-const TEINTES = [
-  'bg-teinte-orange text-teinte-orange-texte',
-  'bg-teinte-vert text-teinte-vert-texte',
-  'bg-teinte-jaune text-teinte-jaune-texte',
-  'bg-teinte-bleu text-teinte-bleu-texte',
-  'bg-teinte-rose text-teinte-rose-texte',
-  'bg-teinte-violet text-teinte-violet-texte',
-]
+async function chargerDemandes() {
+  try {
+    demandes.value = await appelerServeur<DemandeVisible[]>('/api/demandes')
+    erreurDemandes.value = ''
+  } catch (e) {
+    erreurDemandes.value = messageErreur(e)
+  } finally {
+    chargementDemandes.value = false
+  }
+}
+
 const ETAPES = [
-  { titre: 'Cherchez', texte: 'Indiquez un service et votre ville. Vous voyez les prestataires proches, leurs prix et leurs avis.' },
-  { titre: 'Réservez', texte: 'Choisissez un créneau libre dans son agenda, ou demandez un devis si le travail est à chiffrer.' },
+  { titre: 'Publiez votre demande', texte: 'Décrivez votre besoin et indiquez votre ville. C’est gratuit.' },
+  { titre: 'Recevez des propositions', texte: 'Les prestataires proches vous proposent un prix, un jour et une heure. Vous acceptez, refusez ou négociez.' },
   { titre: 'Payez et donnez votre avis', texte: 'Par carte ou en espèces. La facture arrive dans votre compte.' },
 ]
 const ATOUTS = [
-  'Vos clients réservent directement dans votre agenda',
+  'Les demandes des clients près de chez vous arrivent toutes seules',
   'Devis et factures prêts en un clic',
   'Un rappel avant chaque déclaration à l’URSSAF',
 ]
 
 onMounted(async () => {
-  chargerDossiers().catch(() => {}) // sans les dossiers, la recherche du haut suffit
+  chargerDemandes()
   try {
     etatServeur.value = (await appelerServeur<{ message: string }>('/api/etat')).message
     serveurOk.value = true
@@ -55,25 +63,6 @@ onMounted(async () => {
     serveurOk.value = false
   }
 })
-
-function chercher() {
-  erreur.value = ''
-  if (!metier.value || !commune.value) {
-    erreur.value = !metier.value ? 'Choisissez un métier.' : 'Choisissez votre ville.'
-    return
-  }
-  routeur.push({ path: '/trouver', query: { metier: String(metier.value.id), ville: String(commune.value.id) } })
-}
-
-// Métier choisi dans une tuile : la recherche part si la ville est connue, sinon on remonte la demander
-function choisirMetier(choix: MetierVisible) {
-  metier.value = choix
-  dossierOuvert.value = null
-  if (commune.value) return chercher()
-  erreur.value = ''
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-  afficherMessage(`« ${choix.nom} » choisi : indiquez votre ville.`)
-}
 
 async function renvoyerLien() {
   try {
@@ -91,54 +80,54 @@ async function renvoyerLien() {
       <AppBouton variante="secondaire" @click="renvoyerLien">Renvoyer le lien</AppBouton>
     </AppAlerte>
 
-    <section class="flex flex-col gap-6 rounded-rafals bg-fonce px-5 py-8 text-sur-fonce md:px-12 md:py-14">
-      <h1 class="max-w-[16ch] text-[clamp(32px,6vw,54px)] leading-[1.05] font-bold">
-        Le bon prestataire, <span class="text-fonce-vif">près de chez vous.</span>
-      </h1>
-      <p class="max-w-[50ch] text-[17px] text-sur-fonce-doux">
-        Ménage, jardinage, plomberie, coiffure à domicile : réservez un créneau en quelques clics, ou demandez un devis.
-      </p>
-      <form
-        class="grid items-end gap-3 rounded-rafals bg-surface p-4 text-texte md:grid-cols-[1fr_1fr_auto]"
-        @submit.prevent="chercher"
-      >
-        <AppChoixMetier v-model="metier" :avec-dossiers="false" etiquette="Quel service ?" />
-        <AppChoixCommune v-model="commune" etiquette="Où ?" />
-        <AppBouton type="submit" variante="accent">Rechercher</AppBouton>
-        <AppAlerte v-if="erreur" class="md:col-span-3">{{ erreur }}</AppAlerte>
-      </form>
-      <div v-if="!compte">
-        <AppBouton variante="secondaire" @click="routeur.push('/inscription')">Créer mon compte</AppBouton>
-      </div>
-    </section>
+    <!-- Ordinateur : à gauche le bonjour, la barre et la liste ; à droite la carte « Publier », de haut en bas.
+         Téléphone : le bonjour et la barre, la carte, puis la liste. -->
+    <div class="grid gap-6 md:grid-cols-[1fr_380px] md:grid-rows-[auto_1fr]">
+      <section class="flex flex-col gap-5">
+        <h1 class="text-[clamp(30px,5vw,44px)] leading-tight font-bold">
+          Bonjour<template v-if="compte"> {{ compte.prenom }}</template> !
+        </h1>
+        <AppChamp v-model="besoin" etiquette="Chercher dans les demandes" type="search" placeholder="De quoi avez-vous besoin ?" maxlength="80" />
+        <div v-if="!compte"><AppBouton variante="secondaire" @click="routeur.push('/inscription')">Créer mon compte</AppBouton></div>
+      </section>
 
-    <section v-if="dossiers.length" class="flex flex-col gap-4">
-      <h2 class="text-[26px] font-bold">De quoi avez-vous besoin ?</h2>
-      <template v-if="dossierOuvert">
-        <div class="flex flex-wrap items-center gap-2.5">
-          <AppBouton variante="secondaire" @click="dossierOuvert = null">← Tous les dossiers</AppBouton>
-          <h3 class="text-lg font-bold">{{ dossierOuvert.nom }}</h3>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <AppBouton v-for="choix in dossierOuvert.metiers" :key="choix.id" variante="secondaire" @click="choisirMetier(choix)">
-            {{ choix.nom }}
-          </AppBouton>
-        </div>
-      </template>
-      <div v-else class="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-3">
-        <button
-          v-for="(dossier, rang) in dossiers"
-          :key="dossier.id"
-          type="button"
-          class="flex min-h-[104px] flex-col justify-between gap-2 rounded-rafals p-4 text-left hover:brightness-95"
-          :class="TEINTES[rang % TEINTES.length]"
-          @click="dossierOuvert = dossier"
-        >
-          <b class="font-titre text-lg leading-tight">{{ dossier.nom }}</b>
-          <small class="text-[13px]">{{ dossier.metiers.slice(0, 3).map((m) => m.nom).join(', ') }}…</small>
-        </button>
-      </div>
-    </section>
+      <!-- La carte occupe les deux lignes de la colonne de droite, et au moins la hauteur de l'écran sous l'en-tête -->
+      <CartePublierDemande class="md:col-start-2 md:row-span-2 md:row-start-1 md:min-h-[calc(100vh-150px)]" @publiee="chargerDemandes" />
+
+      <section class="flex flex-col gap-4">
+        <h2 class="text-[26px] font-bold">Les demandes des clients</h2>
+        <AppAlerte v-if="erreurDemandes">{{ erreurDemandes }}</AppAlerte>
+        <ul v-else-if="demandesFiltrees.length" class="flex flex-col gap-3">
+          <li v-for="demande in demandesFiltrees" :key="demande.id" class="flex flex-col gap-2 rounded-rafals border border-bord bg-surface p-5">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <b class="text-[17px]">{{ demande.titre }}</b>
+              <b v-if="demande.budget_centimes" class="font-titre text-lg text-primaire">{{ texteBudget(demande.budget_centimes) }}</b>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <AppBadge etat="neutre">{{ demande.metier }}</AppBadge>
+              <AppBadge etat="neutre">{{ demande.ville }}</AppBadge>
+              <AppBadge etat="neutre">{{ texteQuand(demande) }}</AppBadge>
+              <AppBadge etat="neutre">{{ demande.lieu === 'chez_moi' ? 'Chez le client' : 'Chez le prestataire' }}</AppBadge>
+              <AppBadge v-if="demande.a_moi" etat="ok">Ma demande</AppBadge>
+            </div>
+            <p class="whitespace-pre-line text-texte-doux">{{ demande.description }}</p>
+            <!-- Les photos demandent d'être connecté : elles montrent souvent l'intérieur d'un logement -->
+            <div v-if="demande.nombre_photos && compte" class="flex flex-wrap gap-2">
+              <a v-for="n in demande.nombre_photos" :key="n" :href="`/api/demandes/${demande.id}/photos/${n}`" target="_blank" rel="noopener">
+                <img :src="`/api/demandes/${demande.id}/photos/${n}`" :alt="`Photo ${n} de la demande « ${demande.titre} »`" class="size-24 rounded-rafals border border-bord object-cover" />
+              </a>
+            </div>
+            <span class="text-[13px] text-texte-doux">
+              {{ demande.client }}<template v-if="demande.nombre_photos && !compte">
+                · {{ demande.nombre_photos }} photo{{ demande.nombre_photos > 1 ? 's' : '' }} (connectez-vous pour les voir)</template>
+            </span>
+          </li>
+        </ul>
+        <p v-else-if="!chargementDemandes" class="rounded-rafals border border-bord bg-surface p-5 text-texte-doux">
+          {{ besoin.trim() ? `Aucune demande ne contient « ${besoin.trim()} ».` : 'Aucune demande pour l’instant.' }}
+        </p>
+      </section>
+    </div>
 
     <section class="flex flex-col gap-4">
       <h2 class="text-[26px] font-bold">Comment ça marche</h2>

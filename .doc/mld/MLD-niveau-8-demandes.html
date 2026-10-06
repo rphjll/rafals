@@ -42,7 +42,7 @@ flowchart LR
   MESSAGE["<b>MESSAGE</b><br/>id (PK)<br/>conversation_id (FK)<br/>auteur_id (FK)"]
   PHOTO_MESSAGE["<b>PHOTO_MESSAGE</b><br/>id (PK)<br/>message_id (FK)<br/>fichier_id (FK)"]
   DEMANDE["<b>DEMANDE</b><br/>id (PK)<br/>client_id (FK)<br/>metier_id (FK)<br/>commune_id (FK)<br/>cachee_par_id (FK)"]
-  PHOTO_DEMANDE["<b>PHOTO_DEMANDE</b><br/>id (PK)<br/>demande_id (FK)<br/>fichier_id (FK)"]
+  PHOTO_DEMANDE["<b>PHOTO_DEMANDE_PUBLIEE</b><br/>id (PK)<br/>demande_id (FK)<br/>fichier_id (FK)"]
   REPONSE_DEMANDE["<b>REPONSE_DEMANDE</b><br/>id (PK)<br/>demande_id (FK)<br/>prestataire_id (FK)<br/>conversation_id (FK)"]
   PROPOSITION["<b>PROPOSITION</b><br/>id (PK)<br/>conversation_id (FK)<br/>demande_id (FK)<br/>metier_id (FK)<br/>remplace_id (FK)"]
   NEGOCIATION["<b>NEGOCIATION</b><br/>id (PK)<br/>proposition_id (FK)"]
@@ -126,7 +126,8 @@ flowchart LR
         </ul>
       </div>
       <div class="carte">
-        <h3>PHOTO_MESSAGE, PHOTO_DEMANDE <span class="nouveau">nouvelles · lots 8.1, 8.3</span></h3>
+        <h3>PHOTO_MESSAGE, PHOTO_DEMANDE_PUBLIEE <span class="nouveau">nouvelles · lots 8.1, 8.3</span></h3>
+        <p class="note" style="margin-bottom:6px">Nommée PHOTO_DEMANDE dans la 1re version de ce MLD ; renommée le 06/10/2026 car une table <code>photo_demande</code> existe déjà (photos d'une demande de devis, lot 5.3).</p>
         <p class="note" style="margin-bottom:6px">5 photos au plus ; même forme que les photos d'une annonce.</p>
         <ul><li><code>ordre</code> — ordre d'affichage, 1 à 5 (même nom que dans PHOTO_ANNONCE)</li></ul>
       </div>
@@ -137,6 +138,7 @@ flowchart LR
           <li><code>quand</code> — « dès que possible », « dans les 7 jours », « un jour précis », « pas pressé » ; <code>jour</code> — la date, seulement pour « un jour précis »</li>
           <li><code>lieu</code> — « chez moi » ou « chez le prestataire »</li>
           <li><code>budget_centimes</code> — facultatif</li>
+          <li><code>adresse_ligne</code>, <code>adresse_complement</code>, <code>code_postal</code>, <code>latitude</code>, <code>longitude</code> <span class="nouveau">ajoutées le 06/10/2026</span> — l'adresse écrite en publiant et la position du repère sur le plan (demande de Raphael du 05/10/2026) ; la rue n'est montrée qu'au prestataire choisi ; toutes facultatives, sauf la rue quand le lieu est « chez moi »</li>
           <li><code>statut</code> — ouverte, pourvue, fermée, expirée ; <code>statut_change_le</code></li>
           <li><code>cree_le</code>, <code>expire_le</code> (30 jours, ou le jour demandé), <code>rappel_envoye_le</code> (mail « se ferme dans 3 jours »)</li>
           <li><code>cachee_le</code>, <code>cachee_motif</code> + <code>cachee_par_id</code> — par l'administrateur</li>

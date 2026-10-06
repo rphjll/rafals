@@ -12,7 +12,6 @@ import AppBouton from '../ui/AppBouton.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppSection from '../ui/AppSection.vue'
 import AvatarPrestataire from './AvatarPrestataire.vue'
-import CarteMesAnnonces from './CarteMesAnnonces.vue'
 import CarteMetiers from './CarteMetiers.vue'
 import CartePaiementCarte from './CartePaiementCarte.vue'
 import CarteTva from './CarteTva.vue'
@@ -119,7 +118,6 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
     </section>
 
     <template v-if="profil.statut !== 'arrete'">
-      <CarteMesAnnonces />
       <CartePaiementCarte />
       <CarteTva :facture-tva="profil.facture_tva" @maj="(v) => emit('maj', { ...profil, facture_tva: v })" />
       <CarteMetiers :profil="profil" @maj="(p) => emit('maj', p)" />

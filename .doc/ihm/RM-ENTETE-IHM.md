@@ -8,10 +8,11 @@ Bandeau blanc (`surface`) collé en haut de toutes les pages, bordure fine en ba
 
 **Ordre des éléments, de gauche à droite :**
 1. Logo « rafals. » (police des titres, vert `primaire`, point orange `accent`) → lien vers l'accueil `/`.
-2. Menu principal, collé à droite, 3 entrées :
-   1. « Trouver un prestataire » → `/trouver`
-   2. « Mes réservations » → `/rendez-vous` (groupe « réservations »)
-   3. « Proposer mes services » → `/proposer` — devient « Mon activité » quand le compte a un profil de prestataire (groupe « activité »)
+2. Menu principal, collé à droite, 4 entrées :
+   1. « Accueil » → `/`, où le client publie une demande (ajoutée le 05/10/2026 ; demande de Raphael : « crée un nouvel onglet acceuille et de laisser trouver un prestataire »)
+   2. « Trouver un prestataire » → `/trouver`, où se fait la recherche
+   3. « Mes réservations » → `/rendez-vous` (groupe « réservations »)
+   4. « Proposer mes services » → `/proposer` — devient « Mon activité » quand le compte a un profil de prestataire (groupe « activité »)
 3. Zone du compte, au bout du menu (affichée seulement une fois qu'on sait si quelqu'un est connecté, pour éviter un clignotement) :
    - personne n'est connecté : bouton principal [Se connecter] → `/connexion` ;
    - connecté : une pastille ronde avec les initiales (ex. « JM »), le prénom (ex. « Julie ») et « ▾ ». Un clic ouvre une petite liste sous la pastille :
@@ -28,7 +29,7 @@ Bandeau blanc avec une ligne d'onglets ; la page affichée est soulignée en ver
 | Groupe | Pour qui | Onglets, dans l'ordre |
 |---|---|---|
 | Mes réservations | tout le monde | Rendez-vous `/rendez-vous` · Devis `/devis` · Factures `/factures` |
-| Mon activité | prestataire seulement | Ma fiche `/proposer` · Mes annonces `/mes-annonces` · Mon agenda `/mon-agenda` · Devis `/devis` · Factures `/factures` · Mes démarches `/demarches` |
+| Mon activité | prestataire seulement | Ma fiche `/proposer` · Mon agenda `/mon-agenda` · Devis `/devis` · Factures `/factures` · Mes démarches `/demarches` |
 
 - « Devis » et « Factures » sont dans les deux groupes (ce sont les mêmes pages) : on reste dans le groupe d'où l'on vient. Ex. Julie clique « Mon activité » puis « Devis » : le sous-menu « Mon activité » reste affiché. Arrivée directe par un lien : groupe « Mes réservations ».
 - Sur « Proposer mes services » sans profil de prestataire : pas de sous-menu.
@@ -36,7 +37,7 @@ Bandeau blanc avec une ligne d'onglets ; la page affichée est soulignée en ver
 
 ## Sous 768 px de large (téléphone, petite tablette)
 - Le menu disparaît ; un bouton ☰ apparaît à droite (libellé lu à voix haute : « Ouvrir le menu » / « Fermer le menu »).
-- Un clic sur ☰ déroule le menu sous l'en-tête, une entrée par ligne : les 3 entrées, puis un trait, le prénom en petit, « Mon compte », « Administration » (administrateur), [Se déconnecter] — sans pastille à ouvrir.
+- Un clic sur ☰ déroule le menu sous l'en-tête, une entrée par ligne : les 4 entrées, puis un trait, le prénom en petit, « Mon compte », « Administration » (administrateur), [Se déconnecter] — sans pastille à ouvrir.
 - Le menu se referme tout seul quand on change de page.
 
 ## Particularités

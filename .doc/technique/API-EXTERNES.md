@@ -40,3 +40,11 @@ Réponses aux questions restées ouvertes :
 2. **rafals doit-il être une entreprise ?** Le déclarant mandataire se décrit par `Declarant.entrepriseMandataire` (une entreprise, avec son SIREN). ⚠️ Donc oui pour la vraie mise en service ; pour l'espace d'essai de l'INPI, un simple compte suffit. Rien à faire avant la mise en ligne.
 3. **Les frais** : ⚠️ à confirmer avec un professionnel ; la création d'une micro-entreprise est en principe gratuite (sauf agent commercial).
 4. **Données sensibles** : numéro de sécurité sociale et pièce d'identité. Proposition : gardés seulement le temps du dossier, effacés dès qu'il est accepté ou fermé (à valider avec le MLD).
+
+## 3. Adresses et plan de la carte « Publier une demande » (ajouté le 05/10/2026)
+Utilisés par `frontend/src/components/demandes/CartePublierDemande.vue`, directement depuis le navigateur du visiteur (rien ne passe par le serveur de rafals).
+- **Propositions d'adresses : service de géocodage de l'État** (Géoplateforme de l'IGN), `https://data.geopf.fr/geocodage/search?q=…&limit=5`. Gratuit, sans clé, sans inscription. Essayé le 05/10/2026 : « 12 rue de lille merignac » → « 12 Rue de Lille 33700 Mérignac », avec sa position (44.824022, -0.615012).
+- **Plan : OpenStreetMap**, affiché dans un cadre (`https://www.openstreetmap.org/export/embed.html?bbox=…&marker=…`). Gratuit, sans clé. Pas de bibliothèque ajoutée au projet.
+- **Pourquoi pas Google Maps** (demandé par Raphael) : il faut un compte Google Cloud avec une carte bancaire et une clé à garder secrète ; l'adresse et l'adresse IP des visiteurs partent chez Google, ce qui demande un bandeau d'accord (RGPD), alors que le projet garde tout en France ou en Europe (polices installées chez nous, hébergement OVH). Si Raphael veut quand même Google Maps : créer la clé, la mettre dans `.env`, et changer la seule fonction `adressePlan` du composant.
+- **À savoir** : en affichant le plan, le navigateur du visiteur parle à OpenStreetMap (adresse IP et zone regardée). À mentionner dans la page « Données personnelles » avant la mise en ligne.
+- **À faire au lot 8.3** : décider si les propositions d'adresses passent par le serveur de rafals, comme la vérification du SIRET.

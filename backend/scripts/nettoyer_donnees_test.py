@@ -43,6 +43,7 @@ RATTACHEES: dict[str, list[str]] = {
         " OR (table_cible = 'ouverture' AND ligne_id IN (SELECT o.id FROM ouverture o JOIN prestataire p ON p.id = o.prestataire_id"
         " WHERE p.compte_id = :id))"
         " OR (table_cible = 'conversation' AND ligne_id IN (SELECT c.id FROM conversation c WHERE c.client_id = :id OR c.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
+        " OR (table_cible = 'demande' AND ligne_id IN (SELECT d.id FROM demande d WHERE d.client_id = :id))"
         " OR (table_cible = 'rendez_vous' AND ligne_id IN (SELECT r.id FROM rendez_vous r WHERE r.client_id = :id"
         " OR r.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))"
         " OR (table_cible = 'avis' AND ligne_id IN (SELECT a.id FROM avis a WHERE a.client_id = :id"
@@ -66,6 +67,10 @@ RATTACHEES: dict[str, list[str]] = {
         "DELETE FROM photo_message WHERE message_id IN (SELECT m.id FROM message m WHERE m.auteur_id = :id OR m.conversation_id IN (SELECT c.id FROM conversation c WHERE c.client_id = :id OR c.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)))",
         "DELETE FROM message WHERE auteur_id = :id OR conversation_id IN (SELECT c.id FROM conversation c WHERE c.client_id = :id OR c.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",
         "DELETE FROM conversation WHERE bloquee_par_id = :id OR id IN (SELECT c.id FROM conversation c WHERE c.client_id = :id OR c.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",
+        # Demandes publiées (lot 8.3) : les photos, puis les demandes du compte
+        "DELETE FROM photo_demande_publiee WHERE demande_id IN (SELECT d.id FROM demande d WHERE d.client_id = :id)",
+        "UPDATE demande SET cachee_par_id = NULL, cachee_le = NULL WHERE cachee_par_id = :id AND client_id <> :id",
+        "DELETE FROM demande WHERE client_id = :id",
         "DELETE FROM rappel_declaration WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         # Déclarations URSSAF et accords d'essai (lot 7.3) : déclarations, puis accords
         "DELETE FROM declaration_urssaf WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",

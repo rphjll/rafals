@@ -1,0 +1,166 @@
+"""Adresses des demandes publiées par les clients (lot 8.3, première partie). Règles : RM-DEMANDES.md."""
+
+from datetime import date, datetime
+from typing import Annotated
+
+from fastapi import APIRouter, Form, Response, UploadFile
+from pydantic import BaseModel
+
+from app.modeles.comptes import Compte
+from app.modeles.demandes import Demande
+from app.modeles.fichiers import Fichier
+from app.modeles.metiers import Metier
+from app.modeles.prestataires import Commune
+from app.routes.dependances import Base, CompteConnecte, CompteOuPersonne, maintenant
+from app.services import demandes as service
+from app.services import stockage
+from app.services.erreurs import ErreurRegle
+from app.services.messagerie import Photo, nom_du_client
+
+routeur = APIRouter(prefix="/api")
+
+
+class DemandeVisible(BaseModel):
+    """Ce que tout le monde lit sur l'accueil : jamais le nom complet, le téléphone, le mail ni la rue."""
+
+    id: int
+    titre: str
+    description: str
+    metier_id: int
+    metier: str
+    ville: str
+    quand: str
+    jour: date | None
+    lieu: str
+    budget_centimes: int | None
+    client: str  # « Marie D. »
+    cree_le: datetime
+    nombre_photos: int
+    a_moi: bool
+
+
+class MaDemande(DemandeVisible):
+    """Ce que le client relit dans « Mes demandes » : avec son adresse et l'état de la demande."""
+
+    statut: str
+    expire_le: datetime
+    adresse_ligne: str | None
+    adresse_complement: str | None
+    code_postal: str | None
+    latitude: float | None
+    longitude: float | None
+    cachee: bool
+
+
+class Modification(BaseModel):
+    metier_id: int
+    titre: str
+    description: str
+    quand: str
+    jour: date | None = None
+    lieu: str = "chez_moi"
+    budget_centimes: int | None = None
+    adresse_ligne: str | None = None
+    adresse_complement: str | None = None
+    code_postal: str | None = None
+    code_insee: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+
+
+def _visible(db: Base, compte: Compte | None, demande: Demande) -> DemandeVisible:
+    return DemandeVisible(
+        id=demande.id, titre=demande.titre, description=demande.description, metier_id=demande.metier_id,
+        metier=db.get_one(Metier, demande.metier_id).nom, ville=db.get_one(Commune, demande.commune_id).nom,
+        quand=demande.quand, jour=demande.jour, lieu=demande.lieu, budget_centimes=demande.budget_centimes,
+        client=nom_du_client(db.get_one(Compte, demande.client_id)), cree_le=demande.cree_le,
+        nombre_photos=len(service.photos_de(db, demande.id)), a_moi=compte is not None and demande.client_id == compte.id,
+    )
+
+
+def _mienne(db: Base, compte: Compte, demande: Demande) -> MaDemande:
+    return MaDemande(
+        **_visible(db, compte, demande).model_dump(), statut=demande.statut, expire_le=demande.expire_le,
+        adresse_ligne=demande.adresse_ligne, adresse_complement=demande.adresse_complement,
+        code_postal=demande.code_postal, latitude=demande.latitude, longitude=demande.longitude,
+        cachee=demande.cachee_le is not None,
+    )
+
+
+def _jour(texte: str | None) -> date | None:
+    if not texte:
+        return None
+    try:
+        return date.fromisoformat(texte)
+    except ValueError:
+        raise ErreurRegle("Le jour voulu n'est pas une date (ex. 2026-10-10).") from None
+
+
+@routeur.get("/demandes")
+def demandes_ouvertes(db: Base, compte: CompteOuPersonne) -> list[DemandeVisible]:
+    """La liste de l'accueil : ouverte à tous, même sans compte ; la plus récente en haut."""
+    return [_visible(db, compte, d) for d in service.ouvertes(db, maintenant())]
+
+
+@routeur.post("/demandes", status_code=201)
+async def publier(
+    db: Base, compte: CompteConnecte,
+    metier_id: Annotated[int, Form()], titre: Annotated[str, Form()], description: Annotated[str, Form()],
+    quand: Annotated[str, Form()] = "des_que_possible", jour: Annotated[str | None, Form()] = None,
+    lieu: Annotated[str, Form()] = "chez_moi", budget_centimes: Annotated[int | None, Form()] = None,
+    adresse_ligne: Annotated[str | None, Form()] = None, adresse_complement: Annotated[str | None, Form()] = None,
+    code_postal: Annotated[str | None, Form()] = None, code_insee: Annotated[str | None, Form()] = None,
+    latitude: Annotated[float | None, Form()] = None, longitude: Annotated[float | None, Form()] = None,
+    photos: list[UploadFile] | None = None,
+) -> MaDemande:
+    """Un formulaire (pas du JSON), à cause des photos : les rubriques de la demande et jusqu'à 5 fichiers « photos »."""
+    saisie = service.Saisie(
+        metier_id=metier_id, titre=titre, description=description, quand=quand, jour=_jour(jour), lieu=lieu,
+        budget_centimes=budget_centimes, adresse_ligne=adresse_ligne, adresse_complement=adresse_complement,
+        code_postal=code_postal, code_insee=code_insee, latitude=latitude, longitude=longitude,
+    )
+    jointes = [Photo(nom_fichier=p.filename or "photo", type_mime=p.content_type or "", contenu=await p.read())
+               for p in photos or []]
+    demande = service.publier(db, compte, saisie, jointes, maintenant())
+    db.commit()
+    return _mienne(db, compte, demande)
+
+
+@routeur.get("/moi/demandes")
+def mes_demandes(db: Base, compte: CompteConnecte) -> list[MaDemande]:
+    return [_mienne(db, compte, d) for d in service.mes_demandes(db, compte)]
+
+
+@routeur.put("/demandes/{demande_id}")
+def modifier(demande_id: int, donnees: Modification, db: Base, compte: CompteConnecte) -> MaDemande:
+    demande = service.ma_demande_ou_404(db, compte, demande_id)
+    service.modifier(db, compte, demande, service.Saisie(**donnees.model_dump()), maintenant())
+    db.commit()
+    return _mienne(db, compte, demande)
+
+
+@routeur.post("/demandes/{demande_id}/fermer")
+def fermer(demande_id: int, db: Base, compte: CompteConnecte) -> MaDemande:
+    demande = service.ma_demande_ou_404(db, compte, demande_id)
+    service.fermer(db, compte, demande, maintenant())
+    db.commit()
+    return _mienne(db, compte, demande)
+
+
+@routeur.post("/demandes/{demande_id}/prolonger")
+def prolonger(demande_id: int, db: Base, compte: CompteConnecte) -> MaDemande:
+    demande = service.ma_demande_ou_404(db, compte, demande_id)
+    service.prolonger(db, compte, demande, maintenant())
+    db.commit()
+    return _mienne(db, compte, demande)
+
+
+@routeur.get("/demandes/{demande_id}/photos/{ordre}")
+def voir_photo(demande_id: int, ordre: int, db: Base, compte: CompteConnecte) -> Response:
+    """Il faut être connecté : les photos montrent souvent l'intérieur d'un logement."""
+    demande = service.visible_ou_404(db, compte, demande_id, maintenant())
+    photo = next((p for p in service.photos_de(db, demande.id) if p.ordre == ordre), None)
+    if photo is None:
+        raise ErreurRegle("Cette photo n'existe pas.", 404)
+    fichier = db.get_one(Fichier, photo.fichier_id)
+    return Response(content=stockage.lire(fichier.cle_stockage), media_type=fichier.type_mime)

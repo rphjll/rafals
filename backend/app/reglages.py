@@ -168,3 +168,13 @@ MESSAGE_MAIL_ECART = timedelta(hours=1)  # au plus un mail par conversation et p
 MESSAGE_MAIL_AU_PLUS_TARD = timedelta(days=2)  # au-delà, on ne prévient plus pour un vieux message
 MESSAGE_CONSERVATION = timedelta(days=3 * 365)  # une conversation sans message depuis 3 ans est effacée
 TACHE_MESSAGERIE_MINUTES = 5
+
+# Demandes publiées par les clients (RM-DEMANDES.md, validé par Raphael le 04/10/2026)
+DEMANDE_TITRE = (5, 80)
+DEMANDE_DESCRIPTION = (20, 1000)
+DEMANDE_PHOTOS_MAX = 5
+DEMANDE_OUVERTES_MAX = 5  # demandes ouvertes en même temps, par client
+DEMANDE_DUREE = timedelta(days=30)
+DEMANDE_RAPPEL_AVANT = timedelta(days=3)  # mail « votre demande se ferme dans 3 jours »
+DEMANDE_LISTE_MAX = 100  # demandes montrées sur l'accueil
+TACHE_DEMANDES_MINUTES = 15
