@@ -1,15 +1,17 @@
 <script setup lang="ts">
 // Mon activité (.doc/ihm/RM-MON-ACTIVITE-IHM.md) : toutes les fonctions de rafals au même endroit, en tuiles rangées
 // par groupe. Un prestataire en voit plus qu'un client. Une fonction pas encore construite a une tuile « bientôt ».
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { appelerServeur } from '../api'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppPicto from '../components/ui/AppPicto.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
-import { type FonctionActivite, GROUPES_ACTIVITE, adresseDe, fonctionsPour } from '../outils/activite'
+import { type ActiviteChiffree, type FonctionActivite, GROUPES_ACTIVITE, adresseDe, chiffresAffiches, fonctionsPour } from '../outils/activite'
+import { montant } from '../outils/paiements'
 import { teinte } from '../outils/pictos'
 
 const routeur = useRouter()
@@ -28,6 +30,38 @@ const groupes = computed(() => {
       .map((f) => ({ fonction: f, adresse: adresseDe(f, prestataireId.value), teinte: teinte(rang++) })),
   })).filter((groupe) => groupe.tuiles.length)
 })
+
+// Les chiffres du haut (RM-MON-ACTIVITE.md) : relus à chaque ouverture de la page ; sans eux, la page reste utilisable
+const chiffres = ref<ActiviteChiffree | null>(null)
+const affiches = computed(() =>
+  chiffres.value ? chiffresAffiches(chiffres.value, montant, new Date().toLocaleDateString('fr-FR', { month: 'long', timeZone: 'Europe/Paris' })) : [],
+)
+// La barre de la TVA : seulement pour un prestataire qui ne la facture pas
+const tva = computed(() => {
+  const p = chiffres.value?.prestataire
+  if (!p || p.seuil_tva_centimes === null || p.reste_avant_seuil_centimes === null) return null
+  return {
+    annee: p.annee,
+    encaisse: montant(p.encaisse_annee_centimes),
+    seuil: montant(p.seuil_tva_centimes),
+    reste: montant(p.reste_avant_seuil_centimes),
+    depasse: p.encaisse_annee_centimes > p.seuil_tva_centimes,
+    pourcent: Math.min(100, Math.round((p.encaisse_annee_centimes / p.seuil_tva_centimes) * 100)),
+  }
+})
+watch(
+  compte,
+  async (connecte) => {
+    chiffres.value = null
+    if (!connecte) return
+    try {
+      chiffres.value = await appelerServeur<ActiviteChiffree>('/api/moi/activite')
+    } catch {
+      // serveur injoignable : les tuiles suffisent
+    }
+  },
+  { immediate: true },
+)
 
 function ouvrir(fonction: FonctionActivite, adresse: string | null) {
   if (adresse) routeur.push(adresse)
@@ -48,6 +82,46 @@ function ouvrir(fonction: FonctionActivite, adresse: string | null) {
     </template>
 
     <template v-else-if="compte">
+      <!-- Les chiffres : un clic ouvre la page qui les détaille -->
+      <div v-if="affiches.length" class="grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] md:gap-4">
+        <RouterLink
+          v-for="chiffre in affiches"
+          :key="chiffre.texte"
+          :to="chiffre.vers"
+          class="carte flex min-w-0 flex-col gap-0.5 p-4 hover:ring-2 hover:ring-primaire md:p-5"
+        >
+          <b class="text-[clamp(24px,4vw,32px)] leading-tight font-black tabular-nums">{{ chiffre.valeur }}</b>
+          <span class="text-[14px] text-texte-doux">{{ chiffre.texte }}</span>
+        </RouterLink>
+      </div>
+
+      <!-- Encaissé dans l'année et barre de la TVA -->
+      <section v-if="chiffres?.prestataire" class="carte flex flex-col gap-3 p-5">
+        <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h2 class="text-[19px] font-extrabold">Encaissé en {{ chiffres.prestataire.annee }}</h2>
+          <b class="text-[26px] font-black tabular-nums">{{ montant(chiffres.prestataire.encaisse_annee_centimes) }}</b>
+        </div>
+        <template v-if="tva">
+          <div
+            class="h-3 overflow-hidden rounded-full bg-fond"
+            role="progressbar"
+            :aria-valuenow="tva.pourcent"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            :aria-label="`Part du seuil de TVA atteinte : ${tva.pourcent} %`"
+          >
+            <div class="h-full rounded-full" :class="tva.depasse ? 'bg-attente' : 'bg-primaire'" :style="{ width: `${tva.pourcent}%` }" />
+          </div>
+          <p v-if="tva.depasse" class="font-semibold text-attente">
+            Vous avez dépassé le seuil de TVA ({{ tva.seuil }}) : parlez-en à votre comptable ou à votre service des impôts.
+          </p>
+          <p v-else class="text-texte-doux">Il vous reste <b class="text-texte">{{ tva.reste }}</b> avant le seuil de TVA ({{ tva.seuil }}).</p>
+        </template>
+        <p class="text-[13px] text-texte-doux">
+          Seulement ce qui est passé par rafals : ajoutez vous-même ce que vous avez encaissé ailleurs.
+        </p>
+      </section>
+
       <section v-for="groupe in groupes" :key="groupe.cle" class="flex flex-col gap-4">
         <h2 class="text-[24px] font-extrabold">{{ groupe.titre }}</h2>
         <div class="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4">

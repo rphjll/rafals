@@ -35,7 +35,9 @@
 | 19 | 8 — Comme AlloVoisins | Messagerie | Messages privés entre un client et un prestataire | validé et formalisé (04/10/2026) | `regles-metier/RM-MESSAGERIE.md` |
 | 20 | 8 — Comme AlloVoisins | Notation dans les deux sens | Le prestataire note aussi le client | validé et formalisé (04/10/2026) | `regles-metier/RM-AVIS.md` (section « Notation dans les deux sens ») |
 | 21 | 8 — Comme AlloVoisins | Application à installer | rafals sur l'écran d'accueil du téléphone, avec les notifications | validé et formalisé (04/10/2026) | `regles-metier/RM-APPLICATION.md` |
+| 22 | 10 — Faire ce que fait AlloVoisins | Mon activité | Les chiffres du haut de la page (demandes, rendez-vous, devis, argent encaissé) et la barre de la TVA | rédigé le 07/10/2026, **à valider par Raphael** | `regles-metier/RM-MON-ACTIVITE.md` |
 
 ## Décisions en attente
+- ⚠️ Seuil de TVA de 37 500 € montré dans « Mon activité » : à confirmer par un comptable avant la mise en ligne (sujet 22).
 - ⚠️ Prestataires sans SIRET payés en espèces : à faire vérifier juridiquement (sujets 02, 05, 12).
 - Prix du site vitrine et pourcentage de la commission (sujets 12, 13).

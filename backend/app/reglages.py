@@ -107,6 +107,11 @@ FACTURE_MENTION_SANS_TVA = DEVIS_MENTION_SANS_TVA
 FACTURE_TVA_RENDEZ_VOUS_POUR_MILLE = 200
 FACTURE_MOYENS_DIRECTS = ("especes", "cheque", "virement")
 
+# Mon activité (RM-MON-ACTIVITE.md, lot 10.1)
+# ⚠️ À confirmer par un comptable avant la mise en ligne : seuil de chiffre d'affaires au-delà duquel un auto-entrepreneur
+# de services doit facturer la TVA (37 500 € en 2026 ; il change presque chaque année).
+SEUIL_TVA_SERVICES_CENTIMES = 37_500_00
+
 # Signalements et rappels URSSAF (RM-ADMINISTRATION.md, RM-DEMARCHES.md, validés par Raphael le 04/10/2026)
 SIGNALEMENT_MOTIF = (10, 1000)
 RAPPEL_URSSAF_AVANT = timedelta(days=7)  # premier rappel 7 jours avant la date limite, le second la veille

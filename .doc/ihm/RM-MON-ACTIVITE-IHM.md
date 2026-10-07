@@ -12,6 +12,10 @@
 De haut en bas :
 1. Titre « Mon activité » et la phrase « Tout ce que vous faites sur rafals, au même endroit. »
 2. Personne n'est connecté : bandeau gris « Connectez-vous pour voir votre activité. » et [Se connecter] (qui ramène ici après la connexion).
+2 bis. **Les chiffres** (lot 10.1, construit le 07/10/2026 ; règles : `RM-MON-ACTIVITE.md`), lus sur `/api/moi/activite` à chaque ouverture de la page. Une petite carte par chiffre, le nombre en très gros et le texte en gris dessous ; 2 par ligne sur téléphone, 4 sur ordinateur ; un clic ouvre la page du détail. Si le serveur ne répond pas, la page s'affiche sans les chiffres.
+   - Prestataire : « 3 » demandes près de chez vous → Demandes près de chez moi ; « 2 » rendez-vous d'ici dimanche → Mon agenda, onglet Rendez-vous ; « 1 » devis en attente de réponse → Devis ; « 640,00 € » encaissés en octobre → Mon agenda, onglet Paiements. Le texte s'accorde (« 1 demande près de chez vous »).
+   - Dessous, pour un prestataire, une carte « Encaissé en 2026 » avec la somme à droite (« 5 320,00 € ») ; s'il ne facture pas la TVA, une barre verte remplie à la part du seuil atteinte et « Il vous reste 32 180,00 € avant le seuil de TVA (37 500,00 €). » ; seuil dépassé : barre pleine orange et « Vous avez dépassé le seuil de TVA (37 500,00 €) : parlez-en à votre comptable ou à votre service des impôts. » ; toujours la ligne « Seulement ce qui est passé par rafals : ajoutez vous-même ce que vous avez encaissé ailleurs. »
+   - Client : « 1 » demande en ligne → Mes demandes ; « 2 » conversations à lire → Messages ; « 1 » rendez-vous à venir → Rendez-vous.
 3. Des groupes de tuiles. Une tuile = un rond de couleur avec un pictogramme, le nom en gras, une ligne grise. Un clic ouvre la page. Survol : anneau vert.
 
 | Groupe | Tuile | Ligne grise | Ouvre | Qui la voit |
@@ -43,7 +47,6 @@ Exemples : Julie (cliente) voit un seul groupe « Mes services » avec 6 tuiles 
 Sur une page de « Mon activité » (Rendez-vous, Devis, Mon agenda…), le sous-menu sous l'en-tête montre : « ‹ Mon activité » (retour à la page d'ensemble), puis Mes demandes, Rendez-vous, Devis, Factures, et pour un prestataire Demandes près de chez moi, Mon agenda, Déclarer à l'URSSAF. Pas de sous-menu sur la page d'ensemble.
 
 ## Pas encore fait (décidé par Raphael le 07/10/2026, une question par fonction)
-- **Chiffres en haut de la page** (« Oui, avec l'année ») : pour un prestataire « 3 demandes près de chez vous », « 2 rendez-vous cette semaine », « 1 devis en attente », « 640 € encaissés en octobre », plus « 5 320 € encaissés en 2026 » avec la barre de la TVA ; pour un client « 1 demande en ligne », « 3 réponses à lire », « 1 rendez-vous à venir ».
 - **Mes clients** (« Oui, clients de rafals ») : les personnes avec qui le prestataire a eu un rendez-vous ou un devis sur rafals ; pas de client saisi à la main.
 - **Relance d'un devis sans réponse** (« Prévenir Julie tout seul ») : un seul mail au client au bout de 3 jours.
 - **Ma carte de visite** (« Oui, carte de visite ») : un PDF à imprimer avec le nom, le métier, la ville, la note et un carré à scanner vers la page publique ; pas de prospectus.

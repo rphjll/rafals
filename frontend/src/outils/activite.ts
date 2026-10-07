@@ -61,3 +61,58 @@ export function adresseDe(fonction: FonctionActivite, prestataireId: number | nu
   if (typeof fonction.vers === 'function') return prestataireId === null ? null : fonction.vers(prestataireId)
   return fonction.vers ?? null
 }
+
+// ---------- Les chiffres du haut de la page (RM-MON-ACTIVITE.md, lot 10.1) ----------
+
+export interface ChiffresPrestataire {
+  demandes_pres: number
+  rendez_vous_semaine: number
+  devis_en_attente: number
+  encaisse_mois_centimes: number
+  encaisse_annee_centimes: number
+  annee: number
+  /** null : il facture déjà la TVA, pas de barre */
+  seuil_tva_centimes: number | null
+  reste_avant_seuil_centimes: number | null
+}
+
+export interface ChiffresClient {
+  demandes_en_ligne: number
+  conversations_a_lire: number
+  rendez_vous_a_venir: number
+}
+
+/** Ce que renvoie /api/moi/activite : un seul des deux est rempli */
+export interface ActiviteChiffree {
+  prestataire: ChiffresPrestataire | null
+  client: ChiffresClient | null
+}
+
+/** Un chiffre affiché : « 3 » + « demandes près de chez vous », et la page qui le détaille */
+export interface ChiffreAffiche {
+  valeur: string
+  texte: string
+  vers: string
+}
+
+const accorde = (nombre: number, singulier: string, pluriel: string) => (nombre > 1 ? pluriel : singulier)
+
+/** Les chiffres dans l'ordre de l'écran ; « montant » écrit une somme (« 640,00 € »), « mois » est le mois en cours (« octobre ») */
+export function chiffresAffiches(activite: ActiviteChiffree, montant: (centimes: number) => string, mois: string): ChiffreAffiche[] {
+  const p = activite.prestataire
+  if (p) {
+    return [
+      { valeur: String(p.demandes_pres), texte: accorde(p.demandes_pres, 'demande près de chez vous', 'demandes près de chez vous'), vers: '/demandes-pres-de-chez-moi' },
+      { valeur: String(p.rendez_vous_semaine), texte: 'rendez-vous d’ici dimanche', vers: '/mon-agenda?onglet=rendez-vous' },
+      { valeur: String(p.devis_en_attente), texte: 'devis en attente de réponse', vers: '/devis' },
+      { valeur: montant(p.encaisse_mois_centimes), texte: `encaissés en ${mois}`, vers: '/mon-agenda?onglet=paiements' },
+    ]
+  }
+  const c = activite.client
+  if (!c) return []
+  return [
+    { valeur: String(c.demandes_en_ligne), texte: accorde(c.demandes_en_ligne, 'demande en ligne', 'demandes en ligne'), vers: '/mes-demandes' },
+    { valeur: String(c.conversations_a_lire), texte: accorde(c.conversations_a_lire, 'conversation à lire', 'conversations à lire'), vers: '/messages' },
+    { valeur: String(c.rendez_vous_a_venir), texte: 'rendez-vous à venir', vers: '/rendez-vous' },
+  ]
+}
