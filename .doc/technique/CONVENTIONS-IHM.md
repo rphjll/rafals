@@ -9,7 +9,7 @@
 3. S'il est interdit, le bouton reste visible, grisé, avec un cadenas et une bulle qui dit pourquoi et quoi faire. Ex. « 🔒 Payer par carte » chez Karim : « Karim n'a pas encore de SIRET : il ne peut être payé qu'en espèces… ».
 
 ## Structure des pages
-- En-tête fixe en haut : logo « rafals. » à gauche (retour à l'accueil), menu à droite (Trouver un prestataire · Mes réservations · Proposer mes services / Mon activité · pastille du compte). Sous l'en-tête, un sous-menu montre les pages du groupe (`AppSousMenu`, liste dans `composables/useMenu.ts`) ; détail : `ihm/RM-ENTETE-IHM.md` (refait le 04/10/2026).
+- En-tête fixe en haut : logo « rafals. » à gauche (retour à l'accueil), menu à droite (Accueil · Trouver un prestataire · Messages · Mon activité · Mon profil / Proposer mes services · pastille du compte ; refait le 07/10/2026). Sous l'en-tête, sur les pages rangées dans « Mon activité », un sous-menu les montre (`AppSousMenu`) ; la liste des fonctions est écrite une seule fois, dans `frontend/src/outils/activite.ts` (tuiles de la page et sous-menu) ; détail : `ihm/RM-ENTETE-IHM.md` et `ihm/RM-MON-ACTIVITE-IHM.md`. Sur téléphone, les entrées sont dans la barre du bas (`AppBarreBas`).
 - Contenu centré, largeur maximale 1080 px, marges d'au moins 16 px sur les côtés.
 - Fil d'Ariane en haut des pages profondes. Ex. « Accueil › Électricien › Pessac › Karim Benali ».
 - Écrans d'administration : même en-tête ; l'entrée « Administration » est dans la liste du compte (sous le prénom), visible seulement des administrateurs.

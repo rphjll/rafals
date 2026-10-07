@@ -105,12 +105,12 @@ const metiers = computed(() => {
 })
 
 const raisonLocal = computed(() =>
-  aUnLocal.value ? undefined : "Ajoutez d'abord l'adresse de votre local (page « Mon activité »).",
+  aUnLocal.value ? undefined : "Ajoutez d'abord l'adresse de votre local (page « Mon profil »).",
 )
 const raisonCarte = computed(() =>
   profil.value?.siret_statut === 'verifie'
     ? undefined
-    : 'Le paiement par carte demande un SIRET vérifié (page « Mon activité ») : sans lui, espèces seulement.',
+    : 'Le paiement par carte demande un SIRET vérifié (page « Mon profil ») : sans lui, espèces seulement.',
 )
 const total = computed(() => {
   const centimes = versCentimes(prix.value)
@@ -158,7 +158,7 @@ async function enregistrer() {
 <template>
   <GardePrestataire :titre="titrePage">
     <p class="text-[13.5px] text-texte-doux">
-      <RouterLink to="/proposer" class="hover:text-primaire">Mon activité</RouterLink> ›
+      <RouterLink to="/proposer" class="hover:text-primaire">Mon profil</RouterLink> ›
       <RouterLink to="/mes-annonces" class="hover:text-primaire">Mes annonces</RouterLink> › {{ titrePage }}
     </p>
     <h1 class="text-[28px] font-bold">{{ titrePage }}</h1>

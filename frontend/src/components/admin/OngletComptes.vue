@@ -60,7 +60,7 @@ async function changerRole() {
 <template>
   <div class="flex flex-col gap-3">
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
-    <div class="overflow-x-auto rounded-rafals border border-bord bg-surface">
+    <div class="overflow-x-auto carte">
       <table class="w-full min-w-[640px] border-collapse text-sm">
         <thead>
           <tr class="text-left text-xs tracking-wide text-texte-doux uppercase">

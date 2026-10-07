@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// « Proposer mes services » / « Mon activité » (.doc/ihm/RM-PROPOSER-IHM.md).
+// « Proposer mes services » / « Mon profil », appelé « Mon activité » avant le 07/10/2026 (.doc/ihm/RM-PROPOSER-IHM.md).
 // Sans profil : le formulaire de création. Avec un profil : la fiche, et le formulaire pour la modifier.
 import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -33,7 +33,7 @@ async function enregistre(nouveau: ProfilPrestataire) {
   profil.value = nouveau
   enModification.value = false
   afficherMessage(creation ? 'Votre profil de prestataire est créé.' : 'Profil enregistré.')
-  if (creation) await chargerCompte() // le menu affiche maintenant « Mon activité »
+  if (creation) await chargerCompte() // le menu affiche maintenant « Mon profil »
 }
 </script>
 
@@ -45,7 +45,7 @@ async function enregistre(nouveau: ProfilPrestataire) {
 
   <div v-else-if="compte && profilCharge" class="mx-auto flex w-full max-w-[720px] flex-col gap-4">
     <template v-if="profil">
-      <h1 class="text-[28px] font-bold">Mon activité</h1>
+      <h1 class="text-[28px] font-bold">Mon profil</h1>
       <FormulaireProfil v-if="enModification" :existant="profil" @enregistre="enregistre" @annuler="enModification = false" />
       <FicheActivite v-else :profil="profil" @maj="(p) => (profil = p)" @modifier="enModification = true" />
     </template>

@@ -1,0 +1,255 @@
+<title>Mon activité rafals</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Nunito:wght@500;600;700;800;900&display=swap">
+<style>
+/* Style A « chaleureux » choisi par Raphael le 07/10/2026 : formes très rondes, ombres douces, dessins. Contenu centré à 1120 px, carte d'action à droite, barre de 5 boutons en bas sur téléphone. */
+:root{
+  --fond:#F1F7F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;
+  --primaire:#2F6B4F;--primaire-texte:#FFFFFF;--primaire-doux:#E2EEE7;--accent:#D9793A;
+  --fonce:#1F4D38;--sur-fonce:#FFFFFF;--sur-fonce-doux:#D5E6DC;
+  --accent-vif:#E8863F;--accent-vif-texte:#1D2620;
+  --ok:#2E7D4F;--ok-doux:#E3F2E8;--attente:#B26A00;--attente-doux:#FCF0DC;--erreur:#B3261E;--erreur-doux:#FBE4E2;--sur-etat:#FFFFFF;
+  --t-orange:#FBE7D8;--t-orange-x:#7A3A0E;--t-vert:#D8ECDF;--t-vert-x:#1F4D38;--t-jaune:#FBEBC6;--t-jaune-x:#6E4300;
+  --t-bleu:#DCEAF7;--t-bleu-x:#1D4A72;--t-rose:#F8DFE4;--t-rose-x:#7F2238;--t-violet:#E8E1F6;--t-violet-x:#49317F;
+  --ombre:0 8px 28px rgba(31,77,56,.10);
+  --marque:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;--corps:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-carte:26px;--r-champ:16px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;
+  --primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --fonce:#1C3024;--sur-fonce:#E7ECF2;--sur-fonce-doux:#A3AEBD;
+  --accent-vif:#F0955A;--accent-vif-texte:#1D2620;
+  --ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;--erreur:#F08A82;--erreur-doux:#3A1A18;--sur-etat:#0F1A13;
+  --t-orange:#3A2616;--t-orange-x:#F4B48A;--t-vert:#1C3024;--t-vert-x:#8FD5AE;--t-jaune:#33290F;--t-jaune-x:#EFCB73;
+  --t-bleu:#17293A;--t-bleu-x:#93C2EC;--t-rose:#3A1B24;--t-rose-x:#F0A3B4;--t-violet:#271F3D;--t-violet-x:#C2ADF0;
+  --ombre:0 8px 28px rgba(0,0,0,.35);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;
+  --primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --fonce:#1C3024;--sur-fonce:#E7ECF2;--sur-fonce-doux:#A3AEBD;
+  --accent-vif:#F0955A;--accent-vif-texte:#1D2620;
+  --ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;--erreur:#F08A82;--erreur-doux:#3A1A18;--sur-etat:#0F1A13;
+  --t-orange:#3A2616;--t-orange-x:#F4B48A;--t-vert:#1C3024;--t-vert-x:#8FD5AE;--t-jaune:#33290F;--t-jaune-x:#EFCB73;
+  --t-bleu:#17293A;--t-bleu-x:#93C2EC;--t-rose:#3A1B24;--t-rose-x:#F0A3B4;--t-violet:#271F3D;--t-violet-x:#C2ADF0;
+  --ombre:0 8px 28px rgba(0,0,0,.35);color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font:600 16px/1.5 var(--corps)}
+h1,h2,h3,p,ul,ol{margin:0;padding:0}
+ul,ol{list-style:none}
+h1,h2,h3{font-weight:900;line-height:1.12;text-wrap:balance}
+h1{font-size:clamp(34px,5.4vw,58px);letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--primaire)}
+h2{font-size:26px}
+h3{font-size:20px}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.doux{color:var(--doux)}
+.petit{font-size:14px}
+body[data-role="client"] .si-presta,body[data-role="presta"] .si-client{display:none!important}
+.t-vert{background:var(--t-vert);color:var(--t-vert-x)}.t-orange{background:var(--t-orange);color:var(--t-orange-x)}.t-bleu{background:var(--t-bleu);color:var(--t-bleu-x)}
+.t-violet{background:var(--t-violet);color:var(--t-violet-x)}.t-jaune{background:var(--t-jaune);color:var(--t-jaune-x)}.t-rose{background:var(--t-rose);color:var(--t-rose-x)}
+svg.scene{width:100%;height:100%;display:block}
+
+/* Bandeau de la maquette (ne fait pas partie du site) */
+.maq{background:var(--texte);color:var(--fond);padding:10px 16px;font-size:14.5px}
+.maq-in{max-width:1120px;margin:auto;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.seg{display:inline-flex;background:var(--doux);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:none;color:var(--fond);font-weight:800;padding:0 14px;border-radius:9px;min-height:40px}
+.seg button[aria-pressed="true"]{background:var(--fond);color:var(--texte)}
+
+.entete{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--fond);padding:12px 20px}
+.entete-in{max-width:1120px;margin:auto;display:flex;align-items:center;gap:6px}
+.logo{font:800 28px/1 var(--marque);color:var(--primaire);letter-spacing:-.02em;margin-right:auto}
+.logo i{color:var(--accent);font-style:normal}
+.menu{display:flex;gap:2px}
+.menu button{display:flex;align-items:center;gap:6px;border:0;background:none;font-weight:800;padding:0 13px;min-height:44px;border-radius:99px;white-space:nowrap}
+.menu button[aria-current]{background:var(--surface);color:var(--primaire);box-shadow:var(--ombre)}
+.pastille{background:var(--erreur);color:var(--sur-etat);border-radius:99px;font-size:12px;font-weight:800;padding:1px 7px}
+.compte{display:flex;align-items:center;gap:8px;font-weight:800;border:0;background:var(--surface);border-radius:99px;padding:4px 14px 4px 4px;min-height:44px;box-shadow:var(--ombre)}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:12.5px;flex:none}
+@media (max-width:939px){.menu{display:none}}
+
+main{max-width:1160px;margin:auto;padding-inline:20px;padding-block:16px 80px;display:flex;flex-direction:column;gap:32px}
+.carte{background:var(--surface);border-radius:var(--r-carte);padding:20px;box-shadow:var(--ombre)}
+.resume{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.resume .carte{display:flex;flex-direction:column;gap:2px}
+.resume b{font-size:32px;font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums}
+.resume span{color:var(--doux);font-size:14.5px}
+.groupe{display:flex;flex-direction:column;gap:14px}
+.groupe>p{color:var(--doux);margin-top:-8px}
+.tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.tuile{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;text-align:left;border:0;width:100%;min-width:0}
+.tuile:hover{box-shadow:0 0 0 3px var(--primaire),var(--ombre)}
+.tuile .b{width:56px;height:56px;border-radius:50%;display:grid;place-items:center}
+.tuile .b .ic{width:26px;height:26px}
+.tuile .t{display:flex;flex-direction:column;min-width:0}
+.tuile b{font-weight:900;font-size:17.5px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.tuile small{color:var(--doux);font-size:14px}
+.tuile[data-bientot]{box-shadow:none;border:2px dashed var(--bord);background:none}
+.tuile[data-bientot]:hover{box-shadow:none}
+.puce{display:inline-flex;border-radius:99px;padding:2px 9px;font-size:12px;font-weight:800;background:var(--attente-doux);color:var(--attente)}
+.puce.n{background:var(--erreur);color:var(--sur-etat)}
+.profil{display:grid;gap:18px}
+@media (min-width:700px){.profil{grid-template-columns:auto 1fr;align-items:center}}
+.grand{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:36px}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th,td{text-align:left;padding:10px 12px;border-bottom:2px solid var(--fond);vertical-align:top}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--doux)}
+.defile{overflow-x:auto}
+.oui{color:var(--ok);font-weight:800}.non{color:var(--doux);font-weight:800}.tot{color:var(--attente);font-weight:800}
+details summary{cursor:pointer;font-weight:900;font-size:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border-radius:99px;border:0;background:var(--primaire-doux);color:var(--primaire);font-weight:800}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9;background:var(--texte);color:var(--fond);font-weight:800;padding:12px 18px;border-radius:16px;max-width:calc(100% - 32px);text-align:center}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0112 0v6l2 2H4zM10 21h4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6"/></symbol>
+<symbol id="i-euro" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5a4 4 0 100 7M7.5 11h5M7.5 13.5h5"/></symbol>
+<symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18M7 15h4"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.100.9-4.4 4.300 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+<symbol id="i-screen" viewBox="0 0 24 24"><path d="M4 5h16v11H4zM9 20h6M12 16v4"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4h12l-2 4 2 4H5"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+</defs></svg>
+
+<div class="maq"><div class="maq-in">
+  <b>Maquette</b><span>Les chiffres sont des exemples.</span>
+  <span class="seg" role="group" aria-label="Je regarde en tant que">
+    <button id="role-presta" aria-pressed="true">Karim, prestataire</button>
+    <button id="role-client" aria-pressed="false">Julie, cliente</button>
+  </span>
+</div></div>
+
+<header class="entete"><div class="entete-in">
+  <span class="logo">rafals<i>.</i></span>
+  <nav class="menu" aria-label="Menu principal">
+    <button data-vers="x" data-toast="Dans cette maquette, seuls « Mon activité » et « Mon profil » sont dessinés.">Accueil</button>
+    <button data-vers="x" data-toast="Dans cette maquette, seuls « Mon activité » et « Mon profil » sont dessinés.">Trouver un prestataire</button>
+    <button data-vers="x" data-toast="Dans cette maquette, seuls « Mon activité » et « Mon profil » sont dessinés.">Messages<span class="pastille">2</span></button>
+    <button data-page="activite" aria-current="page">Mon activité</button>
+    <button data-page="profil" class="si-presta">Mon profil</button>
+    <button data-vers="x" class="si-client" data-toast="Pour une cliente, « Mon profil » s'appelle encore « Proposer mes services ».">Proposer mes services</button>
+  </nav>
+  <button class="compte" data-toast="Sous le prénom : « Mon compte » et « Se déconnecter », comme aujourd'hui.">
+    <span class="av t-vert"><span class="si-presta">KB</span><span class="si-client">JM</span></span>
+    <span><span class="si-presta">Karim</span><span class="si-client">Julie</span></span>
+  </button>
+</div></header>
+
+<main id="p-activite">
+  <div>
+    <h1>Mon activité</h1>
+    <p class="doux" style="font-size:18px;margin-top:8px">Tout ce que vous faites sur rafals, au même endroit.</p>
+  </div>
+
+  <div class="resume si-presta">
+    <div class="carte"><b>3</b><span>demandes près de chez vous</span></div>
+    <div class="carte"><b>2</b><span>rendez-vous cette semaine</span></div>
+    <div class="carte"><b>1</b><span>devis en attente de réponse</span></div>
+    <div class="carte"><b>640 €</b><span>encaissés en octobre</span></div>
+  </div>
+  <div class="resume si-client">
+    <div class="carte"><b>1</b><span>demande en ligne</span></div>
+    <div class="carte"><b>3</b><span>réponses à lire</span></div>
+    <div class="carte"><b>1</b><span>rendez-vous à venir</span></div>
+  </div>
+
+  <section class="groupe si-presta">
+    <h2>Trouver des clients</h2>
+    <div class="tuiles">
+      <button class="carte tuile" data-toast="Ouvre « Demandes près de chez moi »."><span class="b t-vert"><svg class="ic"><use href="#i-pin"/></svg></span><span class="t"><b>Demandes près de chez moi <span class="puce n">3</span></b><small>Les clients qui cherchent votre métier</small></span></button>
+      <button class="carte tuile" data-bientot data-toast="Pas encore construit : lot 8.6."><span class="b t-jaune"><svg class="ic"><use href="#i-bell"/></svg></span><span class="t"><b>Alertes <span class="puce">bientôt</span></b><small>Un mail à chaque nouvelle demande</small></span></button>
+    </div>
+  </section>
+
+  <section class="groupe">
+    <h2><span class="si-presta">Gérer mon activité</span><span class="si-client">Mes services</span></h2>
+    <div class="tuiles">
+      <button class="carte tuile si-client" data-toast="Ouvre « Mes demandes »."><span class="b t-vert"><svg class="ic"><use href="#i-list"/></svg></span><span class="t"><b>Mes demandes <span class="puce n">3</span></b><small>Ce que j'ai publié, et les réponses</small></span></button>
+      <button class="carte tuile si-presta" data-toast="Ouvre « Mon agenda », qui ne change pas."><span class="b t-vert"><svg class="ic"><use href="#i-cal"/></svg></span><span class="t"><b>Mon agenda</b><small>Mes horaires et mes jours fermés</small></span></button>
+      <button class="carte tuile" data-toast="Ouvre « Rendez-vous »."><span class="b t-orange"><svg class="ic"><use href="#i-clock"/></svg></span><span class="t"><b>Rendez-vous</b><small>À venir et passés</small></span></button>
+      <button class="carte tuile" data-toast="Ouvre « Devis »."><span class="b t-violet"><svg class="ic"><use href="#i-doc"/></svg></span><span class="t"><b>Devis <span class="puce n si-presta">1</span></b><small>Demandes de devis et devis envoyés</small></span></button>
+      <button class="carte tuile" data-toast="Ouvre « Factures »."><span class="b t-bleu"><svg class="ic"><use href="#i-euro"/></svg></span><span class="t"><b>Factures</b><small>Toutes mes factures en PDF</small></span></button>
+      <button class="carte tuile" data-toast="Ouvre « Paiements » (aujourd'hui dans Mon agenda et dans Mon compte)."><span class="b t-jaune"><svg class="ic"><use href="#i-card"/></svg></span><span class="t"><b>Paiements</b><small>Par carte et en espèces</small></span></button>
+      <button class="carte tuile si-client" data-toast="Ouvre « Mes avis »."><span class="b t-rose"><svg class="ic"><use href="#i-star"/></svg></span><span class="t"><b>Mes avis</b><small>Ceux que j'ai donnés</small></span></button>
+    </div>
+  </section>
+
+  <section class="groupe si-presta">
+    <h2>Me faire connaître</h2>
+    <div class="tuiles">
+      <button class="carte tuile" data-toast="Ouvre « Mes avis »."><span class="b t-rose"><svg class="ic"><use href="#i-star"/></svg></span><span class="t"><b>Mes avis</b><small>★ 4,8 · 23 avis de clients</small></span></button>
+      <button class="carte tuile" data-bientot data-toast="Pas encore construit : lots 6.5 et 6.6."><span class="b t-bleu"><svg class="ic"><use href="#i-screen"/></svg></span><span class="t"><b>Mon site <span class="puce">bientôt</span></b><small>Une page à mon nom, visible sur Google</small></span></button>
+    </div>
+  </section>
+
+  <section class="groupe si-presta">
+    <h2>Mes démarches</h2>
+    <div class="tuiles">
+      <button class="carte tuile" data-toast="Ouvre « Mes démarches »."><span class="b t-orange"><svg class="ic"><use href="#i-bank"/></svg></span><span class="t"><b>Déclarer à l'URSSAF</b><small>Prochaine déclaration : 31/10/2026</small></span></button>
+      <button class="carte tuile" data-toast="Ouvre « Créer mon auto-entreprise »."><span class="b t-violet"><svg class="ic"><use href="#i-flag"/></svg></span><span class="t"><b>Mon auto-entreprise</b><small>La créer, suivre mon dossier, la TVA</small></span></button>
+    </div>
+  </section>
+
+  <details class="carte">
+    <summary>Ce qu'AlloVoisins propose aux professionnels, et où c'est dans rafals</summary>
+    <p class="doux" style="margin-block:10px">D'après les pages publiques d'AlloVoisins pour les professionnels. Je n'ai pas pu voir l'onglet « Abonnement » lui-même : il faut être connecté.</p>
+    <div class="defile"><table>
+      <tr><th>AlloVoisins</th><th>Dans rafals</th><th>Où, dans « Mon activité »</th></tr>
+      <tr><td>Recevoir les demandes des clients et y répondre</td><td class="oui">Oui</td><td>Demandes près de chez moi</td></tr>
+      <tr><td>Messagerie avec le client</td><td class="oui">Oui</td><td>Onglet « Messages », à part</td></tr>
+      <tr><td>Profil professionnel visible sur Google</td><td class="tot">En partie</td><td>Onglet « Mon profil », à part ; « Mon site » pas encore construit</td></tr>
+      <tr><td>Collecte des avis clients</td><td class="oui">Oui</td><td>Mes avis</td></tr>
+      <tr><td>Devis, avec accord du client en ligne</td><td class="oui">Oui</td><td>Devis</td></tr>
+      <tr><td>Factures</td><td class="oui">Oui</td><td>Factures</td></tr>
+      <tr><td>Paiement par carte bancaire</td><td class="oui">Oui</td><td>Paiements</td></tr>
+      <tr><td>Suivi des encaissements et du chiffre d'affaires</td><td class="tot">En partie</td><td>Paiements ; les 4 chiffres du haut seraient nouveaux</td></tr>
+      <tr><td>Fichier de tous ses clients, même hors du site</td><td class="non">Non</td><td>—</td></tr>
+      <tr><td>Relance automatique des devis sans réponse</td><td class="non">Non</td><td>—</td></tr>
+      <tr><td>Cartes de visite et prospectus avec QR code</td><td class="non">Non</td><td>—</td></tr>
+      <tr><td>Être mis en avant dans les résultats (option payante)</td><td class="non">Non</td><td>—</td></tr>
+      <tr><td>—</td><td class="oui">En plus dans rafals</td><td>Mon agenda, Déclarer à l'URSSAF, Mon auto-entreprise</td></tr>
+    </table></div>
+  </details>
+</main>
+
+<main id="p-profil" hidden>
+  <div>
+    <h1>Mon profil</h1>
+    <p class="doux" style="font-size:18px;margin-top:8px">C'est la page qui s'appelle aujourd'hui « Mon activité » › « Ma fiche ». Son contenu ne change pas.</p>
+  </div>
+  <div class="carte profil">
+    <span class="grand t-vert">KB</span>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <h2>Karim Benali</h2>
+      <p class="doux">Électricien, aussi petit bricolage · Pessac, jusqu'à 15 km · SIRET vérifié</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"><button class="btn" data-toast="Ouvre le formulaire actuel.">Modifier mon profil</button><button class="btn" data-toast="Ouvre ma page publique.">Voir ma page comme un client</button></div>
+    </div>
+  </div>
+  <div><button class="btn" data-page="activite">‹ Retour à Mon activité</button></div>
+</main>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let minuteur;
+function message(t){const z=$('#toast');z.textContent=t;z.hidden=false;clearTimeout(minuteur);minuteur=setTimeout(()=>z.hidden=true,3000)}
+function page(p){$('#p-activite').hidden=p!=='activite';$('#p-profil').hidden=p!=='profil';
+  $$('.menu [data-page]').forEach(b=>b.dataset.page===p?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));window.scrollTo(0,0)}
+function role(r){document.body.dataset.role=r;$('#role-client').setAttribute('aria-pressed',r==='client');$('#role-presta').setAttribute('aria-pressed',r==='presta');if(r==='client')page('activite')}
+document.addEventListener('click',e=>{
+  const p=e.target.closest('[data-page]');if(p)return page(p.dataset.page);
+  const t=e.target.closest('[data-toast]');if(t)message(t.dataset.toast)});
+$('#role-client').onclick=()=>role('client');$('#role-presta').onclick=()=>role('presta');
+role('presta');
+</script>

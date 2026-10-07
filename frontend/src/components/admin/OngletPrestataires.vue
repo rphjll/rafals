@@ -55,7 +55,7 @@ async function bloquer() {
   <div class="flex flex-col gap-3">
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <p v-if="!prestataires.length" class="text-texte-doux">Aucun prestataire pour l'instant.</p>
-    <div v-else class="overflow-x-auto rounded-rafals border border-bord bg-surface">
+    <div v-else class="overflow-x-auto carte">
       <table class="w-full min-w-[860px] border-collapse text-sm">
         <thead>
           <tr class="text-left text-xs tracking-wide text-texte-doux uppercase">

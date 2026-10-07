@@ -76,7 +76,7 @@ async function statut(action: 'pause' | 'retirer' | 'republier') {
         <AppBouton
           v-else-if="annonce.metier_arrete"
           variante="verrouille"
-          :raison-verrou="`Reprenez d'abord le métier ${annonce.metier.nom} (page « Mon activité »), puis republiez.`"
+          :raison-verrou="`Reprenez d'abord le métier ${annonce.metier.nom} (page « Mon profil »), puis republiez.`"
         >
           Republier
         </AppBouton>

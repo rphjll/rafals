@@ -110,7 +110,7 @@ async function envoyerProposition() {
               v-for="dossier in dossiers"
               :key="dossier.id"
               type="button"
-              class="flex flex-col gap-1 rounded-rafals border border-bord bg-surface p-3.5 text-left hover:border-primaire"
+              class="flex flex-col gap-1 carte p-3.5 text-left hover:border-primaire"
               @click="dossierOuvert = dossier"
             >
               <b>{{ dossier.nom }}</b>

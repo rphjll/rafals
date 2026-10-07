@@ -1,4 +1,6 @@
-# Proposer mes services / Mon activité — Interface
+# Proposer mes services / Mon profil — Interface
+
+> **Renommé le 07/10/2026** (demande de Raphael : « l'onglet actuel mon activité il vas s'appeler mon profil ») : partout où ce document écrit « Mon activité » pour cette page, lire **« Mon profil »** (entrée du menu, titre de la page, fils d'Ariane, messages « page « Mon profil » »). « Mon activité » désigne maintenant la page d'ensemble `/mon-activite` (`RM-MON-ACTIVITE-IHM.md`). Le contenu de la page ne change pas.
 
 > Fichiers : `frontend/src/pages/ProposerPage.vue`, `frontend/src/components/prestataire/FormulaireProfil.vue`, `FicheActivite.vue`, `CarteMesAnnonces.vue`, `CarteMetiers.vue`, `frontend/src/components/CarteAdresse.vue` (local), `frontend/src/components/AppChoixCommune.vue`, `frontend/src/outils/prestataires.ts`. Construit au lot 2.5 (29/09/2026), complété au lot 3.2 (29/09/2026). Règles : `RM-PRESTATAIRES.md`, `RM-ANNONCES.md`. Maquettes : `maquette-lot-2.5-prestataire.html`, `maquette-lot-3.2-annonces.html`.
 

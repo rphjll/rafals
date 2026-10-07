@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Sous-menu d'un groupe de l'en-tête (.doc/ihm/RM-ENTETE-IHM.md) : « Mes réservations » ou « Mon activité ».
+// Sous-menu de « Mon activité » (.doc/ihm/RM-ENTETE-IHM.md) : affiché sur ses pages (Rendez-vous, Devis, Mon agenda…).
 // Il est posé sous l'en-tête, au-dessus de la page : les pages elles-mêmes ne changent pas.
 import { useMenu } from '../composables/useMenu'
 

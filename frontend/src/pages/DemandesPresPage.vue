@@ -30,7 +30,7 @@ onMounted(async () => {
     <div v-else-if="demandes?.length" class="flex flex-col gap-3">
       <CarteDemande v-for="demande in demandes" :key="demande.id" :demande="demande" />
     </div>
-    <p v-else-if="demandes" class="rounded-rafals border border-bord bg-surface p-5 text-texte-doux">
+    <p v-else-if="demandes" class="rounded-carte border-2 border-dashed border-bord p-5 text-texte-doux">
       Aucune demande ouverte pour vos métiers près de chez vous en ce moment.
     </p>
   </GardePrestataire>

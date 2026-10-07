@@ -41,7 +41,7 @@ function remplacer(nouvelle: AnnonceVisible) {
 <template>
   <GardePrestataire titre="Mes annonces">
     <p class="text-[13.5px] text-texte-doux">
-      <RouterLink to="/proposer" class="hover:text-primaire">Mon activité</RouterLink> › Mes annonces
+      <RouterLink to="/proposer" class="hover:text-primaire">Mon profil</RouterLink> › Mes annonces
     </p>
     <div class="flex flex-wrap items-center justify-between gap-3">
       <h1 class="text-[28px] font-bold">Mes annonces</h1>
@@ -60,7 +60,7 @@ function remplacer(nouvelle: AnnonceVisible) {
         <p class="text-texte-doux">Aucune annonce pour l'instant : écrivez la première pour que les clients vous trouvent.</p>
       </AppSection>
 
-      <details v-if="retirees.length" class="rounded-rafals border border-bord bg-surface p-5">
+      <details v-if="retirees.length" class="carte p-5">
         <summary class="min-h-[28px] cursor-pointer font-bold">Annonces retirées ({{ retirees.length }})</summary>
         <div class="flex flex-col divide-y divide-bord">
           <LigneAnnonce v-for="annonce in retirees" :key="annonce.id" :annonce="annonce" @maj="remplacer" />

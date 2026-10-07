@@ -123,7 +123,7 @@ async function enregistrer() {
       <AppCase v-model="montrerDesactives" texte="Montrer les désactivés" />
       <AppBouton @click="nouveau">+ Nouveau métier</AppBouton>
     </div>
-    <div class="overflow-x-auto rounded-rafals border border-bord bg-surface">
+    <div class="overflow-x-auto carte">
       <table class="w-full min-w-[760px] border-collapse text-sm">
         <thead>
           <tr class="text-left text-xs tracking-wide text-texte-doux uppercase">

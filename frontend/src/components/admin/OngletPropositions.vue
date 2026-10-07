@@ -96,7 +96,7 @@ async function refuser(proposition: Proposition) {
     <div
       v-for="proposition in propositions"
       :key="proposition.id"
-      class="grid items-center gap-3 rounded-rafals border border-bord bg-surface p-3.5 sm:grid-cols-[1fr_auto]"
+      class="grid items-center gap-3 carte p-3.5 sm:grid-cols-[1fr_auto]"
     >
       <div>
         <b>« {{ proposition.nom_propose }} »</b> · proposé par {{ proposition.propose_par }} · le

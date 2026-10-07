@@ -40,7 +40,7 @@ const etapes: Etape[] = [
   {
     titre: 'Je termine sur rafals',
     texte:
-      "Ajoutez votre SIRET dans « Mon activité » (il est vérifié tout seul), créez votre espace sur le site de l'URSSAF, puis activez le paiement par carte.",
+      "Ajoutez votre SIRET dans « Mon profil » (il est vérifié tout seul), créez votre espace sur le site de l'URSSAF, puis activez le paiement par carte.",
     bouton: { texte: 'Proposer mes services', page: '/proposer' },
   },
 ]

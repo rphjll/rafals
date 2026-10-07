@@ -26,6 +26,16 @@ const TRACES: Record<string, string> = {
   'menu-activite': 'M5 7h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2zM9 7V4h6v3',
   appareil: 'M5 7h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2zM12 17a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM8 7l1.5-3h5L16 7',
   envoyer: 'M4 12l16-8-6 16-3-6z',
+  // Tuiles de « Mon activité »
+  repere: 'M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11zM12 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z',
+  cloche: 'M6 17v-6a6 6 0 0112 0v6l2 2H4zM10 21h4',
+  liste: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',
+  horloge: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 7v5l3 2',
+  document: 'M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6',
+  euro: 'M12 21a9 9 0 100-18 9 9 0 000 18zM15.5 8.5a4 4 0 100 7M7.5 11h5M7.5 13.5h5',
+  'carte-bancaire': 'M5 6h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zM3 10.5h18M7 15h4',
+  banque: 'M3 10l9-6 9 6zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18',
+  drapeau: 'M5 21V4h12l-2 4 2 4H5',
 }
 
 // Une couleur par dossier, dans l'ordre, puis on recommence (noms écrits en entier pour Tailwind)

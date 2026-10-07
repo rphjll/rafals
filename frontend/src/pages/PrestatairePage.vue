@@ -75,7 +75,7 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
       </p>
       <AppAlerte v-if="monProfil" etat="attente">
         Votre page, telle que les clients la voient.
-        <RouterLink to="/proposer" class="font-semibold underline">Mon activité</RouterLink>
+        <RouterLink to="/proposer" class="font-semibold underline">Mon profil</RouterLink>
       </AppAlerte>
 
       <!-- Ordinateur : la fiche à gauche, la carte « Besoin de Karim ? » à droite, qui reste visible.

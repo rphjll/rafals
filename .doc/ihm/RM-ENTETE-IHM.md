@@ -36,6 +36,14 @@ Bandeau blanc avec une ligne d'onglets ; la page affichée est soulignée en ver
 - Sur « Proposer mes services » sans profil de prestataire : pas de sous-menu.
 - Sur un petit écran, la ligne d'onglets défile sur le côté.
 
+## Menu depuis le 07/10/2026 (demande de Raphael, détail : `RM-MON-ACTIVITE-IHM.md`)
+**Ce paragraphe remplace la liste des entrées et des deux groupes décrite plus haut.**
+- Entrées : « Accueil » `/` · « Trouver un prestataire » `/trouver` · « Messages » `/messages` (seulement connecté) · **« Mon activité » `/mon-activite`** · **« Mon profil » `/proposer`** (compte sans profil de prestataire : « Proposer mes services »).
+- « Mes réservations » n'existe plus : ses pages sont dans « Mon activité ».
+- « Mon activité » est surlignée sur sa page et sur toutes les pages qu'elle range (Mes demandes, Rendez-vous, Devis, Factures, Demandes près de chez moi, Mon agenda, Déclarer à l'URSSAF) ; « Mon profil » sur `/proposer`.
+- Sous-menu : seulement sur ces pages rangées, avec « ‹ Mon activité » en premier. Plus de « Ma fiche » dans le sous-menu (c'est « Mon profil »).
+- Barre du bas sur téléphone : « Accueil », « Trouver », « Messages », « Activité », « Profil » (ou « Proposer »).
+
 ## Barre du bas sur téléphone (ajoutée le 07/10/2026, `frontend/src/components/AppBarreBas.vue`)
 Sous 768 px, les entrées principales quittent le menu ☰ et vont dans une barre blanche arrondie fixée en bas de l'écran, sur toutes les pages : un pictogramme et un mot court par entrée — « Accueil », « Trouver », « Réservations », « Messages » (seulement connecté, avec la pastille rouge des non lus), « Proposer » (ou « Activité » pour un prestataire). L'entrée de la page affichée est en vert sur fond vert clair. L'en-tête et la barre lisent la même liste (`useMenu`, `entrees`). Le menu ☰ ne garde que le compte : « Mon compte », « Administration », [Se déconnecter], ou [Se connecter]. Le message court de 3 secondes s'affiche au-dessus de la barre. **Ce paragraphe remplace la 2ᵉ ligne ci-dessous** (« les 4 entrées, puis un trait… »).
 

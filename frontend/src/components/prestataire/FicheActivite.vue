@@ -70,7 +70,7 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
       Votre activité est arrêtée : ce profil n'est plus visible ni modifiable.
     </AppAlerte>
 
-    <section class="grid items-start gap-4 rounded-rafals border border-bord bg-surface p-5 sm:grid-cols-[96px_1fr]">
+    <section class="grid items-start gap-4 carte p-5 sm:grid-cols-[96px_1fr]">
       <AvatarPrestataire
         :id="profil.id"
         :nom="profil.nom_affiche"

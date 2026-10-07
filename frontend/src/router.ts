@@ -18,6 +18,7 @@ import InscriptionPage from './pages/InscriptionPage.vue'
 import MesAnnoncesPage from './pages/MesAnnoncesPage.vue'
 import MesDemandesPage from './pages/MesDemandesPage.vue'
 import MessagesPage from './pages/MessagesPage.vue'
+import MonActivitePage from './pages/MonActivitePage.vue'
 import MotDePasseOubliePage from './pages/MotDePasseOubliePage.vue'
 import NouveauMotDePassePage from './pages/NouveauMotDePassePage.vue'
 import PrestatairePage from './pages/PrestatairePage.vue'
@@ -47,6 +48,7 @@ export const routeur = createRouter({
     { path: '/trouver', name: 'trouver', component: TrouverPage },
     { path: '/messages', name: 'messages', component: MessagesPage },
     { path: '/messages/:id(\\d+)', name: 'conversation', component: MessagesPage },
+    { path: '/mon-activite', name: 'mon-activite', component: MonActivitePage },
     { path: '/mes-demandes', name: 'mes-demandes', component: MesDemandesPage },
     { path: '/demandes-pres-de-chez-moi', name: 'demandes-pres', component: DemandesPresPage },
     { path: '/proposer', name: 'proposer', component: ProposerPage },
