@@ -14,10 +14,9 @@
    3. (personne n'est connecté) bouton secondaire [Créer mon compte] → `/inscription`.
 2. **Deux colonnes sur ordinateur** (demandes de Raphael du 05/10/2026, mot pour mot : « sur le coté a droite comme sur allo voisin il faut que je puisse mettre mon texte pour publier ma demande », puis « ca doit prendre toute la place de haut en bas la demande et faut que on pussie metre l'adresse et que y'ai une carte google maps qui aparaise et on puisse mettre des photos ») : à gauche le bonjour, la barre et la liste ; à droite la carte « Publier une demande », 380 px de large, **de haut en bas** (elle commence à la hauteur du « Bonjour » et fait au moins la hauteur de l'écran). **Sur téléphone** : le bonjour et la barre, la carte, puis la liste.
    - **À gauche, « Les demandes des clients »** : les demandes ouvertes lues sur le serveur (`/api/demandes`), la plus récente en haut (`RM-DEMANDES.md` § « L'accueil montre toutes les demandes »). **Branché le 06/10/2026.**
-     - Une carte par demande : titre en gras et, à droite, le budget en vert (« 40 € ») s'il y en a un ; une ligne de badges gris « Plombier », « Pessac », « Dès que possible » (ou « samedi 10 octobre »), « Chez le client » (ou « Chez le prestataire »), plus un badge vert « Ma demande » sur les siennes ; la description ; les photos en vignettes de 96 px, cliquables (seulement si on est connecté) ; en petit, « Marie D. » (sans compte et avec des photos : « Marie D. · 2 photos (connectez-vous pour les voir) »).
+     - Une carte par demande : le composant commun `CarteDemande` (`RM-DEMANDES-IHM.md`), avec **[Répondre]** pour un prestataire qui peut répondre et [Voir la conversation] s'il l'a déjà fait (branché le 07/10/2026).
      - La barre filtre sur le titre, la description, le métier et la ville. Ex. « pessac » ne garde que les demandes de Pessac.
      - Liste vide : « Aucune demande pour l'instant. » dans un cadre (ou « Aucune demande ne contient « pelouse ». ») ; serveur injoignable : bandeau rouge avec le message.
-     - Pas encore fait : le bouton [Répondre] des prestataires (suite du lot 8.3), la note du client, le nombre de réponses.
    - **À droite, carte blanche « Publier une demande »** (`frontend/src/components/demandes/CartePublierDemande.vue`), de haut en bas. **Branchée le 06/10/2026** : elle publie vraiment.
      1. « Quel métier ? * » : choix par les premières lettres (`RM-CHOIX-METIER-IHM.md`).
      2. « Titre * » (ex. « Tondre ma pelouse », 80 caractères au plus).
@@ -33,7 +32,7 @@
 4. **Bandeau orange** (`accent-vif`), caché pour un prestataire : « Vous proposez vos services ? », texte, boutons [Proposer mes services] → `/proposer` et [Créer mon auto-entreprise] → `/creer-mon-auto-entreprise`, et 3 atouts cochés.
 5. Ligne pour le développement, sous un trait : badge d'état du serveur (lit `/api/etat` : neutre « Vérification du serveur… », vert « Le serveur de rafals répond. », rouge « Le serveur ne répond pas. Relance demarrer.bat. ») et bouton secondaire [Voir le catalogue des composants] → `/catalogue`.
 
-Pas encore fait : l'écran « Mes demandes » (modifier, fermer, prolonger : le serveur est prêt), [Répondre] pour les prestataires ; la liste « Près de chez vous » de la maquette (il faut connaître la ville du visiteur).
+Pas encore fait : la liste « Près de chez vous » de la maquette (il faut connaître la ville du visiteur).
 
 ## Page « Bientôt disponible »
 Utilisée pour toute adresse inconnue.

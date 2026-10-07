@@ -64,6 +64,8 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - Factures : `TableauFactures` (dans `components/factures/`), `FenetrePayeDirect` (dans `components/`, commune aux rendez-vous en espèces et aux devis en direct) ; types, moyens de paiement et ouverture du PDF : `frontend/src/outils/factures.ts` (lot 5.6).
 - `AppChiffre` — un chiffre mis en avant (titre, grande valeur, détail) : Mon agenda › Paiements, tableau de bord de l'administration (lot 6.2).
 - `BoutonSignaler` (dans `components/`) — [Signaler cette annonce…] / [Signaler ce prestataire…], avec la connexion si besoin et la fenêtre du motif (lot 6.4).
+- Demandes (dans `components/demandes/`) : `CarteDemande` (la même carte sur l'accueil, « Mes demandes » et « Demandes près de chez moi », avec [Répondre]), `CartePublierDemande` ; types et textes : `frontend/src/outils/demandes.ts` (lots 8.3 et 8.4).
+- Messagerie (dans `components/messagerie/`) : `CarteProposition` (accepter, négocier, refuser, retirer), `FenetreProposition` ; types, durées et textes : `frontend/src/outils/messagerie.ts` ; compteur rouge de « Messages » : `composables/useNonLus.ts` (lots 8.2 et 8.4).
 - `GardePrestataire` (dans `components/prestataire/`) — pages réservées aux prestataires (lot 3.2).
 - Prix, durées, lieux et paiements des annonces : toujours par `frontend/src/outils/annonces.ts` (« 50 € · 2 h », « 40 €/h · de 1 h à 3 h ») (lot 3.2).
 - Libellés et couleurs des états du prestataire : `frontend/src/outils/prestataires.ts`.

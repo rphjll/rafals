@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.comptes import Compte
+from app.modeles.demandes import Proposition, ReponseDemande
 from app.modeles.devis import DemandeDevis
 from app.modeles.messagerie import Conversation, Message, PhotoMessage
 from app.modeles.prestataires import Prestataire
@@ -333,17 +334,27 @@ def prevenir_par_mail(db: Session, maintenant: datetime) -> int:
 
 def effacer_les_anciennes(db: Session, maintenant: datetime) -> int:
     """Une conversation sans message depuis 3 ans est effacée (données personnelles) ; une conversation signalée
-    reste (le signalement n'est jamais effacé). Rend le nombre de conversations effacées."""
+    reste (le signalement n'est jamais effacé). Si elle porte une proposition ou une réponse à une demande (jamais
+    effacées : un rendez-vous peut en venir), seuls ses messages et leurs photos sont effacés, la conversation reste
+    vide. Rend le nombre de conversations effacées ou vidées."""
     anciennes = db.scalars(select(Conversation).where(
         Conversation.dernier_message_le < maintenant - reglages.MESSAGE_CONSERVATION,
         ~exists().where(Signalement.conversation_id == Conversation.id),
     )).all()
+    traitees = 0
     for conversation in anciennes:
+        a_garder = db.scalar(select(exists().where(Proposition.conversation_id == conversation.id))) or db.scalar(
+            select(exists().where(ReponseDemande.conversation_id == conversation.id)))
         ids = select(Message.id).where(Message.conversation_id == conversation.id)
+        if a_garder and db.scalar(select(func.count()).select_from(Message).where(Message.conversation_id == conversation.id)) == 0:
+            continue  # déjà vidée lors d'un passage précédent
         db.execute(delete(PhotoMessage).where(PhotoMessage.message_id.in_(ids)))
         db.execute(delete(Message).where(Message.conversation_id == conversation.id))
-        db.delete(conversation)
-    return len(anciennes)
+        if not a_garder:
+            db.delete(conversation)
+        traitees += 1
+    db.flush()
+    return traitees
 
 
 def traiter(db: Session, maintenant: datetime) -> tuple[int, int]:

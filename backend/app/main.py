@@ -15,19 +15,19 @@ from app import reglages
 from app.db import moteur
 from app.routes import (
     accords, administration, agenda, annonces, avis, clients, comptes, creation_entreprise, demandes, devis, factures, messagerie, metiers,
-    paiements,
+    paiements, propositions,
     prestataires, recherche, rendez_vous, services_en_plus,
 )
 from app.services import avis as service_avis
 from app.services import clients as service_clients
 from app.services import creation_entreprise as service_creation
-from app.services import demandes as service_demandes
 from app.services import demarches as service_demarches
 from app.services import devis as service_devis
 from app.services import factures as service_factures
 from app.services import messagerie as service_messagerie
 from app.services import paiements as service_paiements
 from app.services import prestataires as service_prestataires
+from app.services import propositions as service_propositions
 from app.services import rendez_vous as service_rendez_vous
 from app.services.erreurs import ErreurRegle
 
@@ -88,10 +88,11 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
             "messagerie (mails, effacement)", reglages.TACHE_MESSAGERIE_MINUTES * 60,
             _dans_une_session(service_messagerie.traiter),
         )),
-        # Demandes arrivées à leur fin : expirées ; 3 jours avant, un mail « prolongez-la » (lot 8.3)
+        # Demandes arrivées à leur fin : expirées ; 3 jours avant, un mail « prolongez-la » ; propositions dont l'heure
+        # est passée : expirées (lot 8.3)
         asyncio.create_task(_tache_periodique(
-            "demandes (expirations, rappels)", reglages.TACHE_DEMANDES_MINUTES * 60,
-            _dans_une_session(service_demandes.traiter),
+            "demandes et propositions (expirations, rappels)", reglages.TACHE_DEMANDES_MINUTES * 60,
+            _dans_une_session(service_propositions.traiter),
         )),
         # Devis sans réponse après « Valable jusqu'au », rappels du solde (lot 5.3)
         asyncio.create_task(_tache_periodique(
@@ -138,6 +139,7 @@ app.include_router(services_en_plus.routeur)
 app.include_router(creation_entreprise.routeur)
 app.include_router(messagerie.routeur)
 app.include_router(demandes.routeur)
+app.include_router(propositions.routeur)
 
 
 @app.exception_handler(ErreurRegle)

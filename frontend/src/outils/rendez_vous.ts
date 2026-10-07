@@ -16,7 +16,9 @@ export type StatutRendezVous =
 
 export interface RendezVousVisible {
   id: number
-  annonce_id: number
+  annonce_id: number | null // vide : rendez-vous venu d'une proposition (il ne se déplace pas)
+  /** Le calendrier où tombe le rendez-vous */
+  metier: { id: number; nom: string }
   remplace_id: number | null
   debut: string
   fin: string

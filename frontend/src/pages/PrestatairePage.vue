@@ -42,6 +42,20 @@ watch(
   },
   { immediate: true },
 )
+// [Écrire à Karim] (RM-MESSAGERIE) : ouvre la conversation, ou la retrouve si elle existe déjà
+const erreurEcrire = ref('')
+async function ecrire() {
+  if (!prestataire.value) return
+  if (!compte.value) return routeur.push('/connexion')
+  erreurEcrire.value = ''
+  try {
+    const conversation = await appelerServeur<{ id: number }>('/api/conversations', { prestataire_id: prestataire.value.id })
+    routeur.push(`/messages/${conversation.id}`)
+  } catch (e) {
+    erreurEcrire.value = messageErreur(e) // ex. « Ce prestataire n'est pas joignable en ce moment. »
+  }
+}
+
 const monProfil = computed(() => !!prestataire.value && compte.value?.prestataire_id === prestataire.value.id)
 // Retour à la page d'avant (ex. les résultats) ; ouverte directement par un lien : la recherche
 function retour() {
@@ -92,6 +106,10 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
               {{ prestataire.absences }} absence{{ prestataire.absences > 1 ? 's' : '' }} sans prévenir ces 6 derniers mois
             </AppAlerte>
             <p v-if="prestataire.presentation" class="whitespace-pre-line">{{ prestataire.presentation }}</p>
+            <div v-if="!monProfil" class="flex flex-col gap-2">
+              <div><AppBouton @click="ecrire">Écrire à {{ prenom }}</AppBouton></div>
+              <AppAlerte v-if="erreurEcrire">{{ erreurEcrire }}</AppAlerte>
+            </div>
           </div>
         </div>
       </AppSection>

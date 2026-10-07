@@ -1,5 +1,5 @@
 """Demandes publiées par les clients : publier (avec l'adresse et des photos), lister sur l'accueil, modifier, fermer,
-prolonger, expirer. Les réponses, propositions et négociations viennent dans la suite du lot 8.3.
+prolonger, expirer. Les réponses, propositions et négociations sont dans services/propositions.py.
 Règles : .doc/regles-metier/RM-DEMANDES.md (validé par Raphael le 04/10/2026 ; accueil et adresse : 05/10/2026).
 Tout le monde lit les demandes ouvertes ; la rue n'est montrée qu'au client lui-même (puis au prestataire choisi)."""
 
@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.comptes import Compte
-from app.modeles.demandes import Demande, PhotoDemandePubliee
+from app.modeles.demandes import Demande, PhotoDemandePubliee, ReponseDemande
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune
 from app.services import avis, droits, fichiers, journal, mails
@@ -102,13 +102,17 @@ def _controler(db: Session, saisie: Saisie, maintenant: datetime) -> tuple[Saisi
     return propre, commune
 
 
-def _fin(saisie: Saisie, depuis: datetime) -> datetime:
+def fin_le(jour: date | None, depuis: datetime) -> datetime:
     """30 jours après, ou la fin du jour demandé s'il arrive avant. Ex. publiée le 06/10 pour le 10/10 → fin le 10/10 à minuit."""
     fin = depuis + reglages.DEMANDE_DUREE
-    if saisie.jour is not None:
-        fin_du_jour = datetime.combine(saisie.jour + timedelta(days=1), time(0), tzinfo=reglages.FUSEAU_AFFICHAGE)
+    if jour is not None:
+        fin_du_jour = datetime.combine(jour + timedelta(days=1), time(0), tzinfo=reglages.FUSEAU_AFFICHAGE)
         fin = min(fin, fin_du_jour)
     return fin
+
+
+def _fin(saisie: Saisie, depuis: datetime) -> datetime:
+    return fin_le(saisie.jour, depuis)
 
 
 def nombre_ouvertes(db: Session, client: Compte) -> int:
@@ -121,7 +125,7 @@ def _verifier_droit(db: Session, client: Compte, maintenant: datetime) -> None:
         raise ErreurRegle("Vérifiez votre adresse mail (et, avant 18 ans, l'accord de vos parents) pour publier une demande.", 403)
 
 
-def _verifier_place(db: Session, client: Compte) -> None:
+def verifier_place(db: Session, client: Compte) -> None:
     maxi = reglages.DEMANDE_OUVERTES_MAX
     if nombre_ouvertes(db, client) >= maxi:
         raise ErreurRegle(f"Vous avez déjà {maxi} demandes ouvertes : fermez-en une pour publier celle-ci.")
@@ -133,7 +137,7 @@ def _verifier_place(db: Session, client: Compte) -> None:
 def publier(db: Session, client: Compte, saisie: Saisie, photos: list[Photo], maintenant: datetime) -> Demande:
     """Ex. Mme Dupont : Jardinier · « Tondre ma pelouse » · samedi 10/10 · chez elle, 8 allée des Pins à Pessac · 40 €."""
     _verifier_droit(db, client, maintenant)
-    _verifier_place(db, client)
+    verifier_place(db, client)
     propre, commune = _controler(db, saisie, maintenant)
     if len(photos) > reglages.DEMANDE_PHOTOS_MAX:
         raise ErreurRegle(f"Au plus {reglages.DEMANDE_PHOTOS_MAX} photos par demande.")
@@ -169,9 +173,11 @@ def ma_demande_ou_404(db: Session, client: Compte, demande_id: int) -> Demande:
 
 
 def modifier(db: Session, client: Compte, demande: Demande, saisie: Saisie, maintenant: datetime) -> Demande:
-    """Seulement une demande ouverte (suite du lot 8.3 : et tant que personne n'a répondu). Les photos ne changent pas."""
+    """Seulement une demande ouverte, et tant que personne n'a répondu. Les photos ne changent pas."""
     if demande.statut != "ouverte":
         raise ErreurRegle("Cette demande n'est plus ouverte : publiez-en une nouvelle.")
+    if db.scalar(select(ReponseDemande.id).where(ReponseDemande.demande_id == demande.id).limit(1)) is not None:
+        raise ErreurRegle("Un prestataire a déjà répondu : fermez cette demande et publiez-en une autre pour la changer.")
     propre, commune = _controler(db, saisie, maintenant)
     avant = {"titre": demande.titre, "metier_id": demande.metier_id, "commune_id": demande.commune_id}
     demande.metier_id, demande.commune_id = propre.metier_id, commune.id
@@ -211,12 +217,9 @@ def prolonger(db: Session, client: Compte, demande: Demande, maintenant: datetim
     if demande.jour is not None and demande.jour < aujourd_hui:
         raise ErreurRegle("Le jour voulu est passé : publiez une nouvelle demande avec un autre jour.")
     if demande.statut == "expiree":
-        _verifier_place(db, client)
+        verifier_place(db, client)
         demande.statut, demande.statut_change_le = "ouverte", maintenant
-    demande.expire_le = maintenant + reglages.DEMANDE_DUREE
-    if demande.jour is not None:
-        fin_du_jour = datetime.combine(demande.jour + timedelta(days=1), time(0), tzinfo=reglages.FUSEAU_AFFICHAGE)
-        demande.expire_le = min(demande.expire_le, fin_du_jour)
+    demande.expire_le = fin_le(demande.jour, maintenant)
     demande.rappel_envoye_le = None
     journal.noter(db, auteur_id=client.id, action="prolonger_demande", table_cible="demande", ligne_id=demande.id,
                   maintenant=maintenant)

@@ -1,0 +1,39 @@
+# Demandes — Interface (carte d'une demande, « Mes demandes », « Demandes près de chez moi »)
+
+> Fichiers : `frontend/src/components/demandes/CarteDemande.vue`, `frontend/src/pages/MesDemandesPage.vue`, `frontend/src/pages/DemandesPresPage.vue`, `frontend/src/outils/demandes.ts`. Construit le 07/10/2026 (lot 8.4), d'après la maquette validée `maquette-niveau-8-demandes.html`. Règles : `RM-DEMANDES.md`. Publier une demande : `RM-ACCUEIL-IHM.md`.
+
+## Carte d'une demande (la même partout)
+De haut en bas :
+1. Le titre en gras et, à droite, le budget en vert (« 40 € ») s'il y en a un.
+2. Des badges gris : « Plombier », « Pessac », « Dès que possible » (ou « samedi 10 octobre »), « Chez le client » (ou « Chez le prestataire »), « 2 réponses sur 10 » ; un badge vert « Ma demande » sur les siennes.
+3. La description.
+4. Les photos en vignettes de 96 px, cliquables (seulement connecté).
+5. En petit : « Marie D. » (sans compte et avec des photos : « Marie D. · 2 photos (connectez-vous pour les voir) »).
+6. Les boutons :
+   - prestataire qui peut répondre (son métier, son rayon, pas complète) : **[Répondre]** → ouvre la conversation avec le client (`RM-MESSAGES-IHM.md`) ;
+   - prestataire qui a déjà répondu : [Voir la conversation] ;
+   - prestataire, demande complète : [Répondre] verrouillé 🔒 « Cette demande est complète : 10 prestataires ont déjà répondu. » ;
+   - les autres (clients, prestataires d'un autre métier ou trop loin) : aucun bouton ;
+   - puis les boutons propres à la page (« Mes demandes »).
+7. Réponse refusée : bandeau rouge dans la carte.
+
+## Mes demandes (`/mes-demandes`)
+Sous-menu « Mes réservations », premier onglet. Contenu centré, 760 px au plus.
+1. Titre « Mes demandes » et, à droite, [Publier une demande] → l'accueil.
+2. Une carte par demande, la plus récente en haut, avec en plus :
+   - un badge d'état : ouverte (vert), pourvue : prestataire choisi (vert), fermée (gris), expirée (orange), cachée par l'administrateur (rouge) ;
+   - **ouverte** : « Ouverte jusqu'au 06/11/2026 à 11 h 40. », [Prolonger de 30 jours] → « Demande prolongée de 30 jours. », [Fermer ma demande…] (rouge) → fenêtre « Fermer « Tondre ma pelouse » ? Les prestataires ne la verront plus et ne pourront plus y répondre. Elle reste dans « Mes demandes ». » → « Demande fermée. » ;
+   - **expirée** : [Rouvrir pour 30 jours] ;
+   - **pourvue** : [Voir le rendez-vous] → « Mes réservations », et [Rouvrir (rendez-vous annulé)] (refusé avec le message de la règle si le rendez-vous est toujours prévu).
+3. Liste vide : « Aucune demande pour l'instant. Publiez-en une depuis l'accueil : les prestataires proches vous répondent. »
+4. Pas connecté : bandeau gris « Connectez-vous pour voir vos demandes. » et [Se connecter].
+
+Pas encore fait : modifier une demande à l'écran (le serveur sait le faire tant que personne n'a répondu).
+
+## Demandes près de chez moi (`/demandes-pres-de-chez-moi`)
+Sous-menu « Mon activité », deuxième onglet ; réservée aux prestataires (même gardien que « Mon agenda »).
+1. Titre, puis « Les demandes de vos métiers, dans votre rayon. Répondre est gratuit ; rafals garde 5 % seulement si le client paie par carte. »
+2. Une carte par demande à laquelle ce prestataire peut répondre, la plus récente en haut.
+3. Liste vide : « Aucune demande ouverte pour vos métiers près de chez vous en ce moment. »
+
+Pas encore fait : la distance (« à 5 km »), [Signaler] une demande, la note du client (lots 8.5 et 8.6).

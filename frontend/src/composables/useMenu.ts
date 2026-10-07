@@ -10,6 +10,7 @@ export interface LienMenu {
 type Groupe = 'reservations' | 'activite'
 
 const RESERVATIONS: LienMenu[] = [
+  { vers: '/mes-demandes', texte: 'Mes demandes' },
   { vers: '/rendez-vous', texte: 'Rendez-vous' },
   { vers: '/devis', texte: 'Devis' },
   { vers: '/factures', texte: 'Factures' },
@@ -17,6 +18,7 @@ const RESERVATIONS: LienMenu[] = [
 // Visible seulement des prestataires
 const ACTIVITE: LienMenu[] = [
   { vers: '/proposer', texte: 'Ma fiche' },
+  { vers: '/demandes-pres-de-chez-moi', texte: 'Demandes près de chez moi' },
   { vers: '/mon-agenda', texte: 'Mon agenda' },
   { vers: '/devis', texte: 'Devis' },
   { vers: '/factures', texte: 'Factures' },

@@ -56,9 +56,8 @@ def metier_du_calendrier(db: Session, prestataire: Prestataire, metier_id: int |
 
 
 def _rendez_vous_du_metier(db: Session, prestataire: Prestataire, metier_id: int, maintenant: datetime) -> list[RendezVous]:
-    """Rendez-vous à venir pris sur une annonce de ce métier (les seuls touchés par un changement de ce calendrier)."""
-    return [r for r in communs.actifs_a_venir(db, prestataire, maintenant)
-            if db.get_one(Annonce, r.annonce_id).metier_id == metier_id]
+    """Rendez-vous à venir de ce métier (les seuls touchés par un changement de ce calendrier)."""
+    return [r for r in communs.actifs_a_venir(db, prestataire, maintenant) if r.metier_id == metier_id]
 
 
 # ---------- Semaine type ----------
@@ -406,7 +405,7 @@ def horaires_libres(
     ))
     occupes = blocages + [
         (r.debut - pause, r.fin + pause) for r in pris if r.id != ignorer_rendez_vous_id
-        and (autres_metiers or db.get_one(Annonce, r.annonce_id).metier_id == annonce.metier_id)
+        and (autres_metiers or r.metier_id == annonce.metier_id)
     ]
 
     libres: list[datetime] = []

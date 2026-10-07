@@ -1,4 +1,5 @@
 // Demandes publiées par les clients (RM-DEMANDES.md) : ce que le serveur renvoie, et les mots montrés à l'écran.
+import type { BadgeEtat } from './prestataires'
 
 /** Une demande sur l'accueil : jamais le nom complet ni la rue */
 export interface DemandeVisible {
@@ -16,6 +17,37 @@ export interface DemandeVisible {
   cree_le: string
   nombre_photos: number
   a_moi: boolean
+  nombre_reponses: number
+  /** 10 prestataires ont déjà répondu */
+  complete: boolean
+  /** Pour un prestataire connecté : son métier, son rayon, pas complète (ou il a déjà répondu) */
+  peut_repondre: boolean
+  /** Pour un prestataire qui a déjà répondu : sa conversation avec le client */
+  conversation_id: number | null
+}
+
+/** Une de mes demandes, dans « Mes demandes » : avec son état et mon adresse */
+export interface MaDemande extends DemandeVisible {
+  statut: 'ouverte' | 'pourvue' | 'fermee' | 'expiree'
+  expire_le: string
+  adresse_ligne: string | null
+  adresse_complement: string | null
+  code_postal: string | null
+  latitude: number | null
+  longitude: number | null
+  cachee: boolean
+}
+
+export const REPONSES_MAX = 10
+
+export function badgeDemande(demande: MaDemande): { etat: BadgeEtat; texte: string } {
+  if (demande.cachee) return { etat: 'erreur', texte: 'cachée par l’administrateur' }
+  return {
+    ouverte: { etat: 'ok' as BadgeEtat, texte: 'ouverte' },
+    pourvue: { etat: 'ok' as BadgeEtat, texte: 'pourvue : prestataire choisi' },
+    fermee: { etat: 'neutre' as BadgeEtat, texte: 'fermée' },
+    expiree: { etat: 'attente' as BadgeEtat, texte: 'expirée' },
+  }[demande.statut]
 }
 
 export type Quand = 'des_que_possible' | 'sept_jours' | 'jour_precis' | 'pas_presse'

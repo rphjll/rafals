@@ -12,7 +12,10 @@ from app.modeles.fichiers import Fichier
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune
 from app.routes.dependances import Base, CompteConnecte, CompteOuPersonne, maintenant
+from app import reglages
 from app.services import demandes as service
+from app.services import prestataires as service_prestataires
+from app.services import propositions as service_propositions
 from app.services import stockage
 from app.services.erreurs import ErreurRegle
 from app.services.messagerie import Photo, nom_du_client
@@ -37,6 +40,10 @@ class DemandeVisible(BaseModel):
     cree_le: datetime
     nombre_photos: int
     a_moi: bool
+    nombre_reponses: int
+    complete: bool  # 10 prestataires ont déjà répondu
+    peut_repondre: bool  # pour un prestataire connecté : son métier, son rayon, pas complète (ou déjà répondu)
+    conversation_id: int | None  # pour un prestataire qui a déjà répondu : sa conversation avec le client
 
 
 class MaDemande(DemandeVisible):
@@ -69,7 +76,15 @@ class Modification(BaseModel):
 
 
 def _visible(db: Base, compte: Compte | None, demande: Demande) -> DemandeVisible:
+    reponses = service_propositions.nombre_reponses(db, demande.id)
+    prestataire = service_prestataires.profil_de(db, compte) if compte is not None else None
+    ma_reponse = service_propositions.reponse_de(db, prestataire, demande.id) if prestataire is not None else None
+    complete = reponses >= reglages.DEMANDE_REPONSES_MAX
+    peut = prestataire is not None and service_propositions.demande_sur_l_accueil(demande, maintenant()) and (
+        ma_reponse is not None or (not complete and service_propositions.peut_repondre(db, prestataire, demande, maintenant())))
     return DemandeVisible(
+        nombre_reponses=reponses, complete=complete, peut_repondre=peut,
+        conversation_id=ma_reponse.conversation_id if ma_reponse is not None else None,
         id=demande.id, titre=demande.titre, description=demande.description, metier_id=demande.metier_id,
         metier=db.get_one(Metier, demande.metier_id).nom, ville=db.get_one(Commune, demande.commune_id).nom,
         quand=demande.quand, jour=demande.jour, lieu=demande.lieu, budget_centimes=demande.budget_centimes,

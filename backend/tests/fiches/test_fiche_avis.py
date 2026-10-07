@@ -25,7 +25,7 @@ def test_fiche_avis(base: Session, decor) -> None:  # noqa: F811
     base.add(annonce)
     base.commit()
     rdv = RendezVous(**valeurs(RendezVous, 1, {
-        "client_id": compte.id, "prestataire_id": prestataire.id, "annonce_id": annonce.id, "remplace_id": None,
+        "client_id": compte.id, "prestataire_id": prestataire.id, "annonce_id": annonce.id, "metier_id": annonce.metier_id, "proposition_id": None, "remplace_id": None,
         "commune_id": None, "adresse_ligne": None, "code_postal": None, "debut": LE_14, "fin": LE_14 + timedelta(hours=1),
         "prix_centimes": 5000, "heures": None, "lieu": "chez_moi", "mode_paiement": "especes", "statut": "confirme",
         "absent": None, "absence_signalee_le": None, "contestation": None, "contestee_le": None, "absence_decision": None,

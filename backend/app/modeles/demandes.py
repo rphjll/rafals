@@ -1,8 +1,9 @@
-"""Miroir exact des tables demande, photo_demande_publiee (db/schema_v22.sql). Aucun calcul ici."""
+"""Miroir exact des tables demande, photo_demande_publiee (db/schema_v22.sql), reponse_demande, proposition, negociation
+(db/schema_v23.sql). Aucun calcul ici."""
 
 from datetime import date, datetime
 
-from sqlalchemy import BigInteger, Date, DateTime, Float, ForeignKey, Identity, Integer, Text, func
+from sqlalchemy import BigInteger, Boolean, Date, DateTime, Float, ForeignKey, Identity, Integer, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.modeles.base import Base
@@ -43,3 +44,43 @@ class PhotoDemandePubliee(Base):
     demande_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("demande.id"))
     fichier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("fichier.id"))
     ordre: Mapped[int] = mapped_column(Integer)
+
+
+class ReponseDemande(Base):
+    __tablename__ = "reponse_demande"
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    demande_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("demande.id"))
+    prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
+    conversation_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("conversation.id"))
+    cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Proposition(Base):
+    __tablename__ = "proposition"
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    conversation_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("conversation.id"))
+    demande_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("demande.id"))
+    metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
+    remplace_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("proposition.id"))
+    prix_centimes: Mapped[int] = mapped_column(Integer)
+    debut: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    fin: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    lieu: Mapped[str] = mapped_column(Text)
+    paiement_carte: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    paiement_especes: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    statut: Mapped[str] = mapped_column(Text, server_default="en_attente")
+    statut_change_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Negociation(Base):
+    __tablename__ = "negociation"
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    proposition_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("proposition.id"))
+    prix_centimes: Mapped[int] = mapped_column(Integer)
+    statut: Mapped[str] = mapped_column(Text, server_default="en_attente")
+    cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    repondu_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

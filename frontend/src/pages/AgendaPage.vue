@@ -42,11 +42,10 @@ const metier = computed(() => metiers.value.find((m) => m.id === metierId.value)
 const metierChoisi = computed({ get: () => metier.value?.id ?? 0, set: (id) => (metierId.value = id) })
 
 // Dans le calendrier d'un métier : ses rendez-vous, et ceux des autres métiers s'ils bloquent aussi ce calendrier
-const metierDeLAnnonce = computed(() => new Map(annonces.value.map((a) => [a.id, a.metier])))
 const rendezVousDuCalendrier = computed(() =>
   rendezVous.value.flatMap((r) => {
-    const sien = metierDeLAnnonce.value.get(r.annonce_id)
-    if (!sien || sien.id === metier.value?.id) return [r]
+    const sien = r.metier // porté par le rendez-vous lui-même (avant : lu dans son annonce)
+    if (sien.id === metier.value?.id) return [r]
     return agenda.value?.reglages.rendez_vous_bloque_autres_metiers ? [{ ...r, autreMetier: sien.nom }] : []
   }),
 )

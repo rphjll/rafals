@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md) : 4 entrées, puis le menu du compte.
+// En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md) : 4 entrées (5 une fois connecté, avec « Messages »),
+// puis le menu du compte.
 // Sous 768 px de large, le menu se replie derrière le bouton ☰.
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -7,6 +8,7 @@ import { messageErreur } from '../api'
 import { useCompte } from '../composables/useCompte'
 import { useMenu } from '../composables/useMenu'
 import { useMessage } from '../composables/useMessage'
+import { useNonLus } from '../composables/useNonLus'
 import AppBouton from './ui/AppBouton.vue'
 
 const menuOuvert = ref(false)
@@ -17,6 +19,8 @@ const routeur = useRouter()
 const { compte, chargementFait, seDeconnecter } = useCompte()
 const { groupe, estPrestataire, estSur } = useMenu()
 const { afficherMessage } = useMessage()
+const { nonLus, actualiserNonLus } = useNonLus()
+watch(compte, actualiserNonLus, { immediate: true })
 watch(
   () => route.fullPath,
   () => (menuOuvert.value = compteOuvert.value = false),
@@ -27,6 +31,8 @@ const liens = computed(() => [
   { vers: '/', texte: 'Accueil', actif: route.path === '/' },
   { vers: '/trouver', texte: 'Trouver un prestataire', actif: estSur('/trouver') },
   { vers: '/rendez-vous', texte: 'Mes réservations', actif: groupe.value === 'reservations' },
+  // Le compteur rouge : nombre de conversations avec du nouveau
+  ...(compte.value ? [{ vers: '/messages', texte: 'Messages', actif: estSur('/messages'), compteur: nonLus.value }] : []),
   { vers: '/proposer', texte: estPrestataire.value ? 'Mon activité' : 'Proposer mes services', actif: groupe.value === 'activite' },
 ])
 const liensCompte = computed(() => [
@@ -82,6 +88,13 @@ async function deconnexion() {
           :class="lien.actif ? 'bg-primaire-doux text-primaire' : 'text-texte'"
         >
           {{ lien.texte }}
+          <span
+            v-if="'compteur' in lien && lien.compteur"
+            class="ml-1 rounded-full bg-erreur px-2 py-0.5 text-xs font-bold text-sur-etat"
+            :aria-label="`${lien.compteur} conversation${lien.compteur > 1 ? 's' : ''} non lue${lien.compteur > 1 ? 's' : ''}`"
+          >
+            {{ lien.compteur }}
+          </span>
         </RouterLink>
         <!-- Tant qu'on ne sait pas si quelqu'un est connecté, on n'affiche rien (évite un clignotement) -->
         <div v-if="chargementFait" class="flex flex-col pt-2 md:pt-0 md:pl-2">

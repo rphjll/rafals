@@ -191,7 +191,11 @@ async function deplacer(debut: string) {
                 <AppBouton variante="danger" @click="aAnnuler = r">Annuler la demande</AppBouton>
               </template>
               <template v-else-if="dansLeDelai(r)">
-                <AppBouton variante="secondaire" @click="(aDeplacer = r), (erreurDeplacement = '')">Déplacer</AppBouton>
+                <AppBouton v-if="r.annonce_id" variante="secondaire" @click="(aDeplacer = r), (erreurDeplacement = '')">Déplacer</AppBouton>
+                <!-- Venu d'une proposition : c'est le prestataire qui a choisi l'heure -->
+                <AppBouton v-else variante="verrouille" :raison-verrou="`Ce rendez-vous vient d'une proposition : demandez un autre horaire à ${r.autre.nom} dans vos messages.`">
+                  Déplacer
+                </AppBouton>
                 <AppBouton variante="danger" @click="aAnnuler = r">Annuler…</AppBouton>
                 <span v-if="r.annulable_jusqu_au" class="text-[13.5px] text-texte-doux">
                   Annulation gratuite jusqu'au {{ momentCourt(r.annulable_jusqu_au) }}.
@@ -277,7 +281,7 @@ async function deplacer(debut: string) {
     <FenetreAvis :cible="aNoter" @fermer="aNoter = null" @enregistre="(aNoter = null), charger()" />
 
     <AppFenetre :ouverte="aDeplacer !== null" :titre="`Déplacer « ${aDeplacer?.titre} »`" @fermer="aDeplacer = null">
-      <div v-if="aDeplacer" class="flex flex-col gap-3 text-texte">
+      <div v-if="aDeplacer?.annonce_id" class="flex flex-col gap-3 text-texte">
         <p class="text-[14px] text-texte-doux">Actuellement : {{ plage(aDeplacer).toLowerCase() }}. Choisissez un nouvel horaire (même prix).</p>
         <ChoixHoraire :annonce-id="aDeplacer.annonce_id" :heures="aDeplacer.heures" @choisir="deplacer" />
         <AppAlerte v-if="erreurDeplacement">{{ erreurDeplacement }}</AppAlerte>

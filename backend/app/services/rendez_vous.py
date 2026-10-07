@@ -93,7 +93,7 @@ def reserver(db: Session, client: Compte, demande: Demande, maintenant: datetime
     prix = annonce.prix_centimes * (heures or 1) if annonce.forme_prix == "heure" and annonce.prix_centimes else annonce.prix_centimes
     automatique = prestataire.confirmation_automatique
     rdv = RendezVous(
-        client_id=client.id, prestataire_id=prestataire.id, annonce_id=annonce.id, commune_id=commune_id,
+        client_id=client.id, prestataire_id=prestataire.id, annonce_id=annonce.id, metier_id=annonce.metier_id, commune_id=commune_id,
         debut=demande.debut, fin=demande.debut + duree, titre=annonce.titre, prix_centimes=prix,
         heures=heures if annonce.forme_prix == "heure" else None, lieu=lieu, adresse_ligne=ligne, adresse_complement=complement,
         code_postal=code_postal, mode_paiement=demande.mode_paiement, statut="confirme" if automatique else "en_attente",
@@ -239,11 +239,14 @@ def deplacer(db: Session, client: Compte, rdv: RendezVous, nouveau_debut: dateti
         raise ErreurRegle("Un déplacement de ce rendez-vous attend déjà la réponse du prestataire.")
     if nouveau_debut.tzinfo is None:
         nouveau_debut = nouveau_debut.replace(tzinfo=PARIS)
+    if rdv.annonce_id is None:  # venu d'une proposition : c'est le prestataire qui a choisi l'heure
+        raise ErreurRegle("Ce rendez-vous vient d'une proposition : demandez un autre horaire au prestataire dans vos messages.")
     annonce = db.get_one(Annonce, rdv.annonce_id)
     _libre(db, prestataire, annonce, nouveau_debut, rdv.heures, maintenant, ignorer=rdv.id)
     automatique = prestataire.confirmation_automatique
     nouveau = RendezVous(
-        client_id=rdv.client_id, prestataire_id=rdv.prestataire_id, annonce_id=rdv.annonce_id, commune_id=rdv.commune_id,
+        client_id=rdv.client_id, prestataire_id=rdv.prestataire_id, annonce_id=rdv.annonce_id, metier_id=rdv.metier_id,
+        commune_id=rdv.commune_id,
         remplace_id=rdv.id, debut=nouveau_debut, fin=nouveau_debut + (rdv.fin - rdv.debut), titre=rdv.titre,
         prix_centimes=rdv.prix_centimes, heures=rdv.heures, lieu=rdv.lieu, adresse_ligne=rdv.adresse_ligne,
         adresse_complement=rdv.adresse_complement, code_postal=rdv.code_postal, mode_paiement=rdv.mode_paiement,

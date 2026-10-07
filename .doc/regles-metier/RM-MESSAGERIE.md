@@ -56,6 +56,7 @@ Tant que ce client et ce prestataire n'ont aucun rendez-vous ensemble, un numér
 - **Débloquer** : seule la personne qui a bloqué peut débloquer.
 - **Signalement d'une conversation** : il rejoint les signalements de l'administrateur (`RM-ADMINISTRATION.md`). Signalée par le client, elle vise le prestataire (classer, prévenir, bloquer le prestataire) ; signalée par le prestataire, elle vise le client (classer ou **prévenir** : un mail d'avertissement avec le texte de l'administrateur). L'administrateur lit alors le fil en clair, coordonnées comprises.
 - **Effacement après 3 ans** : une conversation signalée n'est pas effacée (un signalement n'est jamais effacé).
+- **Effacement après 3 ans, conversation avec une proposition ou une réponse à une demande** (précision du 07/10/2026, lot 8.3) : ses messages et leurs photos sont effacés, mais la conversation reste, vide, avec ses propositions (un rendez-vous peut en venir ; une proposition n'est jamais effacée). Ex. Karim et Mme Dupont ne se sont plus écrit depuis octobre 2026 : en octobre 2029 leurs messages disparaissent, la carte « Proposition acceptée · 60,00 € » reste.
 - **Compte fermé** : on ne peut plus écrire dans la conversation (« Cette personne a quitté rafals : on ne peut plus lui écrire. »).
 
 ## Qui peut faire quoi

@@ -384,7 +384,7 @@ def fixer_fin_metier(
         # RM-ANNONCES : les réservations de ce métier après la date de fin sont annulées
         lendemain = datetime.combine(fin_le + timedelta(days=1), datetime.min.time(), tzinfo=reglages.FUSEAU_AFFICHAGE)
         for rdv in communs.actifs_a_venir(db, prestataire, maintenant):
-            if rdv.debut >= lendemain and db.get_one(Annonce, rdv.annonce_id).metier_id == metier_id:
+            if rdv.debut >= lendemain and rdv.metier_id == metier_id:
                 communs.annuler_par_rafals(db, rdv, "Le prestataire n'exerce plus ce métier à cette date.",
                                            prestataire.compte_id, maintenant)
     journal.noter(

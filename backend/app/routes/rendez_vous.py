@@ -9,6 +9,7 @@ from sqlalchemy import select
 
 from app import reglages
 from app.modeles.comptes import Compte
+from app.modeles.metiers import Metier
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
 from app.routes.dependances import Administrateur, Base, CompteConnecte, maintenant
@@ -84,11 +85,16 @@ class ReglagesRendezVous(BaseModel):
     annulation_delai_heures: int
 
 
+def _metier(db: Base, rdv: RendezVous) -> dict:
+    return {"id": rdv.metier_id, "nom": db.get_one(Metier, rdv.metier_id).nom}
+
+
 class RendezVousVisible(BaseModel):
     """Ce que voit le client ou le prestataire. Les coordonnées de l'autre seulement quand elles sont permises."""
 
     id: int
-    annonce_id: int
+    annonce_id: int | None  # vide : rendez-vous venu d'une proposition (il ne se déplace pas)
+    metier: dict  # {id, nom} : le calendrier où tombe le rendez-vous
     remplace_id: int | None
     debut: datetime
     fin: datetime
@@ -158,7 +164,7 @@ def vu_par_le_client(db: Base, rdv: RendezVous) -> RendezVousVisible:
     confirme = rdv.statut == "confirme"
     telephone = db.get_one(Compte, prestataire.compte_id).telephone if confirme else None
     return RendezVousVisible(
-        id=rdv.id, annonce_id=rdv.annonce_id, remplace_id=rdv.remplace_id, debut=rdv.debut, fin=rdv.fin, titre=rdv.titre,
+        id=rdv.id, annonce_id=rdv.annonce_id, metier=_metier(db, rdv), remplace_id=rdv.remplace_id, debut=rdv.debut, fin=rdv.fin, titre=rdv.titre,
         prix_centimes=rdv.prix_centimes, heures=rdv.heures, lieu=rdv.lieu,
         adresse=_adresse(db, rdv) if (rdv.lieu == "chez_client" or confirme) else None,
         mode_paiement=rdv.mode_paiement, statut=rdv.statut, motif=rdv.motif, reponse_avant=rdv.reponse_avant,
@@ -176,7 +182,7 @@ def vu_par_le_prestataire(db: Base, prestataire: Prestataire, rdv: RendezVous) -
     visibles = service.coordonnees_client_visibles(db, prestataire, rdv.client_id, maintenant())
     client = db.get_one(Compte, rdv.client_id)
     return RendezVousVisible(
-        id=rdv.id, annonce_id=rdv.annonce_id, remplace_id=rdv.remplace_id, debut=rdv.debut, fin=rdv.fin, titre=rdv.titre,
+        id=rdv.id, annonce_id=rdv.annonce_id, metier=_metier(db, rdv), remplace_id=rdv.remplace_id, debut=rdv.debut, fin=rdv.fin, titre=rdv.titre,
         prix_centimes=rdv.prix_centimes, heures=rdv.heures, lieu=rdv.lieu, adresse=_adresse(db, rdv) if visibles else None,
         mode_paiement=rdv.mode_paiement, statut=rdv.statut, motif=rdv.motif, reponse_avant=rdv.reponse_avant,
         annulable_jusqu_au=None, absence=absence_visible(rdv), avis=_avis(db, rdv), peut_noter=False,

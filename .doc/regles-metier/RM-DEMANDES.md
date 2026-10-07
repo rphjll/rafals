@@ -51,7 +51,7 @@ Réponse de Raphael, mot pour mot : « faut que on pussie metre l'adresse et que
 - **Plan OpenStreetMap et non Google Maps** (choix de Claude, à confirmer par Raphael) : Google Maps demande un compte Google avec une carte bancaire et une clé, et envoie l'adresse des visiteurs à Google ; OpenStreetMap marche tout de suite, sans compte. Détail : `.doc/technique/API-EXTERNES.md` § 3.
 
 ## Précisions prises au lot 8.3, première partie (choix de Claude le 06/10/2026, en mode « sans question » ; à relire par Raphael)
-Construit : publier, lister sur l'accueil, « mes demandes », modifier, fermer, prolonger, expirer, photos. **Pas encore construit** : répondre, propositions, négociation, rendez-vous, demande « pourvue », cacher par l'administrateur.
+Construit : publier, lister sur l'accueil, « mes demandes », modifier, fermer, prolonger, expirer, photos. (Répondre, propositions et rendez-vous : seconde partie, plus haut.)
 - **Qui peut publier** : compte connecté, adresse mail vérifiée (et accord des parents avant 18 ans), comme pour réserver. Sinon : « Vérifiez votre adresse mail (et, avant 18 ans, l'accord de vos parents) pour publier une demande. »
 - **La liste de l'accueil se lit sans compte** ; elle montre 100 demandes au plus, la plus récente en haut. Une demande cachée, fermée, expirée, ou d'un compte fermé n'y est plus.
 - **Les photos demandent d'être connecté** (elles montrent souvent l'intérieur d'un logement). Sans compte, on lit seulement « 2 photos (connectez-vous pour les voir) ».
@@ -66,6 +66,24 @@ Construit : publier, lister sur l'accueil, « mes demandes », modifier, fermer,
 - **Budget** : en euros dans l'écran (« 40 » ou « 40,50 »), gardé en centimes.
 - Publier, modifier, fermer et prolonger sont écrits au journal des actions.
 - **Table des photos** : `photo_demande_publiee` (le nom `photo_demande` est déjà pris par les demandes de devis).
+
+## Précisions prises au lot 8.3, seconde partie (choix de Claude le 07/10/2026, en mode « sans question » ; à relire par Raphael)
+Construit : qui peut répondre, répondre, propositions, négociation du prix, rendez-vous, demande pourvue, rouvrir. **Pas encore construit** : les limites des prestataires sans SIRET, cacher une demande (administrateur), un devis en réponse à une demande.
+- **[Répondre]** : un 2e clic rouvre la même conversation, sans compter une 2e réponse. Une demande complète (10 réponses) reste ouverte à ceux qui ont déjà répondu.
+- **Le lieu d'une proposition vient de la demande** : « chez moi » → le prestataire vient chez le client ; « chez le prestataire » → le client va chez lui (son local doit être rempli dans « Ma fiche »).
+- **Durée proposée** : de 15 minutes à 12 heures. **L'heure** doit être à venir.
+- **Une nouvelle proposition remplace celle qui attendait** pour la même demande (l'ancienne passe « remplacée »). Une proposition refusée, retirée ou expirée n'est pas remplacée : la nouvelle est indépendante.
+  - Exemple : Karim propose 50 €, puis 45 € avant que Mme Dupont réponde → la carte à 50 € est « remplacée », seule celle à 45 € peut être acceptée.
+- **Carte bancaire** : la case n'est acceptée que si le prestataire a un SIRET vérifié et le paiement par carte activé. Si la carte n'est plus possible au moment d'accepter, le client paie en espèces (même règle que les annonces).
+- **Adresse du rendez-vous** : celle écrite dans la demande. Sans demande (le client a écrit en premier) : l'adresse de « Mon compte » ; s'il n'en a pas : « Indiquez d'abord votre adresse dans « Mon compte »… ».
+- **Titre du rendez-vous** : le titre de la demande ; sans demande, le nom du métier (ex. « Plombier »).
+- **Deux clients, la même heure** : le premier qui accepte a le rendez-vous ; l'autre lit « … a déjà un rendez-vous à cette heure-là ».
+- **Un rendez-vous venu d'une proposition ne se déplace pas tout seul** : le bouton [Déplacer] est verrouillé 🔒 (« demandez un autre horaire au prestataire dans vos messages »). Il s'annule comme les autres.
+- **Rouvrir** : seulement une demande pourvue dont le rendez-vous a été annulé (par le client ou le prestataire) ; elle repart pour 30 jours, s'il reste de la place parmi les 5.
+- **Paiement par carte jamais terminé** (30 minutes) : le rendez-vous est annulé comme une réservation ; la demande reste « pourvue » et le client peut la rouvrir.
+- **Une demande ne se modifie plus dès qu'un prestataire a répondu** : « Un prestataire a déjà répondu : fermez cette demande et publiez-en une autre pour la changer. »
+- **Dans le fil**, rafals écrit une ligne à chaque étape (a répondu, propose, a refusé, prix proposé, garde son prix, a accepté, a retiré, a choisi un autre prestataire).
+- **Le rendez-vous porte son métier** (table `rendez_vous`, rubrique `metier_id`) : c'est lui qui dit dans quel calendrier il tombe ; avant, on le lisait dans l'annonce.
 
 ## Répondre : une conversation, puis une proposition
 - [Répondre] ouvre la conversation entre ce prestataire et ce client (`RM-MESSAGERIE.md`), avec la demande rappelée en haut.

@@ -178,3 +178,5 @@ DEMANDE_DUREE = timedelta(days=30)
 DEMANDE_RAPPEL_AVANT = timedelta(days=3)  # mail « votre demande se ferme dans 3 jours »
 DEMANDE_LISTE_MAX = 100  # demandes montrées sur l'accueil
 TACHE_DEMANDES_MINUTES = 15
+DEMANDE_REPONSES_MAX = 10  # prestataires qui peuvent répondre à une même demande
+PROPOSITION_DUREE_MINUTES = (15, 12 * 60)  # durée d'un service proposé

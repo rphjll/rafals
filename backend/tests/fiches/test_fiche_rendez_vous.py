@@ -27,7 +27,8 @@ def test_fiche_rendez_vous(base: Session, decor) -> None:  # noqa: F811
     base.add(annonce)
     base.commit()
     talence = base.scalar(select(Commune).where(Commune.code_insee == "33522"))
-    liens = {"client_id": compte.id, "prestataire_id": prestataire.id, "annonce_id": annonce.id, "remplace_id": None}
+    liens = {"client_id": compte.id, "prestataire_id": prestataire.id, "annonce_id": annonce.id, "metier_id": plombier.id,
+             "proposition_id": None, "remplace_id": None}
     # Valeurs imposées par les contraintes : fin après début, listes de valeurs, adresse complète, attente limitée
     imposees = [
         {**liens, "commune_id": talence.id, "code_postal": "33400", "debut": LE_14, "fin": LE_14 + timedelta(hours=1),

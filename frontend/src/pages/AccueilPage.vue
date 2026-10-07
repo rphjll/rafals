@@ -5,6 +5,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
+import CarteDemande from '../components/demandes/CarteDemande.vue'
 import CartePublierDemande from '../components/demandes/CartePublierDemande.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
@@ -12,7 +13,7 @@ import AppBouton from '../components/ui/AppBouton.vue'
 import AppChamp from '../components/ui/AppChamp.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
-import { type DemandeVisible, texteBudget, texteQuand } from '../outils/demandes'
+import type { DemandeVisible } from '../outils/demandes'
 
 const routeur = useRouter()
 const { compte, renvoyerLienVerification } = useCompte()
@@ -98,30 +99,7 @@ async function renvoyerLien() {
         <h2 class="text-[26px] font-bold">Les demandes des clients</h2>
         <AppAlerte v-if="erreurDemandes">{{ erreurDemandes }}</AppAlerte>
         <ul v-else-if="demandesFiltrees.length" class="flex flex-col gap-3">
-          <li v-for="demande in demandesFiltrees" :key="demande.id" class="flex flex-col gap-2 rounded-rafals border border-bord bg-surface p-5">
-            <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-              <b class="text-[17px]">{{ demande.titre }}</b>
-              <b v-if="demande.budget_centimes" class="font-titre text-lg text-primaire">{{ texteBudget(demande.budget_centimes) }}</b>
-            </div>
-            <div class="flex flex-wrap gap-1.5">
-              <AppBadge etat="neutre">{{ demande.metier }}</AppBadge>
-              <AppBadge etat="neutre">{{ demande.ville }}</AppBadge>
-              <AppBadge etat="neutre">{{ texteQuand(demande) }}</AppBadge>
-              <AppBadge etat="neutre">{{ demande.lieu === 'chez_moi' ? 'Chez le client' : 'Chez le prestataire' }}</AppBadge>
-              <AppBadge v-if="demande.a_moi" etat="ok">Ma demande</AppBadge>
-            </div>
-            <p class="whitespace-pre-line text-texte-doux">{{ demande.description }}</p>
-            <!-- Les photos demandent d'être connecté : elles montrent souvent l'intérieur d'un logement -->
-            <div v-if="demande.nombre_photos && compte" class="flex flex-wrap gap-2">
-              <a v-for="n in demande.nombre_photos" :key="n" :href="`/api/demandes/${demande.id}/photos/${n}`" target="_blank" rel="noopener">
-                <img :src="`/api/demandes/${demande.id}/photos/${n}`" :alt="`Photo ${n} de la demande « ${demande.titre} »`" class="size-24 rounded-rafals border border-bord object-cover" />
-              </a>
-            </div>
-            <span class="text-[13px] text-texte-doux">
-              {{ demande.client }}<template v-if="demande.nombre_photos && !compte">
-                · {{ demande.nombre_photos }} photo{{ demande.nombre_photos > 1 ? 's' : '' }} (connectez-vous pour les voir)</template>
-            </span>
-          </li>
+          <li v-for="demande in demandesFiltrees" :key="demande.id"><CarteDemande :demande="demande" /></li>
         </ul>
         <p v-else-if="!chargementDemandes" class="rounded-rafals border border-bord bg-surface p-5 text-texte-doux">
           {{ besoin.trim() ? `Aucune demande ne contient « ${besoin.trim()} ».` : 'Aucune demande pour l’instant.' }}
