@@ -7,6 +7,17 @@ Entrée « Messages » de l'en-tête (seulement connecté), avec un **compteur r
 
 Pas connecté : titre « Messages », bandeau gris « Connectez-vous pour lire vos messages. », bouton [Se connecter].
 
+## Présentation depuis le 07/10/2026 (style « chaleureux »)
+Ce que fait la page ne change pas ; ce paragraphe remplace, pour la présentation, ce qui est écrit dans « Liste » et « Conversation » ci-dessous.
+- **Ordinateur** : une seule grande carte blanche. À gauche (300 px) la liste des conversations, toujours visible ; à droite le fil de la conversation ouverte. Sur `/messages` (aucun fil ouvert), la partie droite dit « Choisissez une conversation dans la liste. Une seule conversation par personne : tous vos échanges au même endroit. »
+- **Téléphone** : la liste seule sur `/messages` ; le fil seul sur `/messages/12`, avec un rond [‹] en haut à gauche pour revenir à la liste.
+- **Une ligne de la liste** : rond vert clair avec les initiales (« KB »), le nom, l'aperçu du dernier message, la date en petit, la pastille rouge des non lus à droite ; la conversation ouverte a un fond gris clair.
+- **Haut du fil** : initiales, nom, et le bouton [Plus…] qui montre ou cache [Signaler…] et [Bloquer…] (ou [Débloquer]) ; ils ne sont plus affichés en permanence.
+- **Bulles** : les miennes à droite, vertes à texte blanc ; celles de l'autre à gauche, gris clair ; coins très ronds.
+- **Pour écrire, une seule ligne** : un rond avec un appareil photo (« Joindre une photo (0 / 5) », caché à 5 photos), la zone de texte (une ligne, qui s'agrandit à la main), un rond vert avec une flèche pour envoyer. Ces deux ronds sont les seuls boutons du site sans texte ; leur nom est lu à voix haute. Pour un prestataire, dessous : bouton orange [Faire une proposition…].
+- **Carte d'une proposition en attente** : fond vert clair, le jour et l'heure en gras à gauche, le prix dans une pastille verte à droite. Répondue ou retirée : fond gris clair, estompée.
+- La liste est relue après chaque lecture du fil (toutes les 15 secondes).
+
 ## Liste (`/messages`)
 1. Titre « Messages », puis « Une seule conversation par personne : tous vos échanges au même endroit. »
 2. Un cadre, une ligne par conversation, la plus récente en haut. Chaque ligne est cliquable en entier → `/messages/12`.

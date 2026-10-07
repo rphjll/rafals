@@ -48,15 +48,15 @@ async function agir(demande: MaDemande, action: 'fermer' | 'prolonger' | 'rouvri
 <template>
   <div class="mx-auto flex max-w-[760px] flex-col gap-5">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="text-[28px] font-bold">Mes demandes</h1>
-      <AppBouton @click="routeur.push('/')">Publier une demande</AppBouton>
+      <h1 class="text-[clamp(28px,4.5vw,40px)] font-black">Mes demandes</h1>
+      <AppBouton variante="accent" @click="routeur.push('/')">Publier une demande</AppBouton>
     </div>
     <template v-if="chargementFait && !compte">
       <AppAlerte etat="neutre">Connectez-vous pour voir vos demandes.</AppAlerte>
       <div><AppBouton @click="routeur.push('/connexion')">Se connecter</AppBouton></div>
     </template>
     <AppAlerte v-else-if="erreur">{{ erreur }}</AppAlerte>
-    <div v-else-if="demandes?.length" class="flex flex-col gap-3">
+    <div v-else-if="demandes?.length" class="flex flex-col gap-4">
       <CarteDemande v-for="demande in demandes" :key="demande.id" :demande="demande">
         <AppBadge :etat="badgeDemande(demande).etat">{{ badgeDemande(demande).texte }}</AppBadge>
         <template v-if="demande.statut === 'ouverte'">
@@ -73,7 +73,7 @@ async function agir(demande: MaDemande, action: 'fermer' | 'prolonger' | 'rouvri
         </template>
       </CarteDemande>
     </div>
-    <p v-else-if="demandes" class="rounded-rafals border border-bord bg-surface p-5 text-texte-doux">
+    <p v-else-if="demandes" class="rounded-carte border-2 border-dashed border-bord p-5 text-texte-doux">
       Aucune demande pour l'instant. Publiez-en une depuis l'accueil : les prestataires proches vous répondent.
     </p>
 

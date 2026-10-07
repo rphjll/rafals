@@ -1,5 +1,5 @@
-// Pictogrammes des dossiers de métiers (bulles de l'accueil, tuiles de « Trouver un prestataire ») : un tracé par
-// code de dossier, dessiné dans une case de 24 x 24, et une teinte de la charte. Dossier inconnu : la grille.
+// Pictogrammes au trait : dossiers de métiers (bulles de l'accueil, tuiles de « Trouver un prestataire »), entrées du
+// menu, photo et envoi dans les messages. Un tracé par code, dessiné dans une case de 24 x 24. Code inconnu : la grille.
 
 const GRILLE = 'M4 4h6.5v6.5H4zM13.5 4H20v6.5h-6.5zM4 13.5h6.5V20H4zM13.5 13.5H20V20h-6.5z'
 
@@ -18,6 +18,14 @@ const TRACES: Record<string, string> = {
   'auto-transport': 'M4 16v-4l2-5h12l2 5v4zM4 12h16M7 16v2M17 16v2M7.5 14h.01M16.5 14h.01',
   'numerique-bureau': 'M4 5h16v11H4zM9 20h6M12 16v4',
   'services-personne': 'M12 11a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-6 8-6s8 2 8 6',
+  // Entrées du menu (barre du bas sur téléphone)
+  'menu-accueil': 'M3 11l9-8 9 8M5 10v10h14V10',
+  'menu-trouver': 'M11 18a7 7 0 100-14 7 7 0 000 14zM20 20l-3.5-3.5',
+  'menu-reservations': 'M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2zM3 10h18M8 3v4M16 3v4',
+  'menu-messages': 'M4 5h16v11H9l-5 4z',
+  'menu-activite': 'M5 7h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2zM9 7V4h6v3',
+  appareil: 'M5 7h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2zM12 17a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM8 7l1.5-3h5L16 7',
+  envoyer: 'M4 12l16-8-6 16-3-6z',
 }
 
 // Une couleur par dossier, dans l'ordre, puis on recommence (noms écrits en entier pour Tailwind)

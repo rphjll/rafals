@@ -2,6 +2,7 @@
 // Structure commune : l'en-tête en haut, la page en dessous, le message court par-dessus.
 import { onMounted, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+import AppBarreBas from './components/AppBarreBas.vue'
 import AppEntete from './components/AppEntete.vue'
 import AppSousMenu from './components/AppSousMenu.vue'
 import AppMessage from './components/ui/AppMessage.vue'
@@ -19,11 +20,12 @@ watchEffect(() => document.documentElement.classList.toggle('style-classique', r
   <div class="min-h-screen bg-fond text-texte">
     <AppEntete />
     <AppSousMenu />
-    <main class="px-4 pt-7 pb-16">
+    <main class="px-4 pt-7 pb-28 md:pb-16">
       <div class="mx-auto max-w-[1080px]">
         <RouterView />
       </div>
     </main>
+    <AppBarreBas />
     <AppMessage />
   </div>
 </template>

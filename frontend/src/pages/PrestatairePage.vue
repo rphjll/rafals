@@ -66,7 +66,7 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-[880px] flex-col gap-4">
+  <div class="flex w-full flex-col gap-4">
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
 
     <template v-if="prestataire">
@@ -78,41 +78,46 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
         <RouterLink to="/proposer" class="font-semibold underline">Mon activité</RouterLink>
       </AppAlerte>
 
-      <AppSection>
-        <div class="grid items-start gap-4 sm:grid-cols-[96px_1fr]">
-          <AvatarPrestataire :id="prestataire.id" :nom="prestataire.nom_affiche" :a-une-photo="prestataire.a_une_photo" taille="grande" />
-          <div class="flex flex-col gap-2">
-            <div class="flex flex-wrap items-center gap-2">
-              <h1 class="text-[26px] font-bold">{{ prestataire.nom_affiche }}</h1>
-              <AppBadge v-if="prestataire.siret_verifie" etat="ok">SIRET vérifié</AppBadge>
-            </div>
-            <p v-if="prestataire.nombre_avis" class="text-[14px]">
-              <b class="text-accent">★ {{ noteLisible(prestataire.note ?? 0) }}</b>
-              <span class="text-texte-doux"> ({{ prestataire.nombre_avis }} avis)</span>
-            </p>
-            <div v-else><AppBadge etat="attente">Nouveau sur rafals</AppBadge></div>
-            <p class="text-[14px] text-texte-doux">
-              <template v-if="prestataire.metiers.length">
-                {{ prestataire.metiers[0]?.nom }}
-                <template v-if="prestataire.metiers.length > 1">
-                  · aussi {{ prestataire.metiers.slice(1).map((m) => m.nom).join(', ') }}
-                </template>
-              </template>
-            </p>
-            <p class="text-[14px] text-texte-doux">
-              Part de {{ prestataire.ville }}, se déplace jusqu'à {{ prestataire.distance_km }} km
-            </p>
-            <AppAlerte v-if="prestataire.absences" etat="attente">
-              {{ prestataire.absences }} absence{{ prestataire.absences > 1 ? 's' : '' }} sans prévenir ces 6 derniers mois
-            </AppAlerte>
-            <p v-if="prestataire.presentation" class="whitespace-pre-line">{{ prestataire.presentation }}</p>
-            <div v-if="!monProfil" class="flex flex-col gap-2">
-              <div><AppBouton @click="ecrire">Écrire à {{ prenom }}</AppBouton></div>
-              <AppAlerte v-if="erreurEcrire">{{ erreurEcrire }}</AppAlerte>
+      <!-- Ordinateur : la fiche à gauche, la carte « Besoin de Karim ? » à droite, qui reste visible.
+           Téléphone : la présentation, la carte, puis les annonces et les avis. -->
+      <div class="grid items-start gap-8" :class="monProfil ? '' : 'md:grid-cols-[1fr_340px]'">
+        <div class="flex min-w-0 flex-col gap-6">
+          <div class="grid items-center gap-5 sm:grid-cols-[auto_1fr]">
+            <AvatarPrestataire :id="prestataire.id" :nom="prestataire.nom_affiche" :a-une-photo="prestataire.a_une_photo" taille="grande" />
+            <div class="flex min-w-0 flex-col gap-2">
+              <h1 class="text-[clamp(28px,4.5vw,40px)] leading-tight font-black">{{ prestataire.nom_affiche }}</h1>
+              <p v-if="prestataire.nombre_avis">
+                <b class="text-accent">★ {{ noteLisible(prestataire.note ?? 0) }}</b>
+                <span class="text-texte-doux"> · {{ prestataire.nombre_avis }} avis</span>
+              </p>
+              <div class="flex flex-wrap gap-1.5">
+                <AppBadge v-if="!prestataire.nombre_avis" etat="attente">Nouveau sur rafals</AppBadge>
+                <AppBadge v-if="prestataire.siret_verifie" etat="ok">SIRET vérifié</AppBadge>
+              </div>
             </div>
           </div>
+          <div class="flex flex-col gap-1 text-texte-doux">
+            <p v-if="prestataire.metiers.length">
+              <b class="text-texte">{{ prestataire.metiers[0]?.nom }}</b>
+              <template v-if="prestataire.metiers.length > 1">
+                · aussi {{ prestataire.metiers.slice(1).map((m) => m.nom).join(', ') }}
+              </template>
+            </p>
+            <p>Part de {{ prestataire.ville }}, se déplace jusqu'à {{ prestataire.distance_km }} km</p>
+          </div>
+          <AppAlerte v-if="prestataire.absences" etat="attente">
+            {{ prestataire.absences }} absence{{ prestataire.absences > 1 ? 's' : '' }} sans prévenir ces 6 derniers mois
+          </AppAlerte>
+          <p v-if="prestataire.presentation" class="max-w-[65ch] text-[16.5px] whitespace-pre-line">{{ prestataire.presentation }}</p>
         </div>
-      </AppSection>
+
+        <aside v-if="!monProfil" class="flex flex-col gap-3 rounded-carte bg-fonce p-6 text-sur-fonce md:sticky md:top-24">
+          <h2 class="text-[22px] font-extrabold">Besoin de {{ prenom }} ?</h2>
+          <AppBouton variante="accent" pleine-largeur @click="ecrire">Écrire à {{ prenom }}</AppBouton>
+          <AppAlerte v-if="erreurEcrire">{{ erreurEcrire }}</AppAlerte>
+          <p class="text-[13.5px] text-sur-fonce-doux">Son téléphone et son adresse vous sont donnés après une réservation.</p>
+        </aside>
+      </div>
 
       <AppSection titre="Ses annonces">
         <p v-if="!prestataire.annonces.length" class="text-texte-doux">
@@ -139,7 +144,7 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
       <AppSection titre="Avis">
         <template v-if="avis.length">
           <div class="flex flex-wrap items-center gap-3.5">
-            <span class="text-[34px] font-bold">{{ noteLisible(prestataire.note ?? 0) }}</span>
+            <span class="text-[40px] leading-none font-black">{{ noteLisible(prestataire.note ?? 0) }}</span>
             <div>
               <div class="text-lg tracking-wide text-accent">{{ etoiles(prestataire.note ?? 0) }}</div>
               <span class="text-[13.5px] text-texte-doux">{{ prestataire.nombre_avis }} avis de clients ayant eu un rendez-vous</span>
@@ -156,7 +161,6 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
         </template>
         <p v-else class="text-[14px] text-texte-doux">Pas encore d'avis.</p>
       </AppSection>
-      <p class="text-[13px] text-texte-doux">Le téléphone et l'adresse sont donnés après une réservation.</p>
       <BoutonSignaler v-if="!monProfil" :prestataire-id="prestataire.id" :nom-prestataire="prestataire.nom_affiche" />
     </template>
   </div>

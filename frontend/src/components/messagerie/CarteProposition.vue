@@ -81,22 +81,24 @@ const repondreAuPrix = (oui: boolean) =>
 
 <template>
   <div
-    class="flex flex-col gap-2 rounded-rafals border bg-surface p-4"
-    :class="enAttente ? 'border-primaire' : 'border-bord opacity-80'"
+    class="flex flex-col gap-2 rounded-carte p-4"
+    :class="enAttente ? 'bg-teinte-vert text-teinte-vert-texte' : 'bg-fond opacity-80'"
   >
     <div class="flex flex-wrap items-center justify-between gap-2">
-      <span class="text-[13px] text-texte-doux">
+      <span class="text-[13px] font-bold">
         {{ cote === 'client' ? `Proposition de ${avec}` : 'Votre proposition' }}<template v-if="proposition.demande_titre">
           · « {{ proposition.demande_titre }} »</template>
       </span>
       <AppBadge :etat="badge.etat">{{ badge.texte }}</AppBadge>
     </div>
-    <b class="font-titre text-2xl text-primaire">{{ prix(proposition.prix_centimes) }}</b>
-    <span>{{ quandEtOu(proposition, cote) }}</span>
-    <span class="text-[13px] text-texte-doux">Paiement : {{ textePaiement(proposition) }}</span>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <b class="text-[17px]">{{ quandEtOu(proposition, cote) }}</b>
+      <b class="rounded-full bg-primaire px-4 py-1 text-xl whitespace-nowrap text-primaire-texte tabular-nums">{{ prix(proposition.prix_centimes) }}</b>
+    </div>
+    <span class="text-[13px]">Paiement : {{ textePaiement(proposition) }}</span>
 
     <!-- Le client a proposé un autre prix : le prestataire accepte ou refuse ce prix -->
-    <div v-if="enAttente && negociation" class="flex flex-col gap-2 rounded-rafals bg-attente-doux p-3">
+    <div v-if="enAttente && negociation" class="flex flex-col gap-2 rounded-rafals bg-attente-doux p-3 text-texte">
       <span>
         Prix proposé par {{ cote === 'client' ? 'vous' : avec }} : <b>{{ prix(negociation.prix_centimes) }}</b>
         au lieu de {{ prix(proposition.prix_centimes) }}. Le jour, l'heure et le reste ne changent pas.

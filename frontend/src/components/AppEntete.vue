@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md) : 4 entrées (5 une fois connecté, avec « Messages »),
 // puis le menu du compte.
-// Sous 768 px de large, le menu se replie derrière le bouton ☰.
+// Sous 768 px de large, les entrées passent dans la barre du bas (AppBarreBas) ; ☰ ne garde que le compte.
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { messageErreur } from '../api'
@@ -17,24 +17,16 @@ const zoneCompte = ref<HTMLElement | null>(null)
 const route = useRoute()
 const routeur = useRouter()
 const { compte, chargementFait, seDeconnecter } = useCompte()
-const { groupe, estPrestataire, estSur } = useMenu()
+const { estSur, entrees: liens } = useMenu()
 const { afficherMessage } = useMessage()
-const { nonLus, actualiserNonLus } = useNonLus()
+const { actualiserNonLus } = useNonLus()
 watch(compte, actualiserNonLus, { immediate: true })
 watch(
   () => route.fullPath,
   () => (menuOuvert.value = compteOuvert.value = false),
 )
 
-// Les pages de chaque groupe sont dans le sous-menu (AppSousMenu), sous l'en-tête
-const liens = computed(() => [
-  { vers: '/', texte: 'Accueil', actif: route.path === '/' },
-  { vers: '/trouver', texte: 'Trouver un prestataire', actif: estSur('/trouver') },
-  { vers: '/rendez-vous', texte: 'Mes réservations', actif: groupe.value === 'reservations' },
-  // Le compteur rouge : nombre de conversations avec du nouveau
-  ...(compte.value ? [{ vers: '/messages', texte: 'Messages', actif: estSur('/messages'), compteur: nonLus.value }] : []),
-  { vers: '/proposer', texte: estPrestataire.value ? 'Mon activité' : 'Proposer mes services', actif: groupe.value === 'activite' },
-])
+// Les entrées principales (« liens ») viennent de useMenu : la barre du bas, sur téléphone, montre les mêmes
 const liensCompte = computed(() => [
   { vers: '/compte', texte: 'Mon compte' },
   // Visible seulement des administrateurs (lot 1.4)
@@ -84,12 +76,12 @@ async function deconnexion() {
           v-for="lien in liens"
           :key="lien.vers"
           :to="lien.vers"
-          class="rounded-bouton px-3 py-2.5 font-bold hover:bg-primaire-doux hover:text-primaire md:py-2"
+          class="rounded-bouton px-3 py-2.5 font-bold hover:bg-primaire-doux hover:text-primaire max-md:hidden md:py-2"
           :class="lien.actif ? 'bg-primaire-doux text-primaire' : 'text-texte'"
         >
           {{ lien.texte }}
           <span
-            v-if="'compteur' in lien && lien.compteur"
+            v-if="lien.compteur"
             class="ml-1 rounded-full bg-erreur px-2 py-0.5 text-xs font-bold text-sur-etat"
             :aria-label="`${lien.compteur} conversation${lien.compteur > 1 ? 's' : ''} non lue${lien.compteur > 1 ? 's' : ''}`"
           >

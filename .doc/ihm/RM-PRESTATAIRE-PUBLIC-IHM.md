@@ -2,6 +2,13 @@
 
 > Fichiers : `frontend/src/pages/PrestatairePage.vue`, `frontend/src/components/prestataire/AvatarPrestataire.vue`. Construit au lot 4.2 (30/09/2026). Règles : `RM-RECHERCHE.md` (précisions du lot 4.1). Maquette : `maquette-lot-4.2-recherche.html` (écran 3).
 
+## Présentation depuis le 07/10/2026 (style « chaleureux »)
+Ce que fait la page ne change pas ; pour la présentation, ce paragraphe remplace le début de « Page `/prestataires/12` » ci-dessous.
+- La page prend toute la largeur (1080 px) au lieu de 880 px.
+- **En haut, deux colonnes sur ordinateur** : à gauche la photo de profil ronde (ou les initiales), le nom en très grand, « ★ 4,8 · 23 avis », les badges « Nouveau sur rafals » / « SIRET vérifié », puis le métier, la ville et la distance, l'alerte des absences, la présentation. À droite, une **carte vert foncé « Besoin de Karim ? »** (340 px) avec le bouton orange [Écrire à Karim] sur toute la largeur et la phrase « Son téléphone et son adresse vous sont donnés après une réservation. » ; elle reste visible quand on fait défiler. Sur téléphone, elle vient juste sous la présentation. Sur sa propre page, pas de carte.
+- Dessous, sur toute la largeur : « Ses annonces », « Avis » (note en très grand), puis [Signaler ce prestataire…].
+- Pas encore fait : les photos du prestataire en grand (elles n'existent pas encore dans la base : prévues au niveau 9).
+
 ## Page `/prestataires/12`
 Ouverte à tous, même sans compte. Visible seulement si l'activité du prestataire est active (sinon « Ce prestataire n'existe pas. ») ; son auteur la voit toujours. On y arrive depuis les résultats de recherche ou le nom du prestataire sur la page d'une annonce.
 

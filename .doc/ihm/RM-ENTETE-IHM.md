@@ -22,7 +22,7 @@ Bandeau blanc (`surface`) collé en haut de toutes les pages, bordure fine en ba
      3. bouton secondaire [Se déconnecter] → accueil + message vert « Vous êtes déconnecté. »
    - La liste se referme : par un 2ᵉ clic sur la pastille, un clic ailleurs, la touche Échap, ou un changement de page.
 
-L'entrée du groupe affiché est surlignée (fond `primaire-doux`, texte `primaire`). Survol : même effet. Depuis le 07/10/2026 (style « chaleureux ») les entrées sont en forme de pastille (`rounded-bouton`) et en gras ; le logo utilise `font-marque`. La barre de 5 boutons en bas sur téléphone, dessinée dans la maquette, n'est pas encore faite. Sur « Mon compte » ou « Administration », c'est le contour de la pastille qui passe au vert.
+L'entrée du groupe affiché est surlignée (fond `primaire-doux`, texte `primaire`). Survol : même effet. Depuis le 07/10/2026 (style « chaleureux ») les entrées sont en forme de pastille (`rounded-bouton`) et en gras ; le logo utilise `font-marque`. Sur « Mon compte » ou « Administration », c'est le contour de la pastille qui passe au vert.
 
 ## Sous-menu (sous l'en-tête, au-dessus de la page)
 Bandeau blanc avec une ligne d'onglets ; la page affichée est soulignée en vert. Il n'apparaît que sur les pages d'un groupe. **Les pages elles-mêmes ne changent pas** (en particulier « Mon agenda »).
@@ -35,6 +35,9 @@ Bandeau blanc avec une ligne d'onglets ; la page affichée est soulignée en ver
 - « Devis » et « Factures » sont dans les deux groupes (ce sont les mêmes pages) : on reste dans le groupe d'où l'on vient. Ex. Julie clique « Mon activité » puis « Devis » : le sous-menu « Mon activité » reste affiché. Arrivée directe par un lien : groupe « Mes réservations ».
 - Sur « Proposer mes services » sans profil de prestataire : pas de sous-menu.
 - Sur un petit écran, la ligne d'onglets défile sur le côté.
+
+## Barre du bas sur téléphone (ajoutée le 07/10/2026, `frontend/src/components/AppBarreBas.vue`)
+Sous 768 px, les entrées principales quittent le menu ☰ et vont dans une barre blanche arrondie fixée en bas de l'écran, sur toutes les pages : un pictogramme et un mot court par entrée — « Accueil », « Trouver », « Réservations », « Messages » (seulement connecté, avec la pastille rouge des non lus), « Proposer » (ou « Activité » pour un prestataire). L'entrée de la page affichée est en vert sur fond vert clair. L'en-tête et la barre lisent la même liste (`useMenu`, `entrees`). Le menu ☰ ne garde que le compte : « Mon compte », « Administration », [Se déconnecter], ou [Se connecter]. Le message court de 3 secondes s'affiche au-dessus de la barre. **Ce paragraphe remplace la 2ᵉ ligne ci-dessous** (« les 4 entrées, puis un trait… »).
 
 ## Sous 768 px de large (téléphone, petite tablette)
 - Le menu disparaît ; un bouton ☰ apparaît à droite (libellé lu à voix haute : « Ouvrir le menu » / « Fermer le menu »).
