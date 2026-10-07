@@ -4,6 +4,7 @@ import pytest
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
+from app import reglages
 from app.modeles.prestataires import Commune
 from app.services.communes import distance_km
 from app.services.prestataires import siret_valide
@@ -245,6 +246,54 @@ def test_photo_jpg_acceptee_et_visible(fabrique_compte, profil_karim, client) ->
 
     assert depot.json()["a_une_photo"] is True
     assert vue.status_code == 200 and vue.content == JPG
+
+
+def test_photos_de_travaux_ajout_rang_et_retrait(fabrique_compte, profil_karim, client) -> None:
+    # RM-PRESTATAIRES § « Sans annonces » : des photos de son travail sur le profil, visibles par tous
+    karim = fabrique_compte()
+    identifiant = devenir(karim, profil_karim).json()["id"]
+    autre = b"\xff\xd8\xff\xe0" + b"salle de bain" * 50
+
+    karim.client.post("/api/moi/prestataire/photos", files={"fichier": ("cuisine.jpg", JPG, "image/jpeg")})
+    depot = karim.client.post("/api/moi/prestataire/photos", files={"fichier": ("bain.jpg", autre, "image/jpeg")})
+
+    assert depot.status_code == 200 and depot.json()["photos"] == [1, 2]
+    assert depot.json()["a_une_photo"] is False  # la photo de profil est une autre rubrique
+    assert client.get(f"/api/prestataires/{identifiant}").json()["photos"] == [1, 2]
+    assert client.get(f"/api/prestataires/{identifiant}/photos/2").content == autre
+
+    retrait = karim.client.post("/api/moi/prestataire/photos/1/retirer")
+
+    assert retrait.status_code == 200 and retrait.json()["photos"] == [1]  # la n° 2 est remontée d'un rang
+    assert client.get(f"/api/prestataires/{identifiant}/photos/1").content == autre
+    assert client.get(f"/api/prestataires/{identifiant}/photos/2").status_code == 404
+    assert karim.client.post("/api/moi/prestataire/photos/5/retirer").status_code == 404
+
+
+def test_photos_de_travaux_10_au_plus_et_formats(fabrique_compte, profil_karim, monkeypatch) -> None:
+    monkeypatch.setattr(reglages, "PRESTATAIRE_PHOTOS_MAX", 2)
+    karim = fabrique_compte()
+    devenir(karim, profil_karim)
+
+    refus_pdf = karim.client.post("/api/moi/prestataire/photos", files={"fichier": ("cv.pdf", PDF, "application/pdf")})
+    for _ in range(2):
+        assert karim.client.post("/api/moi/prestataire/photos", files={"fichier": ("a.jpg", JPG, "image/jpeg")}).status_code == 200
+    de_trop = karim.client.post("/api/moi/prestataire/photos", files={"fichier": ("a.jpg", JPG, "image/jpeg")})
+
+    assert refus_pdf.status_code == 400 and "envoyez un JPG, PNG" in refus_pdf.json()["detail"]
+    assert de_trop.status_code == 400 and "Au plus 2 photos" in de_trop.json()["detail"]
+
+
+def test_photos_de_travaux_cachees_en_pause_sauf_pour_leur_auteur(fabrique_compte, profil_karim, client) -> None:
+    karim = fabrique_compte()
+    identifiant = devenir(karim, profil_karim).json()["id"]
+    karim.client.post("/api/moi/prestataire/photos", files={"fichier": ("cuisine.jpg", JPG, "image/jpeg")})
+    karim.client.post("/api/moi/prestataire/statut", json={"action": "pause"})
+
+    assert client.get(f"/api/prestataires/{identifiant}/photos/1").status_code == 404
+    assert karim.client.get(f"/api/prestataires/{identifiant}/photos/1").status_code == 200
+    assert fabrique_compte().client.post("/api/moi/prestataire/photos",
+                                         files={"fichier": ("a.jpg", JPG, "image/jpeg")}).status_code == 404  # pas prestataire
 
 
 def test_photo_pdf_refusee(fabrique_compte, profil_karim) -> None:

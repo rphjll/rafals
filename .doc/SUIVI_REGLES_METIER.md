@@ -20,7 +20,7 @@
 | 04 | 2 — Objets communs | Métiers et catégories | La grande liste, les dossiers, la recherche par lettres | validé et formalisé (28/09/2026) | `regles-metier/RM-METIERS.md` |
 | 05 | 3 — Cœur | Annonces | Contenu, prix, ville, modes de paiement (espèces seulement sans SIRET) | validé et formalisé (29/09/2026) ; **annonces retirées par Raphael le 04/10/2026** (pas encore construit) : remplacées par `RM-PRESTATAIRES.md` § « Sans annonces » | `regles-metier/RM-ANNONCES.md` |
 | 06 | 3 — Cœur | Agenda et disponibilités | Horaires, congés, créneaux libres | validé et formalisé (29/09/2026), modifié le 03/10/2026 (un calendrier par métier, ouvertures exceptionnelles) | `regles-metier/RM-AGENDA.md` |
-| 07 | 4 — Action principale | Recherche | Métier + ville, ordre des résultats | validé et formalisé (30/09/2026) | `regles-metier/RM-RECHERCHE.md` |
+| 07 | 4 — Action principale | Recherche | Métier + ville, ordre des résultats | validé et formalisé (30/09/2026) ; **07/10/2026** : sans annonces + une rubrique par dossier (demande et maquette validées par Raphael ; détails proposés par Claude, à valider) | `regles-metier/RM-RECHERCHE.md` |
 | 08 | 4 — Action principale | Rendez-vous | Réservation, confirmation, annulation, absence | validé et formalisé (30/09/2026) | `regles-metier/RM-RENDEZ-VOUS.md` |
 | 09 | 4 — Action principale | Avis | Qui note, quand, modération | validé et formalisé (30/09/2026) | `regles-metier/RM-AVIS.md` |
 | 10 | 5 — Argent | Devis | Création, acceptation, passage en facture | validé et formalisé (02/10/2026) | `regles-metier/RM-DEVIS.md` |
@@ -35,7 +35,7 @@
 | 19 | 8 — Comme AlloVoisins | Messagerie | Messages privés entre un client et un prestataire | validé et formalisé (04/10/2026) | `regles-metier/RM-MESSAGERIE.md` |
 | 20 | 8 — Comme AlloVoisins | Notation dans les deux sens | Le prestataire note aussi le client | validé et formalisé (04/10/2026) | `regles-metier/RM-AVIS.md` (section « Notation dans les deux sens ») |
 | 21 | 8 — Comme AlloVoisins | Application à installer | rafals sur l'écran d'accueil du téléphone, avec les notifications | validé et formalisé (04/10/2026) | `regles-metier/RM-APPLICATION.md` |
-| 22 | 10 — Faire ce que fait AlloVoisins | Mon activité | Les chiffres du haut de la page (demandes, rendez-vous, devis, argent encaissé) et la barre de la TVA | rédigé le 07/10/2026, **à valider par Raphael** | `regles-metier/RM-MON-ACTIVITE.md` |
+| 22 | 10 — Faire ce que fait AlloVoisins | Mon activité | Les chiffres du haut de la page (demandes, rendez-vous, devis, argent encaissé), la barre de la TVA, et « Mes clients » (qui y figure, ce qu'on montre, coordonnées 3 mois) | rédigé le 07/10/2026, **à valider par Raphael** | `regles-metier/RM-MON-ACTIVITE.md` |
 
 ## Décisions en attente
 - ⚠️ Seuil de TVA de 37 500 € montré dans « Mon activité » : à confirmer par un comptable avant la mise en ligne (sujet 22).

@@ -13,7 +13,11 @@ Ce qu'un prestataire renseigne sur rafals (métiers, zone, SIRET) et quand les c
 ## Sans annonces : le prestataire se présente (décision de Raphael du 04/10/2026)
 Réponse de Raphael, mot pour mot : « je vais enlever le sistème d'annonce car c trop dur je vais plutot faire en sorte que ca soit les comptes qui se présentent et les clients qui postes des demandes et les prestataires qui acceptent ou non ou ne font rien ». Puis choix « b » : enlever vraiment les annonces. MLD validé par Raphael le 04/10/2026 (« oui ») : `.doc/mld/MLD-retrait-annonces.html`. Les lignes « (choix de Claude) » ont été proposées avec le MLD.
 
-⚠️ **Pas encore construit** : à faire après les lots 8.3 et 8.4 (demandes et propositions). D'ici là, le code suit encore `RM-ANNONCES.md`.
+⚠️ **Construit en partie le 07/10/2026** (demande de Raphael pour « Trouver un prestataire ») : les **photos de son travail** (table `photo_prestataire`, `db/schema_v24.sql`) et « **visible dès que le profil est rempli** » (la recherche ne demande plus d'annonce). Le reste (lieu dans le profil, devis sans annonce, retrait des annonces) attend les lots 9.1 à 9.4 ; d'ici là, le code suit encore `RM-ANNONCES.md` pour ces points.
+
+**Photos de son travail, précisions du 07/10/2026** (choix de Claude) : une photo ajoutée prend le rang suivant ; en retirer une fait remonter les suivantes d'un rang (on retire la n° 2 : la n° 3 devient la n° 2) ; les 2 premières sont sur sa carte dans « Trouver un prestataire », toutes sont sur sa page publique ; visibles par tous, sauf si l'activité est en pause, arrêtée ou bloquée ; une activité arrêtée ne peut plus en ajouter ni en retirer ; le fichier d'une photo retirée reste rangé (comme une ancienne photo de profil).
+- Exemple 1 : Karim ajoute « cuisine.jpg » puis « bain.jpg » → photos n° 1 et n° 2 ; il retire la n° 1 → « bain.jpg » devient la n° 1.
+- Exemple 2 : Julie a déjà 10 photos → « Au plus 10 photos sur votre profil : retirez-en une d'abord. »
 
 **Le principe.** Il n'y a plus d'annonce. Le profil dit **qui** est le prestataire ; le **prix, le jour et l'heure** sont dans la proposition qu'il fait à un client précis (`RM-DEMANDES.md`).
 - Exemple 1 : avant, Julie publiait « Ménage 2 h — 50 € ». Après, son profil dit « Julie Martin — Ménage, Nantes, jusqu'à 10 km », avec 3 photos ; quand Mme Dupont publie « Ménage de printemps, 3 pièces », Julie lui propose « 50 € · mardi 14/10 à 9 h · 2 h ».

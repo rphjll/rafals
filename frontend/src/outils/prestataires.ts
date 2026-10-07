@@ -35,6 +35,8 @@ export interface ProfilPrestataire {
   facture_tva: boolean
   statut: 'actif' | 'en_pause' | 'bloque' | 'arrete'
   a_une_photo: boolean
+  /** Rangs des photos de son travail, ex. [1, 2, 3] */
+  photos: number[]
 }
 
 export function badgeSiret(statut: string): { etat: Etat; texte: string } {

@@ -2,6 +2,30 @@
 
 > Fichiers : `frontend/src/pages/TrouverPage.vue`, `frontend/src/components/recherche/CarteResultat.vue`, `frontend/src/components/prestataire/AvatarPrestataire.vue`, `frontend/src/outils/recherche.ts`. Construit au lot 2.2 (choix du métier), complété au lot 4.2 (30/09/2026). Règles : `RM-RECHERCHE.md`. Maquette : `maquette-lot-4.2-recherche.html`.
 
+> Fichiers ajoutés le 07/10/2026 : `frontend/src/components/recherche/RubriquesPrestataires.vue`.
+
+## Depuis le 07/10/2026 : une rubrique par service (cette partie décrit l'écran d'aujourd'hui)
+Demande de Raphael, mot pour mot : « je veux que tu m'enelve toute ces bulles et que a la place tu me mette tout les prestataires mais dans une rubrique […] fait comme sur allo voisin » (avec une capture d'AlloVoisins). Maquette validée (« oui c'est parfait la ») : `maquette-trouver-par-service.html` (https://claude.ai/artifact/44ZCypQ8rS99w7zaCDBmNM). Règles : `RM-RECHERCHE.md` § « Une rubrique par dossier ».
+
+**Les tuiles des dossiers (« De quoi avez-vous besoin ? ») n'existent plus.** La page a trois états, tous dans l'adresse :
+
+1. **`/trouver` — ville inconnue.** Titre « Le bon prestataire, près de chez vous. », phrase grise, dessin de la rue, carte de recherche, puis une carte « Indiquez votre ville pour voir les prestataires près de chez vous. » avec l'aide « Tapez son nom ou son code postal dans « Où ? », puis [Rechercher]. Le service est facultatif… ». Si une ville a déjà été donnée sur cet appareil, la page passe toute seule à l'état 2.
+2. **`/trouver?ville=12768` — par service.** Il ne reste en haut que la carte de recherche. Dessous, une rubrique par dossier : titre « Bricolage », ligne grise « 14 prestataires près de Pessac », **rangée de cartes qui défile de côté** (10 au plus, cartes de 318 px, 82 % de l'écran sur téléphone), puis [Voir tout] centré. Aucun prestataire dans la ville : carte « Aucun prestataire ne vient à Pessac pour l'instant. » + [Publier une demande] (→ accueil).
+   - **`/trouver?ville=12768&dossier=3&page=2` — [Voir tout].** [← Tous les services], le titre et le compte de la rubrique, tous ses prestataires en grille (270 px au moins par carte), pages [‹ Précédente] [1] [2] [Suivante ›] au-delà de 30.
+3. **`/trouver?metier=3&ville=12768` — un métier précis.** [← Tous les services] (→ état 2), puis le titre, le tri, les filtres et les résultats (points 3 à 7 plus bas), avec la même carte, en grille.
+
+**Carte de recherche** : « Quel service ? » est devenu **facultatif** ; « Où ? » est obligatoire (bandeau rouge « Indiquez votre ville. »). [Rechercher] retient la ville sur l'appareil.
+
+**Carte d'un prestataire** (`CarteResultat.vue`, la même dans la rangée, dans [Voir tout] et dans les résultats d'une recherche), de haut en bas :
+- dans le coin en haut à droite : « SIRET vérifié » (vert) ou « Particulier » (gris) ;
+- photo de profil ronde (ou initiales « KB ») à gauche ; à droite le nom, le métier en gras (« Plombier », ou « aussi plombier » pour un métier secondaire), « Pessac · à 2 km » ;
+- les **2 premières photos de son travail** côte à côte (112 px de haut ; une seule : toute la largeur), ou un bandeau gris « Pas encore de photos » ;
+- en bas « ★ 4,8/5 (23 avis) » ou l'étiquette « Nouveau sur rafals ».
+- Enlevés de la carte : « à partir de 40 €/h », « vient chez vous », « carte acceptée » (les filtres existent toujours dans l'état 3).
+- Clic → `/prestataires/12`. Survol : anneau vert.
+
+Les paragraphes ci-dessous décrivent les états précédents ; ils ne restent vrais que pour le tri, les filtres, « aucun résultat » et les pages de l'état 3.
+
 > **Redessiné le 07/10/2026 en style « chaleureux »** (choix « A » de Raphael, maquette https://claude.ai/artifact/3GejTyBQFa9dZXbrmmChQc). Ce que fait la page ne change pas. Ce qui change à l'écran :
 > - **Haut de page** : plus de bandeau vert foncé. À gauche le titre « Le bon prestataire, » puis en vert « près de chez vous. », la phrase grise, et la carte blanche de recherche (« Quel service ? », « Où ? », [Rechercher] orange) ; à droite le dessin de la rue (caché sur téléphone). Pendant une recherche, il ne reste que la carte de recherche.
 > - **Tuiles des dossiers** : cartes blanches avec, à gauche, un rond de couleur et le pictogramme du dossier (`AppPicto`), à droite le nom et ses 3 premiers métiers. Survol : anneau vert.

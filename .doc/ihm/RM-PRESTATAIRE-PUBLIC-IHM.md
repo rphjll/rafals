@@ -9,6 +9,9 @@ Ce que fait la page ne change pas ; pour la présentation, ce paragraphe remplac
 - Dessous, sur toute la largeur : « Ses annonces », « Avis » (note en très grand), puis [Signaler ce prestataire…].
 - Pas encore fait : les photos du prestataire en grand (elles n'existent pas encore dans la base : prévues au niveau 9).
 
+## « Son travail en photos » (ajouté le 07/10/2026)
+Entre la présentation et « Ses annonces », seulement s'il a au moins une photo : une grille de vignettes 4/3 (160 px au moins), dans l'ordre choisi par le prestataire ; un clic ouvre la photo en grand dans un nouvel onglet. Les photos s'ajoutent depuis « Mon profil » (`RM-PROPOSER-IHM.md`).
+
 ## Page `/prestataires/12`
 Ouverte à tous, même sans compte. Visible seulement si l'activité du prestataire est active (sinon « Ce prestataire n'existe pas. ») ; son auteur la voit toujours. On y arrive depuis les résultats de recherche ou le nom du prestataire sur la page d'une annonce.
 

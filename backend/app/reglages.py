@@ -25,6 +25,8 @@ PRESTATAIRE_NOM_LONGUEUR = (2, 80)
 PRESTATAIRE_PRESENTATION_MAX = 1000
 PHOTO_TYPES_ACCEPTES = {"image/jpeg", "image/png"}
 PHOTO_TAILLE_MAX_OCTETS = 5 * 1024 * 1024
+# Photos de son travail sur le profil (RM-PRESTATAIRES § « Sans annonces »)
+PRESTATAIRE_PHOTOS_MAX = 10
 
 # Comptes inactifs (RM-CLIENTS.md, validé le 28/09/2026) : mail après 3 ans sans connexion, fermeture 30 jours après
 INACTIVITE_DUREE = timedelta(days=3 * 365)
@@ -53,6 +55,9 @@ RECHERCHE_AVIS_FICTIFS = 5
 RECHERCHE_NOTE_FICTIVE = 4
 RECHERCHE_RESULTATS_PAR_PAGE = 30
 RECHERCHE_METIERS_VOISINS = 5
+# « Trouver un prestataire » par service (RM-RECHERCHE § « Une rubrique par dossier », 07/10/2026)
+RECHERCHE_CARTES_PAR_RUBRIQUE = 10
+RECHERCHE_PHOTOS_SUR_CARTE = 2
 
 # Rendez-vous (RM-RENDEZ-VOUS.md, validé le 30/09/2026). Valeurs au départ : aussi dans db/schema_v9.sql (DEFAULT)
 ANNULATION_DELAI_CHOIX_HEURES = (2, 12, 24, 48)

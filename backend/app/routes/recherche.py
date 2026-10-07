@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlalchemy import select
 
+from app import reglages
 from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
@@ -13,6 +14,7 @@ from app.routes.dependances import Base, CompteOuPersonne, maintenant
 from app.routes.prestataires import CommuneVisible, MetierCourt, commune_visible
 from app.services import absences
 from app.services import avis as service_avis
+from app.services import prestataires as service_prestataires
 from app.services import recherche as service
 from app.services.annonces import modes_de_paiement, raison_cachee
 from app.services.erreurs import ErreurRegle
@@ -29,7 +31,10 @@ class CarteResultat(BaseModel):
     a_une_photo: bool
     ville: str
     distance_km: int
+    metier: str  # le métier écrit sur la carte, ex. « Plombier »
     principal: bool
+    siret_verifie: bool  # coin de la carte : « SIRET vérifié » ou « Particulier »
+    photos: list[int]  # rangs des 2 premières photos de son travail → /api/prestataires/12/photos/1
     note: float | None
     nombre_avis: int
     nouveau: bool
@@ -50,6 +55,23 @@ class PageResultats(BaseModel):
     metiers_voisins: list[MetierCourt]
 
 
+class RubriqueVisible(BaseModel):
+    """Un dossier de métiers et ses prestataires pour une ville (« Trouver un prestataire » par service)."""
+
+    dossier_id: int
+    code: str
+    nom: str
+    total: int
+    page: int
+    pages: int
+    resultats: list[CarteResultat]
+
+
+class PageRubriques(BaseModel):
+    ville: CommuneVisible
+    rubriques: list[RubriqueVisible]
+
+
 class PrestatairePublic(BaseModel):
     id: int
     nom_affiche: str
@@ -62,14 +84,18 @@ class PrestatairePublic(BaseModel):
     note: float | None
     nombre_avis: int
     absences: int  # « 1 absence sans prévenir » en 6 mois (RM-RENDEZ-VOUS)
+    photos: list[int]  # rangs des photos de son travail (10 au plus)
     annonces: list[AnnoncePublique]
 
 
-def carte(r: service.Resultat) -> CarteResultat:
+def carte(db: Base, r: service.Resultat) -> CarteResultat:
     moins_cher = r.a_partir_de
+    photos = service_prestataires.photos_de(db, r.prestataire.id)[: reglages.RECHERCHE_PHOTOS_SUR_CARTE]
     return CarteResultat(
         prestataire_id=r.prestataire.id, nom_affiche=r.prestataire.nom_affiche, a_une_photo=r.prestataire.photo_id is not None,
-        ville=r.commune.nom, distance_km=round(r.distance_km), principal=r.principal, note=r.note, nombre_avis=r.nombre_avis,
+        ville=r.commune.nom, distance_km=round(r.distance_km), metier=db.get_one(Metier, r.metier_id).nom,
+        principal=r.principal, siret_verifie=r.prestataire.siret_statut == "verifie", photos=[p.ordre for p in photos],
+        note=r.note, nombre_avis=r.nombre_avis,
         nouveau=r.nouveau, a_partir_de_centimes=moins_cher.prix_centimes if moins_cher else None,
         a_partir_de_par_heure=bool(moins_cher and moins_cher.forme_prix == "heure"), nombre_annonces=len(r.annonces),
         vient_chez_vous=any(a.lieu in ("chez_client", "les_deux") for a in r.annonces),
@@ -94,8 +120,38 @@ def rechercher(
     return PageResultats(
         metier=MetierCourt(id=metier.id, nom=metier.nom), ville=commune_visible(db.get_one(Commune, commune_id)),
         total=resultat.total,
-        page=resultat.page, pages=resultat.pages, resultats=[carte(r) for r in resultat.resultats],
+        page=resultat.page, pages=resultat.pages, resultats=[carte(db, r) for r in resultat.resultats],
         metiers_voisins=[MetierCourt(id=m.id, nom=m.nom) for m in resultat.metiers_voisins],
+    )
+
+
+def _rubrique(db: Base, rubrique: service.Rubrique, *, par_page: int, page: int = 1) -> RubriqueVisible:
+    pages = max(1, -(-len(rubrique.resultats) // par_page))
+    page = min(max(1, page), pages)
+    return RubriqueVisible(
+        dossier_id=rubrique.dossier.id, code=rubrique.dossier.code, nom=rubrique.dossier.nom, total=len(rubrique.resultats),
+        page=page, pages=pages, resultats=[carte(db, r) for r in rubrique.resultats[(page - 1) * par_page: page * par_page]],
+    )
+
+
+@routeur.get("/recherche/rubriques")
+def rubriques(commune_id: int, db: Base) -> PageRubriques:
+    """Ex. /api/recherche/rubriques?commune_id=33318 → « Bricolage » (14, les 10 premiers), « Jardinage » (9)… Ouvert à tous."""
+    trouvees = service.par_dossier(db, commune_id=commune_id, maintenant=maintenant())
+    return PageRubriques(
+        ville=commune_visible(db.get_one(Commune, commune_id)),
+        rubriques=[_rubrique(db, r, par_page=reglages.RECHERCHE_CARTES_PAR_RUBRIQUE) for r in trouvees],
+    )
+
+
+@routeur.get("/recherche/rubriques/{dossier_id}")
+def rubrique_entiere(dossier_id: int, commune_id: int, db: Base, page: int = 1) -> PageRubriques:
+    """[Voir tout] : tous les prestataires d'un dossier pour une ville, 30 par page. Dossier vide : aucune rubrique."""
+    trouvees = service.par_dossier(db, commune_id=commune_id, maintenant=maintenant())
+    return PageRubriques(
+        ville=commune_visible(db.get_one(Commune, commune_id)),
+        rubriques=[_rubrique(db, r, par_page=reglages.RECHERCHE_RESULTATS_PAR_PAGE, page=page)
+                   for r in trouvees if r.dossier.id == dossier_id],
     )
 
 
@@ -126,5 +182,6 @@ def page_publique(prestataire_id: int, db: Base, compte: CompteOuPersonne) -> Pr
         distance_km=prestataire.distance_km, metiers=[MetierCourt(id=m.id, nom=m.nom) for m in metiers],
         siret_verifie=prestataire.siret_statut == "verifie", note=note, nombre_avis=nombre,
         absences=len(absences.absences_du_prestataire(db, prestataire.id, maintenant_)),
+        photos=[p.ordre for p in service_prestataires.photos_de(db, prestataire.id)],
         annonces=[annonce_publique(db, a, prestataire) for a in annonces],
     )

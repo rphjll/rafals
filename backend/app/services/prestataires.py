@@ -11,7 +11,7 @@ from app import reglages
 from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
-from app.modeles.prestataires import Commune, MetierSecondaire, Prestataire
+from app.modeles.prestataires import Commune, MetierSecondaire, PhotoPrestataire, Prestataire
 from app.services import droits, fichiers, journal
 from app.services import rendez_vous_communs as communs
 from app.services import siret as service_siret
@@ -333,6 +333,59 @@ def deposer_photo(
         avant={"photo_id": ancienne}, apres={"photo_id": fichier.id}, maintenant=maintenant,
     )
     return prestataire
+
+
+# ---------- Photos de son travail (10 au plus, la n° 1 montrée en premier ; RM-PRESTATAIRES § « Sans annonces ») ----------
+
+
+def photos_de(db: Session, prestataire_id: int) -> list[PhotoPrestataire]:
+    return list(db.scalars(
+        select(PhotoPrestataire).where(PhotoPrestataire.prestataire_id == prestataire_id).order_by(PhotoPrestataire.ordre)
+    ))
+
+
+def ajouter_photo_travail(
+    db: Session, compte: Compte, prestataire: Prestataire, *, nom_fichier: str, type_mime: str, contenu: bytes, maintenant: datetime
+) -> PhotoPrestataire:
+    """Ex. Karim ajoute la photo d'une salle de bain refaite : elle prend le rang suivant (la 3e photo = n° 3)."""
+    if prestataire.statut == "arrete":
+        raise ErreurRegle("Votre activité est arrêtée : ce profil ne peut plus être modifié.")
+    deja = photos_de(db, prestataire.id)
+    if len(deja) >= reglages.PRESTATAIRE_PHOTOS_MAX:
+        raise ErreurRegle(f"Au plus {reglages.PRESTATAIRE_PHOTOS_MAX} photos sur votre profil : retirez-en une d'abord.")
+    fichiers.verifier(
+        contenu, type_mime, types_acceptes=reglages.PHOTO_TYPES_ACCEPTES, taille_max_octets=reglages.PHOTO_TAILLE_MAX_OCTETS
+    )
+    fichier = fichiers.enregistrer(db, compte, nom_fichier=nom_fichier, type_mime=type_mime, contenu=contenu, maintenant=maintenant)
+    photo = PhotoPrestataire(prestataire_id=prestataire.id, fichier_id=fichier.id, ordre=len(deja) + 1)
+    db.add(photo)
+    db.flush()
+    journal.noter(
+        db, auteur_id=compte.id, action="ajouter_photo_travail", table_cible="prestataire", ligne_id=prestataire.id,
+        apres={"fichier_id": fichier.id, "ordre": photo.ordre}, maintenant=maintenant,
+    )
+    return photo
+
+
+def retirer_photo_travail(db: Session, prestataire: Prestataire, ordre: int, maintenant: datetime) -> None:
+    """Les photos suivantes remontent d'un rang (ex. on retire la n° 2 : la n° 3 devient la n° 2).
+    Le fichier reste rangé (comme l'ancienne photo d'un profil)."""
+    if prestataire.statut == "arrete":
+        raise ErreurRegle("Votre activité est arrêtée : ce profil ne peut plus être modifié.")
+    photos = photos_de(db, prestataire.id)
+    photo = next((p for p in photos if p.ordre == ordre), None)
+    if photo is None:
+        raise ErreurRegle("Cette photo n'existe pas.", 404)
+    db.delete(photo)
+    db.flush()
+    for suivante in photos:
+        if suivante.ordre > ordre:
+            suivante.ordre -= 1
+            db.flush()  # un rang à la fois : deux photos n'ont jamais le même numéro
+    journal.noter(
+        db, auteur_id=prestataire.compte_id, action="retirer_photo_travail", table_cible="prestataire", ligne_id=prestataire.id,
+        avant={"fichier_id": photo.fichier_id, "ordre": ordre}, maintenant=maintenant,
+    )
 
 
 # ---------- Date de fin d'un métier (RM-ANNONCES) ----------

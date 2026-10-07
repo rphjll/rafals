@@ -110,6 +110,7 @@ RATTACHEES: dict[str, list[str]] = {
         "DELETE FROM blocage WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM ouverture WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM metier_secondaire WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
+        "DELETE FROM photo_prestataire WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM prestataire WHERE compte_id = :id",
         "DELETE FROM accord_parental WHERE compte_id = :id",
         "DELETE FROM fichier WHERE depose_par_id = :id",

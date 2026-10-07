@@ -14,7 +14,7 @@ import BoutonSignaler from '../components/BoutonSignaler.vue'
 import { useCompte } from '../composables/useCompte'
 import { lieuPourLeClient, paiement, prixCourt } from '../outils/annonces'
 import { type AvisPublic, etoiles } from '../outils/avis'
-import { type PrestatairePublic, noteLisible } from '../outils/recherche'
+import { type PrestatairePublic, adressePhotoTravail, noteLisible } from '../outils/recherche'
 
 const route = useRoute()
 const routeur = useRouter()
@@ -118,6 +118,19 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
           <p class="text-[13.5px] text-sur-fonce-doux">Son téléphone et son adresse vous sont donnés après une réservation.</p>
         </aside>
       </div>
+
+      <AppSection v-if="prestataire.photos.length" titre="Son travail en photos">
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
+          <a v-for="rang in prestataire.photos" :key="rang" :href="adressePhotoTravail(prestataire.id, rang)" target="_blank" rel="noopener">
+            <img
+              :src="adressePhotoTravail(prestataire.id, rang)"
+              :alt="`Photo n° ${rang} du travail de ${prenom}`"
+              loading="lazy"
+              class="aspect-[4/3] w-full rounded-rafals object-cover hover:ring-2 hover:ring-primaire"
+            />
+          </a>
+        </div>
+      </AppSection>
 
       <AppSection titre="Ses annonces">
         <p v-if="!prestataire.annonces.length" class="text-texte-doux">

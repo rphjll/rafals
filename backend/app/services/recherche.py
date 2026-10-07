@@ -1,18 +1,20 @@
-"""Recherche d'un prestataire : un métier + la ville du client. Règles : .doc/regles-metier/RM-RECHERCHE.md (validé le 30/09/2026).
+"""Recherche d'un prestataire : un métier + la ville du client, ou tous les services d'une ville rangés par dossier.
+Règles : .doc/regles-metier/RM-RECHERCHE.md (validé le 30/09/2026 ; « Sans annonces » et « Une rubrique par dossier », 07/10/2026).
 
+Qui apparaît : un prestataire actif, qui exerce le métier, et dont le rayon couvre la ville du client (plus besoin d'annonce).
 Ordre : métier principal d'abord ; puis les prestataires notés, du meilleur au moins bon selon la note pondérée ;
 puis les nouveaux (sans avis, badge « Nouveau ») ; à égalité, le plus proche, puis le plus ancien sur rafals.
 Aucune table : tout se calcule à partir des prestataires, des annonces, des communes et de l'agenda."""
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.annonces import Annonce
-from app.modeles.metiers import Metier
+from app.modeles.metiers import CategorieMetier, Metier
 from app.modeles.prestataires import Commune, Prestataire
 from app.services import agenda, avis, communes
 from app.services.annonces import modes_de_paiement
@@ -33,7 +35,8 @@ class Resultat:
     prestataire: Prestataire
     commune: Commune
     distance_km: float
-    principal: bool  # le métier cherché est son métier principal
+    principal: bool  # le métier cherché (ou montré) est son métier principal
+    metier_id: int  # le métier écrit sur sa carte
     annonces: list[Annonce] = field(default_factory=list)
     note: float | None = None  # vraie note moyenne, montrée au client
     nombre_avis: int = 0
@@ -57,6 +60,14 @@ class Page:
     page: int
     pages: int
     metiers_voisins: list[Metier]
+
+
+@dataclass
+class Rubrique:
+    """Un dossier de métiers (ex. « Jardinage ») et ses prestataires pour une ville, déjà dans l'ordre."""
+
+    dossier: CategorieMetier
+    resultats: list[Resultat]
 
 
 def note_ponderee(somme_des_notes: int, nombre_avis: int) -> float:
@@ -92,11 +103,71 @@ def _garder(db: Session, r: Resultat, filtres: Filtres, maintenant: datetime) ->
     return not (filtres.libre_7_jours and not _libre_dans_7_jours(db, r, maintenant))
 
 
+def _dans_le_rayon(db: Session, client: Commune, jour: date) -> list[tuple[Prestataire, Commune, float, list[int]]]:
+    """Les prestataires actifs dont le rayon couvre la ville du client, avec leur ville de départ, la distance et
+    leurs métiers exercés. Ex. Karim, « Pessac, jusqu'à 15 km » : gardé pour Talence (5 km), pas pour Libourne."""
+    trouves = []
+    for prestataire in db.scalars(select(Prestataire).where(Prestataire.statut == "actif")):
+        depart = db.get_one(Commune, prestataire.commune_id)
+        distance = communes.distance_km(depart, client)
+        if distance <= prestataire.distance_km:
+            trouves.append((prestataire, depart, distance, metiers_exerces(db, prestataire, jour)))
+    return trouves
+
+
+def _est_principal(prestataire: Prestataire, metier_id: int, jour: date) -> bool:
+    return prestataire.metier_principal_id == metier_id and en_cours(prestataire.metier_principal_fin_le, jour)
+
+
+def _noter(db: Session, resultats: list[Resultat]) -> None:
+    notes = _avis(db, [r.prestataire for r in resultats])
+    for r in resultats:
+        somme, nombre = notes.get(r.prestataire.id, (0, 0))
+        r.nombre_avis = nombre
+        r.note = somme / nombre if nombre else None
+        r.note_classement = note_ponderee(somme, nombre) if nombre else None
+
+
+def _cle_note(r: Resultat) -> tuple:
+    return (not r.principal, r.nouveau, -(r.note_classement or 0), r.distance_km, r.prestataire.cree_le)
+
+
+def _cle_distance(r: Resultat) -> tuple:
+    return (r.distance_km, not r.principal, r.nouveau, -(r.note_classement or 0), r.prestataire.cree_le)
+
+
+def par_dossier(db: Session, *, commune_id: int, maintenant: datetime) -> list[Rubrique]:
+    """« Trouver un prestataire » pour une ville : une rubrique par dossier de métiers, sans les dossiers vides.
+    Ex. à Pessac : « Bricolage » (Karim, plombier ; Sarah, électricienne), « Jardinage » (Sophie).
+    Un prestataire est une seule fois dans une rubrique, avec son métier principal s'il est dans ce dossier,
+    sinon son premier métier secondaire de ce dossier ; il peut être dans deux rubriques (plombier et jardinier)."""
+    client = db.get(Commune, commune_id)
+    if client is None:
+        raise ErreurRegle("Choisissez votre ville dans la liste.")
+    jour = aujourd_hui(maintenant)
+    dossier_du_metier = {m.id: m.categorie_id for m in db.scalars(select(Metier).where(Metier.est_active))}
+    par_rubrique: dict[int, dict[int, Resultat]] = {}
+    for prestataire, depart, distance, exerces in _dans_le_rayon(db, client, jour):
+        for metier_id in exerces:  # le métier principal est le premier de la liste
+            dossier_id = dossier_du_metier.get(metier_id)
+            if dossier_id is not None:
+                par_rubrique.setdefault(dossier_id, {}).setdefault(
+                    prestataire.id, Resultat(prestataire, depart, distance, _est_principal(prestataire, metier_id, jour), metier_id)
+                )
+    rubriques = []
+    for dossier in db.scalars(select(CategorieMetier).where(CategorieMetier.est_active).order_by(CategorieMetier.ordre)):
+        resultats = list(par_rubrique.get(dossier.id, {}).values())
+        if resultats:
+            _noter(db, resultats)
+            rubriques.append(Rubrique(dossier, sorted(resultats, key=_cle_note)))
+    return rubriques
+
+
 def rechercher(
     db: Session, *, metier_id: int, commune_id: int, maintenant: datetime, filtres: Filtres | None = None,
     tri: str = "note", page: int = 1,
 ) -> Page:
-    """Ex. « Plombier » + Talence → les plombiers dont le rayon couvre Talence et qui ont une annonce de plomberie en ligne."""
+    """Ex. « Plombier » + Talence → les plombiers actifs dont le rayon couvre Talence, avec ou sans annonce."""
     metier = db.get(Metier, metier_id)
     client = db.get(Commune, commune_id)
     if metier is None:
@@ -108,41 +179,18 @@ def rechercher(
     filtres = filtres or Filtres()
     jour = aujourd_hui(maintenant)
 
-    # Annonces en ligne de ce métier, regroupées par prestataire actif
-    lignes = db.execute(
-        select(Annonce, Prestataire)
-        .join(Prestataire, Prestataire.id == Annonce.prestataire_id)
-        .where(Annonce.metier_id == metier_id, Annonce.statut == "en_ligne", Prestataire.statut == "actif")
-    ).all()
-    par_prestataire: dict[int, Resultat] = {}
-    for annonce, prestataire in lignes:
-        if prestataire.id not in par_prestataire:
-            if metier_id not in metiers_exerces(db, prestataire, jour):
-                continue  # métier arrêté (date de fin passée)
-            depart = db.get_one(Commune, prestataire.commune_id)
-            distance = communes.distance_km(depart, client)
-            if distance > prestataire.distance_km:
-                continue  # la ville du client est hors de son rayon
-            principal = prestataire.metier_principal_id == metier_id and en_cours(prestataire.metier_principal_fin_le, jour)
-            par_prestataire[prestataire.id] = Resultat(prestataire, depart, distance, principal)
-        par_prestataire[prestataire.id].annonces.append(annonce)
-
-    resultats = list(par_prestataire.values())
-    avis = _avis(db, [r.prestataire for r in resultats])
-    for r in resultats:
-        somme, nombre = avis.get(r.prestataire.id, (0, 0))
-        r.nombre_avis = nombre
-        r.note = somme / nombre if nombre else None
-        r.note_classement = note_ponderee(somme, nombre) if nombre else None
+    resultats = []
+    for prestataire, depart, distance, exerces in _dans_le_rayon(db, client, jour):
+        if metier_id in exerces:
+            resultats.append(Resultat(prestataire, depart, distance, _est_principal(prestataire, metier_id, jour), metier_id))
+    # Tant que les annonces existent : celles en ligne de ce métier donnent le prix et servent aux filtres
+    par_prestataire = {r.prestataire.id: r for r in resultats}
+    for annonce in db.scalars(select(Annonce).where(Annonce.metier_id == metier_id, Annonce.statut == "en_ligne")):
+        if annonce.prestataire_id in par_prestataire:
+            par_prestataire[annonce.prestataire_id].annonces.append(annonce)
+    _noter(db, resultats)
     resultats = [r for r in resultats if _garder(db, r, filtres, maintenant)]
-
-    def cle_note(r: Resultat) -> tuple:
-        return (not r.principal, r.nouveau, -(r.note_classement or 0), r.distance_km, r.prestataire.cree_le)
-
-    def cle_distance(r: Resultat) -> tuple:
-        return (r.distance_km, not r.principal, r.nouveau, -(r.note_classement or 0), r.prestataire.cree_le)
-
-    resultats.sort(key=cle_note if tri == "note" else cle_distance)
+    resultats.sort(key=_cle_note if tri == "note" else _cle_distance)
 
     par_page = reglages.RECHERCHE_RESULTATS_PAR_PAGE
     pages = max(1, -(-len(resultats) // par_page))

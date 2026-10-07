@@ -8,6 +8,7 @@ import { appelerServeur, messageErreur } from '../../api'
 import { type PageResultats, pluriel } from '../../outils/recherche'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
+import AppPages from '../ui/AppPages.vue'
 import AppSection from '../ui/AppSection.vue'
 import CarteResultat from './CarteResultat.vue'
 
@@ -144,8 +145,8 @@ function enleverFiltres() {
       </div>
 
       <p v-if="chargement" class="text-texte-doux">Recherche…</p>
-      <div v-else-if="page.resultats.length" class="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(190px,1fr))] sm:gap-4">
-        <CarteResultat v-for="r in page.resultats" :key="r.prestataire_id" :resultat="r" :metier="page.metier.nom" />
+      <div v-else-if="page.resultats.length" class="grid grid-cols-[repeat(auto-fill,minmax(270px,1fr))] gap-4">
+        <CarteResultat v-for="r in page.resultats" :key="r.prestataire_id" :resultat="r" />
       </div>
       <AppSection v-else-if="avecFiltres">
         <p class="font-semibold">Aucun résultat avec ces filtres.</p>
@@ -170,18 +171,7 @@ function enleverFiltres() {
         </template>
       </AppSection>
 
-      <nav v-if="page.pages > 1" class="flex flex-wrap justify-center gap-1.5" aria-label="Pages de résultats">
-        <AppBouton v-if="page.page > 1" variante="secondaire" @click="aller({ page: String(page.page - 1) }, true)">‹ Précédente</AppBouton>
-        <AppBouton
-          v-for="n in page.pages"
-          :key="n"
-          :variante="n === page.page ? 'principal' : 'secondaire'"
-          @click="aller({ page: String(n) }, true)"
-        >
-          {{ n }}
-        </AppBouton>
-        <AppBouton v-if="page.page < page.pages" variante="secondaire" @click="aller({ page: String(page.page + 1) }, true)">Suivante ›</AppBouton>
-      </nav>
+      <AppPages :page="page.page" :pages="page.pages" etiquette="Pages de résultats" @aller="(n) => aller({ page: String(n) }, true)" />
     </template>
   </section>
 </template>

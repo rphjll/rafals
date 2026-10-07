@@ -1,4 +1,5 @@
-"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8, v9, v12, v13, v17, v16). Aucun calcul ici."""
+"""Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8, v9, v12, v13, v17, v16)
+et photo_prestataire (db/schema_v24.sql). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -61,3 +62,12 @@ class MetierSecondaire(Base):
     prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
     metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
     fin_le: Mapped[date | None] = mapped_column(Date)
+
+
+class PhotoPrestataire(Base):
+    __tablename__ = "photo_prestataire"
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
+    fichier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("fichier.id"))
+    ordre: Mapped[int] = mapped_column(Integer)

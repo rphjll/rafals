@@ -14,6 +14,7 @@ import AppSection from '../ui/AppSection.vue'
 import AvatarPrestataire from './AvatarPrestataire.vue'
 import CarteMetiers from './CarteMetiers.vue'
 import CartePaiementCarte from './CartePaiementCarte.vue'
+import CartePhotosTravail from './CartePhotosTravail.vue'
 import CarteTva from './CarteTva.vue'
 
 const props = defineProps<{ profil: ProfilPrestataire }>()
@@ -118,6 +119,7 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
     </section>
 
     <template v-if="profil.statut !== 'arrete'">
+      <CartePhotosTravail :profil="profil" @maj="(p) => emit('maj', p)" />
       <CartePaiementCarte />
       <CarteTva :facture-tva="profil.facture_tva" @maj="(v) => emit('maj', { ...profil, facture_tva: v })" />
       <CarteMetiers :profil="profil" @maj="(p) => emit('maj', p)" />
@@ -133,7 +135,7 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
 
     <AppSection v-if="profil.statut !== 'arrete'" titre="Visibilité">
       <p class="text-[14.5px] text-texte-doux">
-        Vous apparaissez dans les recherches tant que votre activité est active et qu'une annonce est en ligne.
+        Vous apparaissez dans les recherches tant que votre activité est active.
       </p>
       <div class="flex flex-wrap gap-2 pt-8 sm:pt-0">
         <AppBouton v-if="bloque" variante="verrouille" :raison-verrou="raisonBlocage">Mettre en pause</AppBouton>

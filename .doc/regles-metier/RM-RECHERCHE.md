@@ -2,7 +2,25 @@
 
 > Validé et formalisé le 30/09/2026 (lot 4.0).
 
-## Sans annonces (décision de Raphael du 04/10/2026, pas encore construit)
+## Une rubrique par dossier de métiers (demande de Raphael du 07/10/2026, construit le même jour)
+Demande, mot pour mot : « quand je suis dans l'onglet y'a la recherche en haut et en dessous y'a plein de rubriques et bah je veux que tu m'enelve toute ces bulles et que a la place tu me mette tout les prestataires mais dans une rubrique […] fait comme sur allo voisin », avec une capture d'écran d'AlloVoisins. Maquette validée (« oui c'est parfait la ») : `.doc/ihm/maquette-trouver-par-service.html`.
+- **La ville d'abord** (choix de Raphael : « Demander la ville d'abord ») : tant que le site ne connaît pas la ville du visiteur, aucun prestataire n'est montré. La ville est retenue sur son appareil, pas dans son compte.
+  - Exemple 1 : Julie ouvre « Trouver un prestataire » pour la première fois → « Indiquez votre ville pour voir les prestataires près de chez vous. »
+  - Exemple 2 : elle tape « Pessac » et [Rechercher] → les rubriques de Pessac ; le lendemain, elles s'affichent sans rien redemander.
+- **Une rubrique par dossier** (« Bricolage », « Jardinage »…), dans l'ordre des dossiers. Y sont les prestataires **actifs**, qui exercent un métier du dossier, et dont le **rayon** couvre la ville. Un dossier sans prestataire n'apparaît pas.
+  - Exemple 1 : à Pessac, « Bricolage · 14 prestataires près de Pessac », « Jardinage · 9 prestataires près de Pessac » ; pas de rubrique « Coiffure » si aucun coiffeur ne vient à Pessac.
+  - Exemple 2 : Luc, plombier à Libourne, jusqu'à 10 km → absent des rubriques de Pessac (47 km).
+- **Une seule carte par prestataire dans une rubrique** (choix de Claude) : avec son métier principal s'il est dans ce dossier, sinon son premier métier secondaire du dossier (« aussi plombier »). Il peut être dans deux rubriques.
+  - Exemple 1 : Karim, électricien (principal) et plombier (secondaire), deux métiers du même dossier → une carte « Électricien ».
+  - Exemple 2 : Karim, plombier (principal) et coiffeur (secondaire) → une carte « Plombier » dans un dossier, une carte « aussi coiffeur » dans l'autre.
+- **Ordre dans une rubrique** : le même que la recherche (métier principal d'abord, puis les mieux notés, puis les nouveaux, puis le plus proche).
+- **10 cartes par rubrique** (réglage `RECHERCHE_CARTES_PAR_RUBRIQUE`, choix de Claude), puis [Voir tout] : tout le dossier, 30 par page.
+- **Carte** : photo de profil ou initiales, nom, métier, « Pessac · à 2 km », « SIRET vérifié » ou « Particulier » (sans SIRET vérifié), les **2 premières photos de son travail** (choix de Raphael : « Oui, tout de suite » ; réglage `RECHERCHE_PHOTOS_SUR_CARTE`), la note et le nombre d'avis ou « Nouveau sur rafals ». Pas de prix. Pas repris d'AlloVoisins : « Profil boosté », « En ligne à 15:36 ».
+- ⚠️ À faire vérifier : le mot « Particulier » pour un prestataire dont le SIRET est absent, à vérifier ou refusé (choix de Claude, repris de la capture).
+
+## Sans annonces (décision de Raphael du 04/10/2026 ; « Qui apparaît » construit le 07/10/2026, le reste pas encore)
+> **Construit le 07/10/2026**, en avance sur le lot 9.1, pour que les rubriques ne soient pas vides : la condition « au moins une annonce en ligne » a disparu de la recherche. Tant que les annonces existent, celles d'un prestataire donnent encore son prix et servent aux filtres : avec « Vient chez moi », « Paiement par carte » ou « Libre dans les 7 jours », un prestataire sans annonce n'est pas montré (choix de Claude, jusqu'au lot 9.2).
+
 Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Après les lots 8.3 et 8.4, ce fichier se lira ainsi (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
 - **Qui apparaît** : un prestataire dont l'activité est active, qui exerce le métier cherché (principal ou secondaire, pas arrêté) et dont le rayon couvre la ville du client. La condition « au moins une annonce en ligne » disparaît.
 - **Carte d'un résultat** : nom, photo, ville, distance, « Nouveau » ou la note et le nombre d'avis, « vient chez vous » et « carte bancaire acceptée ». Plus de « à partir de 40 € » ni de nombre d'annonces.
@@ -16,7 +34,7 @@ Comment un client trouve un prestataire : un métier + une ville, et l'ordre des
 
 ## Déjà décidé (sujets 02, 04, 05)
 - Le client cherche un **métier** (par les premières lettres ou par dossier, `RM-METIERS.md`) et une **ville**.
-- Un prestataire apparaît si la ville du client est dans son **rayon** (distance à vol d'oiseau, `RM-PRESTATAIRES.md`), et seulement s'il a au moins une **annonce en ligne** de ce métier (`RM-ANNONCES.md`).
+- Un prestataire apparaît si la ville du client est dans son **rayon** (distance à vol d'oiseau, `RM-PRESTATAIRES.md`). ~~Et seulement s'il a au moins une annonce en ligne de ce métier~~ : condition enlevée le 07/10/2026 (voir « Sans annonces »).
 - Ceux dont c'est le **métier principal** passent avant ceux qui l'exercent en **métier secondaire** ; ensuite, les **mieux notés** d'abord.
 - Téléphone, mail et rue du local : jamais dans les résultats (seulement après réservation).
 

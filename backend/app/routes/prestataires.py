@@ -11,7 +11,7 @@ from app.modeles.comptes import Compte
 from app.modeles.fichiers import Fichier
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
-from app.routes.dependances import Administrateur, Base, CompteConnecte, maintenant
+from app.routes.dependances import Administrateur, Base, CompteConnecte, CompteOuPersonne, maintenant
 from app.services import communes as service_communes
 from app.services import prestataires as service
 from app.services import stockage
@@ -62,6 +62,7 @@ class ProfilVisible(BaseModel):
     siret_statut: str
     statut: str
     a_une_photo: bool
+    photos: list[int]  # rangs des photos de son travail, ex. [1, 2, 3] → /api/prestataires/12/photos/1
     cree_le: datetime
     facture_tva: bool  # case « Je facture la TVA » (lot 5.3, RM-DEVIS)
 
@@ -119,6 +120,7 @@ def visible(db: Base, prestataire: Prestataire) -> ProfilVisible:
         siret_statut=prestataire.siret_statut,
         statut=prestataire.statut,
         a_une_photo=prestataire.photo_id is not None,
+        photos=[p.ordre for p in service.photos_de(db, prestataire.id)],
         cree_le=prestataire.cree_le,
         facture_tva=prestataire.facture_tva,
     )
@@ -190,6 +192,38 @@ def statut(donnees: ActionStatut, db: Base, compte: CompteConnecte) -> ProfilVis
 
 
 # ---------- Photo d'un prestataire (pour tous : elle sera montrée sur ses annonces) ----------
+
+
+@routeur.post("/moi/prestataire/photos")
+async def ajouter_photo_travail(fichier: UploadFile, db: Base, compte: CompteConnecte) -> ProfilVisible:
+    """Une photo de son travail de plus (10 au plus), montrée sur son profil et sur sa carte."""
+    prestataire = mon_profil_ou_404(db, compte)
+    service.ajouter_photo_travail(
+        db, compte, prestataire, nom_fichier=fichier.filename or "photo", type_mime=fichier.content_type or "",
+        contenu=await fichier.read(), maintenant=maintenant(),
+    )
+    db.commit()
+    return visible(db, prestataire)
+
+
+@routeur.post("/moi/prestataire/photos/{ordre}/retirer")
+def retirer_photo_travail(ordre: int, db: Base, compte: CompteConnecte) -> ProfilVisible:
+    prestataire = mon_profil_ou_404(db, compte)
+    service.retirer_photo_travail(db, prestataire, ordre, maintenant())
+    db.commit()
+    return visible(db, prestataire)
+
+
+@routeur.get("/prestataires/{prestataire_id}/photos/{ordre}")
+def voir_photo_travail(prestataire_id: int, ordre: int, db: Base, compte: CompteOuPersonne) -> Response:
+    """Pour tous, comme la page publique : cachée si l'activité est en pause, arrêtée ou bloquée (sauf pour son auteur)."""
+    prestataire = db.get(Prestataire, prestataire_id)
+    auteur = prestataire is not None and compte is not None and compte.id == prestataire.compte_id
+    photo = next((p for p in service.photos_de(db, prestataire_id) if p.ordre == ordre), None)
+    if prestataire is None or photo is None or not (auteur or prestataire.statut == "actif"):
+        raise ErreurRegle("Cette photo n'existe pas.", 404)
+    fichier = db.get_one(Fichier, photo.fichier_id)
+    return Response(content=stockage.lire(fichier.cle_stockage), media_type=fichier.type_mime)
 
 
 @routeur.get("/prestataires/{prestataire_id}/photo")

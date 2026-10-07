@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.services.recherche import note_ponderee
 from tests.test_annonces import AUJOURD_HUI, carte_activee, menage, metiers, publier, siret_verifie  # noqa: F401 (fixture)
-from tests.test_prestataires import devenir, id_commune, id_metier
+from tests.test_prestataires import JPG, devenir, id_commune, id_metier
 
 
 @pytest.fixture
@@ -69,15 +69,21 @@ def test_seulement_dans_le_rayon(fabrique, client, metiers, villes) -> None:
     assert 3 <= karim["distance_km"] <= 10 and karim["ville"] == "Pessac"
 
 
-def test_il_faut_une_annonce_en_ligne_de_ce_metier(fabrique, client, metiers, villes) -> None:
+def test_sans_annonce_on_apparait_quand_meme_sauf_en_pause(fabrique, client, metiers, villes) -> None:
+    # RM-RECHERCHE § « Sans annonces » : il suffit d'être actif, d'exercer le métier et de couvrir la ville
     fabrique("Sans annonce", "Pessac", "Plombier", annonce_dans="")
-    fabrique("Électricien seulement", "Pessac", "Plombier", secondaires=("Électricien",), annonce_dans="Électricien")
+    fabrique("Annonce ailleurs", "Pessac", "Plombier", secondaires=("Électricien",), annonce_dans="Électricien")
+    fabrique("Autre métier", "Pessac", "Coiffeur", annonce_dans="")
     en_pause = fabrique("En pause", "Pessac", "Plombier")
     en_pause.client.post("/api/moi/prestataire/statut", json={"action": "pause"})
 
     page = chercher(client, metiers["Plombier"], villes["Talence"])
+    noms = set(fabrique.noms(page))
 
-    assert not {"Sans annonce", "Électricien seulement", "En pause"} & set(fabrique.noms(page))
+    assert {"Sans annonce", "Annonce ailleurs"} <= noms and not {"Autre métier", "En pause"} & noms
+    sans = next(r for r in page["resultats"] if fabrique.noms({"resultats": [r]}) == ["Sans annonce"])
+    assert sans["metier"] == "Plombier" and sans["a_partir_de_centimes"] is None and sans["nombre_annonces"] == 0
+    assert sans["siret_verifie"] is False and sans["photos"] == []
 
 
 def test_metier_arrete_n_apparait_plus(fabrique, client, metiers, villes, base: Session) -> None:
@@ -225,6 +231,88 @@ def test_aucun_resultat_propose_des_metiers_voisins(client, villes) -> None:
 
 def test_metier_ou_ville_inconnus(client) -> None:
     assert client.get("/api/recherche", params={"metier_id": 999999, "commune_id": 1}).status_code == 400
+
+
+# ---------- Une rubrique par dossier de métiers (« Trouver un prestataire » par service) ----------
+
+
+def rubriques_de(client, ville_id: int) -> list[dict]:
+    reponse = client.get("/api/recherche/rubriques", params={"commune_id": ville_id})
+    assert reponse.status_code == 200, reponse.text
+    return reponse.json()["rubriques"]
+
+
+def rubrique_entiere(client, dossier_id: int, ville_id: int) -> dict:
+    """[Voir tout] : toutes les pages réunies."""
+    adresse, params = f"/api/recherche/rubriques/{dossier_id}", {"commune_id": ville_id}
+    rubrique = client.get(adresse, params=params).json()["rubriques"][0]
+    for numero in range(2, rubrique["pages"] + 1):
+        rubrique["resultats"] += client.get(adresse, params={**params, "page": numero}).json()["rubriques"][0]["resultats"]
+    return rubrique
+
+
+def test_rubriques_par_dossier_pour_une_ville(fabrique, client, metiers, villes, base: Session) -> None:
+    karim = fabrique("Karim", "Pessac", "Plombier", secondaires=("Coiffeur",), annonce_dans="")
+    fabrique("Luc", "Libourne", "Plombier", km=10, annonce_dans="")  # Talence est hors de son rayon
+    en_pause = fabrique("En pause", "Pessac", "Plombier", annonce_dans="")
+    en_pause.client.post("/api/moi/prestataire/statut", json={"action": "pause"})
+    dossier = {nom: base.execute(text("SELECT categorie_id FROM metier WHERE id = :id"), {"id": metiers[nom]}).scalar_one()
+               for nom in ("Plombier", "Coiffeur")}
+    assert dossier["Plombier"] != dossier["Coiffeur"]
+
+    rubriques = rubriques_de(client, villes["Talence"])
+
+    assert all(r["total"] >= 1 for r in rubriques)  # aucun dossier vide
+    assert [r["dossier_id"] for r in rubriques] == [
+        i for i in base.execute(text("SELECT id FROM categorie_metier ORDER BY ordre")).scalars()
+        if i in {r["dossier_id"] for r in rubriques}
+    ]
+    plomberie = rubrique_entiere(client, dossier["Plombier"], villes["Talence"])
+    coiffure = rubrique_entiere(client, dossier["Coiffeur"], villes["Talence"])
+    assert fabrique.noms(plomberie) == ["Karim"]  # ni Luc (trop loin), ni le prestataire en pause
+    carte = next(r for r in plomberie["resultats"] if r["prestataire_id"] == karim.prestataire_id)
+    assert carte["metier"] == "Plombier" and carte["principal"] is True and carte["ville"] == "Pessac"
+    assert 3 <= carte["distance_km"] <= 10 and carte["nouveau"] is True and carte["siret_verifie"] is False
+    # Karim est aussi dans le dossier de son métier secondaire, avec ce métier-là sur sa carte
+    secondaire = next(r for r in coiffure["resultats"] if r["prestataire_id"] == karim.prestataire_id)
+    assert secondaire["metier"].startswith("Coiffeur") and secondaire["principal"] is False
+    assert "0600000000" not in str(rubriques) and karim.email not in str(rubriques)
+
+
+def test_rubrique_une_seule_carte_par_prestataire_avec_ses_2_premieres_photos(fabrique, client, metiers, villes, base: Session) -> None:
+    # Plombier et électricien sont dans le même dossier : une seule carte, celle du métier principal
+    karim = fabrique("Karim", "Pessac", "Électricien", secondaires=("Plombier",), annonce_dans="")
+    dossiers = {base.execute(text("SELECT categorie_id FROM metier WHERE id = :id"), {"id": metiers[nom]}).scalar_one()
+                for nom in ("Plombier", "Électricien")}
+    siret_verifie(base, karim)
+    for numero in range(3):
+        depot = karim.client.post("/api/moi/prestataire/photos", files={"fichier": (f"travail{numero}.jpg", JPG, "image/jpeg")})
+        assert depot.status_code == 200, depot.text
+
+    cartes = [r for dossier_id in dossiers for r in rubrique_entiere(client, dossier_id, villes["Talence"])["resultats"]
+              if r["prestataire_id"] == karim.prestataire_id]
+
+    if len(dossiers) == 1:
+        assert len(cartes) == 1 and cartes[0]["metier"] == "Électricien"
+    assert all(c["photos"] == [1, 2] and c["siret_verifie"] is True for c in cartes)
+
+
+def test_rubriques_limitees_a_10_cartes_et_voir_tout(fabrique, client, metiers, villes, monkeypatch, base: Session) -> None:
+    monkeypatch.setattr(reglages, "RECHERCHE_CARTES_PAR_RUBRIQUE", 2)
+    for nom in ("Un", "Deux", "Trois"):
+        fabrique(nom, "Talence", "Maçon", annonce_dans="")
+    dossier_id = base.execute(text("SELECT categorie_id FROM metier WHERE id = :id"), {"id": metiers["Maçon"]}).scalar_one()
+
+    courte = next(r for r in rubriques_de(client, villes["Talence"]) if r["dossier_id"] == dossier_id)
+    entiere = rubrique_entiere(client, dossier_id, villes["Talence"])
+
+    assert len(courte["resultats"]) == 2 and courte["total"] >= 3
+    assert {"Un", "Deux", "Trois"} <= set(fabrique.noms(entiere)) and entiere["total"] == courte["total"]
+
+
+def test_rubriques_ville_inconnue_ou_dossier_vide(client, villes) -> None:
+    assert client.get("/api/recherche/rubriques", params={"commune_id": 0}).status_code == 400
+    assert client.get("/api/recherche/rubriques/0", params={"commune_id": villes["Talence"]}).json()["rubriques"] == []
 
 
 # ---------- Page publique d'un prestataire ----------

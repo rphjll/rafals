@@ -1,0 +1,230 @@
+<title>Trouver un prestataire par service</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Nunito:wght@500;600;700;800;900&display=swap">
+<style>
+/* Maquette du 07/10/2026 : « Trouver un prestataire » avec une rangée de prestataires par service (modèle : capture AlloVoisins de Raphael). Style « chaleureux » du site, contenu centré à 1120 px, rangées qui défilent de côté. */
+:root{
+  --fond:#F1F7F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;
+  --primaire:#2F6B4F;--primaire-texte:#FFFFFF;--primaire-doux:#E2EEE7;--accent:#D9793A;
+  --accent-vif:#E8863F;--accent-vif-texte:#1D2620;
+  --ok:#2E7D4F;--ok-doux:#E3F2E8;--attente:#B26A00;--attente-doux:#FCF0DC;
+  --t-orange:#FBE7D8;--t-orange-x:#7A3A0E;--t-vert:#D8ECDF;--t-vert-x:#1F4D38;--t-jaune:#FBEBC6;--t-jaune-x:#6E4300;
+  --t-bleu:#DCEAF7;--t-bleu-x:#1D4A72;--t-rose:#F8DFE4;--t-rose-x:#7F2238;--t-violet:#E8E1F6;--t-violet-x:#49317F;
+  --ombre:0 8px 28px rgba(31,77,56,.10);
+  --marque:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;--corps:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-carte:26px;--r-champ:16px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;
+  --primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --accent-vif:#F0955A;--accent-vif-texte:#1D2620;
+  --ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;
+  --t-orange:#3A2616;--t-orange-x:#F4B48A;--t-vert:#1C3024;--t-vert-x:#8FD5AE;--t-jaune:#33290F;--t-jaune-x:#EFCB73;
+  --t-bleu:#17293A;--t-bleu-x:#93C2EC;--t-rose:#3A1B24;--t-rose-x:#F0A3B4;--t-violet:#271F3D;--t-violet-x:#C2ADF0;
+  --ombre:0 8px 28px rgba(0,0,0,.35);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;
+  --primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --accent-vif:#F0955A;--accent-vif-texte:#1D2620;
+  --ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;
+  --t-orange:#3A2616;--t-orange-x:#F4B48A;--t-vert:#1C3024;--t-vert-x:#8FD5AE;--t-jaune:#33290F;--t-jaune-x:#EFCB73;
+  --t-bleu:#17293A;--t-bleu-x:#93C2EC;--t-rose:#3A1B24;--t-rose-x:#F0A3B4;--t-violet:#271F3D;--t-violet-x:#C2ADF0;
+  --ombre:0 8px 28px rgba(0,0,0,.35);color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font:600 16px/1.5 var(--corps)}
+h1,h2,h3,p,ul{margin:0;padding:0}
+ul{list-style:none}
+h1,h2,h3{font-weight:900;line-height:1.12;text-wrap:balance}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.doux{color:var(--doux)}
+.t0{background:var(--t-vert);color:var(--t-vert-x)}.t1{background:var(--t-orange);color:var(--t-orange-x)}.t2{background:var(--t-bleu);color:var(--t-bleu-x)}
+.t3{background:var(--t-violet);color:var(--t-violet-x)}.t4{background:var(--t-jaune);color:var(--t-jaune-x)}.t5{background:var(--t-rose);color:var(--t-rose-x)}
+
+/* Bandeau de la maquette (ne fait pas partie du site) */
+.maq{background:var(--texte);color:var(--fond);padding:10px 16px;font-size:14.5px}
+.maq-in{max-width:1120px;margin:auto;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.seg{display:inline-flex;background:var(--doux);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:none;color:var(--fond);font-weight:800;padding:0 14px;border-radius:9px;min-height:40px}
+.seg button[aria-pressed="true"]{background:var(--fond);color:var(--texte)}
+
+.entete{padding:12px 16px}
+.entete-in{max-width:1120px;margin:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.logo{font:800 28px/1 var(--marque);color:var(--primaire);letter-spacing:-.02em;margin-right:auto}
+.logo i{color:var(--accent);font-style:normal}
+.menu{display:flex;gap:2px;flex-wrap:wrap}
+.menu span{font-weight:800;padding:9px 13px;border-radius:99px;white-space:nowrap}
+.menu span[aria-current]{background:var(--surface);color:var(--primaire);box-shadow:var(--ombre)}
+@media (max-width:760px){.menu span:not([aria-current]){display:none}}
+
+main{max-width:1152px;margin:auto;padding-inline:16px;padding-block:12px 80px;display:flex;flex-direction:column;gap:36px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border-radius:99px;border:0;background:var(--primaire);color:var(--primaire-texte);font-weight:800}
+.btn.sec{background:var(--primaire-doux);color:var(--primaire)}
+.btn.acc{background:var(--accent-vif);color:var(--accent-vif-texte)}
+.carte{background:var(--surface);border-radius:var(--r-carte);box-shadow:var(--ombre)}
+
+/* Recherche */
+.haut{display:flex;flex-direction:column;gap:18px}
+.haut h1{font-size:clamp(30px,5vw,48px);letter-spacing:-.02em}
+.haut h1 em{font-style:normal;color:var(--primaire)}
+.rech{display:grid;gap:12px;padding:16px;align-items:end}
+@media (min-width:760px){.rech{grid-template-columns:1fr 1fr auto}}
+.champ{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:14px;min-width:0}
+.champ input{border:1.5px solid var(--bord);border-radius:var(--r-champ);background:var(--surface);padding:12px 14px;min-height:48px;font-weight:600;font-size:16px;width:100%}
+
+/* Une rubrique = un service */
+.rub{display:flex;flex-direction:column;gap:12px}
+.rub-tete h2{font-size:24px}
+.rub-tete p{font-size:14.5px;color:var(--doux)}
+.rangee{display:flex;gap:16px;overflow-x:auto;padding:6px 4px 18px;margin-inline:-4px;scroll-snap-type:x proximity}
+.rangee>*{flex:none;width:min(318px,82vw);scroll-snap-align:start}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.centre{display:flex;justify-content:center}
+
+/* Carte d'un prestataire */
+.presta{position:relative;display:flex;flex-direction:column;border:0;padding:0;text-align:left;overflow:hidden;min-width:0}
+.presta:hover{box-shadow:var(--ombre),0 0 0 2px var(--primaire)}
+.presta .coin{position:absolute;top:0;right:0;font-size:12.5px;font-weight:800;padding:4px 12px;border-radius:0 0 0 14px}
+.coin.pro{background:var(--ok-doux);color:var(--ok)}
+.coin.part{background:var(--fond);color:var(--doux)}
+.presta .qui{display:flex;gap:12px;align-items:center;padding:30px 16px 12px}
+.av{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:22px;flex:none}
+.av.photo{background:linear-gradient(140deg,var(--t-jaune),var(--t-orange));color:var(--t-orange-x)}
+.qui div{min-width:0;line-height:1.3}
+.qui b{display:block;font-size:17px;font-weight:900;overflow-wrap:anywhere}
+.qui small{display:block;font-size:13.5px;color:var(--doux)}
+.qui small.metier{color:var(--texte);font-weight:800}
+.travaux{display:grid;grid-template-columns:1fr 1fr;gap:3px;height:112px}
+.travaux span{display:grid;place-items:center;font-size:12.5px;font-weight:800;text-align:center;padding:4px}
+.travaux.vide{grid-template-columns:1fr;height:auto}
+.travaux.vide span{background:var(--fond);color:var(--doux);padding:10px}
+body[data-photos="non"] .travaux{display:none}
+.bas{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px 14px;margin-top:auto}
+.etoile{color:var(--accent);font-weight:900;font-variant-numeric:tabular-nums}
+.bas small{font-size:13.5px;color:var(--doux)}
+.puce{background:var(--attente-doux);color:var(--attente);border-radius:99px;padding:3px 11px;font-size:13px;font-weight:800}
+
+/* Notes pour Raphael */
+.notes{padding:22px;display:flex;flex-direction:column;gap:14px}
+.notes h2{font-size:20px}
+.notes li{padding-left:20px;position:relative;max-width:78ch}
+.notes li+li{margin-top:6px}
+.notes li::before{content:"";position:absolute;left:4px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--primaire)}
+.notes .nouv li::before{background:var(--accent)}
+</style>
+
+<div class="maq"><div class="maq-in">
+  <b>Maquette : rien n'est changé dans le site.</b>
+  <span>Photos de travaux sur les cartes :</span>
+  <span class="seg" role="group" aria-label="Photos de travaux">
+    <button type="button" id="photos-oui" aria-pressed="true">Avec</button>
+    <button type="button" id="photos-non" aria-pressed="false">Sans</button>
+  </span>
+</div></div>
+
+<header class="entete"><div class="entete-in">
+  <span class="logo">rafals<i>.</i></span>
+  <nav class="menu" aria-label="Menu"><span>Accueil</span><span aria-current="page">Trouver un prestataire</span><span>Messages</span><span>Mon activité</span><span>Mon profil</span></nav>
+</div></header>
+
+<main>
+  <section class="haut">
+    <h1>Le bon prestataire, <em>près de chez vous.</em></h1>
+    <form class="carte rech" id="recherche">
+      <label class="champ" for="service">Quel service ?<input id="service" placeholder="ex. plombier, ménage…"></label>
+      <label class="champ" for="ville">Où ?<input id="ville" value="Pessac (33600)"></label>
+      <button class="btn acc" type="submit">Rechercher</button>
+    </form>
+  </section>
+
+  <div id="liste" style="display:flex;flex-direction:column;gap:30px"></div>
+
+  <section class="carte notes">
+    <h2>Ce qui change par rapport à aujourd'hui</h2>
+    <ul>
+      <li>Les tuiles « Jardinage », « Ménage »… sous le titre « De quoi avez-vous besoin ? » disparaissent.</li>
+      <li>À leur place : une rubrique par service, avec ses prestataires en rangée qui défile de côté, et un bouton [Voir tout].</li>
+      <li>[Voir tout] montre tous les prestataires du service en grille, avec [← Tous les services] pour revenir.</li>
+      <li>Un service sans aucun prestataire près de la ville n'apparaît pas.</li>
+      <li>La recherche du haut reste comme aujourd'hui.</li>
+    </ul>
+    <h2>Ce qui est nouveau et que tu dois décider</h2>
+    <ul class="nouv">
+      <li><b>Photos de travaux</b> (les images sous le nom, comme sur ta capture) : elles n'existent pas encore dans rafals. Essaie le bouton « Avec / Sans » tout en haut pour voir les deux.</li>
+      <li><b>La ville</b> : pour écrire « à 3 km » et ne montrer que les prestataires proches, le site doit connaître la ville du visiteur. Aujourd'hui il ne la connaît qu'après une recherche.</li>
+      <li><b>« SIRET vérifié » / « Particulier »</b> dans le coin de la carte : le site sait déjà qui a un SIRET vérifié.</li>
+      <li>Pas repris de ta capture : « Profil boosté » (publicité payante) et « En ligne à 15:36 ». Dis-moi si tu les veux.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+// Exemples inventés pour la maquette (aucune vraie personne)
+var RUBRIQUES = [
+  {nom:"Bricolage", total:14, gens:[
+    {n:"Nicolas G.", m:"Menuisier poseur de cuisine", v:"Mérignac", km:6, note:"5,0", avis:10, pro:true, photo:true, t:["Cuisine posée","Plan de travail"]},
+    {n:"Clément P.", m:"Homme toutes mains", v:"Pessac", km:1, note:"4,3", avis:47, pro:false, photo:true, t:["Abri de jardin","Terrasse"]},
+    {n:"Karim Benali", m:"Plombier", v:"Talence", km:3, note:"4,8", avis:23, pro:true, photo:false, t:["Salle de bain","Chauffe-eau"]},
+    {n:"Lucas M.", m:"Peintre", v:"Gradignan", km:4, pro:true, photo:true, t:[]},
+    {n:"Sarah D.", m:"Électricienne", v:"Bègles", km:7, note:"4,9", avis:8, pro:true, photo:false, t:["Tableau électrique","Éclairage"]}
+  ]},
+  {nom:"Jardinage", total:9, gens:[
+    {n:"Sophie Martin", m:"Jardinière paysagiste", v:"Pessac", km:2, note:"4,8", avis:40, pro:true, photo:true, t:["Haie taillée","Massif"]},
+    {n:"Hugo D.", m:"Tonte et entretien", v:"Cestas", km:8, note:"4,2", avis:5, pro:false, photo:false, t:["Pelouse","Désherbage"]},
+    {n:"Marc L.", m:"Élagueur", v:"Canéjan", km:6, pro:true, photo:true, t:["Élagage","Abattage"]},
+    {n:"Julie M.", m:"Jardinière", v:"Talence", km:3, note:"5,0", avis:2, pro:false, photo:false, t:[]}
+  ]},
+  {nom:"Ménage", total:6, gens:[
+    {n:"Nadia K.", m:"Aide ménagère", v:"Pessac", km:1, note:"4,9", avis:31, pro:true, photo:true, t:["Cuisine","Vitres"]},
+    {n:"Léa R.", m:"Repassage à domicile", v:"Mérignac", km:5, note:"4,6", avis:12, pro:false, photo:false, t:[]},
+    {n:"Paul T.", m:"Nettoyage de vitres", v:"Bordeaux", km:7, pro:true, photo:true, t:["Baie vitrée","Véranda"]}
+  ]},
+  {nom:"Coiffure à domicile", total:2, gens:[
+    {n:"Inès B.", m:"Coiffeuse", v:"Talence", km:3, note:"4,7", avis:19, pro:true, photo:true, t:["Coupe","Couleur"]},
+    {n:"Tom V.", m:"Barbier", v:"Pessac", km:2, pro:false, photo:false, t:[]}
+  ]}
+];
+var ouverte = null; // rubrique montrée en entier après [Voir tout]
+
+function el(balise, classe, texte){var e=document.createElement(balise); if(classe) e.className=classe; if(texte!=null) e.textContent=texte; return e}
+function initiales(nom){return nom.split(" ").map(function(p){return p[0]}).join("").replace(".","").slice(0,2).toUpperCase()}
+
+function cartePrestataire(p, rang){
+  var c=el("button","carte presta"); c.type="button";
+  c.append(el("span","coin "+(p.pro?"pro":"part"), p.pro?"SIRET vérifié":"Particulier"));
+  var qui=el("span","qui");
+  qui.append(el("span","av "+(p.photo?"photo":"t"+rang%6), p.photo?"photo":initiales(p.n)));
+  var d=el("div"); d.append(el("b",null,p.n), el("small","metier",p.m), el("small",null,p.v+" · à "+p.km+" km")); qui.append(d);
+  var tr=el("span","travaux"+(p.t.length?"":" vide"));
+  if(p.t.length) p.t.forEach(function(x,i){tr.append(el("span","t"+(rang+i+2)%6,x))});
+  else tr.append(el("span",null,"Pas encore de photos"));
+  var bas=el("span","bas");
+  if(p.note){var s=el("span"); s.append(el("span","etoile","★ "+p.note+"/5"), el("small",null," ("+p.avis+" avis)")); bas.append(s)}
+  else bas.append(el("span","puce","Nouveau sur rafals"));
+  c.append(qui,tr,bas); return c;
+}
+
+function dessiner(){
+  var liste=document.getElementById("liste"); liste.textContent="";
+  RUBRIQUES.forEach(function(r){
+    if(ouverte && ouverte!==r.nom) return;
+    var s=el("section","rub");
+    if(ouverte){var ret=el("button","btn sec","← Tous les services"); ret.type="button"; ret.style.alignSelf="flex-start"; ret.onclick=function(){ouverte=null;dessiner()}; s.append(ret)}
+    var tete=el("div","rub-tete"); tete.append(el("h2",null,r.nom), el("p",null,r.total+" prestataires près de Pessac")); s.append(tete);
+    var zone=el("div", ouverte?"grille":"rangee"); if(!ouverte){zone.tabIndex=0; zone.setAttribute("aria-label","Prestataires : "+r.nom)}
+    r.gens.forEach(function(p,i){zone.append(cartePrestataire(p,i))}); s.append(zone);
+    if(!ouverte){var ct=el("div","centre"); var b=el("button","btn sec","Voir tout"); b.type="button"; b.onclick=function(){ouverte=r.nom;dessiner();liste.scrollIntoView({block:"start"})}; ct.append(b); s.append(ct)}
+    liste.append(s);
+  });
+}
+function photos(avec){
+  document.body.dataset.photos=avec?"oui":"non";
+  document.getElementById("photos-oui").setAttribute("aria-pressed",avec);
+  document.getElementById("photos-non").setAttribute("aria-pressed",!avec);
+}
+document.getElementById("photos-oui").onclick=function(){photos(true)};
+document.getElementById("photos-non").onclick=function(){photos(false)};
+document.getElementById("recherche").addEventListener("submit",function(e){e.preventDefault()});
+dessiner();
+</script>

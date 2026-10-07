@@ -1,5 +1,5 @@
-"""Test de fiche du prestataire : ajout → modification → fiche liée (métier secondaire)
-→ suppression du prestataire refusée tant qu'un métier secondaire existe → suppression.
+"""Test de fiche du prestataire : ajout → modification → fiches liées (métier secondaire, photo de son travail)
+→ suppression du prestataire refusée tant qu'une fiche liée existe → suppression.
 (La commune est une donnée de référence chargée depuis la liste officielle : pas de fiche à part.)"""
 
 import pytest
@@ -8,8 +8,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.modeles.comptes import Compte
+from app.modeles.fichiers import Fichier
 from app.modeles.metiers import Metier
-from app.modeles.prestataires import Commune, MetierSecondaire, Prestataire
+from app.modeles.prestataires import Commune, MetierSecondaire, PhotoPrestataire, Prestataire
 from tests.fiches.outils import relire_et_comparer, valeurs
 
 
@@ -64,8 +65,34 @@ def test_fiche_prestataire(base: Session) -> None:
         base.commit()
     base.rollback()
 
+    # 3 bis. Fiche liée : une photo de son travail (ajout, modification, suppression du prestataire refusée)
+    base.delete(base.get_one(MetierSecondaire, secondaire.id))
+    base.commit()
+    fichiers = []
+    for variante in (1, 2):
+        fichier = Fichier(**valeurs(Fichier, variante, {"depose_par_id": compte.id}))
+        base.add(fichier)
+        base.commit()
+        fichiers.append(fichier.id)
+    ajout_photo = valeurs(PhotoPrestataire, 1, {"prestataire_id": prestataire.id, "fichier_id": fichiers[0]})
+    photo = PhotoPrestataire(**ajout_photo)
+    base.add(photo)
+    base.commit()
+    relire_et_comparer(base, PhotoPrestataire, photo.id, ajout_photo)
+    modification_photo = valeurs(PhotoPrestataire, 2, {"prestataire_id": prestataire.id, "fichier_id": fichiers[1]})
+    for rubrique, valeur in modification_photo.items():
+        setattr(photo, rubrique, valeur)
+    base.commit()
+    relire_et_comparer(base, PhotoPrestataire, photo.id, modification_photo)
+
+    base.delete(base.get_one(Prestataire, prestataire.id))
+    with pytest.raises(IntegrityError):
+        base.commit()
+    base.rollback()
+
     # 4. Suppressions, désormais possibles
-    for modele, identifiant in ((MetierSecondaire, secondaire.id), (Prestataire, prestataire.id), (Compte, compte.id)):
+    for modele, identifiant in ((PhotoPrestataire, photo.id), (Prestataire, prestataire.id), (Fichier, fichiers[0]),
+                                (Fichier, fichiers[1]), (Compte, compte.id)):
         base.delete(base.get_one(modele, identifiant))
         base.commit()
         base.expire_all()
