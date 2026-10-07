@@ -2,20 +2,16 @@
 // Photo ronde d'un prestataire, ou ses initiales s'il n'en a pas (« Karim Benali » → « KB ») :
 // Mon activité, résultats de recherche, page publique.
 import { computed } from 'vue'
+import { initialesDe } from '../../outils/noms'
 
 const props = withDefaults(
-  defineProps<{ id: number; nom: string; aUnePhoto: boolean; taille?: 'petite' | 'grande'; version?: number }>(),
+  defineProps<{ id: number; nom: string; aUnePhoto: boolean; taille?: 'petite' | 'moyenne' | 'grande'; version?: number }>(),
   { taille: 'petite', version: 0 },
 )
-const initiales = computed(() =>
-  props.nom
-    .replace(/^ZZTEST\s+/, '')
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((mot) => mot[0]?.toUpperCase() ?? '')
-    .join(''),
-)
-const classeTaille = computed(() => (props.taille === 'grande' ? 'size-24 text-3xl' : 'size-14 text-lg sm:size-16'))
+const initiales = computed(() => initialesDe(props.nom))
+// « moyenne » : les petites cartes des résultats de recherche
+const TAILLES = { petite: 'size-14 text-lg sm:size-16', moyenne: 'size-[92px] text-[28px]', grande: 'size-24 text-3xl' }
+const classeTaille = computed(() => TAILLES[props.taille])
 </script>
 
 <template>

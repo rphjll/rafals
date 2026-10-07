@@ -39,7 +39,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', surTouche))
         role="dialog"
         aria-modal="true"
         :aria-label="titre"
-        class="max-h-[calc(100dvh-32px)] w-full overflow-y-auto rounded-rafals border border-bord bg-surface p-[22px] text-texte"
+        class="max-h-[calc(100dvh-32px)] w-full overflow-y-auto carte p-[22px] text-texte"
         :class="large ? 'max-w-[640px]' : 'max-w-[440px]'"
       >
         <h3 class="mb-2 text-xl font-bold">{{ titre }}</h3>

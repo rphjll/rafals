@@ -22,7 +22,7 @@ Bandeau blanc (`surface`) collé en haut de toutes les pages, bordure fine en ba
      3. bouton secondaire [Se déconnecter] → accueil + message vert « Vous êtes déconnecté. »
    - La liste se referme : par un 2ᵉ clic sur la pastille, un clic ailleurs, la touche Échap, ou un changement de page.
 
-L'entrée du groupe affiché est surlignée (fond `primaire-doux`, texte `primaire`). Survol : même effet. Sur « Mon compte » ou « Administration », c'est le contour de la pastille qui passe au vert.
+L'entrée du groupe affiché est surlignée (fond `primaire-doux`, texte `primaire`). Survol : même effet. Depuis le 07/10/2026 (style « chaleureux ») les entrées sont en forme de pastille (`rounded-bouton`) et en gras ; le logo utilise `font-marque`. La barre de 5 boutons en bas sur téléphone, dessinée dans la maquette, n'est pas encore faite. Sur « Mon compte » ou « Administration », c'est le contour de la pastille qui passe au vert.
 
 ## Sous-menu (sous l'en-tête, au-dessus de la page)
 Bandeau blanc avec une ligne d'onglets ; la page affichée est soulignée en vert. Il n'apparaît que sur les pages d'un groupe. **Les pages elles-mêmes ne changent pas** (en particulier « Mon agenda »).

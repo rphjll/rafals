@@ -144,7 +144,7 @@ function enleverFiltres() {
       </div>
 
       <p v-if="chargement" class="text-texte-doux">Recherche…</p>
-      <div v-else-if="page.resultats.length" class="flex flex-col gap-3">
+      <div v-else-if="page.resultats.length" class="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(190px,1fr))] sm:gap-4">
         <CarteResultat v-for="r in page.resultats" :key="r.prestataire_id" :resultat="r" :metier="page.metier.nom" />
       </div>
       <AppSection v-else-if="avecFiltres">

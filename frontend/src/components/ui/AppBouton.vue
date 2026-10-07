@@ -22,8 +22,8 @@ const verrouille = computed(() => props.variante === 'verrouille')
 
 const classesVariante: Record<string, string> = {
   principal: 'bg-primaire text-primaire-texte border-primaire hover:brightness-110',
-  secondaire: 'bg-surface text-primaire border-primaire hover:bg-primaire-doux',
-  danger: 'bg-surface text-erreur border-erreur hover:bg-erreur-doux',
+  secondaire: 'bg-secondaire-fond text-primaire border-secondaire-bord hover:brightness-95',
+  danger: 'bg-danger-fond text-erreur border-danger-bord hover:brightness-95',
   verrouille: 'bg-neutre-doux text-neutre border-neutre-doux cursor-not-allowed',
   accent: 'bg-accent-vif text-accent-vif-texte border-accent-vif hover:brightness-105',
 }
@@ -47,7 +47,7 @@ function clic(evenement: MouseEvent) {
       :type="verrouille ? 'button' : type"
       :aria-disabled="verrouille || undefined"
       :aria-busy="occupe || undefined"
-      class="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-rafals border px-[18px] py-2.5 font-semibold transition"
+      class="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-bouton border px-[18px] py-2.5 font-bold transition"
       :class="[classesVariante[variante], pleineLargeur ? 'w-full' : '', occupe ? 'cursor-wait opacity-70' : '']"
       @click="clic"
       @blur="bulleVisible = false"

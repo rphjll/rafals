@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Structure commune : l'en-tête en haut, la page en dessous, le message court par-dessus.
-import { onMounted } from 'vue'
+import { onMounted, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 import AppEntete from './components/AppEntete.vue'
 import AppSousMenu from './components/AppSousMenu.vue'
 import AppMessage from './components/ui/AppMessage.vue'
@@ -8,6 +9,10 @@ import { useCompte } from './composables/useCompte'
 
 const { chargerCompte } = useCompte()
 onMounted(chargerCompte)
+
+// « Mon agenda » garde les formes d'avant (coins de 10 px, bordures, Figtree) : voir style.css, « style-classique »
+const route = useRoute()
+watchEffect(() => document.documentElement.classList.toggle('style-classique', route.name === 'mon-agenda'))
 </script>
 
 <template>

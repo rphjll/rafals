@@ -1,0 +1,567 @@
+<title>rafals en style chaleureux</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Nunito:wght@500;600;700;800;900&display=swap">
+<style>
+/* Style A « chaleureux » choisi par Raphael le 07/10/2026 : formes très rondes, ombres douces, dessins. Contenu centré à 1120 px, carte d'action à droite, barre de 5 boutons en bas sur téléphone. */
+:root{
+  --fond:#F1F7F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;
+  --primaire:#2F6B4F;--primaire-texte:#FFFFFF;--primaire-doux:#E2EEE7;--accent:#D9793A;
+  --fonce:#1F4D38;--sur-fonce:#FFFFFF;--sur-fonce-doux:#D5E6DC;
+  --accent-vif:#E8863F;--accent-vif-texte:#1D2620;
+  --ok:#2E7D4F;--ok-doux:#E3F2E8;--attente:#B26A00;--attente-doux:#FCF0DC;--erreur:#B3261E;--erreur-doux:#FBE4E2;--sur-etat:#FFFFFF;
+  --t-orange:#FBE7D8;--t-orange-x:#7A3A0E;--t-vert:#D8ECDF;--t-vert-x:#1F4D38;--t-jaune:#FBEBC6;--t-jaune-x:#6E4300;
+  --t-bleu:#DCEAF7;--t-bleu-x:#1D4A72;--t-rose:#F8DFE4;--t-rose-x:#7F2238;--t-violet:#E8E1F6;--t-violet-x:#49317F;
+  --ombre:0 8px 28px rgba(31,77,56,.10);
+  --marque:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;--corps:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-carte:26px;--r-champ:16px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;
+  --primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --fonce:#1C3024;--sur-fonce:#E7ECF2;--sur-fonce-doux:#A3AEBD;
+  --accent-vif:#F0955A;--accent-vif-texte:#1D2620;
+  --ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;--erreur:#F08A82;--erreur-doux:#3A1A18;--sur-etat:#0F1A13;
+  --t-orange:#3A2616;--t-orange-x:#F4B48A;--t-vert:#1C3024;--t-vert-x:#8FD5AE;--t-jaune:#33290F;--t-jaune-x:#EFCB73;
+  --t-bleu:#17293A;--t-bleu-x:#93C2EC;--t-rose:#3A1B24;--t-rose-x:#F0A3B4;--t-violet:#271F3D;--t-violet-x:#C2ADF0;
+  --ombre:0 8px 28px rgba(0,0,0,.35);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;
+  --primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --fonce:#1C3024;--sur-fonce:#E7ECF2;--sur-fonce-doux:#A3AEBD;
+  --accent-vif:#F0955A;--accent-vif-texte:#1D2620;
+  --ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;--erreur:#F08A82;--erreur-doux:#3A1A18;--sur-etat:#0F1A13;
+  --t-orange:#3A2616;--t-orange-x:#F4B48A;--t-vert:#1C3024;--t-vert-x:#8FD5AE;--t-jaune:#33290F;--t-jaune-x:#EFCB73;
+  --t-bleu:#17293A;--t-bleu-x:#93C2EC;--t-rose:#3A1B24;--t-rose-x:#F0A3B4;--t-violet:#271F3D;--t-violet-x:#C2ADF0;
+  --ombre:0 8px 28px rgba(0,0,0,.35);color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font:600 16px/1.5 var(--corps)}
+h1,h2,h3,p,ul,ol{margin:0;padding:0}
+ul,ol{list-style:none}
+h1,h2,h3{font-weight:900;line-height:1.12;text-wrap:balance}
+h1{font-size:clamp(34px,5.4vw,58px);letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--primaire)}
+h2{font-size:26px}
+h3{font-size:20px}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.doux{color:var(--doux)}
+.petit{font-size:14px}
+body[data-role="client"] .si-presta,body[data-role="presta"] .si-client{display:none!important}
+.t-vert{background:var(--t-vert);color:var(--t-vert-x)}.t-orange{background:var(--t-orange);color:var(--t-orange-x)}.t-bleu{background:var(--t-bleu);color:var(--t-bleu-x)}
+.t-violet{background:var(--t-violet);color:var(--t-violet-x)}.t-jaune{background:var(--t-jaune);color:var(--t-jaune-x)}.t-rose{background:var(--t-rose);color:var(--t-rose-x)}
+svg.scene{width:100%;height:100%;display:block}
+
+/* Bandeau de la maquette (ne fait pas partie du site) */
+.maq{background:var(--texte);color:var(--fond);padding:10px 16px;font-size:14.5px}
+.maq-in{max-width:1120px;margin:auto;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.seg{display:inline-flex;background:var(--doux);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:none;color:var(--fond);font-weight:800;padding:0 14px;border-radius:9px;min-height:40px}
+.seg button[aria-pressed="true"]{background:var(--fond);color:var(--texte)}
+
+/* En-tête */
+.entete{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--fond);padding:12px 20px}
+.entete-in{max-width:1120px;margin:auto;display:flex;align-items:center;gap:6px}
+.logo{font:800 28px/1 var(--marque);color:var(--primaire);letter-spacing:-.02em;background:none;border:0;padding:0;margin-right:auto}
+.logo i{color:var(--accent);font-style:normal}
+.menu{display:flex;gap:2px}
+.menu button{display:flex;align-items:center;gap:6px;border:0;background:none;font-weight:800;padding:0 13px;min-height:44px;border-radius:99px;white-space:nowrap}
+.menu button:hover{color:var(--primaire)}
+.menu button[aria-current]{background:var(--surface);color:var(--primaire);box-shadow:var(--ombre)}
+.pastille{background:var(--erreur);color:var(--sur-etat);border-radius:99px;font-size:12px;font-weight:800;padding:1px 7px}
+.compte{display:flex;align-items:center;gap:8px;font-weight:800;border:0;background:var(--surface);border-radius:99px;padding:4px 14px 4px 4px;min-height:44px;box-shadow:var(--ombre)}
+.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:15px;flex:none}
+.av.p{width:34px;height:34px;font-size:12.5px}
+.av.m{width:64px;height:64px;font-size:22px}
+.av.g{width:104px;height:104px;font-size:36px}
+
+main{max-width:1160px;margin:auto;padding-inline:20px;padding-block:12px 110px}
+.ecran{display:flex;flex-direction:column;gap:36px}
+.pile{display:flex;flex-direction:column;gap:16px}
+.ligne{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.entre{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px}
+
+/* Boutons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:99px;border:0;background:var(--primaire);color:var(--primaire-texte);font-weight:800}
+.btn.sec{background:var(--primaire-doux);color:var(--primaire)}
+.btn.dan{background:var(--erreur-doux);color:var(--erreur)}
+.btn.acc{background:var(--accent-vif);color:var(--accent-vif-texte)}
+.btn.discret{background:none;color:var(--doux);padding-inline:8px}
+.btn.large{width:100%;min-height:52px;font-size:17px;font-weight:900}
+.btn.rond{width:46px;padding:0;flex:none}
+.puce{display:inline-flex;gap:6px;align-items:center;background:var(--fond);border-radius:99px;padding:6px 12px;font-size:14px;font-weight:800}
+.puce .ic{width:16px;height:16px}
+.puce.ok{background:var(--ok-doux);color:var(--ok)}
+.puce.att{background:var(--attente-doux);color:var(--attente)}
+.carte{background:var(--surface);border-radius:var(--r-carte);padding:22px;box-shadow:var(--ombre)}
+.etoile{color:var(--accent);font-weight:900;font-variant-numeric:tabular-nums}
+.champ{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:14px}
+.champ input,.champ textarea{border:0;border-radius:var(--r-champ);background:var(--fond);padding:12px 14px;min-height:48px;font-weight:600;font-size:16px;width:100%}
+.champ textarea{min-height:116px;resize:vertical}
+
+/* Haut de page */
+.hero{display:grid;gap:20px;align-items:center}
+.hero>*{min-width:0}
+@media (min-width:900px){.hero{grid-template-columns:1.1fr .9fr}}
+.sous{font-size:19px;color:var(--doux);margin-top:12px;max-width:42ch}
+.rech{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:99px;padding:6px 6px 6px 22px;box-shadow:var(--ombre);max-width:520px;margin-top:22px}
+.rech input{flex:1;min-width:0;border:0;outline:0;background:none;min-height:48px}
+.rech button{width:50px;height:50px;border-radius:50%;border:0;background:var(--accent-vif);color:var(--accent-vif-texte);display:grid;place-items:center;flex:none}
+.dessin{max-width:440px;justify-self:center;width:100%}
+.bulles-cat{display:flex;gap:22px;overflow-x:auto;padding:6px 4px 10px}
+.bulles-cat button{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:none;font-weight:800;min-width:76px}
+.bulles-cat .b{width:76px;height:76px;border-radius:50%;display:grid;place-items:center}
+.bulles-cat .b .ic{width:30px;height:30px}
+.bulles-cat button[aria-pressed="true"] .b{box-shadow:0 0 0 4px var(--fond),0 0 0 7px var(--primaire)}
+
+/* Deux colonnes : contenu + carte d'action */
+.deux{display:grid;gap:32px}
+.deux>*{min-width:0}
+@media (min-width:940px){.deux{grid-template-columns:1fr 360px;align-items:start}.colle{position:sticky;top:84px}}
+@media (max-width:939px){.deux .haut-tel{order:-1}}
+.sombre{background:var(--fonce);color:var(--sur-fonce);border-radius:30px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.sombre .champ input,.sombre .champ textarea{background:var(--surface);color:var(--texte)}
+.sombre small,.sombre .note{color:var(--sur-fonce-doux);font-size:14px}
+.sombre .btn.sec{background:transparent;color:var(--sur-fonce);box-shadow:inset 0 0 0 2px var(--sur-fonce-doux)}
+.sombre .btn.discret{color:var(--sur-fonce-doux)}
+.photo-plus{display:flex;align-items:center;gap:10px;font-weight:800;font-size:14.5px;background:none;border:0;padding:0;min-height:46px;text-align:left;color:var(--sur-fonce)}
+.photo-plus span{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;border:2px dashed currentColor}
+
+/* Carte d'une demande */
+.dem{display:flex;flex-direction:column;gap:14px}
+.dem .top{display:flex;align-items:center;gap:12px}
+.dem .top>div{margin-right:auto;line-height:1.3;min-width:0}
+.dem .top small{display:block;color:var(--doux);font-size:14px}
+.prix{background:var(--primaire);color:var(--primaire-texte);font-weight:900;padding:6px 15px;border-radius:99px;font-size:17px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.prix.libre{background:var(--fond);color:var(--primaire);font-size:14px}
+.dem .mid{display:grid;grid-template-columns:1fr 116px;gap:16px;align-items:start}
+.dem .mid>div{min-width:0}
+.dem .mid h3{margin-bottom:4px}
+.dem p{color:var(--doux)}
+.img{border-radius:18px;overflow:hidden;aspect-ratio:1;max-width:100%}
+.dem .bot .btn{margin-left:auto}
+.vide{padding:24px;border:2px dashed var(--bord);border-radius:20px;color:var(--doux)}
+
+.etapes{display:grid;gap:16px}
+.etapes li{display:flex;flex-direction:column;gap:8px}
+.etapes .num{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;font-weight:900;font-size:19px}
+@media (min-width:768px){.etapes{grid-template-columns:repeat(3,1fr)}}
+.orange{background:var(--accent-vif);color:var(--accent-vif-texte);border-radius:30px;padding:28px 26px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.orange p{max-width:48ch;margin-top:6px}
+.orange .btn{background:var(--accent-vif-texte);color:var(--t-orange)}
+
+/* Trouver */
+.form-rech{display:grid;gap:12px;margin-top:22px;max-width:520px}
+.tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.tuile{display:flex;align-items:center;gap:14px;text-align:left;border:0;width:100%}
+.tuile .b{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;flex:none}
+.tuile .b .ic{width:26px;height:26px}
+.tuile b{display:block;font-weight:900;font-size:18px}
+.tuile small{color:var(--doux);font-size:14px}
+.grille-pres{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.res{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;border:0;padding:20px 14px;min-width:0}
+.res:hover{box-shadow:0 0 0 3px var(--primaire),var(--ombre)}
+.res h3{font-size:18px}
+.res .puces{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.res .puce{font-size:12.5px;padding:4px 10px}
+.portrait{width:92px;height:92px;border-radius:50%;overflow:hidden;flex:none;display:grid;place-items:center;font-weight:900;font-size:30px}
+.portrait.g{width:112px;height:112px}
+.portrait svg{width:100%;height:100%;display:block}
+
+/* Fiche */
+.fiche-haut{display:grid;gap:18px;align-items:center}
+@media (min-width:600px){.fiche-haut{grid-template-columns:auto 1fr}}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.photos .img{aspect-ratio:4/3}
+.note-gd{font-size:46px;font-weight:900;line-height:1}
+
+/* Messages */
+.msg{display:grid;background:var(--surface);border-radius:var(--r-carte);box-shadow:var(--ombre);overflow:hidden}
+.msg>*{min-width:0}
+.convs{padding:10px;display:flex;flex-direction:column;gap:4px}
+.convs button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:10px 12px;border:0;border-radius:18px;background:none;min-height:66px}
+.convs button[aria-current],.convs button:hover{background:var(--fond)}
+.convs .txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.convs .txt span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--doux);font-size:14px}
+.fil{display:flex;flex-direction:column;min-height:540px}
+.fil-haut{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:2px solid var(--fond)}
+.fil-haut h2{font-size:20px;margin-right:auto}
+.rappel{margin:14px 18px 0;padding:10px 14px;border-radius:16px;background:var(--fond);font-size:14.5px;color:var(--doux)}
+.rappel b{color:var(--texte)}
+.bulles{flex:1;display:flex;flex-direction:column;gap:10px;padding:18px}
+.bulle{max-width:82%;padding:10px 16px;border-radius:22px 22px 22px 6px;background:var(--fond);align-self:flex-start;overflow-wrap:anywhere}
+.bulle.moi{background:var(--primaire);color:var(--primaire-texte);align-self:flex-end;border-radius:22px 22px 6px 22px}
+.bulle small{display:block;font-size:12px;opacity:.8}
+.prop{align-self:stretch;border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:10px;background:var(--t-vert);color:var(--t-vert-x)}
+.prop .gros{font-size:20px;font-weight:900}
+.prop .prix{font-size:22px;padding:6px 18px}
+.ecrire{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:2px solid var(--fond)}
+.ecrire input{flex:1;min-width:0;border:0;border-radius:99px;background:var(--fond);padding:0 18px;min-height:46px}
+@media (min-width:768px){.msg{grid-template-columns:310px 1fr}.convs{border-right:2px solid var(--fond)}.retour-msg{display:none}}
+@media (max-width:767px){.msg[data-vue="liste"] .fil,.msg[data-vue="fil"] .convs{display:none}}
+
+/* Sous-menu et barre du bas */
+.sous-menu{display:flex;gap:6px;overflow-x:auto;padding-block:4px}
+.sous-menu button{flex:none;border:0;background:none;font-weight:800;padding:0 16px;min-height:44px;border-radius:99px;color:var(--doux)}
+.sous-menu button[aria-current]{background:var(--primaire);color:var(--primaire-texte)}
+.bas{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:5;display:none;background:var(--surface);border-radius:26px;box-shadow:0 8px 30px rgba(0,0,0,.22);padding:4px}
+.bas button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:58px;border:0;border-radius:22px;background:none;font-size:11.5px;font-weight:800;color:var(--doux);position:relative;min-width:0}
+.bas button[aria-current]{color:var(--primaire);background:var(--primaire-doux)}
+.bas .pastille{position:absolute;top:5px;left:calc(50% + 6px)}
+@media (max-width:939px){.menu{display:none}.bas{display:flex}.compte span:last-child{display:none}.compte{padding:4px}}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9;background:var(--texte);color:var(--fond);font-weight:800;padding:12px 18px;border-radius:16px;max-width:calc(100% - 32px);text-align:center}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-case" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-6z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-9 5-14 15-14 0 10-5 15-14 15zM5 19l8-8"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></symbol>
+<symbol id="i-tool" viewBox="0 0 24 24"><path d="M15 4a5 5 0 00-5 7l-7 7 3 3 7-7a5 5 0 007-5l-3 3-3-3z"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 01-12 0c0-4 6-11 6-11z"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></symbol>
+<symbol id="i-cut" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.5 8L20 18M8.5 16L20 6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+</defs></svg>
+
+<div class="maq"><div class="maq-in">
+  <b>Maquette</b><span>Noms, demandes et dessins sont des exemples.</span>
+  <span class="seg" role="group" aria-label="Je regarde en tant que">
+    <button id="role-client" aria-pressed="true">Julie, cliente</button>
+    <button id="role-presta" aria-pressed="false">Karim, prestataire</button>
+  </span>
+</div></div>
+
+<header class="entete"><div class="entete-in">
+  <button class="logo" data-vers="accueil" aria-label="Accueil rafals">rafals<i>.</i></button>
+  <nav class="menu" aria-label="Menu principal">
+    <button data-vers="accueil" data-nav="accueil">Accueil</button>
+    <button data-vers="trouver" data-nav="trouver">Trouver un prestataire</button>
+    <button data-vers="demandes" data-nav="demandes">Mes réservations</button>
+    <button data-vers="messages" data-nav="messages">Messages<span class="pastille">2</span></button>
+    <button class="si-client" data-toast="« Proposer mes services » sera dessiné ensuite.">Proposer mes services</button>
+    <button class="si-presta" data-toast="« Mon agenda » ne change pas : il n'est pas dans la maquette.">Mon activité</button>
+  </nav>
+  <button class="compte" data-toast="« Mon compte » sera dessiné ensuite.">
+    <span class="av p t-vert"><span class="si-client">JM</span><span class="si-presta">KB</span></span>
+    <span><span class="si-client">Julie</span><span class="si-presta">Karim</span></span>
+  </button>
+</div></header>
+
+<main>
+<!-- ================= ACCUEIL ================= -->
+<section class="ecran" id="e-accueil">
+  <div class="pile">
+    <div class="hero">
+      <div>
+        <h1>Bonjour <span class="si-client">Julie</span><span class="si-presta">Karim</span> ! <em class="si-client">De quoi avez-vous besoin ?</em><em class="si-presta">Qui pouvez-vous aider ?</em></h1>
+        <p class="sous si-client">Un voisin ou un professionnel du quartier s'en occupe, souvent dès cette semaine.</p>
+        <p class="sous si-presta">Voici les demandes des clients autour de Pessac. Répondez à celles qui vous vont.</p>
+        <label class="rech"><input id="besoin" type="search" placeholder="ex. pelouse, ménage, robinet…" aria-label="Chercher dans les demandes" maxlength="80">
+          <button type="button" aria-label="Chercher" data-toast="La liste se filtre pendant que vous écrivez."><svg class="ic"><use href="#i-search"/></svg></button></label>
+      </div>
+      <div class="dessin" id="quartier"></div>
+    </div>
+    <div class="bulles-cat" id="cats" role="group" aria-label="Types de service"></div>
+  </div>
+
+  <div class="deux">
+    <div class="pile">
+      <div class="entre"><h2>Les demandes près de chez vous</h2><span class="doux petit" id="compte-dem"></span></div>
+      <div class="pile" id="liste"></div>
+    </div>
+    <form class="sombre colle haut-tel" id="publier">
+      <h2>Publier une demande</h2>
+      <label class="champ" for="p-texte">Votre besoin<textarea id="p-texte" maxlength="300" placeholder="ex. Tondre ma pelouse de 200 m² samedi matin"></textarea></label>
+      <label class="champ" for="p-adresse">Où ?<input id="p-adresse" placeholder="ex. 12 rue des Lilas, Pessac"></label>
+      <button type="button" class="photo-plus" data-toast="Le choix de photos s'ouvre ici (5 au plus)."><span><svg class="ic"><use href="#i-cam"/></svg></span>Ajouter des photos</button>
+      <button class="btn acc large" type="submit">Publier ma demande</button>
+      <small>Gratuit. La rue n'est montrée qu'au prestataire que vous choisissez.</small>
+    </form>
+  </div>
+
+  <div class="pile">
+    <h2>Comment ça marche</h2>
+    <ol class="etapes">
+      <li class="carte"><span class="num t-vert">1</span><h3>Publiez votre demande</h3><p class="doux">Décrivez votre besoin en une phrase. C'est gratuit.</p></li>
+      <li class="carte"><span class="num t-jaune">2</span><h3>Recevez des propositions</h3><p class="doux">Un prix, un jour, une heure. Vous acceptez, négociez ou refusez.</p></li>
+      <li class="carte"><span class="num t-orange">3</span><h3>Payez et donnez votre avis</h3><p class="doux">Par carte ou en espèces. La facture arrive dans votre compte.</p></li>
+    </ol>
+  </div>
+
+  <div class="orange si-client">
+    <div><h2>Vous proposez vos services ?</h2><p>rafals s'occupe de l'agenda, des devis, des factures, et vous rappelle chaque déclaration à l'URSSAF.</p></div>
+    <button class="btn" data-toast="« Proposer mes services » sera dessiné ensuite.">Proposer mes services</button>
+  </div>
+</section>
+
+<!-- ================= TROUVER ================= -->
+<section class="ecran" id="e-trouver" hidden>
+  <div class="hero">
+    <div>
+      <h1>Le bon prestataire, <em>près de chez vous.</em></h1>
+      <form class="form-rech carte" id="form-rech">
+        <label class="champ" for="r-quoi">Quel service ?<input id="r-quoi" value="Électricien"></label>
+        <label class="champ" for="r-ou">Où ?<input id="r-ou" value="Pessac"></label>
+        <button class="btn acc large" type="submit">Rechercher</button>
+      </form>
+    </div>
+    <div class="dessin" id="quartier2"></div>
+  </div>
+
+  <div class="pile" id="bloc-tuiles">
+    <h2>Ou choisissez un type de service</h2>
+    <div class="tuiles">
+      <button class="carte tuile" data-metier="Jardinier"><span class="b t-vert"><svg class="ic"><use href="#i-leaf"/></svg></span><span><b>Jardin</b><small>Tonte, haies, potager</small></span></button>
+      <button class="carte tuile" data-metier="Aide ménagère"><span class="b t-bleu"><svg class="ic"><use href="#i-spark"/></svg></span><span><b>Ménage</b><small>Ménage, repassage, vitres</small></span></button>
+      <button class="carte tuile" data-metier="Bricoleur"><span class="b t-orange"><svg class="ic"><use href="#i-tool"/></svg></span><span><b>Bricolage</b><small>Meubles, petits travaux</small></span></button>
+      <button class="carte tuile" data-metier="Plombier"><span class="b t-violet"><svg class="ic"><use href="#i-drop"/></svg></span><span><b>Plomberie</b><small>Fuite, robinet, chauffe-eau</small></span></button>
+      <button class="carte tuile" data-metier="Électricien"><span class="b t-jaune"><svg class="ic"><use href="#i-bolt"/></svg></span><span><b>Électricité</b><small>Prise, tableau, luminaire</small></span></button>
+      <button class="carte tuile" data-metier="Coiffeur à domicile"><span class="b t-rose"><svg class="ic"><use href="#i-cut"/></svg></span><span><b>Beauté</b><small>Coiffure, manucure</small></span></button>
+    </div>
+  </div>
+
+  <div class="pile" id="bloc-res" hidden>
+    <div class="entre"><h2 id="titre-res"></h2><button class="btn sec" id="retour-tuiles"><svg class="ic"><use href="#i-back"/></svg>Tous les services</button></div>
+    <div class="grille-pres" id="grille-pres"></div>
+  </div>
+</section>
+
+<!-- ================= FICHE PRESTATAIRE ================= -->
+<section class="ecran" id="e-fiche" hidden>
+  <div><button class="btn discret" data-vers="trouver"><svg class="ic"><use href="#i-back"/></svg>Retour aux résultats</button></div>
+  <div class="deux">
+    <div class="pile" style="gap:32px">
+      <div class="fiche-haut">
+        <span class="portrait g" id="photo-karim"></span>
+        <div class="pile" style="gap:10px">
+          <h1 style="font-size:clamp(30px,4.5vw,42px)">Karim Benali</h1>
+          <p><span class="etoile">★ 4,8</span> <span class="doux">· 23 avis</span></p>
+          <div class="ligne"><span class="puce ok"><svg class="ic"><use href="#i-shield"/></svg>SIRET vérifié</span><span class="puce" style="background:var(--surface)"><svg class="ic"><use href="#i-bolt"/></svg>Électricien, aussi petit bricolage</span><span class="puce" style="background:var(--surface)"><svg class="ic"><use href="#i-pin"/></svg>Pessac, jusqu'à 15 km</span></div>
+        </div>
+      </div>
+      <p style="max-width:62ch;font-size:17.5px">Électricien depuis 12 ans à Pessac. Dépannage, pose de prises et de luminaires, remise aux normes d'un tableau. Je préviens toujours la veille et je laisse le chantier propre.</p>
+      <div class="pile"><h2>Ses photos</h2><div class="photos" id="photos-karim"></div></div>
+      <div class="pile"><h2>Avis</h2>
+        <div class="ligne"><span class="note-gd">4,8</span><div><div class="etoile">★★★★★</div><span class="doux petit">23 avis de clients ayant eu un rendez-vous</span></div></div>
+        <div class="carte pile" style="gap:6px"><div class="ligne"><span class="av p t-rose">MD</span><b>Marie D.</b><span class="etoile">★★★★★</span><span class="doux petit">02/10/2026</span></div><p>Venu à l'heure, prise remplacée en 20 minutes, prix annoncé respecté.</p></div>
+        <div class="carte pile" style="gap:6px"><div class="ligne"><span class="av p t-bleu">HP</span><b>Hugo P.</b><span class="etoile">★★★★★</span><span class="doux petit">24/09/2026</span></div><p>Très clair dans ses explications. Je le rappellerai pour le tableau.</p></div>
+        <div class="carte pile" style="gap:6px"><div class="ligne"><span class="av p t-jaune">NB</span><b>Nadia B.</b><span class="etoile">★★★★☆</span><span class="doux petit">11/09/2026</span></div><p>Bon travail, un quart d'heure de retard mais il avait prévenu.</p></div>
+        <div><button class="btn sec" data-toast="Les 10 avis suivants s'affichent ici.">Voir plus d'avis</button></div>
+      </div>
+    </div>
+    <aside class="sombre colle haut-tel">
+      <h2>Besoin de Karim ?</h2>
+      <button class="btn acc large" data-vers="messages" data-msg="Conversation ouverte avec Karim Benali.">Écrire à Karim</button>
+      <button class="btn sec large" data-toast="La fenêtre « Demander un devis » s'ouvre ici.">Demander un devis</button>
+      <p class="note">Son téléphone et son adresse vous sont donnés après une réservation.</p>
+      <button class="btn discret" data-toast="La fenêtre « Signaler » s'ouvre ici.">Signaler ce prestataire…</button>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= MESSAGES ================= -->
+<section class="ecran" id="e-messages" hidden style="gap:20px">
+  <h1 style="font-size:clamp(30px,4.5vw,42px)">Messages</h1>
+  <div class="msg" id="msg" data-vue="liste">
+    <div class="convs">
+      <button aria-current="true" data-conv><span class="av t-vert"><span class="si-client">KB</span><span class="si-presta">JM</span></span>
+        <span class="txt"><b><span class="si-client">Karim Benali</span><span class="si-presta">Julie M.</span></b><span>Proposition : 45 € · samedi 10/10 à 10 h 00</span></span><span class="pastille">1</span></button>
+      <button data-toast="Dans la maquette, seule la première conversation est dessinée."><span class="av t-orange">SL</span>
+        <span class="txt"><b>Sofia Lopes</b><span>Bonjour, je suis libre dimanche matin si…</span></span><span class="pastille">1</span></button>
+      <button data-toast="Dans la maquette, seule la première conversation est dessinée."><span class="av t-bleu">TR</span>
+        <span class="txt"><b>Thomas Roux</b><span>Merci, à bientôt !</span></span></button>
+    </div>
+    <div class="fil">
+      <div class="fil-haut">
+        <button class="btn sec rond retour-msg" id="retour-msg" aria-label="Retour à la liste"><svg class="ic"><use href="#i-back"/></svg></button>
+        <span class="av t-vert"><span class="si-client">KB</span><span class="si-presta">JM</span></span>
+        <h2><span class="si-client">Karim Benali</span><span class="si-presta">Julie M.</span></h2>
+        <button class="btn discret" data-toast="Un petit menu s'ouvre ici avec « Signaler… » et « Bloquer… ».">Plus…</button>
+      </div>
+      <p class="rappel">Demande : <b>Tondre ma pelouse de 200 m²</b> · Pessac · samedi 10/10 · budget 40 €</p>
+      <div class="bulles" id="bulles">
+        <div class="bulle si-client">Bonjour Julie, je peux venir samedi matin avec ma tondeuse.<small>07/10/2026 à 9 h 12</small></div>
+        <div class="bulle moi si-presta">Bonjour Julie, je peux venir samedi matin avec ma tondeuse.<small>07/10/2026 à 9 h 12 · lu</small></div>
+        <div class="bulle moi si-client">Parfait. Il y a aussi les bordures, c'est compris ?<small>07/10/2026 à 9 h 20 · lu</small></div>
+        <div class="bulle si-presta">Parfait. Il y a aussi les bordures, c'est compris ?<small>07/10/2026 à 9 h 20</small></div>
+        <div class="prop" id="prop">
+          <b class="petit" id="prop-titre"><span class="si-client">Proposition de Karim</span><span class="si-presta">Votre proposition</span></b>
+          <div class="entre"><span class="gros">Samedi 10/10 à 10 h 00 · 1 h 30</span><span class="prix">45 €</span></div>
+          <span>Tonte et bordures comprises.</span>
+          <div class="ligne" id="prop-boutons">
+            <button class="btn si-client" id="accepter">Accepter 45 € samedi 10/10 à 10 h 00</button>
+            <button class="btn si-client" style="background:var(--surface);color:var(--primaire)" data-toast="La fenêtre « Négocier » s'ouvre ici.">Négocier</button>
+            <button class="btn dan si-client" data-toast="La fenêtre « Refuser » s'ouvre ici.">Refuser</button>
+            <button class="btn dan si-presta" data-toast="La fenêtre « Retirer » s'ouvre ici.">Retirer ma proposition</button>
+          </div>
+        </div>
+      </div>
+      <form class="ecrire" id="ecrire">
+        <button type="button" class="btn sec rond" aria-label="Joindre une photo" data-toast="Le choix de photos s'ouvre ici (5 au plus)."><svg class="ic"><use href="#i-cam"/></svg></button>
+        <input id="m-texte" placeholder="Écrire un message…" aria-label="Votre message" maxlength="2000">
+        <button type="button" class="btn acc si-presta" data-toast="La fenêtre « Faire une proposition » s'ouvre ici.">Proposer</button>
+        <button class="btn rond" aria-label="Envoyer"><svg class="ic"><use href="#i-send"/></svg></button>
+      </form>
+    </div>
+  </div>
+  <p class="doux petit">Téléphone et mail sont masqués dans les messages tant qu'il n'y a pas de rendez-vous entre vous.</p>
+</section>
+
+<!-- ================= MES DEMANDES ================= -->
+<section class="ecran" id="e-demandes" hidden style="gap:20px">
+  <div class="sous-menu" role="group" aria-label="Pages de Mes réservations">
+    <button data-toast="« Mes rendez-vous » sera dessiné ensuite.">Mes rendez-vous</button>
+    <button aria-current="page">Mes demandes</button>
+    <button data-toast="« Devis » sera dessiné ensuite.">Devis</button>
+    <button data-toast="« Factures » sera dessiné ensuite.">Factures</button>
+  </div>
+  <div class="entre"><h1 style="font-size:clamp(30px,4.5vw,42px)">Mes demandes</h1><button class="btn acc" data-vers="accueil"><svg class="ic"><use href="#i-plus"/></svg>Publier une demande</button></div>
+  <div class="pile">
+    <article class="carte dem">
+      <div class="mid"><div class="pile" style="gap:10px">
+        <div class="ligne"><span class="puce ok">En ligne, encore 12 jours</span></div>
+        <h3>Tondre ma pelouse de 200 m²</h3>
+        <div class="ligne"><span class="puce"><svg class="ic"><use href="#i-pin"/></svg>Pessac</span><span class="puce"><svg class="ic"><use href="#i-clock"/></svg>Samedi 10/10</span><span class="prix">40 €</span></div>
+      </div><div class="img" id="img-d1"></div></div>
+      <div class="ligne"><span class="av p t-vert">KB</span><span class="av p t-orange" style="margin-left:-14px">SL</span><span class="av p t-bleu" style="margin-left:-14px">TR</span><b>3 prestataires ont répondu</b></div>
+      <div class="ligne"><button class="btn" data-vers="messages">Voir les 3 réponses</button><button class="btn sec" data-toast="Le formulaire de modification s'ouvre ici.">Modifier</button><button class="btn dan" data-toast="La fenêtre de confirmation s'ouvre ici.">Fermer la demande</button></div>
+    </article>
+    <article class="carte dem">
+      <div class="mid"><div class="pile" style="gap:10px">
+        <div class="ligne"><span class="puce">Terminée le 28/09/2026</span></div>
+        <h3>Monter une armoire à 3 portes</h3>
+        <p>Faite par Thomas Roux · 35 €</p>
+      </div><div class="img" id="img-d2"></div></div>
+      <div class="ligne"><button class="btn sec" data-toast="La fenêtre « Donner mon avis » s'ouvre ici.">Donner mon avis</button></div>
+    </article>
+  </div>
+</section>
+</main>
+
+<nav class="bas" aria-label="Menu du bas">
+  <button data-vers="accueil" data-nav="accueil"><svg class="ic"><use href="#i-home"/></svg>Accueil</button>
+  <button data-vers="trouver" data-nav="trouver"><svg class="ic"><use href="#i-search"/></svg>Trouver</button>
+  <button data-vers="demandes" data-nav="demandes"><svg class="ic"><use href="#i-cal"/></svg>Réservations</button>
+  <button data-vers="messages" data-nav="messages"><svg class="ic"><use href="#i-chat"/></svg>Messages<span class="pastille">2</span></button>
+  <button data-toast="« Mon activité » sera dessiné ensuite. « Mon agenda » ne change pas."><svg class="ic"><use href="#i-case"/></svg>Activité</button>
+</nav>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const ic=n=>`<svg class="ic" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const CATS={tout:['Tout','grid','t-jaune'],jardin:['Jardin','leaf','t-vert'],menage:['Ménage','spark','t-bleu'],brico:['Bricolage','tool','t-orange'],plomberie:['Plomberie','drop','t-violet']};
+const DEMANDES=[
+  {cat:'jardin',titre:'Tondre ma pelouse de 200 m²',ville:'Pessac',quand:'Samedi 10/10',budget:'40 €',client:'Julie M.',ini:'JM',age:'il y a 2 h',rep:3,moi:true,desc:'Pelouse plate, sans obstacle. Tondeuse à apporter, bordures à faire aussi.'},
+  {cat:'brico',titre:'Monter une armoire à 3 portes',ville:'Mérignac',quand:'Cette semaine',budget:'35 €',client:'Hugo P.',ini:'HP',age:'il y a 5 h',rep:1,desc:'Armoire en kit déjà livrée, 3e étage avec ascenseur.'},
+  {cat:'menage',titre:'Ménage de 3 h avant un déménagement',ville:'Bordeaux',quand:'Lundi 12/10',budget:'60 €',client:'Nadia B.',ini:'NB',age:'hier',rep:6,desc:'Appartement de 45 m² vide. Sols, cuisine et salle de bain.'},
+  {cat:'plomberie',titre:'Robinet de cuisine qui fuit',ville:'Talence',quand:'Dès que possible',budget:'',client:'Marc T.',ini:'MT',age:'hier',rep:0,desc:'Le mitigeur goutte en continu. Je n\'ai pas le modèle de rechange.'},
+];
+/* Dessins qui tiennent la place des photos des clients */
+const SCENES={
+jardin:`<rect width="400" height="280" fill="#DDF1E4"/><circle cx="318" cy="66" r="36" fill="#F6C667"/><ellipse cx="110" cy="290" rx="240" ry="130" fill="#8FD0A5"/><ellipse cx="330" cy="310" rx="220" ry="130" fill="#5FB583"/><rect x="92" y="120" width="12" height="60" rx="4" fill="#7A5B3A"/><circle cx="98" cy="104" r="40" fill="#2F6B4F"/><circle cx="246" cy="196" r="8" fill="#fff"/><circle cx="270" cy="212" r="6" fill="#F6C667"/><circle cx="210" cy="222" r="6" fill="#fff"/>`,
+brico:`<rect width="400" height="280" fill="#FBE7D8"/><rect y="220" width="400" height="60" fill="#F1CDB0"/><rect x="130" y="50" width="150" height="176" rx="8" fill="#C98A54"/><path d="M180 50v176M230 50v176" stroke="#7A3A0E" stroke-width="3" fill="none"/><circle cx="172" cy="140" r="4" fill="#7A3A0E"/><circle cx="222" cy="140" r="4" fill="#7A3A0E"/><circle cx="238" cy="140" r="4" fill="#7A3A0E"/><rect x="42" y="170" width="64" height="52" rx="5" fill="#E8A56B"/><path d="M42 190h64" stroke="#7A3A0E" stroke-width="3" fill="none"/><rect x="312" y="150" width="12" height="72" rx="6" fill="#2F6B4F"/><rect x="315" y="110" width="6" height="44" fill="#8A94A3"/>`,
+menage:`<rect width="400" height="280" fill="#DCEAF7"/><rect y="226" width="400" height="54" fill="#C4DBF0"/><rect x="50" y="40" width="130" height="130" rx="8" fill="#fff"/><path d="M115 40v130M50 105h130" stroke="#93C2EC" stroke-width="4" fill="none"/><path d="M236 150h96l-12 80h-72z" fill="#5B9BD5"/><path d="M236 150a48 30 0 0196 0" stroke="#1D4A72" stroke-width="4" fill="none"/><circle cx="262" cy="118" r="16" fill="#fff"/><circle cx="296" cy="98" r="11" fill="#fff"/><circle cx="318" cy="126" r="8" fill="#fff"/><path d="M356 54l5 14 14 5-14 5-5 14-5-14-14-5 14-5z" fill="#F6C667"/>`,
+plomberie:`<rect width="400" height="280" fill="#E8E1F6"/><path d="M0 70h400M0 140h400M100 0v140M200 0v140M300 0v140" stroke="#D6CBEE" stroke-width="3" fill="none"/><rect x="100" y="210" width="210" height="70" rx="14" fill="#fff"/><rect x="140" y="92" width="110" height="20" rx="10" fill="#6B55B3"/><rect x="230" y="92" width="20" height="48" rx="10" fill="#6B55B3"/><rect x="160" y="64" width="16" height="32" fill="#49317F"/><rect x="146" y="56" width="44" height="12" rx="6" fill="#49317F"/><path d="M240 156s9 12 9 19a9 9 0 01-18 0c0-7 9-19 9-19z" fill="#5B9BD5"/><path d="M240 190s6 8 6 13a6 6 0 01-12 0c0-5 6-13 6-13z" fill="#93C2EC"/>`,
+elec:`<rect width="400" height="280" fill="#FBEBC6"/><rect y="226" width="400" height="54" fill="#F3DCA0"/><rect x="140" y="70" width="120" height="120" rx="18" fill="#fff"/><circle cx="178" cy="130" r="9" fill="#6E4300"/><circle cx="222" cy="130" r="9" fill="#6E4300"/><path d="M318 40l-28 44h22l-8 40 34-52h-22z" fill="#E8863F"/><path d="M70 60v70a20 20 0 0040 0" stroke="#2F6B4F" stroke-width="8" fill="none" stroke-linecap="round"/>`,
+};
+const scene=c=>`<svg class="scene" viewBox="0 0 400 280" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Dessin à la place d'une photo">${SCENES[c]}</svg>`;
+const QUARTIER=`<svg viewBox="0 0 420 290" role="img" aria-label="Dessin d'une rue avec trois maisons" style="width:100%;display:block"><ellipse cx="210" cy="160" rx="205" ry="128" fill="#D8ECDF"/><circle cx="336" cy="70" r="30" fill="#F6C667"/><rect x="42" y="208" width="7" height="34" fill="#7A5B3A"/><circle cx="45" cy="196" r="27" fill="#2F6B4F"/><rect x="70" y="150" width="84" height="92" fill="#fff"/><path d="M58 152l54-48 54 48z" fill="#E8863F"/><rect x="102" y="200" width="22" height="42" rx="3" fill="#2F6B4F"/><rect x="80" y="166" width="20" height="20" rx="3" fill="#DCEAF7"/><rect x="172" y="118" width="92" height="124" fill="#FBEBC6"/><path d="M160 120l58-52 58 52z" fill="#1F4D38"/><rect x="207" y="194" width="24" height="48" rx="3" fill="#E8863F"/><rect x="184" y="138" width="22" height="22" rx="3" fill="#fff"/><rect x="232" y="138" width="22" height="22" rx="3" fill="#fff"/><rect x="282" y="164" width="74" height="78" fill="#F8DFE4"/><path d="M272 166l47-40 47 40z" fill="#C96A82"/><rect x="309" y="202" width="20" height="40" rx="3" fill="#7F2238"/><rect x="292" y="178" width="16" height="16" rx="3" fill="#fff"/><rect x="372" y="214" width="6" height="28" fill="#7A5B3A"/><circle cx="375" cy="204" r="22" fill="#5FB583"/><rect x="20" y="240" width="380" height="12" rx="6" fill="#8FD0A5"/></svg>`;
+$('#quartier').innerHTML=$('#quartier2').innerHTML=QUARTIER;
+$('#photos-karim').innerHTML=['elec','brico','plomberie','elec'].map(c=>`<div class="img">${scene(c)}</div>`).join('');
+$('#img-d1').innerHTML=scene('jardin');$('#img-d2').innerHTML=scene('brico');
+
+/* Portraits dessinés : ils tiennent la place des photos de profil des prestataires */
+const portrait=(fond,peau,cheveux,haut)=>`<svg viewBox="0 0 100 100" role="img" aria-label="Dessin à la place d'une photo de profil"><rect width="100" height="100" fill="${fond}"/><ellipse cx="50" cy="104" rx="38" ry="30" fill="${haut}"/><rect x="43" y="58" width="14" height="16" fill="${peau}"/><circle cx="50" cy="44" r="20" fill="${peau}"/><path d="M29 44a21 21 0 0142 0c-6-10-14-13-21-13s-15 3-21 13z" fill="${cheveux}"/></svg>`;
+const PRESTATAIRES=[
+  {nom:'Karim Benali',photo:portrait('#D8ECDF','#C99A6B','#2B211B','#2F6B4F'),note:'4,8',avis:23,lieu:'Pessac · à 2 km',siret:true,fiche:true},
+  {nom:'Sofia Lopes',photo:portrait('#FBE7D8','#E9BE95','#6B3A1E','#E8863F'),note:'4,6',avis:9,lieu:'Talence · à 5 km',siret:true},
+  {nom:'Thomas Roux',ini:'TR',teinte:'t-bleu',lieu:'Mérignac · à 8 km'},
+  {nom:'Awa Diallo',photo:portrait('#E8E1F6','#8A5A3C','#1D1512','#49317F'),note:'5,0',avis:4,lieu:'Pessac · à 3 km',siret:true},
+  {nom:'Lucas Martin',photo:portrait('#DCEAF7','#EBC7A4','#B9853C','#1D4A72'),note:'4,3',avis:12,lieu:'Gradignan · à 6 km'},
+  {nom:'Inès Morel',ini:'IM',teinte:'t-rose',note:'4,7',avis:6,lieu:'Bordeaux · à 9 km',siret:true},
+];
+$('#grille-pres').innerHTML=PRESTATAIRES.map(p=>`<button class="carte res" ${p.fiche?'data-vers="fiche"':'data-toast="Dans la maquette, seule la fiche de Karim est dessinée."'}>
+  <span class="portrait ${p.photo?'':p.teinte}">${p.photo||p.ini}</span><h3>${p.nom}</h3>
+  ${p.note?`<span><span class="etoile">★ ${p.note}</span> <span class="doux petit">· ${p.avis} avis</span></span>`:'<span class="puce att">Nouveau sur rafals</span>'}
+  <span class="doux petit">${p.lieu}</span>
+  ${p.siret?`<span class="puces"><span class="puce ok">${ic('shield')}SIRET vérifié</span></span>`:''}</button>`).join('');
+$('#photo-karim').innerHTML=PRESTATAIRES[0].photo;
+
+let cat='tout';
+const reponses=d=>d.rep?`${d.rep} réponse${d.rep>1?'s':''} sur 10`:'Aucune réponse';
+function carte(d){const teinte=CATS[d.cat][2];
+  return `<article class="carte dem"><div class="top"><span class="av ${teinte}">${d.ini}</span><div><b>${d.client}</b><small>${esc(d.ville)} · ${d.age}</small></div>${d.budget?`<span class="prix">${d.budget}</span>`:'<span class="prix libre">Prix à proposer</span>'}</div>
+  <div class="mid"><div><h3>${esc(d.titre)}</h3><p>${esc(d.desc)}</p></div><div class="img">${scene(d.cat)}</div></div>
+  <div class="ligne bot"><span class="puce">${ic('clock')}${d.quand}</span><span class="puce">${reponses(d)}</span>
+  ${d.moi?`<span class="puce ok si-client">Ma demande</span><button class="btn sec si-client" data-vers="demandes">Voir mes réponses</button>`:''}
+  <button class="btn si-presta" data-vers="messages" data-msg="Conversation ouverte avec ${d.client}.">Répondre</button></div></article>`}
+function afficher(){
+  const mot=$('#besoin').value.trim().toLowerCase();
+  const l=DEMANDES.filter(d=>(cat==='tout'||d.cat===cat)&&(!mot||`${d.titre} ${d.desc} ${CATS[d.cat][0]} ${d.ville}`.toLowerCase().includes(mot)));
+  $('#liste').innerHTML=l.length?l.map(carte).join(''):'<p class="vide">Aucune demande ne correspond. Essayez un autre mot, ou publiez la vôtre.</p>';
+  $('#compte-dem').textContent=`${l.length} demande${l.length>1?'s':''}`;
+  $$('#cats button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.cat===cat));
+}
+$('#cats').innerHTML=Object.entries(CATS).map(([c,[nom,icone,teinte]])=>`<button data-cat="${c}" aria-pressed="false"><span class="b ${teinte}">${ic(icone)}</span>${nom}</button>`).join('');
+$('#cats').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b){cat=b.dataset.cat;afficher()}});
+$('#besoin').addEventListener('input',afficher);
+
+let minuteur;
+function message(t){const z=$('#toast');z.textContent=t;z.hidden=false;clearTimeout(minuteur);minuteur=setTimeout(()=>z.hidden=true,3000)}
+const ECRANS=['accueil','trouver','fiche','messages','demandes'];
+function aller(nom,msg){
+  $$('.ecran').forEach(s=>s.hidden=s.id!=='e-'+nom);
+  const nav=nom==='fiche'?'trouver':nom;
+  $$('[data-nav]').forEach(b=>b.dataset.nav===nav?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
+  if(nom==='messages')$('#msg').dataset.vue=msg?'fil':'liste';
+  try{history.replaceState(null,'','#'+nom)}catch{}
+  window.scrollTo(0,0);if(msg)message(msg);
+}
+document.addEventListener('click',e=>{
+  const v=e.target.closest('[data-vers]');if(v){e.preventDefault();return aller(v.dataset.vers,v.dataset.msg)}
+  const t=e.target.closest('[data-toast]');if(t){e.preventDefault();message(t.dataset.toast)}
+});
+function role(r){document.body.dataset.role=r;$('#role-client').setAttribute('aria-pressed',r==='client');$('#role-presta').setAttribute('aria-pressed',r==='presta')}
+$('#role-client').onclick=()=>role('client');$('#role-presta').onclick=()=>role('presta');
+
+$('#publier').addEventListener('submit',e=>{e.preventDefault();
+  const texte=$('#p-texte').value.trim(),adresse=$('#p-adresse').value.trim();
+  if(texte.length<5)return message('Écrivez votre besoin en quelques mots.');
+  if(!adresse)return message('Indiquez où : une adresse ou une ville.');
+  DEMANDES.unshift({cat:'jardin',titre:texte.slice(0,60),ville:adresse.split(',').pop().trim(),quand:'Dès que possible',budget:'',client:'Julie M.',ini:'JM',age:'à l\'instant',rep:0,moi:true,desc:texte});
+  e.target.reset();cat='tout';$('#besoin').value='';afficher();message('Demande publiée. Les prestataires proches la voient déjà.');
+});
+
+function chercher(metier){if(metier)$('#r-quoi').value=metier;
+  $('#titre-res').textContent=`${$('#r-quoi').value||'Prestataires'} près de ${$('#r-ou').value||'chez vous'} : 6 prestataires`;
+  $('#bloc-tuiles').hidden=true;$('#bloc-res').hidden=false;$('#bloc-res').scrollIntoView({block:'start'})}
+$('#form-rech').addEventListener('submit',e=>{e.preventDefault();chercher()});
+$$('.tuile').forEach(t=>t.onclick=()=>chercher(t.dataset.metier));
+$('#retour-tuiles').onclick=()=>{$('#bloc-tuiles').hidden=false;$('#bloc-res').hidden=true};
+
+$('[data-conv]').onclick=()=>$('#msg').dataset.vue='fil';
+$('#retour-msg').onclick=()=>$('#msg').dataset.vue='liste';
+$('#accepter').onclick=()=>{$('#prop-titre').textContent='Rendez-vous confirmé';$('#prop-boutons').innerHTML='<span class="puce ok">'+ic('check')+'Accepté le 07/10/2026</span>';message('Rendez-vous confirmé · samedi 10/10 à 10 h 00')};
+$('#ecrire').addEventListener('submit',e=>{e.preventDefault();const t=$('#m-texte').value.trim();if(!t)return;
+  $('#bulles').insertAdjacentHTML('beforeend',`<div class="bulle moi">${esc(t)}<small>à l'instant · envoyé</small></div>`);$('#m-texte').value=''});
+
+role('client');afficher();
+const depart=location.hash.slice(1);aller(ECRANS.includes(depart)?depart:'accueil');
+</script>

@@ -3,6 +3,8 @@
 > Choisie par Raphael le 28/09/2026 en regardant la maquette cliquable `.doc/ihm/maquette-charte.html` (https://claude.ai/artifact/K2WSEd51fSMiCsQ2S3s3R7) : ambiance **B. Vert sauge**, boutons **arrondis**.
 > Ces valeurs sont recopiées telles quelles dans les réglages de Tailwind au lot des écrans ; on ne tape jamais une couleur à la main dans un écran.
 
+> **Style « chaleureux » depuis le 07/10/2026** (choisi par Raphael, « A », sur la maquette `.doc/ihm/maquette-trois-styles.html`, puis `.doc/ihm/maquette-style-chaleureux.html`, https://claude.ai/artifact/3GejTyBQFa9dZXbrmmChQc) : les couleurs ne changent pas ; les polices et les formes changent (voir « Polices » et « Formes »). **Exception : l'écran « Mon agenda » garde les formes d'avant** (Raphael, 04/10/2026 : « l'agenda ne dois pas changer »).
+
 ## Couleurs
 
 | Rôle | Nom technique | Mode clair | Mode sombre | Sert à |
@@ -57,21 +59,30 @@ Toutes les couleurs sont écrites à un seul endroit : `frontend/src/style.css`.
 
 ## Polices (gratuites, installées dans rafals)
 Installées avec l'application (paquets `@fontsource-variable`), jamais chargées depuis Google : charger une police chez Google envoie l'adresse du visiteur à Google sans son accord (RGPD).
-- **Titres** : Bricolage Grotesque, graisse 600 à 700 (ex. « Électricien à Pessac », le logo).
-- **Texte** : Figtree, graisse 400 à 700 (tout le reste).
+- **Logo « rafals. »** : Bricolage Grotesque (classe `font-marque`), inchangé.
+- **Titres et texte** (depuis le 07/10/2026) : **Nunito**, graisse 500 pour le texte, 700 à 900 pour les titres (ex. « Bonjour Julie ! » en 900). Les deux fichiers de la police sont rangés dans `frontend/src/assets/polices/` (avec sa licence libre OFL) et déclarés en haut de `style.css` : le paquet n'a pas pu être installé par npm le 07/10/2026 (erreur de certificat dans le conteneur).
+- Avant le 07/10/2026, et encore sur « Mon agenda » : titres en Bricolage Grotesque, texte en Figtree.
 - Chiffres alignés (`tabular-nums`) pour les prix, les notes et les heures.
 
-## Formes
-- Coins arrondis : **10 px** pour les boutons, les champs, les cartes et les fenêtres.
-- Badges (étiquettes d'état) : bouts complètement ronds.
-- Pas d'ombre portée : les cartes sont séparées par leur bordure.
+## Formes (style « chaleureux », 07/10/2026)
+| Élément | Classe à écrire | Valeur | Avant (et encore sur « Mon agenda ») |
+|---|---|---|---|
+| Champs, petits cadres | `rounded-rafals` | 16 px | 10 px |
+| Cartes, fenêtres | `carte` (coins, fond, ombre d'un coup) ou `rounded-carte` | 26 px, ombre douce, pas de bordure | 10 px, bordure grise, pas d'ombre |
+| Boutons, liens du menu | `rounded-bouton` | complètement ronds | 10 px |
+| Badges (étiquettes d'état) | — | bouts complètement ronds | pareil |
+
+- **Une carte s'écrit `carte`**, jamais « `rounded-… border border-bord bg-surface` » à la main. Ex. `<article class="carte p-5">`. Les écrans pas encore repassés gardent leur bordure avec des coins de 16 px : à convertir au fur et à mesure.
+- Ombre des cartes : `0 8px 28px` vert foncé à 10 % en clair, noir à 35 % en sombre (`--ombre-carte`).
+- **Comment « Mon agenda » garde l'ancien style** : toutes ces valeurs sont des réglages de `style.css` (`--coin`, `--coin-carte`, `--coin-bouton`, `--ombre-carte`, `--bord-carte`, polices, fonds des boutons secondaire et danger). `App.vue` pose la classe `style-classique` sur la page tant qu'on est sur `/mon-agenda` ; elle remet les valeurs d'avant. Rien n'est écrit dans les fichiers de l'agenda.
+- Pictogrammes des dossiers de métiers : `AppPicto` (tracés et teintes dans `frontend/src/outils/pictos.ts`). Dessin de la rue aux trois maisons : `frontend/src/assets/quartier.svg` (une image : ses couleurs sont dans le fichier).
 
 ## Boutons (un seul composant `AppBouton`, 5 variantes)
 | Variante | Aspect | Exemple |
 |---|---|---|
 | Principal | Fond vert, texte blanc | « Réserver mardi 14/10 à 10 h 00 », « Rechercher » |
-| Secondaire | Fond blanc, bordure et texte verts | « Demander un devis » |
-| Danger | Fond blanc, bordure et texte rouges | « Annuler », « Supprimer » |
+| Secondaire | Fond vert très clair (`primaire-doux`), texte vert, sans bordure (avant le 07/10/2026 : fond blanc, bordure verte) | « Demander un devis » |
+| Danger | Fond rouge très clair (`erreur-doux`), texte rouge, sans bordure (avant : fond blanc, bordure rouge) | « Annuler », « Supprimer » |
 | Verrouillé | Fond gris, texte gris, 🔒, bulle d'explication au clic | « 🔒 Payer par carte » chez Karim sans SIRET |
 | Accent (04/10/2026) | Fond orange `accent-vif`, texte foncé | « Rechercher » sur le bandeau vert foncé de l'accueil |
 Hauteur minimale 42 px (confortable au doigt).

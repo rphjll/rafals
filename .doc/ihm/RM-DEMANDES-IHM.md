@@ -3,13 +3,12 @@
 > Fichiers : `frontend/src/components/demandes/CarteDemande.vue`, `frontend/src/pages/MesDemandesPage.vue`, `frontend/src/pages/DemandesPresPage.vue`, `frontend/src/outils/demandes.ts`. Construit le 07/10/2026 (lot 8.4), d'après la maquette validée `maquette-niveau-8-demandes.html`. Règles : `RM-DEMANDES.md`. Publier une demande : `RM-ACCUEIL-IHM.md`.
 
 ## Carte d'une demande (la même partout)
-De haut en bas :
-1. Le titre en gras et, à droite, le budget en vert (« 40 € ») s'il y en a un.
-2. Des badges gris : « Plombier », « Pessac », « Dès que possible » (ou « samedi 10 octobre »), « Chez le client » (ou « Chez le prestataire »), « 2 réponses sur 10 » ; un badge vert « Ma demande » sur les siennes.
-3. La description.
-4. Les photos en vignettes de 96 px, cliquables (seulement connecté).
-5. En petit : « Marie D. » (sans compte et avec des photos : « Marie D. · 2 photos (connectez-vous pour les voir) »).
-6. Les boutons :
+**Redessinée le 07/10/2026 en style « chaleureux »** (carte blanche à ombre, classe `carte`). De haut en bas :
+1. Une ligne « qui demande » : un rond vert clair avec les initiales du client (« MD »), son nom (« Marie D. ») et dessous, en gris, « Pessac · 07/10/2026 » (ville et jour de publication) ; à droite, le budget dans une pastille verte (« 40 € »), ou une pastille claire « Prix à proposer » s'il n'y en a pas.
+2. Le titre en gras, puis la description en gris.
+3. Les photos en vignettes de 96 px, cliquables (seulement connecté).
+4. Des badges gris : « Plombier », « Dès que possible » (ou « samedi 10 octobre »), « Chez le client » (ou « Chez le prestataire »), « 2 réponses sur 10 » ; un badge vert « Ma demande » sur les siennes ; sans compte et avec des photos : « 2 photos (connectez-vous pour les voir) ». La ville n'est plus un badge (elle est en haut).
+5. Les boutons :
    - prestataire qui peut répondre (son métier, son rayon, pas complète) : **[Répondre]** → ouvre la conversation avec le client (`RM-MESSAGES-IHM.md`) ;
    - prestataire qui a déjà répondu : [Voir la conversation] ;
    - prestataire, demande complète : [Répondre] verrouillé 🔒 « Cette demande est complète : 10 prestataires ont déjà répondu. » ;

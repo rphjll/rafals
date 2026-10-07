@@ -1,0 +1,562 @@
+<title>Maquette rafals simple et belle</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Mise en page : en-tête fixe, contenu centré à 1080 px, liste à gauche et carte d'action à droite ; barre de 5 boutons en bas sur téléphone. */
+:root{
+  --fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;
+  --primaire:#2F6B4F;--primaire-texte:#FFFFFF;--primaire-doux:#E2EEE7;--accent:#D9793A;
+  --fonce:#1F4D38;--sur-fonce:#FFFFFF;--sur-fonce-doux:#D5E6DC;--fonce-vif:#5FD38A;
+  --accent-vif:#E8863F;--accent-vif-texte:#1D2620;
+  --ok:#2E7D4F;--ok-doux:#E3F2E8;--attente:#B26A00;--attente-doux:#FCF0DC;--erreur:#B3261E;--erreur-doux:#FBE4E2;--neutre:#5E6876;--neutre-doux:#E8ECF1;--sur-etat:#FFFFFF;
+  --t-orange:#FBE7D8;--t-orange-x:#7A3A0E;--t-vert:#D8ECDF;--t-vert-x:#1F4D38;--t-jaune:#FBEBC6;--t-jaune-x:#6E4300;
+  --t-bleu:#DCEAF7;--t-bleu-x:#1D4A72;--t-rose:#F8DFE4;--t-rose-x:#7F2238;--t-violet:#E8E1F6;--t-violet-x:#49317F;
+  --titre:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;--corps:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;
+  --primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --fonce:#1C3024;--sur-fonce:#E7ECF2;--sur-fonce-doux:#A3AEBD;--fonce-vif:#79C49C;
+  --accent-vif:#F0955A;--accent-vif-texte:#1D2620;
+  --ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;--erreur:#F08A82;--erreur-doux:#3A1A18;--neutre:#A3AEBD;--neutre-doux:#262E39;--sur-etat:#0F1A13;
+  --t-orange:#3A2616;--t-orange-x:#F4B48A;--t-vert:#1C3024;--t-vert-x:#8FD5AE;--t-jaune:#33290F;--t-jaune-x:#EFCB73;
+  --t-bleu:#17293A;--t-bleu-x:#93C2EC;--t-rose:#3A1B24;--t-rose-x:#F0A3B4;--t-violet:#271F3D;--t-violet-x:#C2ADF0;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;
+  --primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --fonce:#1C3024;--sur-fonce:#E7ECF2;--sur-fonce-doux:#A3AEBD;--fonce-vif:#79C49C;
+  --accent-vif:#F0955A;--accent-vif-texte:#1D2620;
+  --ok:#6CC592;--ok-doux:#17301F;--attente:#F0B35A;--attente-doux:#33260F;--erreur:#F08A82;--erreur-doux:#3A1A18;--neutre:#A3AEBD;--neutre-doux:#262E39;--sur-etat:#0F1A13;
+  --t-orange:#3A2616;--t-orange-x:#F4B48A;--t-vert:#1C3024;--t-vert-x:#8FD5AE;--t-jaune:#33290F;--t-jaune-x:#EFCB73;
+  --t-bleu:#17293A;--t-bleu-x:#93C2EC;--t-rose:#3A1B24;--t-rose-x:#F0A3B4;--t-violet:#271F3D;--t-violet-x:#C2ADF0;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font:400 16px/1.5 var(--corps)}
+h1,h2,h3,p,ul,ol{margin:0;padding:0}
+ul,ol{list-style:none}
+h1,h2,h3,.logo,.prix{font-family:var(--titre);text-wrap:balance;line-height:1.15}
+h2{font-size:24px}
+h3{font-size:18px}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.doux{color:var(--doux)}
+.petit{font-size:13.5px}
+
+/* Rôle regardé : cliente ou prestataire */
+body[data-role="client"] .si-presta,body[data-role="presta"] .si-client{display:none!important}
+
+/* En-tête */
+.entete{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--bord);padding-inline:16px}
+.entete-int{max-width:1080px;margin:auto;height:60px;display:flex;align-items:center;gap:8px}
+.logo{font-size:25px;font-weight:700;color:var(--primaire);background:none;border:0;padding:0;margin-right:auto;letter-spacing:-.02em}
+.logo i{color:var(--accent);font-style:normal}
+.menu{display:flex;gap:2px}
+.menu button{display:flex;align-items:center;gap:6px;min-height:42px;padding:0 11px;border:0;border-radius:var(--r);background:none;font-weight:600;white-space:nowrap}
+.menu button:hover,.menu button[aria-current]{background:var(--primaire-doux);color:var(--primaire)}
+.pastille{background:var(--erreur);color:var(--sur-etat);border-radius:99px;font-size:12px;font-weight:700;padding:1px 7px}
+.compte{display:flex;align-items:center;gap:8px;min-height:42px;padding:4px 12px 4px 4px;border:1px solid var(--bord);border-radius:99px;background:var(--surface);font-weight:600}
+.rond{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--primaire-doux);color:var(--primaire);font-size:13px;font-weight:700;flex:none}
+
+/* Bandeau de la maquette (ne fait pas partie du site) */
+.maq{background:var(--neutre-doux);border-bottom:1px dashed var(--bord);padding:10px 16px;font-size:14px}
+.maq-int{max-width:1080px;margin:auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.maq details{flex:1 1 100%}
+.maq summary{cursor:pointer;font-weight:700}
+.maq li{margin:4px 0 0 18px;list-style:disc}
+.seg{display:inline-flex;border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:7px 12px;font-weight:600;min-height:38px}
+.seg button[aria-pressed="true"]{background:var(--primaire);color:var(--primaire-texte)}
+
+main{max-width:1112px;margin:auto;padding-inline:16px;padding-block:24px 96px}
+.ecran{display:flex;flex-direction:column;gap:28px}
+
+/* Boutons (les 5 variantes de la charte) */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 16px;border-radius:var(--r);border:1px solid var(--primaire);background:var(--primaire);color:var(--primaire-texte);font-weight:700}
+.btn.sec{background:var(--surface);color:var(--primaire)}
+.btn.dan{background:var(--surface);color:var(--erreur);border-color:var(--erreur)}
+.btn.acc{background:var(--accent-vif);border-color:var(--accent-vif);color:var(--accent-vif-texte)}
+.btn.large{width:100%}
+.btn.discret{background:none;border-color:transparent;color:var(--doux);font-weight:600}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:2px 10px;font-size:13px;font-weight:700;background:var(--neutre-doux);color:var(--neutre)}
+.badge.ok{background:var(--ok-doux);color:var(--ok)}
+.badge.att{background:var(--attente-doux);color:var(--attente)}
+.badge .ic{width:14px;height:14px}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:var(--r);padding:20px}
+
+.t-vert{background:var(--t-vert);color:var(--t-vert-x)}.t-orange{background:var(--t-orange);color:var(--t-orange-x)}
+.t-bleu{background:var(--t-bleu);color:var(--t-bleu-x)}.t-violet{background:var(--t-violet);color:var(--t-violet-x)}
+.t-jaune{background:var(--t-jaune);color:var(--t-jaune-x)}.t-rose{background:var(--t-rose);color:var(--t-rose-x)}
+
+/* Bandeau vert foncé */
+.bandeau{background:var(--fonce);color:var(--sur-fonce);border-radius:var(--r);padding:28px 20px;display:flex;flex-direction:column;gap:16px}
+.bandeau h1{font-size:clamp(30px,5vw,46px);font-weight:700;max-width:18ch}
+.bandeau h1 em{font-style:normal;color:var(--fonce-vif)}
+.bandeau p{color:var(--sur-fonce-doux);font-size:17px;max-width:52ch}
+.chercher{display:flex;align-items:center;gap:10px;background:var(--surface);color:var(--texte);border-radius:var(--r);padding:0 14px;min-height:52px;max-width:560px}
+.chercher input{flex:1;min-width:0;border:0;background:none;outline:0;min-height:50px}
+.chercher:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.form-rech{display:grid;gap:10px;background:var(--surface);color:var(--texte);border-radius:var(--r);padding:14px}
+.champ{display:flex;flex-direction:column;gap:4px;font-size:13.5px;font-weight:600}
+.champ input,.champ textarea{border:1px solid var(--bord);border-radius:var(--r);background:var(--fond);padding:10px 12px;min-height:44px;font-weight:400;font-size:16px;width:100%}
+.champ textarea{min-height:110px;resize:vertical}
+@media (min-width:768px){.bandeau{padding:40px 44px}.form-rech{grid-template-columns:1fr 1fr auto;align-items:end}}
+
+/* Pastilles de filtre */
+.pastilles{display:flex;flex-wrap:wrap;gap:8px}
+.pastilles button{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:0 14px;border-radius:99px;border:2px solid transparent;font-weight:700}
+.pastilles button.tout{background:var(--surface);color:var(--texte);border-color:var(--bord)}
+.pastilles button[aria-pressed="true"]{border-color:currentColor}
+
+/* Accueil : liste + carte Publier */
+.deux{display:grid;gap:24px}
+.deux>*{min-width:0}
+@media (min-width:900px){.deux{grid-template-columns:1fr 360px;align-items:start}.colle{position:sticky;top:76px}}
+@media (max-width:899px){.deux .colle{order:-1}}
+.pile{display:flex;flex-direction:column;gap:12px}
+.entre{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px}
+.dem{display:grid;grid-template-columns:auto 1fr;gap:14px}
+.pic{display:grid;place-items:center;width:48px;height:48px;border-radius:var(--r)}
+.pic .ic{width:24px;height:24px}
+.dem-corps{display:flex;flex-direction:column;gap:8px;min-width:0}
+.prix{font-size:20px;font-weight:700;color:var(--primaire);font-variant-numeric:tabular-nums;white-space:nowrap}
+.meta{display:flex;flex-wrap:wrap;gap:4px 16px;color:var(--doux);font-size:14.5px}
+.meta span{display:inline-flex;align-items:center;gap:5px}
+.meta .ic{width:16px;height:16px}
+.vignettes{display:flex;gap:8px;flex-wrap:wrap}
+.vignette{display:grid;place-items:center;width:72px;height:72px;border-radius:var(--r)}
+.vide{padding:20px;border:1px dashed var(--bord);border-radius:var(--r);color:var(--doux)}
+.publier{display:flex;flex-direction:column;gap:14px}
+.plan{height:120px;border-radius:var(--r);border:1px solid var(--bord);display:grid;place-items:center;color:var(--primaire);font-weight:700;font-size:13.5px;
+  background:linear-gradient(115deg,transparent 46%,var(--surface) 46%,var(--surface) 52%,transparent 52%),linear-gradient(20deg,transparent 60%,var(--surface) 60%,var(--surface) 65%,transparent 65%),var(--primaire-doux)}
+.plan span{display:inline-flex;gap:6px;align-items:center;background:var(--surface);padding:4px 10px;border-radius:99px;border:1px solid var(--bord)}
+.ajout{width:72px;height:72px;border-radius:var(--r);border:1px dashed var(--bord);background:var(--fond);color:var(--doux);display:grid;place-items:center}
+
+.etapes{display:grid;gap:20px}
+.etapes li{display:grid;grid-template-columns:auto 1fr;gap:12px}
+.etapes .num{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--primaire);color:var(--primaire-texte);font-family:var(--titre);font-weight:700}
+@media (min-width:768px){.etapes{grid-template-columns:repeat(3,1fr)}}
+.orange{background:var(--accent-vif);color:var(--accent-vif-texte);border-radius:var(--r);padding:24px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.orange p{max-width:48ch}
+.orange .btn{background:var(--accent-vif-texte);border-color:var(--accent-vif-texte);color:#fff}
+
+/* Trouver */
+.tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.tuile{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;min-height:118px;padding:16px;border:0;border-radius:var(--r)}
+.tuile .ic{width:28px;height:28px}
+.tuile b{font-family:var(--titre);font-size:18px;line-height:1.15}
+.tuile small{font-size:13px}
+.res{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;width:100%;text-align:left}
+.res:hover{border-color:var(--primaire)}
+.avatar{display:grid;place-items:center;border-radius:50%;font-family:var(--titre);font-weight:700;width:64px;height:64px;font-size:22px;flex:none}
+.avatar.gd{width:96px;height:96px;font-size:34px}
+.etoile{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
+.ligne{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+
+/* Fiche prestataire */
+.fiche-haut{display:grid;gap:16px}
+@media (min-width:640px){.fiche-haut{grid-template-columns:auto 1fr}}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.photos div{aspect-ratio:4/3;border-radius:var(--r);display:grid;place-items:center;max-width:100%}
+.avis{display:flex;flex-direction:column;gap:4px;padding-block:14px;border-top:1px solid var(--bord)}
+.note-gd{font-family:var(--titre);font-size:40px;font-weight:700;line-height:1}
+
+/* Messages */
+.msg{display:grid;background:var(--surface);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden}
+.msg>*{min-width:0}
+.convs button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:14px 16px;border:0;border-bottom:1px solid var(--bord);background:none;min-height:68px}
+.convs button[aria-current],.convs button:hover{background:var(--primaire-doux)}
+.convs .avatar{width:44px;height:44px;font-size:16px}
+.convs .txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.convs .txt span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--doux);font-size:14px}
+.fil{display:flex;flex-direction:column;min-height:520px}
+.fil-haut{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--bord)}
+.fil-haut h2{font-size:19px;margin-right:auto}
+.rappel{margin:14px 16px 0;padding:8px 12px;border-radius:var(--r);background:var(--fond);font-size:14px;color:var(--doux)}
+.bulles{flex:1;display:flex;flex-direction:column;gap:10px;padding:16px}
+.bulle{max-width:82%;padding:9px 13px;border-radius:14px;background:var(--neutre-doux);align-self:flex-start;overflow-wrap:anywhere}
+.bulle.moi{background:var(--primaire-doux);align-self:flex-end}
+.bulle small{display:block;font-size:12px;color:var(--doux)}
+.prop{align-self:stretch;border:2px solid var(--primaire);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.prop.faite{border-color:var(--ok);background:var(--ok-doux)}
+.ecrire{display:flex;gap:8px;align-items:flex-end;padding:12px 16px;border-top:1px solid var(--bord)}
+.ecrire textarea{flex:1;min-width:0;border:1px solid var(--bord);border-radius:var(--r);background:var(--fond);padding:10px 12px;min-height:44px;height:44px;resize:none}
+.carre{width:44px;height:44px;padding:0;flex:none}
+@media (min-width:768px){.msg{grid-template-columns:300px 1fr}.convs{border-right:1px solid var(--bord)}.retour-msg{display:none}}
+@media (max-width:767px){.msg[data-vue="liste"] .fil,.msg[data-vue="fil"] .convs{display:none}}
+
+/* Barre du bas (téléphone) */
+.bas{position:fixed;left:0;right:0;bottom:0;z-index:5;display:none;background:var(--surface);border-top:1px solid var(--bord);padding-bottom:env(safe-area-inset-bottom,0px)}
+.bas button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:58px;justify-content:center;border:0;background:none;font-size:11.5px;font-weight:600;color:var(--doux);position:relative}
+.bas button[aria-current]{color:var(--primaire)}
+.bas .ic{width:22px;height:22px}
+.bas .pastille{position:absolute;top:6px;left:calc(50% + 6px)}
+@media (max-width:899px){.menu{display:none}.bas{display:flex}}
+
+.toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9;background:var(--ok);color:var(--sur-etat);font-weight:700;padding:10px 16px;border-radius:var(--r);max-width:calc(100% - 32px);text-align:center}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-case" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-6z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-9 5-14 15-14 0 10-5 15-14 15zM5 19l8-8"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></symbol>
+<symbol id="i-tool" viewBox="0 0 24 24"><path d="M15 4a5 5 0 00-5 7l-7 7 3 3 7-7a5 5 0 007-5l-3 3-3-3z"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 01-12 0c0-4 6-11 6-11z"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></symbol>
+<symbol id="i-cut" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.5 8L20 18M8.5 16L20 6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.500 8-8 9-4.500-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+</defs></svg>
+
+<header class="entete"><div class="entete-int">
+  <button class="logo" data-vers="accueil" aria-label="Accueil rafals">rafals<i>.</i></button>
+  <nav class="menu" aria-label="Menu principal">
+    <button data-vers="accueil" data-nav="accueil">Accueil</button>
+    <button data-vers="trouver" data-nav="trouver">Trouver un prestataire</button>
+    <button data-vers="demandes" data-nav="demandes">Mes réservations</button>
+    <button data-vers="messages" data-nav="messages">Messages <span class="pastille">2</span></button>
+    <button class="si-client" data-toast="« Proposer mes services » : pas dans cette maquette.">Proposer mes services</button>
+    <button class="si-presta" data-toast="« Mon activité » et « Mon agenda » ne changent pas : pas dans cette maquette.">Mon activité</button>
+  </nav>
+  <button class="compte" data-toast="« Mon compte » : pas dans cette maquette.">
+    <span class="rond"><span class="si-client">JM</span><span class="si-presta">KB</span></span>
+    <span class="si-client">Julie</span><span class="si-presta">Karim</span>
+  </button>
+</div></header>
+
+<div class="maq"><div class="maq-int">
+  <b>Maquette</b><span>Tous les noms et toutes les demandes sont des exemples inventés.</span>
+  <span class="seg" role="group" aria-label="Je regarde en tant que">
+    <button id="role-client" aria-pressed="true">Julie, cliente</button>
+    <button id="role-presta" aria-pressed="false">Karim, prestataire</button>
+  </span>
+  <details open><summary>Ce qui change sur cet écran</summary><ul id="changements"></ul></details>
+</div></div>
+
+<main>
+<!-- ================= ACCUEIL ================= -->
+<section class="ecran" id="e-accueil">
+  <div class="bandeau">
+    <h1>Bonjour <span class="si-client">Julie</span><span class="si-presta">Karim</span> ! <em class="si-client">De quoi avez-vous besoin ?</em><em class="si-presta">Qui pouvez-vous aider ?</em></h1>
+    <label class="chercher"><svg class="ic"><use href="#i-search"/></svg>
+      <input id="besoin" type="search" placeholder="ex. pelouse, ménage, robinet, Pessac…" aria-label="Chercher dans les demandes" maxlength="80"></label>
+  </div>
+
+  <div class="pastilles" id="pastilles" role="group" aria-label="Filtrer par type de service"></div>
+
+  <div class="deux">
+    <div class="pile">
+      <div class="entre"><h2>Les demandes des clients</h2><span class="doux petit" id="compte-dem"></span></div>
+      <div class="pile" id="liste"></div>
+    </div>
+
+    <form class="carte publier colle" id="publier">
+      <h2>Publier une demande</h2>
+      <label class="champ" for="p-texte">Votre besoin
+        <textarea id="p-texte" maxlength="300" placeholder="ex. Tondre ma pelouse de 200 m² samedi matin"></textarea></label>
+      <label class="champ" for="p-adresse">Où ?
+        <input id="p-adresse" placeholder="ex. 12 rue des Lilas, Pessac"></label>
+      <div class="plan" id="p-plan" hidden><span><svg class="ic"><use href="#i-pin"/></svg><span id="p-lieu"></span></span></div>
+      <div>
+        <span class="champ">Photos (facultatif, 5 au plus)</span>
+        <div class="vignettes" id="p-photos" style="margin-top:4px">
+          <button type="button" class="ajout" id="p-ajout" aria-label="Ajouter une photo"><svg class="ic"><use href="#i-cam"/></svg></button>
+        </div>
+      </div>
+      <button class="btn acc large" type="submit">Publier ma demande</button>
+      <p class="doux petit">Gratuit. La rue n'est montrée qu'au prestataire que vous choisissez.</p>
+    </form>
+  </div>
+
+  <div class="pile">
+    <h2>Comment ça marche</h2>
+    <ol class="etapes">
+      <li><span class="num">1</span><div><b>Publiez votre demande</b><p class="doux">Décrivez votre besoin en une phrase. C'est gratuit.</p></div></li>
+      <li><span class="num">2</span><div><b>Recevez des propositions</b><p class="doux">Un prix, un jour, une heure. Vous acceptez, négociez ou refusez.</p></div></li>
+      <li><span class="num">3</span><div><b>Payez et donnez votre avis</b><p class="doux">Par carte ou en espèces. La facture arrive dans votre compte.</p></div></li>
+    </ol>
+  </div>
+
+  <div class="orange si-client">
+    <div><h2>Vous proposez vos services ?</h2><p>rafals s'occupe de l'agenda, des devis, des factures et vous rappelle chaque déclaration à l'URSSAF.</p></div>
+    <button class="btn" data-toast="« Proposer mes services » : pas dans cette maquette.">Proposer mes services</button>
+  </div>
+</section>
+
+<!-- ================= TROUVER ================= -->
+<section class="ecran" id="e-trouver" hidden>
+  <div class="bandeau">
+    <h1>Le bon prestataire, <em>près de chez vous.</em></h1>
+    <form class="form-rech" id="form-rech">
+      <label class="champ" for="r-quoi">Quel service ?<input id="r-quoi" value="Électricien"></label>
+      <label class="champ" for="r-ou">Où ?<input id="r-ou" value="Pessac"></label>
+      <button class="btn acc" type="submit">Rechercher</button>
+    </form>
+  </div>
+
+  <div class="pile" id="bloc-tuiles">
+    <h2>Ou choisissez un type de service</h2>
+    <div class="tuiles">
+      <button class="tuile t-vert" data-metier="Jardinier"><svg class="ic"><use href="#i-leaf"/></svg><b>Jardin</b><small>Tonte, taille de haies, potager</small></button>
+      <button class="tuile t-bleu" data-metier="Aide ménagère"><svg class="ic"><use href="#i-spark"/></svg><b>Ménage</b><small>Ménage, repassage, vitres</small></button>
+      <button class="tuile t-orange" data-metier="Bricoleur"><svg class="ic"><use href="#i-tool"/></svg><b>Bricolage</b><small>Montage de meubles, petits travaux</small></button>
+      <button class="tuile t-violet" data-metier="Plombier"><svg class="ic"><use href="#i-drop"/></svg><b>Plomberie</b><small>Fuite, robinet, chauffe-eau</small></button>
+      <button class="tuile t-jaune" data-metier="Électricien"><svg class="ic"><use href="#i-bolt"/></svg><b>Électricité</b><small>Prise, tableau, luminaire</small></button>
+      <button class="tuile t-rose" data-metier="Coiffeur à domicile"><svg class="ic"><use href="#i-cut"/></svg><b>Beauté</b><small>Coiffure, manucure à domicile</small></button>
+    </div>
+  </div>
+
+  <div class="pile" id="bloc-res" hidden>
+    <div class="entre"><h2 id="titre-res"></h2><button class="btn sec" id="retour-tuiles"><svg class="ic"><use href="#i-back"/></svg>Tous les services</button></div>
+    <button class="carte res" data-vers="fiche">
+      <span class="avatar t-vert">KB</span>
+      <span class="pile" style="gap:6px"><span class="ligne"><h3>Karim Benali</h3><span class="etoile">★ 4,8</span><span class="doux petit">(23 avis)</span></span>
+        <span class="meta"><span><svg class="ic"><use href="#i-pin"/></svg>Pessac, à 2 km</span></span>
+        <span class="ligne"><span class="badge ok"><svg class="ic"><use href="#i-shield"/></svg>SIRET vérifié</span><span class="badge">vient chez vous</span><span class="badge">carte acceptée</span></span></span>
+      <svg class="ic" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+    </button>
+    <button class="carte res" data-toast="Dans la maquette, seule la fiche de Karim est dessinée.">
+      <span class="avatar t-orange">SL</span>
+      <span class="pile" style="gap:6px"><span class="ligne"><h3>Sofia Lopes</h3><span class="etoile">★ 4,6</span><span class="doux petit">(9 avis)</span></span>
+        <span class="meta"><span><svg class="ic"><use href="#i-pin"/></svg>Talence, à 5 km</span></span>
+        <span class="ligne"><span class="badge ok"><svg class="ic"><use href="#i-shield"/></svg>SIRET vérifié</span><span class="badge">vient chez vous</span></span></span>
+      <svg class="ic" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+    </button>
+    <button class="carte res" data-toast="Dans la maquette, seule la fiche de Karim est dessinée.">
+      <span class="avatar t-bleu">TR</span>
+      <span class="pile" style="gap:6px"><span class="ligne"><h3>Thomas Roux</h3><span class="badge att">Nouveau sur rafals</span></span>
+        <span class="meta"><span><svg class="ic"><use href="#i-pin"/></svg>Mérignac, à 8 km</span></span>
+        <span class="ligne"><span class="badge">vient chez vous</span><span class="badge">espèces seulement</span></span></span>
+      <svg class="ic" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- ================= FICHE PRESTATAIRE ================= -->
+<section class="ecran" id="e-fiche" hidden>
+  <div><button class="btn discret" data-vers="trouver"><svg class="ic"><use href="#i-back"/></svg>Retour aux résultats</button></div>
+  <div class="deux">
+    <div class="pile" style="gap:24px">
+      <div class="fiche-haut">
+        <span class="avatar gd t-vert">KB</span>
+        <div class="pile" style="gap:8px">
+          <div class="ligne"><h1 style="font-size:32px">Karim Benali</h1><span class="badge ok"><svg class="ic"><use href="#i-shield"/></svg>SIRET vérifié</span></div>
+          <p><span class="etoile">★ 4,8</span> <span class="doux">· 23 avis</span></p>
+          <p class="meta"><span><svg class="ic"><use href="#i-bolt"/></svg>Électricien, aussi petit bricolage</span><span><svg class="ic"><use href="#i-pin"/></svg>Pessac, se déplace jusqu'à 15 km</span></p>
+        </div>
+      </div>
+      <p style="max-width:65ch">Électricien depuis 12 ans à Pessac. Dépannage, pose de prises et de luminaires, remise aux normes d'un tableau. Je préviens toujours la veille et je laisse le chantier propre.</p>
+      <div class="pile"><h2>Ses photos</h2>
+        <div class="photos"><div class="t-jaune"><svg class="ic"><use href="#i-cam"/></svg></div><div class="t-vert"><svg class="ic"><use href="#i-cam"/></svg></div><div class="t-bleu"><svg class="ic"><use href="#i-cam"/></svg></div><div class="t-orange"><svg class="ic"><use href="#i-cam"/></svg></div></div>
+      </div>
+      <div class="pile"><h2>Avis</h2>
+        <div class="ligne"><span class="note-gd">4,8</span><div><div class="etoile">★★★★★</div><span class="doux petit">23 avis de clients ayant eu un rendez-vous</span></div></div>
+        <div>
+          <div class="avis"><div class="ligne"><b>Marie D.</b><span class="etoile">★★★★★</span><span class="doux petit">02/10/2026</span></div><p>Venu à l'heure, prise remplacée en 20 minutes, prix annoncé respecté.</p></div>
+          <div class="avis"><div class="ligne"><b>Hugo P.</b><span class="etoile">★★★★★</span><span class="doux petit">24/09/2026</span></div><p>Très clair dans ses explications. Je le rappellerai pour le tableau.</p></div>
+          <div class="avis"><div class="ligne"><b>Nadia B.</b><span class="etoile">★★★★☆</span><span class="doux petit">11/09/2026</span></div><p>Bon travail, un quart d'heure de retard mais il avait prévenu.</p></div>
+        </div>
+        <div><button class="btn sec" data-toast="Les 10 avis suivants s'afficheraient ici.">Voir plus d'avis</button></div>
+      </div>
+    </div>
+    <aside class="carte pile colle">
+      <h3>Besoin de Karim ?</h3>
+      <button class="btn large" data-vers="messages" data-msg="Conversation ouverte avec Karim Benali.">Écrire à Karim</button>
+      <button class="btn sec large" data-toast="La fenêtre « Demander un devis » ne change pas : pas dans cette maquette.">Demander un devis</button>
+      <p class="doux petit">Son téléphone et son adresse vous sont donnés après une réservation.</p>
+      <button class="btn discret" data-toast="La fenêtre « Signaler » ne change pas.">Signaler ce prestataire…</button>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= MESSAGES ================= -->
+<section class="ecran" id="e-messages" hidden>
+  <h1 style="font-size:30px">Messages</h1>
+  <div class="msg" id="msg" data-vue="liste">
+    <div class="convs">
+      <button aria-current="true" data-conv><span class="avatar t-vert"><span class="si-client">KB</span><span class="si-presta">JM</span></span>
+        <span class="txt"><b><span class="si-client">Karim Benali</span><span class="si-presta">Julie M.</span></b><span>Proposition : 45 € · samedi 10/10 à 10 h 00</span></span><span class="pastille">1</span></button>
+      <button data-toast="Dans la maquette, seule la première conversation est dessinée."><span class="avatar t-orange">SL</span>
+        <span class="txt"><b>Sofia Lopes</b><span>Bonjour, je suis libre dimanche matin si…</span></span><span class="pastille">1</span></button>
+      <button data-toast="Dans la maquette, seule la première conversation est dessinée."><span class="avatar t-bleu">TR</span>
+        <span class="txt"><b>Thomas Roux</b><span>Merci, à bientôt !</span></span></button>
+    </div>
+    <div class="fil">
+      <div class="fil-haut">
+        <button class="btn sec carre retour-msg" id="retour-msg" aria-label="Retour à la liste"><svg class="ic"><use href="#i-back"/></svg></button>
+        <h2><span class="si-client">Karim Benali</span><span class="si-presta">Julie M.</span></h2>
+        <button class="btn discret" data-toast="Un petit menu s'ouvre ici avec « Signaler… » et « Bloquer… ».">Plus…</button>
+      </div>
+      <p class="rappel">Demande : <b style="color:var(--texte)">Tondre ma pelouse (200 m²)</b> · Pessac · samedi 10/10 · budget 40 €</p>
+      <div class="bulles" id="bulles">
+        <div class="bulle si-client">Bonjour Julie, je peux venir samedi matin avec ma tondeuse.<small>07/10/2026 à 9 h 12</small></div>
+        <div class="bulle moi si-presta">Bonjour Julie, je peux venir samedi matin avec ma tondeuse.<small>07/10/2026 à 9 h 12 · lu</small></div>
+        <div class="bulle moi si-client">Parfait. Il y a aussi les bordures, c'est compris ?<small>07/10/2026 à 9 h 20 · lu</small></div>
+        <div class="bulle si-presta">Parfait. Il y a aussi les bordures, c'est compris ?<small>07/10/2026 à 9 h 20</small></div>
+        <div class="prop" id="prop">
+          <span class="doux petit" id="prop-titre"><span class="si-client">Proposition de Karim</span><span class="si-presta">Votre proposition</span></span>
+          <div class="entre"><b style="font-size:18px">Samedi 10/10 à 10 h 00 · 1 h 30</b><span class="prix">45 €</span></div>
+          <span class="doux petit">Tonte et bordures comprises.</span>
+          <div class="ligne" id="prop-boutons">
+            <button class="btn si-client" id="accepter">Accepter 45 € samedi 10/10 à 10 h 00</button>
+            <button class="btn sec si-client" data-toast="La fenêtre « Négocier » ne change pas.">Négocier</button>
+            <button class="btn dan si-client" data-toast="La fenêtre « Refuser » ne change pas.">Refuser</button>
+            <button class="btn dan si-presta" data-toast="La fenêtre « Retirer » ne change pas.">Retirer ma proposition</button>
+          </div>
+        </div>
+      </div>
+      <form class="ecrire" id="ecrire">
+        <button type="button" class="btn sec carre" aria-label="Joindre une photo" data-toast="Le choix de photos s'ouvre ici (5 au plus)."><svg class="ic"><use href="#i-cam"/></svg></button>
+        <textarea id="m-texte" placeholder="Écrire un message…" aria-label="Votre message" maxlength="2000"></textarea>
+        <button type="button" class="btn sec si-presta" data-toast="La fenêtre « Faire une proposition » ne change pas.">Proposer</button>
+        <button class="btn carre" aria-label="Envoyer"><svg class="ic"><use href="#i-send"/></svg></button>
+      </form>
+    </div>
+  </div>
+  <p class="doux petit">Téléphone et mail sont masqués dans les messages tant qu'il n'y a pas de rendez-vous entre vous.</p>
+</section>
+
+<!-- ================= MES DEMANDES ================= -->
+<section class="ecran" id="e-demandes" hidden>
+  <div class="pastilles" role="group" aria-label="Pages de Mes réservations">
+    <button class="tout" data-toast="« Mes rendez-vous » : pas dans cette maquette.">Mes rendez-vous</button>
+    <button class="tout" aria-pressed="true" style="color:var(--primaire)">Mes demandes</button>
+    <button class="tout" data-toast="« Devis » : pas dans cette maquette.">Devis</button>
+    <button class="tout" data-toast="« Factures » : pas dans cette maquette.">Factures</button>
+  </div>
+  <div class="entre"><h1 style="font-size:30px">Mes demandes</h1><button class="btn acc" data-vers="accueil"><svg class="ic"><use href="#i-plus"/></svg>Publier une demande</button></div>
+  <div class="pile">
+    <article class="carte dem">
+      <span class="pic t-vert"><svg class="ic"><use href="#i-leaf"/></svg></span>
+      <div class="dem-corps">
+        <div class="entre"><h3>Tondre ma pelouse (200 m²)</h3><span class="badge ok">En ligne, encore 12 jours</span></div>
+        <p class="meta"><span><svg class="ic"><use href="#i-pin"/></svg>Pessac</span><span><svg class="ic"><use href="#i-clock"/></svg>Samedi 10/10</span><span>Budget 40 €</span></p>
+        <div class="ligne"><span class="rond">KB</span><span class="rond">SL</span><span class="rond">TR</span><b>3 prestataires ont répondu</b></div>
+        <div class="ligne"><button class="btn" data-vers="messages">Voir les 3 réponses</button><button class="btn sec" data-toast="Le formulaire de modification s'ouvre ici.">Modifier</button><button class="btn dan" data-toast="La fenêtre de confirmation s'ouvre ici.">Fermer la demande</button></div>
+      </div>
+    </article>
+    <article class="carte dem">
+      <span class="pic t-orange"><svg class="ic"><use href="#i-tool"/></svg></span>
+      <div class="dem-corps">
+        <div class="entre"><h3>Monter une armoire à 3 portes</h3><span class="badge">Terminée le 28/09/2026</span></div>
+        <p class="meta"><span><svg class="ic"><use href="#i-pin"/></svg>Pessac</span><span>Faite par Thomas Roux · 35 €</span></p>
+        <div class="ligne"><button class="btn sec" data-toast="La fenêtre « Donner mon avis » ne change pas.">Donner mon avis</button></div>
+      </div>
+    </article>
+  </div>
+</section>
+</main>
+
+<nav class="bas" aria-label="Menu du bas">
+  <button data-vers="accueil" data-nav="accueil"><svg class="ic"><use href="#i-home"/></svg>Accueil</button>
+  <button data-vers="trouver" data-nav="trouver"><svg class="ic"><use href="#i-search"/></svg>Trouver</button>
+  <button data-vers="demandes" data-nav="demandes"><svg class="ic"><use href="#i-cal"/></svg>Réservations</button>
+  <button data-vers="messages" data-nav="messages"><svg class="ic"><use href="#i-chat"/></svg>Messages<span class="pastille">2</span></button>
+  <button data-toast="« Mon activité » et « Mon agenda » ne changent pas : pas dans cette maquette."><svg class="ic"><use href="#i-case"/></svg>Activité</button>
+</nav>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const ic=n=>`<svg class="ic" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const CATS={jardin:['Jardin','leaf','t-vert'],menage:['Ménage','spark','t-bleu'],brico:['Bricolage','tool','t-orange'],plomberie:['Plomberie','drop','t-violet']};
+const DEMANDES=[
+  {cat:'jardin',titre:'Tondre ma pelouse (200 m²)',ville:'Pessac',quand:'Samedi 10/10',lieu:'Chez le client',budget:'40 €',client:'Julie M.',rep:3,photos:2,moi:true,desc:'Pelouse plate, sans obstacle. Tondeuse à apporter, bordures à faire aussi.'},
+  {cat:'brico',titre:'Monter une armoire à 3 portes',ville:'Mérignac',quand:'Cette semaine',lieu:'Chez le client',budget:'35 €',client:'Hugo P.',rep:1,photos:1,desc:'Armoire en kit déjà livrée, 3e étage avec ascenseur.'},
+  {cat:'menage',titre:'Ménage de 3 h avant un déménagement',ville:'Bordeaux',quand:'Lundi 12/10',lieu:'Chez le client',budget:'60 €',client:'Nadia B.',rep:6,photos:0,desc:'Appartement de 45 m² vide. Sols, cuisine et salle de bain.'},
+  {cat:'plomberie',titre:'Robinet de cuisine qui fuit',ville:'Talence',quand:'Dès que possible',lieu:'Chez le client',budget:'',client:'Marc T.',rep:0,photos:1,desc:'Le mitigeur goutte en continu. Je n\'ai pas le modèle de rechange.'},
+];
+const CHANGEMENTS={
+  accueil:['Le « Bonjour » et la recherche passent dans un bandeau vert : la page a enfin de la couleur.','Une demande = un pictogramme de couleur, une ligne d\'infos (ville, jour, lieu) et le budget en gros, à la place de 5 étiquettes grises.','Des pastilles « Jardin, Ménage… » filtrent la liste en un clic.','La carte « Publier une demande » garde le texte, l\'adresse et les photos ; le plan n\'apparaît qu\'une fois l\'adresse écrite.','L\'état du serveur et le bouton du catalogue quittent l\'accueil (ils iraient dans Administration).'],
+  trouver:['Chaque tuile de service reçoit un pictogramme.','Les cartes de résultat n\'affichent plus de prix ni de nombre d\'annonces (les annonces sont retirées) : nom, note, distance, 2 ou 3 étiquettes.'],
+  fiche:['À droite, une carte qui reste visible avec [Écrire à Karim] et [Demander un devis] : plus besoin de remonter la page.','Les photos du prestataire sont montrées en grand, avant les avis.','[Signaler] devient discret, en bas de la carte.'],
+  messages:['Sur ordinateur : la liste à gauche et la conversation à droite, sans changer de page.','La proposition est encadrée en vert, avec le prix en gros.','Une seule ligne pour écrire : photo, texte, envoyer. « Signaler » et « Bloquer » sont rangés derrière [Plus…].'],
+  demandes:['Chaque demande montre qui a répondu (pastilles rondes) et un seul bouton principal.','Sur téléphone, toutes les pages gagnent la barre de 5 boutons en bas.'],
+};
+
+let cat='tout';
+function carte(d){const[,icone,teinte]=CATS[d.cat];
+  return `<article class="carte dem"><span class="pic ${teinte}">${ic(icone)}</span><div class="dem-corps">
+  <div class="entre"><h3>${esc(d.titre)}</h3>${d.budget?`<span class="prix">${d.budget}</span>`:''}</div>
+  <p class="meta"><span>${ic('pin')}${esc(d.ville)}</span><span>${ic('clock')}${d.quand}</span><span>${ic('home')}${d.lieu}</span></p>
+  <p>${esc(d.desc)}</p>
+  ${d.photos?`<div class="vignettes">${`<span class="vignette ${teinte}">${ic('cam')}</span>`.repeat(d.photos)}</div>`:''}
+  <div class="entre" style="align-items:center"><span class="doux petit">${d.client} · ${d.rep} réponse${d.rep>1?'s':''} sur 10</span>
+  ${d.moi?`<span class="ligne si-client"><span class="badge ok">Ma demande</span><button class="btn sec" data-vers="demandes">Voir mes réponses</button></span>`:''}
+  <button class="btn si-presta" data-vers="messages" data-msg="Conversation ouverte avec ${d.client}.">Répondre</button></div>
+  </div></article>`}
+function afficher(){
+  const mot=$('#besoin').value.trim().toLowerCase();
+  const l=DEMANDES.filter(d=>(cat==='tout'||d.cat===cat)&&(!mot||`${d.titre} ${d.desc} ${CATS[d.cat][0]} ${d.ville}`.toLowerCase().includes(mot)));
+  $('#liste').innerHTML=l.length?l.map(carte).join(''):'<p class="vide">Aucune demande ne correspond. Essayez un autre mot, ou publiez la vôtre.</p>';
+  $('#compte-dem').textContent=`${l.length} demande${l.length>1?'s':''}`;
+}
+$('#pastilles').innerHTML=`<button class="tout" data-cat="tout" aria-pressed="true">Tout</button>`+Object.entries(CATS).map(([c,[nom,icone,teinte]])=>`<button class="${teinte}" data-cat="${c}" aria-pressed="false">${ic(icone)}${nom}</button>`).join('');
+$('#pastilles').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;cat=b.dataset.cat;$$('#pastilles button').forEach(x=>x.setAttribute('aria-pressed',x===b));afficher()});
+$('#besoin').addEventListener('input',afficher);
+
+let minuteur;
+function message(t){const z=$('#toast');z.textContent=t;z.hidden=false;clearTimeout(minuteur);minuteur=setTimeout(()=>z.hidden=true,3000)}
+function aller(nom,msg){
+  $$('.ecran').forEach(s=>s.hidden=s.id!=='e-'+nom);
+  const nav=nom==='fiche'?'trouver':nom;
+  $$('[data-nav]').forEach(b=>b.dataset.nav===nav?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
+  $('#changements').innerHTML=CHANGEMENTS[nom].map(c=>`<li>${c}</li>`).join('');
+  if(nom==='messages')$('#msg').dataset.vue=msg?'fil':'liste';
+  try{history.replaceState(null,'','#'+nom)}catch{}
+  window.scrollTo(0,0);if(msg)message(msg);
+}
+document.addEventListener('click',e=>{
+  const v=e.target.closest('[data-vers]');if(v){e.preventDefault();return aller(v.dataset.vers,v.dataset.msg)}
+  const t=e.target.closest('[data-toast]');if(t){e.preventDefault();message(t.dataset.toast)}
+});
+function role(r){document.body.dataset.role=r;$('#role-client').setAttribute('aria-pressed',r==='client');$('#role-presta').setAttribute('aria-pressed',r==='presta')}
+$('#role-client').onclick=()=>role('client');$('#role-presta').onclick=()=>role('presta');
+
+// Publier une demande
+$('#p-adresse').addEventListener('input',e=>{const a=e.target.value.trim();$('#p-plan').hidden=a.length<3;$('#p-lieu').textContent=a});
+$('#p-ajout').onclick=()=>{const z=$('#p-photos');if(z.children.length>5)return message('5 photos au plus.');z.insertAdjacentHTML('afterbegin',`<span class="vignette t-vert">${ic('cam')}</span>`)};
+$('#publier').addEventListener('submit',e=>{e.preventDefault();
+  const texte=$('#p-texte').value.trim(),adresse=$('#p-adresse').value.trim();
+  if(texte.length<5)return message('Écrivez votre besoin en quelques mots.');
+  if(!adresse)return message('Indiquez où : une adresse ou une ville.');
+  DEMANDES.unshift({cat:'jardin',titre:texte.slice(0,60),ville:adresse.split(',').pop().trim(),quand:'Dès que possible',lieu:'Chez le client',budget:'',client:'Julie M.',rep:0,photos:$('#p-photos').children.length-1,moi:true,desc:texte});
+  e.target.reset();$('#p-plan').hidden=true;$$('#p-photos .vignette').forEach(x=>x.remove());
+  cat='tout';$$('#pastilles button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.cat==='tout'));$('#besoin').value='';afficher();
+  message('Demande publiée. Les prestataires proches la voient déjà.');
+});
+
+// Trouver
+function chercher(metier){if(metier)$('#r-quoi').value=metier;
+  $('#titre-res').textContent=`${$('#r-quoi').value||'Prestataires'} près de ${$('#r-ou').value||'chez vous'} : 3 prestataires`;
+  $('#bloc-tuiles').hidden=true;$('#bloc-res').hidden=false}
+$('#form-rech').addEventListener('submit',e=>{e.preventDefault();chercher()});
+$$('.tuile').forEach(t=>t.onclick=()=>chercher(t.dataset.metier));
+$('#retour-tuiles').onclick=()=>{$('#bloc-tuiles').hidden=false;$('#bloc-res').hidden=true};
+
+// Messages
+$('[data-conv]').onclick=()=>$('#msg').dataset.vue='fil';
+$('#retour-msg').onclick=()=>$('#msg').dataset.vue='liste';
+$('#accepter').onclick=()=>{$('#prop').classList.add('faite');$('#prop-titre').innerHTML='<b>Rendez-vous confirmé</b>';$('#prop-boutons').innerHTML='<span class="badge ok">'+ic('check')+'Accepté le 07/10/2026</span>';message('Rendez-vous confirmé · samedi 10/10 à 10 h 00')};
+$('#ecrire').addEventListener('submit',e=>{e.preventDefault();const t=$('#m-texte').value.trim();if(!t)return;
+  $('#bulles').insertAdjacentHTML('beforeend',`<div class="bulle moi">${esc(t)}<small>à l'instant · envoyé</small></div>`);$('#m-texte').value=''});
+
+role('client');afficher();
+const depart=location.hash.slice(1);aller(CHANGEMENTS[depart]?depart:'accueil');
+</script>

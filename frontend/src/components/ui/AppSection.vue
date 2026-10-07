@@ -6,8 +6,8 @@ withDefaults(defineProps<{ titre?: string; danger?: boolean }>(), { titre: '', d
 
 <template>
   <section
-    class="flex flex-col gap-3.5 rounded-rafals border bg-surface p-5"
-    :class="danger ? 'border-erreur' : 'border-bord'"
+    class="carte flex flex-col gap-3.5 p-5"
+    :class="danger ? 'border-erreur' : ''"
   >
     <div v-if="titre || $slots.action" class="flex flex-wrap items-center justify-between gap-2.5">
       <h2 class="text-xl font-bold">{{ titre }}</h2>

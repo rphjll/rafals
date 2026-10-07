@@ -154,7 +154,7 @@ async function publier() {
 </script>
 
 <template>
-  <form class="flex flex-col gap-4 rounded-rafals border border-bord bg-surface p-5" @submit.prevent="publier">
+  <form class="carte flex flex-col gap-4 p-5" @submit.prevent="publier">
     <h2 class="text-xl font-bold">Publier une demande</h2>
 
     <AppChoixMetier v-model="metier" :avec-dossiers="false" etiquette="Quel métier ?" obligatoire />

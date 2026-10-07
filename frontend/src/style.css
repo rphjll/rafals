@@ -3,6 +3,24 @@
    (bg-primaire, text-texte-doux…), jamais une valeur comme #2F6B4F. */
 @import 'tailwindcss';
 
+/* Police du texte (style « chaleureux », 07/10/2026) : Nunito, rangée dans le site (assets/polices), jamais chargée chez Google */
+@font-face {
+  font-family: 'Nunito Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 1000;
+  src: url('./assets/polices/nunito-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Nunito Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 1000;
+  src: url('./assets/polices/nunito-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   --fond: #f3f6f2;
   --surface: #ffffff;
@@ -44,6 +62,19 @@
   --teinte-rose-texte: #7f2238;
   --teinte-violet: #e8e1f6;
   --teinte-violet-texte: #49317f;
+  /* Formes du style « chaleureux » (07/10/2026) : coins très ronds, ombre douce à la place des bordures */
+  --coin: 16px; /* champs, petits cadres */
+  --coin-carte: 26px; /* cartes, fenêtres */
+  --coin-bouton: 999px; /* boutons complètement ronds */
+  --ombre-carte: 0 8px 28px rgb(31 77 56 / 0.1);
+  --bord-carte: transparent;
+  --secondaire-fond: var(--primaire-doux);
+  --secondaire-bord: transparent;
+  --danger-fond: var(--erreur-doux);
+  --danger-bord: transparent;
+  --police-titre: 'Nunito Variable', 'Segoe UI', system-ui, sans-serif;
+  --police-corps: 'Nunito Variable', 'Segoe UI', system-ui, sans-serif;
+  --graisse-corps: 500;
   color-scheme: light;
 }
 
@@ -88,8 +119,26 @@
     --teinte-rose-texte: #f0a3b4;
     --teinte-violet: #271f3d;
     --teinte-violet-texte: #c2adf0;
+    --ombre-carte: 0 8px 28px rgb(0 0 0 / 0.35);
     color-scheme: dark;
   }
+}
+
+/* « Mon agenda » garde les formes d'avant le 07/10/2026 (Raphael : « l'agenda ne dois pas changer ») :
+   App.vue pose cette classe sur la page entière tant qu'on est sur /mon-agenda. */
+:root.style-classique {
+  --coin: 10px;
+  --coin-carte: 10px;
+  --coin-bouton: 10px;
+  --ombre-carte: none;
+  --bord-carte: var(--bord);
+  --secondaire-fond: var(--surface);
+  --secondaire-bord: var(--primaire);
+  --danger-fond: var(--surface);
+  --danger-bord: var(--erreur);
+  --police-titre: 'Bricolage Grotesque Variable', 'Segoe UI', system-ui, sans-serif;
+  --police-corps: 'Figtree Variable', 'Segoe UI', system-ui, sans-serif;
+  --graisse-corps: 400;
 }
 
 @theme inline {
@@ -133,17 +182,37 @@
   --color-teinte-violet: var(--teinte-violet);
   --color-teinte-violet-texte: var(--teinte-violet-texte);
 
-  --font-titre: 'Bricolage Grotesque Variable', 'Segoe UI', system-ui, sans-serif;
-  --font-corps: 'Figtree Variable', 'Segoe UI', system-ui, sans-serif;
+  --color-bord-carte: var(--bord-carte);
+  --color-secondaire-fond: var(--secondaire-fond);
+  --color-secondaire-bord: var(--secondaire-bord);
+  --color-danger-fond: var(--danger-fond);
+  --color-danger-bord: var(--danger-bord);
 
-  /* Coins arrondis de 10 px (boutons, champs, cartes, fenêtres) */
-  --radius-rafals: 10px;
+  /* Le logo « rafals. » reste en Bricolage Grotesque ; titres et texte suivent le style de la page */
+  --font-marque: 'Bricolage Grotesque Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-titre: var(--police-titre);
+  --font-corps: var(--police-corps);
+
+  /* Coins arrondis : rafals = champs et petits cadres, carte = cartes et fenêtres, bouton = boutons */
+  --radius-rafals: var(--coin);
+  --radius-carte: var(--coin-carte);
+  --radius-bouton: var(--coin-bouton);
+  --shadow-carte: var(--ombre-carte);
+}
+
+/* Une carte de rafals : à écrire « carte », jamais « rounded-… border… bg-surface » à la main */
+@utility carte {
+  border-radius: var(--coin-carte);
+  border: 1px solid var(--bord-carte);
+  background-color: var(--surface);
+  box-shadow: var(--ombre-carte);
 }
 
 @layer base {
   body {
     @apply bg-fond text-texte font-corps;
     font-size: 15px;
+    font-weight: var(--graisse-corps);
     margin: 0;
   }
   h1,

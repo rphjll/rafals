@@ -62,7 +62,7 @@ async function deconnexion() {
 <template>
   <header class="sticky top-[env(safe-area-inset-top,0px)] z-10 border-b border-bord bg-surface px-4">
     <div class="relative mx-auto flex h-[60px] max-w-[1080px] items-center gap-4">
-      <RouterLink to="/" class="font-titre text-2xl font-bold tracking-tight text-primaire" aria-label="Accueil rafals">
+      <RouterLink to="/" class="font-marque text-2xl font-bold tracking-tight text-primaire" aria-label="Accueil rafals">
         rafals<span class="text-accent">.</span>
       </RouterLink>
       <button
@@ -84,7 +84,7 @@ async function deconnexion() {
           v-for="lien in liens"
           :key="lien.vers"
           :to="lien.vers"
-          class="rounded-rafals px-3 py-2.5 font-semibold hover:bg-primaire-doux hover:text-primaire md:py-2"
+          class="rounded-bouton px-3 py-2.5 font-bold hover:bg-primaire-doux hover:text-primaire md:py-2"
           :class="lien.actif ? 'bg-primaire-doux text-primaire' : 'text-texte'"
         >
           {{ lien.texte }}

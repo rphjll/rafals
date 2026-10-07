@@ -66,6 +66,7 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `BoutonSignaler` (dans `components/`) — [Signaler cette annonce…] / [Signaler ce prestataire…], avec la connexion si besoin et la fenêtre du motif (lot 6.4).
 - Demandes (dans `components/demandes/`) : `CarteDemande` (la même carte sur l'accueil, « Mes demandes » et « Demandes près de chez moi », avec [Répondre]), `CartePublierDemande` ; types et textes : `frontend/src/outils/demandes.ts` (lots 8.3 et 8.4).
 - Messagerie (dans `components/messagerie/`) : `CarteProposition` (accepter, négocier, refuser, retirer), `FenetreProposition` ; types, durées et textes : `frontend/src/outils/messagerie.ts` ; compteur rouge de « Messages » : `composables/useNonLus.ts` (lots 8.2 et 8.4).
+- Style « chaleureux » (07/10/2026) : une carte s'écrit avec la classe `carte` ; `AppPicto` — pictogramme d'un dossier de métiers (tracés et teintes : `frontend/src/outils/pictos.ts`) ; initiales d'un nom dans un rond : `frontend/src/outils/noms.ts` (`AvatarPrestataire`, `CarteDemande`) ; `AvatarPrestataire` a une taille « moyenne » (92 px) pour les petites cartes de résultat. Détail des formes : `CHARTE-VISUELLE.md` § « Formes ».
 - `GardePrestataire` (dans `components/prestataire/`) — pages réservées aux prestataires (lot 3.2).
 - Prix, durées, lieux et paiements des annonces : toujours par `frontend/src/outils/annonces.ts` (« 50 € · 2 h », « 40 €/h · de 1 h à 3 h ») (lot 3.2).
 - Libellés et couleurs des états du prestataire : `frontend/src/outils/prestataires.ts`.
