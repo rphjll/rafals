@@ -167,6 +167,18 @@ def ia_de_moderation(monkeypatch: pytest.MonkeyPatch) -> dict[str, float]:
     return reglage
 
 
+@pytest.fixture(autouse=True)
+def sans_limites_de_particulier(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Les prestataires d'essai n'ont pas de SIRET (Karim, Léa…) : sans cette précaution, aucun ne pourrait répondre à
+    une demande de plombier ou de coiffeur. Partout, on fait donc comme s'ils avaient un SIRET vérifié pour les
+    limites des particuliers ; seuls les tests marqués `limites_particulier` (tests/test_particuliers.py) les subissent."""
+    if "limites_particulier" in request.keywords:
+        return
+    from app.services import particuliers
+
+    monkeypatch.setattr(particuliers, "est_particulier", lambda _prestataire: False)
+
+
 @pytest.fixture
 def mails_envoyes(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     """Remplace l'envoi réel : les mails sont gardés dans une liste que le test peut lire."""

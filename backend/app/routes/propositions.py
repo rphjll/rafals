@@ -16,6 +16,7 @@ from app.routes.prestataires import mon_profil_ou_404
 from app.services import demandes as service_demandes
 from app.services import messagerie
 from app.services import paiements as service_paiements
+from app.services import particuliers
 from app.services import propositions as service
 
 routeur = APIRouter(prefix="/api")
@@ -64,6 +65,7 @@ class PropositionVisible(BaseModel):
     cree_le: datetime
     negociation: NegociationVisible | None  # le prix proposé par le client, s'il attend une réponse
     rendez_vous_id: int | None
+    particulier: bool  # prestataire sans SIRET vérifié : étiquette « Particulier, non professionnel » et avertissement
 
 
 class RendezVousCree(BaseModel):
@@ -91,8 +93,47 @@ def _proposition(db: Base, proposition: Proposition) -> PropositionVisible:
         remplace_id=proposition.remplace_id, cree_le=proposition.cree_le,
         negociation=None if negociation is None else NegociationVisible(
             id=negociation.id, prix_centimes=negociation.prix_centimes, statut=negociation.statut),
-        rendez_vous_id=rdv,
+        rendez_vous_id=rdv, particulier=particuliers.est_particulier(prestataire),
     )
+
+
+# ---------- Limites d'un prestataire sans SIRET ----------
+
+
+class LimitesVisibles(BaseModel):
+    """Où en est un prestataire sans SIRET vérifié (RM-PRESTATAIRES § « Limites d'un prestataire sans SIRET »)."""
+
+    particulier: bool  # faux : SIRET vérifié, aucune limite
+    etiquette: str  # « Particulier, non professionnel »
+    avertissement: str  # lu par le client avant d'accepter
+    texte_case: str
+    adresse_remplie: bool
+    case_cochee_le: datetime | None
+    prix_max_centimes: int
+    rendez_vous_ce_mois: int
+    rendez_vous_par_mois: int
+    total_12_mois_centimes: int
+    total_max_centimes: int
+    plafond_atteint: bool
+
+
+def _limites(db: Base, prestataire: Prestataire) -> LimitesVisibles:
+    limites = particuliers.limites_de(db, prestataire, maintenant())
+    return LimitesVisibles(etiquette=particuliers.ETIQUETTE, avertissement=particuliers.AVERTISSEMENT,
+                           texte_case=particuliers.CASE, **limites.__dict__)
+
+
+@routeur.get("/moi/prestataire/limites")
+def mes_limites(db: Base, compte: CompteConnecte) -> LimitesVisibles:
+    return _limites(db, mon_profil_ou_404(db, compte))
+
+
+@routeur.post("/moi/prestataire/activite-occasionnelle")
+def cocher_activite_occasionnelle(db: Base, compte: CompteConnecte) -> LimitesVisibles:
+    """La case « Mon activité est occasionnelle et je déclare mes revenus aux impôts » : la date est gardée."""
+    prestataire = particuliers.cocher_la_case(db, mon_profil_ou_404(db, compte), maintenant())
+    db.commit()
+    return _limites(db, prestataire)
 
 
 # ---------- Répondre à une demande ----------

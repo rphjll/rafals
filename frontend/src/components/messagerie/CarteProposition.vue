@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import { formaterDateHeure } from '../../outils/dates'
-import { badgeProposition, prix, type PropositionVisible, quandEtOu, textePaiement } from '../../outils/messagerie'
+import { badgeProposition, prix, type PropositionVisible, quandEtOu, textePaiement, AVERTISSEMENT_PARTICULIER, ETIQUETTE_PARTICULIER } from '../../outils/messagerie'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
@@ -91,6 +91,7 @@ const repondreAuPrix = (oui: boolean) =>
       </span>
       <AppBadge :etat="badge.etat">{{ badge.texte }}</AppBadge>
     </div>
+    <div v-if="proposition.particulier"><AppBadge etat="attente">{{ ETIQUETTE_PARTICULIER }}</AppBadge></div>
     <div class="flex flex-wrap items-center justify-between gap-2">
       <b class="text-[17px]">{{ quandEtOu(proposition, cote) }}</b>
       <b class="rounded-full bg-primaire px-4 py-1 text-xl whitespace-nowrap text-primaire-texte tabular-nums">{{ prix(proposition.prix_centimes) }}</b>
@@ -135,6 +136,9 @@ const repondreAuPrix = (oui: boolean) =>
         <p>
           <b>{{ prix(proposition.prix_centimes) }}</b> · {{ quandEtOu(proposition, 'client') }}, avec {{ avec }}.
         </p>
+        <AppAlerte v-if="proposition.particulier" etat="attente">
+          {{ avec }} est un particulier, pas un professionnel. {{ AVERTISSEMENT_PARTICULIER }}
+        </AppAlerte>
         <AppChoix v-model="mode" etiquette="Comment payez-vous ?" :options="modes" obligatoire />
         <AppAlerte v-if="mode === 'carte'" etat="neutre">
           Vous payez maintenant sur la page sécurisée de Stripe. Vous êtes remboursé en entier si {{ avec }} annule.

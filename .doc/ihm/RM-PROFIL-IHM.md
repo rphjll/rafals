@@ -23,6 +23,17 @@ Demande de Raphael du 07/10/2026, mot pour mot : « on vas fusioner mon compte e
 2. Carte « Proposer mes services » : la phrase « Vous faites du ménage, du jardinage, de la plomberie… ? Créez votre profil de prestataire. » et le bouton [Proposer mes services], qui déplie le formulaire sur place. Le formulaire est déjà déplié quand on arrive par l'entrée « Proposer mes services » du menu (`/profil?proposer=1`) ou de « Créer mon auto-entreprise » (`/profil?siret=…`). Adresse mail pas vérifiée, ou accord des parents manquant : un bandeau orange à la place du bouton.
 3. Les cartes du compte (les mêmes que ci-dessus).
 
+## Carte « Sans SIRET : vos limites » (ajoutée le 12/10/2026, lot 11.2)
+Fichier : `frontend/src/components/prestataire/CarteParticulier.vue`, placée dans la fiche de l'activité juste avant « Photos de mon travail ». **Affichée seulement si le SIRET n'est pas vérifié** ; elle disparaît dès qu'il l'est. Règles : `RM-PRESTATAIRES.md` § « Limites d'un prestataire sans SIRET ».
+De haut en bas :
+1. Badge orange « Particulier, non professionnel ».
+2. « Sans SIRET vérifié, vous rendez de petits services, payés en espèces. Vos clients lisent cette étiquette sur votre profil et sur vos propositions, avec l'avertissement « Pas de facture, pas de garantie, pas d'assurance professionnelle. » »
+3. Quatre lignes : « Seulement les métiers autorisés sans SIRET (ex. promener un chien, repasser, tondre une pelouse). » · « **100,00 €** au plus par proposition. » · « **1 sur 2** rendez-vous ce mois-ci. » · « **230,00 € sur 1 000,00 €** de rendez-vous sur les 12 derniers mois. »
+4. Plafond atteint : bandeau rouge « Vous avez atteint la limite des particuliers : vous ne pouvez plus répondre aux demandes tant que vous n'avez pas de SIRET. »
+5. La case « Mon activité est occasionnelle et je déclare mes revenus aux impôts. » et le bouton [Enregistrer ma déclaration] (verrouillé 🔒 tant que la case n'est pas cochée : « Cochez d'abord la case… ») → message « C'est noté : vous pouvez répondre aux demandes. » Une fois faite : « ✓ « Mon activité est occasionnelle… » : déclaré le 12/10/2026. », sans case ni bouton.
+6. Sans adresse : bandeau orange « Indiquez aussi votre adresse, plus bas : elle n'est pas montrée au public, mais rafals doit la connaître. »
+7. « Avec un SIRET vérifié, aucune de ces limites : tous les métiers, tous les prix, la carte bancaire et les devis. » et le bouton secondaire [Créer mon auto-entreprise] → `/creer-mon-auto-entreprise`.
+
 ## Une seule adresse : « Mon adresse » (07/10/2026)
 Demande de Raphael, mot pour mot : « mon local et mon adress c la meme chose donc compress les pour que ca fasse que 1 fin juste pour le titre met mon adresse ».
 - La carte « Mon local » n'existe plus. Il reste une seule carte **« Mon adresse »**, à sa place habituelle parmi les cartes du compte.

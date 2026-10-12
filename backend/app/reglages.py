@@ -184,3 +184,9 @@ DEMANDE_LISTE_MAX = 100  # demandes montrées sur l'accueil
 TACHE_DEMANDES_MINUTES = 15
 DEMANDE_REPONSES_MAX = 10  # prestataires qui peuvent répondre à une même demande
 PROPOSITION_DUREE_MINUTES = (15, 12 * 60)  # durée d'un service proposé
+
+# Limites d'un prestataire sans SIRET vérifié (RM-PRESTATAIRES.md § « Limites d'un prestataire sans SIRET », 09/10/2026)
+PARTICULIER_PRIX_MAX_CENTIMES = 100_00  # 100 € au plus par proposition
+PARTICULIER_RENDEZ_VOUS_PAR_MOIS = 2  # rendez-vous confirmés dans un même mois du calendrier
+PARTICULIER_TOTAL_CENTIMES = 1000_00  # 1 000 € de rendez-vous qui ont eu lieu…
+PARTICULIER_TOTAL_SUR = timedelta(days=365)  # … sur les 12 derniers mois

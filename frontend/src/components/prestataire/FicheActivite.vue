@@ -12,6 +12,7 @@ import AppFenetre from '../ui/AppFenetre.vue'
 import AppSection from '../ui/AppSection.vue'
 import AvatarPrestataire from './AvatarPrestataire.vue'
 import CarteMetiers from './CarteMetiers.vue'
+import CarteParticulier from './CarteParticulier.vue'
 import CartePaiementCarte from './CartePaiementCarte.vue'
 import CartePhotosTravail from './CartePhotosTravail.vue'
 import CarteTva from './CarteTva.vue'
@@ -118,6 +119,8 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
     </section>
 
     <template v-if="profil.statut !== 'arrete'">
+      <!-- Sans SIRET vérifié : ses limites et la case à cocher (la carte se cache toute seule avec un SIRET) -->
+      <CarteParticulier :key="profil.siret_statut" />
       <CartePhotosTravail :profil="profil" @maj="(p) => emit('maj', p)" />
       <CartePaiementCarte />
       <CarteTva :facture-tva="profil.facture_tva" @maj="(v) => emit('maj', { ...profil, facture_tva: v })" />

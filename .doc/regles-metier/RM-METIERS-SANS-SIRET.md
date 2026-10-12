@@ -1,7 +1,7 @@
 # Règle métier — Métiers autorisés ou non sans SIRET
 
 > Écrit par Claude le 09/10/2026, à la demande de Raphael (« non je ne veux pas m'ochuper de ca dans l'amin commande faut que ca soit automatique »). Complète `RM-PRESTATAIRES.md` § « Limites d'un prestataire sans SIRET », règle 1.
-> ⚠️ **Pas encore construit.** ⚠️ **À montrer à un avocat avant la mise en ligne** : ce classement est fait par prudence, il ne vaut pas un avis juridique.
+> **Construit le 12/10/2026** : rubrique `metier.siret_obligatoire` (`schema_v26.sql`), remplie d'après la liste `sans_siret` de `backend/app/donnees/metiers.json` (les 50 métiers autorisés, par leur code). ⚠️ **À montrer à un avocat avant la mise en ligne** : ce classement est fait par prudence, il ne vaut pas un avis juridique.
 
 ## Objectif
 Dire, pour chacun des 129 métiers de rafals, si un prestataire **sans SIRET vérifié** peut répondre aux demandes de ce métier. Le site l'applique tout seul : aucun écran d'administration.

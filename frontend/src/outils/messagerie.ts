@@ -53,6 +53,8 @@ export interface PropositionVisible {
   /** Le prix proposé par le client, s'il attend la réponse du prestataire */
   negociation: { id: number; prix_centimes: number; statut: string } | null
   rendez_vous_id: number | null
+  /** Prestataire sans SIRET vérifié : étiquette « Particulier, non professionnel » et avertissement avant d'accepter */
+  particulier: boolean
 }
 
 export const DUREES = [30, 45, 60, 90, 120, 180, 240].map((minutes) => ({ valeur: minutes, texte: duree(minutes) }))
@@ -101,3 +103,7 @@ export function badgeProposition(p: PropositionVisible): { etat: BadgeEtat; text
 export function repeteUneCarte(texte: string): boolean {
   return / propose : | accepte \d|^Prix proposé par /.test(texte)
 }
+
+// Prestataire sans SIRET vérifié (RM-PRESTATAIRES.md § « Limites d'un prestataire sans SIRET »)
+export const ETIQUETTE_PARTICULIER = 'Particulier, non professionnel'
+export const AVERTISSEMENT_PARTICULIER = 'Pas de facture, pas de garantie, pas d’assurance professionnelle.'

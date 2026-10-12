@@ -18,6 +18,7 @@ const TITRES = {
   '8.0': 'Règles « comme AlloVoisins »', '8.1': 'Messagerie', '8.2': 'Écran Messages', '8.3a': 'Demandes des clients', '8.3b': 'Répondre à une demande, propositions', '8.4': 'Mes demandes, demandes près de chez moi', '8.5': 'Alertes, notation du client', '8.6': 'Onglet Alertes, avis reçus', '8.7': 'Site installable et notifications',
   '9.1': 'Retrait des annonces : ajouts dans la base', '9.2': 'Rendez-vous par proposition, retrait du code des annonces', '9.3': 'Écrans sans annonces', '9.4': 'Retrait des annonces : suppressions dans la base',
   '10.1': 'Chiffres de Mon activité', '10.2': 'Mes clients', '10.3': "Relance d'un devis", '10.4': 'Ma carte de visite', '10.5': 'Être mis en avant',
+  '11.1': 'Limites sans SIRET : serveur', '11.2': 'Limites sans SIRET : écrans',
 }
 // Tâches hors lot de la rubrique « Travail en cours » (résumées à la main)
 const HORS_LOT = [

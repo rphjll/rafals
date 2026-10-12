@@ -29,3 +29,6 @@ En bas de la page, à droite (absent sur son propre profil) : voir `RM-SIGNALEME
 
 ## [Écrire à Karim] (ajouté le 07/10/2026, lot 8.2)
 Sous la présentation, un bouton principal **[Écrire à Karim]** (le prénom du nom affiché), absent sur sa propre page. Il ouvre la conversation avec ce prestataire dans « Messages » (`RM-MESSAGES-IHM.md`), ou la retrouve si elle existe déjà. Pas connecté → page de connexion. Refus de la règle (ex. « Ce prestataire n'est pas joignable en ce moment. ») : bandeau rouge sous le bouton.
+
+## Étiquette « Particulier, non professionnel » (ajoutée le 12/10/2026, lot 11.2)
+À côté du nom : badge vert « SIRET vérifié », ou sinon badge orange « Particulier, non professionnel » (règle 6 de `RM-PRESTATAIRES.md` § « Limites d'un prestataire sans SIRET »).

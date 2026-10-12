@@ -11,6 +11,7 @@
 5. Les boutons :
    - prestataire qui peut répondre (son métier, son rayon, pas complète) : **[Répondre]** → ouvre la conversation avec le client (`RM-MESSAGES-IHM.md`) ;
    - prestataire qui a déjà répondu : [Voir la conversation] ;
+   - prestataire **sans SIRET** que la demande concerne mais qu'une limite arrête (ajouté le 12/10/2026) : [Répondre] verrouillé 🔒 avec la raison, ex. « « Plombier » demande un SIRET : créez votre auto-entreprise… », « Sans SIRET, avant de répondre : indiquez votre adresse et cochez « Mon activité est occasionnelle… » dans « Mon profil ». », « Vous avez atteint la limite des particuliers (1 000,00 € sur 12 mois)… » ;
    - prestataire, demande complète : [Répondre] verrouillé 🔒 « Cette demande est complète : 10 prestataires ont déjà répondu. » ;
    - les autres (clients, prestataires d'un autre métier ou trop loin) : aucun bouton ;
    - puis les boutons propres à la page (« Mes demandes »).
@@ -27,7 +28,7 @@ Sous-menu « Mes réservations », premier onglet. Contenu centré, 760 px au pl
 3. Liste vide : « Aucune demande pour l'instant. Publiez-en une depuis l'accueil : les prestataires proches vous répondent. »
 4. Pas connecté : bandeau gris « Connectez-vous pour voir vos demandes. » et [Se connecter].
 
-Pas encore fait : modifier une demande à l'écran (le serveur sait le faire tant que personne n'a répondu).
+**[Modifier…]** (ajouté le 12/10/2026) : sur une demande ouverte, à gauche de [Prolonger de 30 jours]. Fenêtre « Modifier ma demande » (`FenetreModifierDemande.vue`) : rappel « Plombier · Pessac. Pour changer le métier, l'adresse ou les photos, fermez cette demande et publiez-en une autre. », puis « Titre * », « Décrivez votre besoin * », « Pour quand ? * » (et « Quel jour ? * »), « Budget en euros (facultatif) », [Enregistrer] et [Annuler] → message « Demande modifiée. » ; refus de la règle en bandeau rouge dans la fenêtre. Dès qu'un prestataire a répondu, le bouton est verrouillé 🔒 : « Un prestataire a déjà répondu : pour changer cette demande, fermez-la et publiez-en une autre. »
 
 ## Demandes près de chez moi (`/demandes-pres-de-chez-moi`)
 Sous-menu « Mon activité », deuxième onglet ; réservée aux prestataires (même gardien que « Mon agenda »).

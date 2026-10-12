@@ -164,5 +164,17 @@
     ["Opticien, Dentiste", "prise de rendez-vous déjà gérée par des outils de santé spécialisés"],
     ["Club sportif / Association, Escape game, Salle d'escalade / Trampoline, Centre équestre, Location de salle", "lieux plutôt que personnes (gardés : les moniteurs et professeurs)"],
     ["Avocat, Assurance / Courtier, Agence de voyages, Pompes funèbres", "professions réglementées ou agences, hors services du quotidien"]
+  ],
+  "_sans_siret": "Codes des métiers qu'un prestataire sans SIRET vérifié peut exercer (RM-METIERS-SANS-SIRET.md). Tout métier absent de cette liste demande un SIRET.",
+  "sans_siret": [
+    "aide-devoirs", "animateur-enfants", "community-manager", "conciergerie", "cordonnier", "cours-couture",
+    "cours-cuisine", "cours-dessin", "cours-informatique", "cours-langues", "cours-musique", "courses",
+    "debarras", "decoration-evenements", "depannage-informatique", "developpeur-web", "dj", "ecrivain-public",
+    "fleuriste-evenements", "formateur", "garde-enfants", "grand-nettoyage", "graphiste", "horloger",
+    "jardinier", "lavage-auto", "location-fete", "magicien", "menage", "montage-meubles",
+    "multiservices", "musicien", "nettoyage-textiles", "pet-sitter", "photographe", "promeneur-chiens",
+    "redacteur", "relooking", "reparation-electromenager", "reparation-telephone", "repassage", "retouches",
+    "secretariat", "soutien-scolaire", "taille-haies", "toiletteur", "traducteur", "videaste",
+    "vitres", "wedding-planner"
   ]
 }

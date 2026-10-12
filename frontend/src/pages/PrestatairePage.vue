@@ -108,6 +108,8 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
               <div class="flex flex-wrap gap-1.5">
                 <AppBadge v-if="!prestataire.nombre_avis" etat="attente">Nouveau sur rafals</AppBadge>
                 <AppBadge v-if="prestataire.siret_verifie" etat="ok">SIRET vérifié</AppBadge>
+              <!-- Sans SIRET vérifié : l'étiquette que la règle impose (RM-PRESTATAIRES, limites sans SIRET) -->
+              <AppBadge v-else etat="attente">Particulier, non professionnel</AppBadge>
               </div>
             </div>
           </div>

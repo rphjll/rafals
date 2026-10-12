@@ -53,6 +53,7 @@ class Prestataire(Base):
     facture_tva: Mapped[bool] = mapped_column(Boolean, server_default="false")
     declaration_periodicite: Mapped[str | None] = mapped_column(Text)
     rendez_vous_bloque_autres_metiers: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    activite_occasionnelle_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v26
     lieu: Mapped[str] = mapped_column(Text, server_default="chez_client")
 
 

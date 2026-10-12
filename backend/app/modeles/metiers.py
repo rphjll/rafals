@@ -28,6 +28,7 @@ class Metier(Base):
     nom: Mapped[str] = mapped_column(Text)
     mots_cles: Mapped[list[str]] = mapped_column(ARRAY(Text), server_default="{}")
     est_active: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    siret_obligatoire: Mapped[bool] = mapped_column(Boolean, server_default="true")  # schema_v26
 
 
 class PropositionMetier(Base):

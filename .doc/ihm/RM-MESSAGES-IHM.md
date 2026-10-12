@@ -69,3 +69,9 @@ Bord vert tant qu'elle attend une réponse, grisée ensuite. De haut en bas :
 ## Pas encore fait
 - La carte « Rendez-vous passé : noter » et la moyenne à côté des noms (lots 8.5 et 8.6).
 - Un devis à la place d'une proposition simple (niveau 9).
+
+## Proposition d'un prestataire sans SIRET (ajouté le 12/10/2026, lot 11.2)
+- Sous la première ligne de la carte : badge orange « Particulier, non professionnel », chez le client comme chez le prestataire.
+- Dans la fenêtre « Confirmer le rendez-vous », au-dessus de « Comment payez-vous ? » : bandeau orange « Emma Leroy est un particulier, pas un professionnel. Pas de facture, pas de garantie, pas d'assurance professionnelle. »
+- Refus à l'acceptation, en bandeau rouge dans la fenêtre : « Emma Leroy a atteint sa limite du mois (2 rendez-vous sans SIRET) : choisissez un jour du mois suivant, ou un autre prestataire. » ou « Emma Leroy a atteint la limite des particuliers : cette proposition ne peut plus être acceptée. »
+- Refus à l'envoi d'une proposition, dans la fenêtre « Faire une proposition » : « Sans SIRET, une proposition ne peut pas dépasser 100,00 €… ».

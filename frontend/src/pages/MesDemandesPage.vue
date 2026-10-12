@@ -1,10 +1,11 @@
 <script setup lang="ts">
 // Mes demandes (.doc/ihm/RM-DEMANDES-IHM.md ; RM-DEMANDES.md) : les demandes que j'ai publiées, avec leur état ;
-// fermer, prolonger, rouvrir. On publie depuis l'accueil.
+// modifier (tant que personne n'a répondu), fermer, prolonger, rouvrir. On publie depuis l'accueil.
 import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import CarteDemande from '../components/demandes/CarteDemande.vue'
+import FenetreModifierDemande from '../components/demandes/FenetreModifierDemande.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
@@ -20,6 +21,7 @@ const { afficherMessage } = useMessage()
 const demandes = ref<MaDemande[] | null>(null)
 const erreur = ref('')
 const aFermer = ref<MaDemande | null>(null)
+const aModifier = ref<MaDemande | null>(null)
 
 async function charger() {
   if (!compte.value) return
@@ -61,6 +63,14 @@ async function agir(demande: MaDemande, action: 'fermer' | 'prolonger' | 'rouvri
         <AppBadge :etat="badgeDemande(demande).etat">{{ badgeDemande(demande).texte }}</AppBadge>
         <template v-if="demande.statut === 'ouverte'">
           <span class="self-center text-[13px] text-texte-doux">Ouverte jusqu'au {{ formaterDateHeure(demande.expire_le) }}.</span>
+          <AppBouton v-if="!demande.nombre_reponses" variante="secondaire" @click="aModifier = demande">Modifier…</AppBouton>
+          <AppBouton
+            v-else
+            variante="verrouille"
+            raison-verrou="Un prestataire a déjà répondu : pour changer cette demande, fermez-la et publiez-en une autre."
+          >
+            Modifier
+          </AppBouton>
           <AppBouton variante="secondaire" @click="agir(demande, 'prolonger', 'Demande prolongée de 30 jours.')">Prolonger de 30 jours</AppBouton>
           <AppBouton variante="danger" @click="aFermer = demande">Fermer ma demande…</AppBouton>
         </template>
@@ -77,6 +87,7 @@ async function agir(demande: MaDemande, action: 'fermer' | 'prolonger' | 'rouvri
       Aucune demande pour l'instant. Publiez-en une depuis l'accueil : les prestataires proches vous répondent.
     </p>
 
+    <FenetreModifierDemande :demande="aModifier" @fermer="aModifier = null" @modifiee="(aModifier = null), charger()" />
     <AppFenetre :ouverte="aFermer !== null" :titre="`Fermer « ${aFermer?.titre} » ?`" @fermer="aFermer = null">
       Les prestataires ne la verront plus et ne pourront plus y répondre. Elle reste dans « Mes demandes ».
       <template #pied>

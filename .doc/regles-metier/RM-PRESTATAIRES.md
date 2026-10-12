@@ -53,7 +53,7 @@ Réponse de Raphael, mot pour mot : « je vais enlever le sistème d'annonce car
 ## Limites d'un prestataire sans SIRET (validé par Raphael le 09/10/2026, règle par règle)
 Demande de Raphael du 04/10/2026, mot pour mot : « je veux que les prestataires ai une tres gros limite car sinon je pourrais avoir des problemes juridiques ». Proposition de Claude du 04/10/2026, reprise le 08/10/2026 (« c un peut strict sur certaines regles et d'autre pas assez »), puis tranchée une règle à la fois le 09/10/2026 ; écriture demandée par Raphael (« oui »).
 
-⚠️ **Pas encore construit** : aujourd'hui le code ne pose aucune de ces limites. ⚠️ **À montrer à un avocat avant la mise en ligne** : aucun de ces chiffres ne vient de la loi, et il n'existe pas de montant en dessous duquel on a le droit de travailler sans se déclarer.
+**Construit le 12/10/2026** (lots 11.1 et 11.2 : `services/particuliers.py`, `schema_v26.sql`, `tests/test_particuliers.py`). ⚠️ **À montrer à un avocat avant la mise en ligne** : aucun de ces chiffres ne vient de la loi, et il n'existe pas de montant en dessous duquel on a le droit de travailler sans se déclarer.
 
 Ces limites valent pour tout prestataire dont le SIRET n'est pas « vérifié » (absent, à vérifier ou refusé). **Dès que le SIRET est vérifié, elles tombent toutes.**
 
@@ -89,6 +89,16 @@ Ces limites valent pour tout prestataire dont le SIRET n'est pas « vérifié »
 5. **Quand les 1 000 € sont atteints** (« si le plafond est atteit de plus de 1000 euro par ans a ce mement la oui elles sont retirés mais le resataire est prévenue ») : ses propositions encore en attente sont retirées, il est prévenu par mail, et il ne peut plus en envoyer tant qu'il est au-dessus (ou sans SIRET vérifié).
    - Exemple : le rendez-vous du 20/10 porte Emma à 1 010 € sur 12 mois ; ses 2 propositions en attente passent à « retirée » et elle reçoit « Vous avez atteint la limite des particuliers : créez votre auto-entreprise ».
    - Précisé par Claude (à relire) : un rendez-vous déjà confirmé n'est jamais annulé par rafals pour cette raison ; le total peut donc dépasser un peu 1 000 € (au plus de 2 rendez-vous de 100 €).
+
+**Précisions prises en construisant, le 12/10/2026 (choix de Claude, en mode « sans question » ; à relire par Raphael) :**
+- **« A eu lieu »** : rendez-vous confirmé, dont l'heure de fin est passée, sans absence signalée (ni du client ni du prestataire). Ex. Mme Dupont n'était pas là, Emma clique [Client absent] : ces 15 € ne comptent pas.
+- **Les 12 derniers mois** : 365 jours, comptés à partir de la fin de chaque rendez-vous.
+- **Au plafond de 1 000 €** : il ne peut plus répondre ni proposer, et aucun client ne peut plus accepter une proposition déjà envoyée ; une tâche de fond (toutes les 15 minutes) retire ses propositions en attente, écrit une ligne dans chaque conversation et lui envoie un seul mail.
+- **Bouton [Répondre] verrouillé 🔒 avec la raison**, au lieu d'un bouton absent, quand la demande est dans ses métiers et son rayon mais qu'une limite l'arrête : « « Plombier » demande un SIRET… », « Sans SIRET, avant de répondre : indiquez votre adresse et cochez… », « Vous avez atteint la limite des particuliers… ». Ex. Karim, sans SIRET, voit « Fuite sous l'évier » dans « Demandes près de chez moi » avec le bouton verrouillé.
+- **La case se coche dans « Mon profil »**, carte « Sans SIRET : vos limites », qui montre aussi où il en est (« 1 sur 2 rendez-vous ce mois-ci », « 230,00 € sur 1 000,00 € »).
+- **L'étiquette** est écrite en entier sur la page publique et sur chaque proposition ; sur les petites cartes de « Trouver un prestataire », le coin dit seulement « Particulier » (la place manque).
+- **Les 4 plafonds sont des réglages** (`backend/app/reglages.py`) : 100 €, 2 par mois, 1 000 €, 365 jours.
+- **Dans les tests automatiques**, les prestataires d'essai n'ont pas de SIRET ; pour ne pas tous les bloquer, les limites sont coupées partout sauf dans `tests/test_particuliers.py`, qui les vérifie une par une.
 
 **Pourquoi la règle 5 est à signaler à l'avocat** : sans limite de durée, un particulier peut rester sans SIRET indéfiniment ; la règle des 6 mois était celle qui poussait à se déclarer (remarque de Claude du 09/10/2026, Raphael a maintenu son choix).
 

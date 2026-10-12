@@ -44,6 +44,7 @@ class DemandeVisible(BaseModel):
     complete: bool  # 10 prestataires ont déjà répondu
     peut_repondre: bool  # pour un prestataire connecté : son métier, son rayon, pas complète (ou déjà répondu)
     conversation_id: int | None  # pour un prestataire qui a déjà répondu : sa conversation avec le client
+    raison_verrou: str | None  # prestataire sans SIRET : pourquoi [Répondre] est verrouillé (métier, adresse, case, plafond)
 
 
 class MaDemande(DemandeVisible):
@@ -82,8 +83,11 @@ def _visible(db: Base, compte: Compte | None, demande: Demande) -> DemandeVisibl
     complete = reponses >= reglages.DEMANDE_REPONSES_MAX
     peut = prestataire is not None and service_propositions.demande_sur_l_accueil(demande, maintenant()) and (
         ma_reponse is not None or (not complete and service_propositions.peut_repondre(db, prestataire, demande, maintenant())))
+    verrou = None
+    if prestataire is not None and ma_reponse is None and not peut and service_propositions.demande_sur_l_accueil(demande, maintenant()):
+        verrou = service_propositions.raison_verrou(db, prestataire, demande, maintenant())
     return DemandeVisible(
-        nombre_reponses=reponses, complete=complete, peut_repondre=peut,
+        nombre_reponses=reponses, complete=complete, peut_repondre=peut, raison_verrou=verrou,
         conversation_id=ma_reponse.conversation_id if ma_reponse is not None else None,
         id=demande.id, titre=demande.titre, description=demande.description, metier_id=demande.metier_id,
         metier=db.get_one(Metier, demande.metier_id).nom, ville=db.get_one(Commune, demande.commune_id).nom,

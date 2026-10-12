@@ -68,7 +68,7 @@ Construit : publier, lister sur l'accueil, « mes demandes », modifier, fermer,
 - **Table des photos** : `photo_demande_publiee` (le nom `photo_demande` est déjà pris par les demandes de devis).
 
 ## Précisions prises au lot 8.3, seconde partie (choix de Claude le 07/10/2026, en mode « sans question » ; à relire par Raphael)
-Construit : qui peut répondre, répondre, propositions, négociation du prix, rendez-vous, demande pourvue, rouvrir. **Pas encore construit** : les limites des prestataires sans SIRET, cacher une demande (administrateur), un devis en réponse à une demande.
+Construit : qui peut répondre, répondre, propositions, négociation du prix, rendez-vous, demande pourvue, rouvrir ; les limites des prestataires sans SIRET (12/10/2026). **Pas encore construit** : cacher une demande (administrateur), un devis en réponse à une demande.
 - **[Répondre]** : un 2e clic rouvre la même conversation, sans compter une 2e réponse. Une demande complète (10 réponses) reste ouverte à ceux qui ont déjà répondu.
 - **Le lieu d'une proposition vient de la demande** : « chez moi » → le prestataire vient chez le client ; « chez le prestataire » → le client va chez lui (son local doit être rempli dans « Ma fiche »).
 - **Durée proposée** : de 15 minutes à 12 heures. **L'heure** doit être à venir.
@@ -85,9 +85,9 @@ Construit : qui peut répondre, répondre, propositions, négociation du prix, r
 - **Dans le fil**, rafals écrit une ligne à chaque étape (a répondu, propose, a refusé, prix proposé, garde son prix, a accepté, a retiré, a choisi un autre prestataire).
 - **Le rendez-vous porte son métier** (table `rendez_vous`, rubrique `metier_id`) : c'est lui qui dit dans quel calendrier il tombe ; avant, on le lisait dans l'annonce.
 
-## Prestataire sans SIRET : des limites pour répondre et proposer (validé par Raphael le 09/10/2026, pas encore construit)
+## Prestataire sans SIRET : des limites pour répondre et proposer (validé par Raphael le 09/10/2026, construit le 12/10/2026)
 La règle complète est dans `RM-PRESTATAIRES.md` § « Limites d'un prestataire sans SIRET ». Ce qu'elle change ici :
-- **Répondre** : pas de bouton [Répondre] sur une demande d'un métier interdit sans SIRET ; avant sa première réponse, son adresse doit être remplie et la case « Mon activité est occasionnelle et je déclare mes revenus aux impôts » cochée.
+- **Répondre** : bouton [Répondre] verrouillé 🔒, avec la raison, sur une demande d'un métier interdit sans SIRET ; avant sa première réponse, son adresse doit être remplie et la case « Mon activité est occasionnelle et je déclare mes revenus aux impôts » cochée.
 - **Proposer** : 100 € au plus ; espèces seulement (déjà en place).
 - **Accepter** : refusé si le prestataire a déjà 2 rendez-vous confirmés dans le mois du rendez-vous, ou s'il a atteint 1 000 € de rendez-vous qui ont eu lieu sur les 12 derniers mois (ses propositions en attente sont alors retirées et il est prévenu) ; le client lit l'avertissement « Pas de facture, pas de garantie, pas d'assurance professionnelle. » avant de confirmer.
   - Exemple 1 : Emma, sans SIRET, propose 40 € pour une pelouse → acceptée par Mme Dupont après l'avertissement.

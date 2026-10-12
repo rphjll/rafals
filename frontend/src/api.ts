@@ -10,7 +10,7 @@ export class ErreurServeur extends Error {
   }
 }
 
-export async function appelerServeur<T>(chemin: string, donnees?: unknown, methode?: 'GET' | 'POST'): Promise<T> {
+export async function appelerServeur<T>(chemin: string, donnees?: unknown, methode?: 'GET' | 'POST' | 'PUT'): Promise<T> {
   // Un fichier (FormData) part tel quel ; le reste part en JSON
   const estFormulaire = donnees instanceof FormData
   let reponse: Response

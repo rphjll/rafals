@@ -24,6 +24,8 @@ export interface DemandeVisible {
   peut_repondre: boolean
   /** Pour un prestataire qui a déjà répondu : sa conversation avec le client */
   conversation_id: number | null
+  /** Prestataire sans SIRET : pourquoi [Répondre] est verrouillé (métier, adresse, case, plafond) */
+  raison_verrou: string | null
 }
 
 /** Une de mes demandes, dans « Mes demandes » : avec son état et mon adresse */

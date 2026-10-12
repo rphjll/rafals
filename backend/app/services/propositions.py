@@ -17,6 +17,7 @@ from app.modeles.prestataires import Commune, Prestataire
 from app.modeles.rendez_vous import RendezVous
 from app.services import absences, clients, communes, droits, journal, locaux, messagerie, stripe_api
 from app.services import demandes as service_demandes
+from app.services import particuliers
 from app.services import paiements as service_paiements
 from app.services import prestataires as service_prestataires
 from app.services import rendez_vous as service_rendez_vous
@@ -55,7 +56,28 @@ def peut_repondre(db: Session, prestataire: Prestataire, demande: Demande, maint
     if demande.metier_id not in service_prestataires.metiers_exerces(db, prestataire, jour):
         return False
     distance = communes.distance_km(db.get_one(Commune, prestataire.commune_id), db.get_one(Commune, demande.commune_id))
+    if distance > prestataire.distance_km:
+        return False
+    # Sans SIRET vérifié : métier autorisé, plafond de l'année pas atteint, adresse et case remplies (RM-PRESTATAIRES)
+    return particuliers.raison_de_ne_pas_repondre(db, prestataire, demande.metier_id, maintenant) is None
+
+
+def concerne(db: Session, prestataire: Prestataire, demande: Demande, maintenant: datetime) -> bool:
+    """La demande est dans ses métiers et dans son rayon, sans regarder les limites des particuliers : sert à lui dire
+    pourquoi [Répondre] est verrouillé (ex. « Plombier demande un SIRET »)."""
+    if prestataire.statut != "actif" or prestataire.compte_id == demande.client_id:
+        return False
+    if demande.metier_id not in service_prestataires.metiers_exerces(db, prestataire, maintenant.astimezone(PARIS).date()):
+        return False
+    distance = communes.distance_km(db.get_one(Commune, prestataire.commune_id), db.get_one(Commune, demande.commune_id))
     return distance <= prestataire.distance_km
+
+
+def raison_verrou(db: Session, prestataire: Prestataire, demande: Demande, maintenant: datetime) -> str | None:
+    """Pour un prestataire sans SIRET que la demande concerne : pourquoi il ne peut pas répondre ; None sinon."""
+    if not concerne(db, prestataire, demande, maintenant):
+        return None
+    return particuliers.raison_de_ne_pas_repondre(db, prestataire, demande.metier_id, maintenant)
 
 
 def nombre_reponses(db: Session, demande_id: int) -> int:
@@ -68,8 +90,9 @@ def reponse_de(db: Session, prestataire: Prestataire, demande_id: int) -> Repons
 
 
 def demandes_pour(db: Session, prestataire: Prestataire, maintenant: datetime) -> list[Demande]:
-    """« Demandes près de chez moi » : les demandes de l'accueil auxquelles ce prestataire peut répondre."""
-    return [d for d in service_demandes.ouvertes(db, maintenant) if peut_repondre(db, prestataire, d, maintenant)]
+    """« Demandes près de chez moi » : les demandes de l'accueil de ses métiers, dans son rayon. Sans SIRET, celles
+    auxquelles il ne peut pas répondre restent montrées, avec la raison sur le bouton verrouillé."""
+    return [d for d in service_demandes.ouvertes(db, maintenant) if concerne(db, prestataire, d, maintenant)]
 
 
 def demandes_de(db: Session, conversation_id: int) -> list[Demande]:
@@ -89,6 +112,8 @@ def repondre(db: Session, prestataire: Prestataire, demande_id: int, maintenant:
         return db.get_one(Conversation, deja.conversation_id)
     if prestataire.compte_id == demande.client_id:
         raise ErreurRegle("Vous ne pouvez pas répondre à votre propre demande.")
+    if concerne(db, prestataire, demande, maintenant):
+        particuliers.verifier_reponse(db, prestataire, demande.metier_id, maintenant)
     if not peut_repondre(db, prestataire, demande, maintenant):
         raise ErreurRegle("Vous ne pouvez pas répondre à cette demande : elle n'est pas dans vos métiers, ou trop loin de chez vous.", 403)
     maxi = reglages.DEMANDE_REPONSES_MAX
@@ -209,6 +234,7 @@ def proposer(db: Session, prestataire: Prestataire, conversation_id: int, saisie
 
     if saisie.prix_centimes <= 0:
         raise ErreurRegle("Indiquez un prix (ex. 60 €).")
+    particuliers.verifier_proposition(db, prestataire, metier_id, saisie.prix_centimes, maintenant)
     debut = saisie.debut if saisie.debut.tzinfo is not None else saisie.debut.replace(tzinfo=PARIS)
     if debut <= maintenant:
         raise ErreurRegle("Proposez un jour et une heure à venir.")
@@ -370,6 +396,7 @@ def accepter(db: Session, client: Compte, proposition_id: int, mode_paiement: st
     if prestataire.statut != "actif":
         raise ErreurRegle("Ce prestataire n'est pas disponible en ce moment.")
     _verifier_libre(db, prestataire, proposition.debut, proposition.fin)
+    particuliers.verifier_acceptation(db, prestataire, proposition, maintenant)
     if mode_paiement not in modes_de_paiement(proposition, prestataire):
         raise ErreurRegle("Ce mode de paiement n'est pas accepté pour cette proposition.")
 
@@ -459,6 +486,7 @@ def expirer(db: Session, maintenant: datetime) -> int:
     return len(passees)
 
 
-def traiter(db: Session, maintenant: datetime) -> tuple[int, int, int]:
-    """La tâche de fond : (demandes expirées, rappels envoyés, propositions expirées)."""
-    return (*service_demandes.traiter(db, maintenant), expirer(db, maintenant))
+def traiter(db: Session, maintenant: datetime) -> tuple[int, int, int, int]:
+    """La tâche de fond : (demandes expirées, rappels envoyés, propositions expirées, propositions retirées parce qu'un
+    prestataire sans SIRET a atteint 1 000 € sur 12 mois)."""
+    return (*service_demandes.traiter(db, maintenant), expirer(db, maintenant), particuliers.retirer_au_plafond(db, maintenant))

@@ -52,14 +52,14 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
 <div class="page">
   <div>
     <h1>Suivi de rafals<i>.</i></h1>
-    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 12/10/2026. 65 lots, du niveau 0 au niveau 10, et 3 tâches hors lot.</p>
+    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 12/10/2026. 67 lots, du niveau 0 au niveau 11, et 3 tâches hors lot.</p>
   </div>
-  <div class="barre" role="img" aria-label="46 faits, 11 à vérifier, 2 en cours, 9 à faire">
-    <span class="fait" style="width:67.64705882352942%"></span><span class="verifier" style="width:16.176470588235293%"></span><span class="cours" style="width:2.941176470588235%"></span><span class="faire" style="width:13.23529411764706%"></span>
+  <div class="barre" role="img" aria-label="46 faits, 13 à vérifier, 2 en cours, 9 à faire">
+    <span class="fait" style="width:65.71428571428571%"></span><span class="verifier" style="width:18.571428571428573%"></span><span class="cours" style="width:2.857142857142857%"></span><span class="faire" style="width:12.857142857142856%"></span>
   </div>
   <div class="filtres" role="group" aria-label="Montrer seulement un état">
-    <button type="button" data-f="tout" aria-pressed="true">Tout <b>68</b></button>
-    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>9</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>2</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>11</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>46</b></button>
+    <button type="button" data-f="tout" aria-pressed="true">Tout <b>70</b></button>
+    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>9</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>2</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>13</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>46</b></button>
   </div>
   <p class="doux" id="vide" hidden>Aucun lot dans cet état.</p>
   <section><header><h2><span>Hors lot</span>Travail en cours</h2></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="cours">
@@ -293,7 +293,7 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr><tr data-etat="verifier">
   <td class="lot">8.4</td>
-  <td><span class="titre">Mes demandes, demandes près de chez moi</span><span class="type">Écrans</span><p><b>Fait le 07/10/2026.</b> « Mes demandes » (fermer, prolonger, rouvrir), « Demandes près de chez moi », [Répondre] sur l'accueil, cartes de proposition et de négociation dans la conversation, fenêtre « Faire une proposition ». <b>Reste</b> : modifier une demande à l'écran</p></td>
+  <td><span class="titre">Mes demandes, demandes près de chez moi</span><span class="type">Écrans</span><p><b>Fait le 07/10/2026.</b> « Mes demandes » (fermer, prolonger, rouvrir), « Demandes près de chez moi », [Répondre] sur l'accueil, cartes de proposition et de négociation dans la conversation, fenêtre « Faire une proposition ». Modifier une demande à l'écran, tant que personne n'a répondu (12/10/2026)</p></td>
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr><tr data-etat="faire">
   <td class="lot">8.5</td>
@@ -345,6 +345,15 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
   <td class="lot">10.5</td>
   <td><span class="titre">Être mis en avant</span><span class="type">Règles + Serveur + Écrans</span><p>« Être mis en avant » : payer pour apparaître en premier dans les résultats</p></td>
   <td class="etat"><span class="badge faire">À faire</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 11</span>Limites des prestataires sans SIRET</h2><span class="avance">0 fait sur 2</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="verifier">
+  <td class="lot">11.1</td>
+  <td><span class="titre">Limites sans SIRET : serveur</span><span class="type">Serveur</span><p><code>schema_v26.sql</code> (<code>metier.siret_obligatoire</code>, <code>prestataire.activite_occasionnelle_le</code>) ; 79 métiers avec SIRET obligatoire, 50 autorisés ; adresse et case avant la première réponse ; 100 € par proposition ; 2 rendez-vous par mois ; 1 000 € sur 12 mois, propositions retirées et mail au plafond</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">11.2</td>
+  <td><span class="titre">Limites sans SIRET : écrans</span><span class="type">Écrans</span><p>Carte « Sans SIRET : vos limites » dans « Mon profil » (case à cocher, où il en est) ; [Répondre] verrouillé avec la raison ; étiquette « Particulier, non professionnel » sur la page publique et les propositions ; avertissement au client avant d'accepter</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr></tbody></table></div></section>
 </div>
 

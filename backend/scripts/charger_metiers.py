@@ -3,6 +3,7 @@
 Relançable sans risque : chaque dossier et chaque métier est reconnu par son code.
 - nouveau code → ajouté ;
 - code existant → nom, dossier, ordre et mots-clés mis à jour ;
+- « SIRET obligatoire » : oui pour tout métier, sauf ceux de la liste `sans_siret` du fichier (RM-METIERS-SANS-SIRET.md) ;
 - rien n'est jamais supprimé ni désactivé ici (un métier retiré de la liste se désactive à la main).
 
 Lancé à la main (lot 2.1) :  docker compose exec -T backend python -m scripts.charger_metiers
@@ -23,6 +24,7 @@ FICHIER = Path(__file__).resolve().parent.parent / "app" / "donnees" / "metiers.
 
 def charger(db: Session) -> tuple[int, int]:
     donnees = json.loads(FICHIER.read_text(encoding="utf-8"))
+    sans_siret = set(donnees.get("sans_siret", []))
     ajouts = 0
     total = 0
     for ordre, categorie_json in enumerate(donnees["categories"], start=1):
@@ -37,10 +39,12 @@ def charger(db: Session) -> tuple[int, int]:
             mots_cles = [mot.strip() for mot in mots.split(",") if mot.strip()]
             metier = db.scalar(select(Metier).where(Metier.code == code))
             if metier is None:
-                db.add(Metier(categorie_id=categorie.id, code=code, nom=nom, mots_cles=mots_cles))
+                db.add(Metier(categorie_id=categorie.id, code=code, nom=nom, mots_cles=mots_cles,
+                              siret_obligatoire=code not in sans_siret))
                 ajouts += 1
             else:
                 metier.categorie_id, metier.nom, metier.mots_cles = categorie.id, nom, mots_cles
+                metier.siret_obligatoire = code not in sans_siret
             total += 1
     return ajouts, total
 

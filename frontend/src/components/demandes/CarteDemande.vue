@@ -70,11 +70,13 @@ async function repondre() {
         {{ demande.nombre_photos }} photo{{ demande.nombre_photos > 1 ? 's' : '' }} (connectez-vous pour les voir)
       </AppBadge>
     </div>
-    <div v-if="demande.conversation_id || demande.peut_repondre || (compte?.prestataire_id && demande.complete && !demande.a_moi) || $slots.default" class="flex flex-wrap gap-2">
+    <div v-if="demande.conversation_id || demande.peut_repondre || demande.raison_verrou || (compte?.prestataire_id && demande.complete && !demande.a_moi) || $slots.default" class="flex flex-wrap gap-2">
       <AppBouton v-if="demande.conversation_id" variante="secondaire" @click="routeur.push(`/messages/${demande.conversation_id}`)">
         Voir la conversation
       </AppBouton>
       <AppBouton v-else-if="demande.peut_repondre" :occupe="occupe" @click="repondre">Répondre</AppBouton>
+      <!-- Prestataire sans SIRET : métier qui en demande un, adresse ou case manquante, plafond de l'année atteint -->
+      <AppBouton v-else-if="demande.raison_verrou" variante="verrouille" :raison-verrou="demande.raison_verrou">Répondre</AppBouton>
       <AppBouton
         v-else-if="compte?.prestataire_id && demande.complete && !demande.a_moi"
         variante="verrouille"
