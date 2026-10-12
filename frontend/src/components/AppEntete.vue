@@ -6,10 +6,12 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { messageErreur } from '../api'
 import { useCompte } from '../composables/useCompte'
+import { useInstallation } from '../composables/useInstallation'
 import { useMenu } from '../composables/useMenu'
 import { useMessage } from '../composables/useMessage'
 import { useNonLus } from '../composables/useNonLus'
 import AppBouton from './ui/AppBouton.vue'
+import AppFenetre from './ui/AppFenetre.vue'
 
 const menuOuvert = ref(false)
 const compteOuvert = ref(false)
@@ -32,6 +34,14 @@ const liensCompte = computed(() => [
   // Visible seulement des administrateurs (lot 1.4)
   ...(compte.value?.est_administrateur ? [{ vers: '/administration', texte: 'Administration' }] : []),
 ])
+// [Installer rafals] (RM-APPLICATION) : un clic installe (Android, ordinateur) ou explique les deux gestes (iPhone)
+const { facon: faconInstaller, installer } = useInstallation()
+const gestesApple = ref(false)
+async function installerRafals() {
+  if (faconInstaller.value === 'apple') gestesApple.value = true
+  else if (await installer()) afficherMessage('rafals est installé sur cet appareil.')
+}
+
 const initiales = computed(() => `${compte.value?.prenom[0] ?? ''}${compte.value?.nom[0] ?? ''}`.toUpperCase())
 const surCompte = computed(() => liensCompte.value.some((lien) => estSur(lien.vers)))
 
@@ -130,6 +140,7 @@ async function deconnexion() {
               >
                 {{ lien.texte }}
               </RouterLink>
+              <AppBouton v-if="faconInstaller" variante="secondaire" pleine-largeur @click="installerRafals">Installer rafals</AppBouton>
               <AppBouton variante="secondaire" pleine-largeur @click="deconnexion">Se déconnecter</AppBouton>
             </div>
           </div>
@@ -137,5 +148,15 @@ async function deconnexion() {
         </div>
       </nav>
     </div>
+    <AppFenetre :ouverte="gestesApple" titre="Installer rafals sur votre iPhone" @fermer="gestesApple = false">
+      <ol class="flex list-decimal flex-col gap-2 pl-5 text-texte">
+        <li>En bas de l'écran de Safari, touchez le bouton <b>Partager</b> (un carré avec une flèche vers le haut).</li>
+        <li>Faites défiler, puis touchez <b>« Sur l'écran d'accueil »</b>.</li>
+        <li>Touchez <b>Ajouter</b> : l'icône rafals apparaît à côté de vos autres applications.</li>
+      </ol>
+      <template #pied>
+        <AppBouton @click="gestesApple = false">J'ai compris</AppBouton>
+      </template>
+    </AppFenetre>
   </header>
 </template>
