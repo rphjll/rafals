@@ -19,6 +19,7 @@ from app.services import messagerie
 from app.services import paiements as service_paiements
 from app.services import particuliers
 from app.services import propositions as service
+from app.services import signalements
 
 routeur = APIRouter(prefix="/api")
 
@@ -205,6 +206,19 @@ def repondre(demande_id: int, db: Base, compte: CompteConnecte) -> ReponseFaite:
     conversation = service.repondre(db, mon_profil_ou_404(db, compte), demande_id, maintenant())
     db.commit()
     return ReponseFaite(conversation_id=conversation.id)
+
+
+class MotifSignalement(BaseModel):
+    motif: str
+
+
+@routeur.post("/demandes/{demande_id}/signaler", status_code=201)
+def signaler_la_demande(demande_id: int, donnees: MotifSignalement, db: Base, compte: CompteConnecte) -> dict[str, int]:
+    """Réservé aux prestataires : la demande rejoint les signalements de l'administrateur, qui la laisse ou la cache."""
+    mon_profil_ou_404(db, compte)
+    signalement = signalements.signaler_demande(db, compte, demande_id, donnees.motif, maintenant())
+    db.commit()
+    return {"id": signalement.id}
 
 
 @routeur.post("/demandes/{demande_id}/rouvrir")

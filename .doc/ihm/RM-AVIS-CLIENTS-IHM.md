@@ -35,4 +35,4 @@ Jamais affichés : le nom complet, la ville, l'adresse, le téléphone, le mail,
 - (Fait le 12/10/2026 : dans « Mon activité », la tuile « Mes avis reçus » porte une pastille rouge avec le nombre d'avis arrivés depuis la dernière visite.)
 - Le bouton [Noter Marie D.] sur la ligne du rendez-vous passé dans « Mon agenda › Rendez-vous » (la carte de la conversation le fait déjà).
 - Pour le prestataire : modifier ou retirer son avis depuis l'écran (le serveur sait le faire).
-- Administration : la liste des avis sur un client signalés (le serveur est prêt : `/api/admin/avis-clients-signales`).
+- (Fait le 12/10/2026 : Administration › Avis signalés montre aussi les avis sur un client signalés, avec le badge « avis sur un client, signalé » ; [Le laisser] ou [Le cacher…], le motif part au prestataire qui l'a écrit.)

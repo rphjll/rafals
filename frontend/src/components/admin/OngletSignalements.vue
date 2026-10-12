@@ -17,7 +17,10 @@ interface SignalementAdministre {
   id: number
   cree_le: string
   auteur: string
-  prestataire_id: number
+  prestataire_id: number | null // vide : c'est un client qui est visé (demande ou conversation signalée)
+  demande_id?: number | null
+  demande_titre?: string | null
+  demande_texte?: string | null
   prestataire: string
   prestataire_statut: string
   motif: string
@@ -56,6 +59,12 @@ const bloquer = (s: SignalementAdministre): DemandeTexte => ({
   etiquette: 'Motif', aide: 'ex. « Faux profil »', chemin: `/api/admin/signalements/${s.id}`, cle: 'decision',
   fixes: { action: 'bloquer_prestataire' }, bouton: 'Bloquer', danger: true, reussite: 'Prestataire bloqué.',
 })
+const cacherDemande = (s: SignalementAdministre): DemandeTexte => ({
+  titre: `Cacher « ${s.demande_titre} » ?`,
+  explication: 'La demande disparaît de l’accueil et plus personne ne peut y répondre. Le motif est envoyé au client, jamais le nom de celui qui a signalé.',
+  etiquette: 'Motif', aide: 'ex. « Demande contraire à la loi »', chemin: `/api/admin/signalements/${s.id}`, cle: 'decision',
+  fixes: { action: 'cacher_demande' }, bouton: 'Cacher la demande', danger: true, reussite: 'Demande cachée.',
+})
 const ETATS: Record<string, string> = { actif: 'actif', en_pause: 'en pause', bloque: 'bloqué', arrete: 'arrêté' }
 </script>
 
@@ -64,20 +73,26 @@ const ETATS: Record<string, string> = { actif: 'actif', en_pause: 'en pause', bl
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <AppSection v-if="!liste.length"><p class="text-texte-doux">Aucun signalement à traiter.</p></AppSection>
     <AppSection v-for="s in liste" :key="s.id" :titre="s.prestataire">
-      <template #action><AppBadge etat="attente">prestataire signalé</AppBadge></template>
+      <template #action>
+        <AppBadge etat="attente">{{ s.demande_id ? 'demande signalée' : s.prestataire_id ? 'prestataire signalé' : 'client signalé' }}</AppBadge>
+      </template>
       <dl class="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1 text-[14px]">
         <dt class="text-texte-doux">Signalé par</dt>
         <dd>{{ s.auteur }}, le {{ formaterDateHeure(s.cree_le) }}</dd>
         <dt class="text-texte-doux">Prestataire</dt>
         <dd class="flex flex-wrap items-center gap-2">
           {{ ETATS[s.prestataire_statut] ?? s.prestataire_statut }}<template v-if="s.deja_signale"> · déjà signalé {{ s.deja_signale }} fois</template>
-          <AppBouton variante="secondaire" @click="routeur.push(`/prestataires/${s.prestataire_id}`)">Voir sa page</AppBouton>
+          <AppBouton v-if="s.prestataire_id" variante="secondaire" @click="routeur.push(`/prestataires/${s.prestataire_id}`)">Voir sa page</AppBouton>
         </dd>
       </dl>
+      <p v-if="s.demande_id" class="rounded-rafals bg-fond px-3 py-2 text-[14px]">
+        <b>Demande : {{ s.demande_titre }}</b><br />{{ s.demande_texte }}
+      </p>
       <AppAlerte etat="attente">« {{ s.motif }} »</AppAlerte>
       <div class="flex flex-wrap gap-2">
         <AppBouton variante="secondaire" @click="classer(s)">Rien à faire</AppBouton>
-        <AppBouton v-if="s.prestataire_statut !== 'bloque' && s.prestataire_statut !== 'arrete'" variante="danger" @click="aDecider = bloquer(s)">
+        <AppBouton v-if="s.demande_id" variante="danger" @click="aDecider = cacherDemande(s)">Cacher la demande…</AppBouton>
+        <AppBouton v-else-if="s.prestataire_id && s.prestataire_statut !== 'bloque' && s.prestataire_statut !== 'arrete'" variante="danger" @click="aDecider = bloquer(s)">
           Bloquer le prestataire…
         </AppBouton>
       </div>

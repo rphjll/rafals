@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Administration › Avis signalés (.doc/ihm/RM-ADMINISTRATION-IHM.md ; RM-AVIS.md) : l'avis et la raison du signalement,
-// puis [Le laisser] ou [Le cacher…] avec un motif envoyé au client. Rien n'est effacé.
+// puis [Le laisser] ou [Le cacher…] avec un motif envoyé à celui qui l'a écrit. Rien n'est effacé.
+// Deux sortes d'avis : sur un prestataire (signalé par lui) et, depuis le lot 8.6, sur un client (signalé par lui).
 import { onMounted, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
@@ -15,9 +16,14 @@ import AppSection from '../ui/AppSection.vue'
 
 interface AvisSignale {
   avis: AvisPublic
-  prestataire: string
+  /** La personne notée, qui a signalé l'avis : « Karim Benali » ou « Marie D. » */
+  sur: string
   signalement: string
   signale_le: string
+  /** L'adresse du serveur pour décider : avis sur un prestataire, ou avis sur un client */
+  chemin: string
+  /** Qui reçoit le motif si l'avis est caché */
+  auteur: 'client' | 'prestataire'
 }
 
 const emit = defineEmits<{ maj: [] }>()
@@ -28,7 +34,20 @@ const aCacher = ref<DemandeTexte | null>(null)
 
 async function charger() {
   try {
-    liste.value = await appelerServeur<AvisSignale[]>('/api/admin/avis-signales')
+    const [surPrestataires, surClients] = await Promise.all([
+      appelerServeur<{ avis: AvisPublic; prestataire: string; signalement: string; signale_le: string }[]>('/api/admin/avis-signales'),
+      appelerServeur<{ avis: AvisPublic; client: string; signalement: string; signale_le: string }[]>('/api/admin/avis-clients-signales'),
+    ])
+    liste.value = [
+      ...surPrestataires.map((s) => ({
+        avis: s.avis, sur: s.prestataire, signalement: s.signalement, signale_le: s.signale_le,
+        chemin: `/api/admin/avis/${s.avis.id}/decision`, auteur: 'client' as const,
+      })),
+      ...surClients.map((s) => ({
+        avis: s.avis, sur: s.client, signalement: s.signalement, signale_le: s.signale_le,
+        chemin: `/api/admin/avis-clients/${s.avis.id}/decision`, auteur: 'prestataire' as const,
+      })),
+    ].sort((a, b) => a.signale_le.localeCompare(b.signale_le))
   } catch (e) {
     erreur.value = messageErreur(e)
   }
@@ -37,7 +56,7 @@ onMounted(charger)
 
 async function laisser(s: AvisSignale) {
   try {
-    await appelerServeur(`/api/admin/avis/${s.avis.id}/decision`, { cacher: false })
+    await appelerServeur(s.chemin, { cacher: false })
     afficherMessage('Avis laissé : le signalement est traité.')
     await charger()
     emit('maj')
@@ -47,10 +66,10 @@ async function laisser(s: AvisSignale) {
 }
 const cacher = (s: AvisSignale): DemandeTexte => ({
   titre: 'Cacher cet avis ?',
-  explication: "Il ne sera plus affiché et sa note ne comptera plus. Le motif est envoyé au client. Rien n'est effacé.",
+  explication: `Il ne sera plus affiché et sa note ne comptera plus. Le motif est envoyé au ${s.auteur} qui l'a écrit. Rien n'est effacé.`,
   etiquette: 'Motif', aide: 'ex. « Accusation grave sans élément »',
-  chemin: `/api/admin/avis/${s.avis.id}/decision`, cle: 'motif', fixes: { cacher: true },
-  bouton: 'Cacher', danger: true, reussite: 'Avis caché : le client est prévenu.',
+  chemin: s.chemin, cle: 'motif', fixes: { cacher: true },
+  bouton: 'Cacher', danger: true, reussite: `Avis caché : le ${s.auteur} est prévenu.`,
 })
 </script>
 
@@ -58,11 +77,13 @@ const cacher = (s: AvisSignale): DemandeTexte => ({
   <div class="flex flex-col gap-4">
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <AppSection v-if="!liste.length"><p class="text-texte-doux">Aucun avis signalé.</p></AppSection>
-    <AppSection v-for="s in liste" :key="s.avis.id" :titre="`Avis sur ${s.prestataire}`">
-      <template #action><AppBadge etat="attente">signalé</AppBadge></template>
+    <AppSection v-for="s in liste" :key="s.chemin" :titre="`Avis sur ${s.sur}`">
+      <template #action>
+        <AppBadge etat="attente">{{ s.auteur === 'prestataire' ? 'avis sur un client, signalé' : 'signalé' }}</AppBadge>
+      </template>
       <AvisAffiche :avis="s.avis" />
       <AppAlerte etat="attente">
-        Signalé par {{ s.prestataire }} le {{ formaterDateHeure(s.signale_le) }} : « {{ s.signalement }} »
+        Signalé par {{ s.sur }} le {{ formaterDateHeure(s.signale_le) }} : « {{ s.signalement }} »
       </AppAlerte>
       <div class="flex flex-wrap gap-2">
         <AppBouton variante="secondaire" @click="laisser(s)">Le laisser</AppBouton>

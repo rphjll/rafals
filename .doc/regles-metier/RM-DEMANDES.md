@@ -68,7 +68,7 @@ Construit : publier, lister sur l'accueil, « mes demandes », modifier, fermer,
 - **Table des photos** : `photo_demande_publiee` (le nom `photo_demande` est déjà pris par les demandes de devis).
 
 ## Précisions prises au lot 8.3, seconde partie (choix de Claude le 07/10/2026, en mode « sans question » ; à relire par Raphael)
-Construit : qui peut répondre, répondre, propositions, négociation du prix, rendez-vous, demande pourvue, rouvrir ; les limites des prestataires sans SIRET (12/10/2026). **Pas encore construit** : cacher une demande (administrateur), un devis en réponse à une demande.
+Construit : qui peut répondre, répondre, propositions, négociation du prix, rendez-vous, demande pourvue, rouvrir ; les limites des prestataires sans SIRET, signaler une demande et la cacher (12/10/2026). **Pas encore construit** : un devis en réponse à une demande.
 - **[Répondre]** : un 2e clic rouvre la même conversation, sans compter une 2e réponse. Une demande complète (10 réponses) reste ouverte à ceux qui ont déjà répondu.
 - **Le lieu d'une proposition vient de la demande** : « chez moi » → le prestataire vient chez le client ; « chez le prestataire » → le client va chez lui (son local doit être rempli dans « Ma fiche »).
 - **Durée proposée** : de 15 minutes à 12 heures. **L'heure** doit être à venir.

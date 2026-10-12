@@ -40,3 +40,6 @@ Pas encore fait : la distance (« à 5 km »), [Signaler] une demande, la note d
 
 ## Note du client sur la carte d'une demande (ajoutée le 12/10/2026, lot 8.6)
 Sous le nom du client : « 5,0 ★ · 1 avis » en orange et le lien « Voir les avis » → `/clients/12/avis` (`RM-AVIS-CLIENTS-IHM.md`). Rien si le client n'a aucun avis.
+
+## [Signaler…] une demande (ajouté le 12/10/2026, lot 8.5)
+Sur la carte d'une demande, pour un prestataire (jamais sur sa propre demande) : bouton secondaire [Signaler…], après [Répondre]. Il ouvre la fenêtre à un seul texte « Signaler « Fuite sous l'évier » » : « Demande fausse, hors sujet ou contraire à la loi : l'administrateur de rafals la regarde. Votre nom n'est pas donné au client. », « Que se passe-t-il ? * » (10 à 1000 caractères) → message « Demande signalée : l'administrateur va regarder. » ; déjà signalée par lui : « Vous l'avez déjà signalée : l'administrateur va regarder. »

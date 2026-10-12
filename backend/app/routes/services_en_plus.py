@@ -12,6 +12,7 @@ from sqlalchemy import func, select
 from app.modeles.comptes import Compte
 from app.modeles.prestataires import Prestataire
 from app.modeles.messagerie import Conversation
+from app.modeles.demandes import Demande
 from app.modeles.signalements import Signalement
 from app.routes.dependances import Administrateur, Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
@@ -222,7 +223,7 @@ class NouveauSignalement(BaseModel):
 
 
 class DecisionSignalement(BaseModel):
-    action: Literal["classer", "bloquer_prestataire", "prevenir"]
+    action: Literal["classer", "bloquer_prestataire", "prevenir", "cacher_demande"]
     decision: str = ""
 
 
@@ -234,6 +235,9 @@ class SignalementAdministre(BaseModel):
     prestataire: str  # ou le nom du client visé
     prestataire_statut: str
     conversation_id: int | None = None  # conversation signalée : l'administrateur peut la lire (lot 8.1)
+    demande_id: int | None = None  # demande signalée par un prestataire (lot 8.5)
+    demande_titre: str | None = None
+    demande_texte: str | None = None
     motif: str
     deja_signale: int  # nombre d'autres signalements sur ce prestataire (traités ou non)
 
@@ -253,6 +257,15 @@ def signalements_a_traiter(db: Base, _admin: Administrateur) -> list[Signalement
     for s in signalements.a_traiter(db):
         auteur = db.get_one(Compte, s.auteur_id)
         prestataire = db.get_one(Prestataire, s.prestataire_id) if s.prestataire_id else None
+        if s.demande_id is not None:  # demande signalée : c'est le client qui l'a publiée qui est visé
+            demande = db.get_one(Demande, s.demande_id)
+            client = db.get_one(Compte, demande.client_id)
+            resultat.append(SignalementAdministre(
+                id=s.id, cree_le=s.cree_le, auteur=f"{auteur.prenom} {auteur.nom}", prestataire_id=None,
+                prestataire=f"{client.prenom} {client.nom} (client)", prestataire_statut="client", motif=s.motif,
+                demande_id=demande.id, demande_titre=demande.titre, demande_texte=demande.description, deja_signale=0,
+            ))
+            continue
         if prestataire is None:  # conversation signalée par le prestataire : le client est visé
             client = db.get_one(Compte, db.get_one(Conversation, s.conversation_id).client_id)
             resultat.append(SignalementAdministre(

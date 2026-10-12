@@ -10,6 +10,7 @@ import { texteNote } from '../../outils/avis'
 import { formaterDate } from '../../outils/dates'
 import { initialesDe } from '../../outils/noms'
 import { type DemandeVisible, REPONSES_MAX, texteBudget, texteQuand } from '../../outils/demandes'
+import FenetreTexte, { type DemandeTexte } from '../FenetreTexte.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
@@ -20,6 +21,22 @@ const { compte } = useCompte()
 const erreur = ref('')
 const occupe = ref(false)
 const initiales = computed(() => initialesDe(props.demande.client))
+
+// [Signaler…] : réservé aux prestataires ; l'administrateur laisse la demande ou la cache
+const aSignaler = ref<DemandeTexte | null>(null)
+function signaler() {
+  aSignaler.value = {
+    titre: `Signaler « ${props.demande.titre} »`,
+    explication: 'Demande fausse, hors sujet ou contraire à la loi : l’administrateur de rafals la regarde. Votre nom n’est pas donné au client.',
+    etiquette: 'Que se passe-t-il ?',
+    aide: 'ex. « Ce n’est pas une vraie demande ». De 10 à 1000 caractères.',
+    chemin: `/api/demandes/${props.demande.id}/signaler`,
+    cle: 'motif',
+    bouton: 'Signaler',
+    danger: true,
+    reussite: 'Demande signalée : l’administrateur va regarder.',
+  }
+}
 
 async function repondre() {
   erreur.value = ''
@@ -75,7 +92,7 @@ async function repondre() {
         {{ demande.nombre_photos }} photo{{ demande.nombre_photos > 1 ? 's' : '' }} (connectez-vous pour les voir)
       </AppBadge>
     </div>
-    <div v-if="demande.conversation_id || demande.peut_repondre || demande.raison_verrou || (compte?.prestataire_id && demande.complete && !demande.a_moi) || $slots.default" class="flex flex-wrap gap-2">
+    <div v-if="demande.conversation_id || demande.peut_repondre || demande.raison_verrou || (compte?.prestataire_id && !demande.a_moi) || (compte?.prestataire_id && demande.complete && !demande.a_moi) || $slots.default" class="flex flex-wrap gap-2">
       <AppBouton v-if="demande.conversation_id" variante="secondaire" @click="routeur.push(`/messages/${demande.conversation_id}`)">
         Voir la conversation
       </AppBouton>
@@ -89,8 +106,10 @@ async function repondre() {
       >
         Répondre
       </AppBouton>
+      <AppBouton v-if="compte?.prestataire_id && !demande.a_moi" variante="secondaire" @click="signaler">Signaler…</AppBouton>
       <slot />
     </div>
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+    <FenetreTexte :demande="aSignaler" @fermer="aSignaler = null" @fait="aSignaler = null" />
   </article>
 </template>

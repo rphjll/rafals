@@ -14,3 +14,9 @@ Une carte par signalement à traiter, le plus ancien d'abord : titre « Annonce 
 - [Retirer l'annonce…] (danger, si l'annonce n'est pas déjà retirée) → fenêtre « Retirer l'annonce « Plomberie » ? » (« Elle ne sera plus visible. Le motif est envoyé à Karim Benali (sans le nom de celui qui a signalé). Rien n'est effacé. » ; « Motif * ») → « Annonce retirée : Karim Benali est prévenu. »
 - [Bloquer le prestataire…] (danger, s'il n'est ni bloqué ni arrêté) → fenêtre « Bloquer Karim Benali ? » (« Son profil et ses annonces disparaissent des recherches, ses rendez-vous à venir sont annulés et ses clients prévenus. Le motif lui est envoyé. » ; « Motif * ») → « Prestataire bloqué. »
 - Vide : « Aucun signalement à traiter. » Le tableau de bord affiche aussi le bouton « 2 signalements ».
+
+## Demande signalée (ajouté le 12/10/2026, lot 8.5)
+Dans Administration › Signalements, une demande signalée par un prestataire a sa carte : titre « Marie Dupont (client) », badge orange « demande signalée », « Signalé par Karim Benali, le 12/10/2026 à 22 h 10 », puis dans un encadré gris le titre et le texte de la demande, puis le motif entre guillemets.
+- [Rien à faire] : le signalement est classé, la demande reste en ligne.
+- [Cacher la demande…] (rouge) : fenêtre « Cacher « Fuite sous l'évier » ? » avec le motif à écrire (5 caractères au moins) → « Demande cachée. » La demande quitte l'accueil ; le client la voit encore dans « Mes demandes » avec le badge rouge « cachée par l'administrateur » et reçoit le motif par mail, jamais le nom de celui qui a signalé.
+- Le badge dit maintenant « prestataire signalé », « client signalé » (conversation) ou « demande signalée » ; [Voir sa page] n'apparaît que pour un prestataire.

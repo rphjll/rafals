@@ -9,13 +9,14 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.comptes import Compte
+from app.modeles.demandes import Demande
 from app.modeles.messagerie import Conversation
 from app.modeles.prestataires import Prestataire
 from app.modeles.signalements import Signalement
 from app.services import journal, mails, prestataires
 from app.services.erreurs import ErreurRegle
 
-ACTIONS = ("classer", "bloquer_prestataire", "prevenir")
+ACTIONS = ("classer", "bloquer_prestataire", "prevenir", "cacher_demande")
 
 
 def signaler(db: Session, auteur: Compte, *, prestataire_id: int | None, motif: str, maintenant: datetime) -> Signalement:
@@ -43,6 +44,30 @@ def signaler(db: Session, auteur: Compte, *, prestataire_id: int | None, motif: 
     return signalement
 
 
+def signaler_demande(db: Session, auteur: Compte, demande_id: int, motif: str, maintenant: datetime) -> Signalement:
+    """Un prestataire signale une demande (fausse, hors sujet, illégale) : l'administrateur la laisse ou la cache.
+    Ex. Karim signale « Travail au noir, pas de facture » : « Il demande de ne rien déclarer »."""
+    motif = (motif or "").strip()
+    mini, maxi = reglages.SIGNALEMENT_MOTIF
+    if not mini <= len(motif) <= maxi:
+        raise ErreurRegle(f"Expliquez le problème en {mini} à {maxi} caractères (ex. « Ce n'est pas une vraie demande »).")
+    demande = db.get(Demande, demande_id)
+    if demande is None or demande.statut != "ouverte" or demande.cachee_le is not None:
+        raise ErreurRegle("Cette demande n'est plus ouverte.", 404)
+    if demande.client_id == auteur.id:
+        raise ErreurRegle("Vous ne pouvez pas signaler votre propre demande.")
+    if db.scalar(select(Signalement.id).where(Signalement.auteur_id == auteur.id, Signalement.demande_id == demande.id,
+                                              Signalement.statut == "a_traiter")) is not None:
+        raise ErreurRegle("Vous l'avez déjà signalée : l'administrateur va regarder.")
+    signalement = Signalement(auteur_id=auteur.id, prestataire_id=None, annonce_id=None, demande_id=demande.id, motif=motif,
+                              cree_le=maintenant, statut="a_traiter")
+    db.add(signalement)
+    db.flush()
+    journal.noter(db, auteur_id=auteur.id, action="signaler", table_cible="signalement", ligne_id=signalement.id,
+                  apres={"demande_id": demande.id}, maintenant=maintenant)
+    return signalement
+
+
 def a_traiter(db: Session) -> list[Signalement]:
     return list(db.scalars(select(Signalement).where(Signalement.statut == "a_traiter").order_by(Signalement.cree_le)))
 
@@ -63,6 +88,17 @@ def traiter(db: Session, administrateur: Compte, signalement_id: int, *, action:
     prestataire = db.get_one(Prestataire, signalement.prestataire_id) if signalement.prestataire_id else None
     if action == "classer":
         decision = decision or "Rien à faire"
+    elif action == "cacher_demande":
+        # La demande disparaît de l'accueil ; le client reçoit le motif, jamais le nom de celui qui a signalé
+        if signalement.demande_id is None:
+            raise ErreurRegle("Ce signalement ne porte pas sur une demande.")
+        if len(decision) < 5:
+            raise ErreurRegle("Écrivez le motif : il est envoyé au client (ex. « Demande contraire à la loi »).")
+        demande = db.get_one(Demande, signalement.demande_id)
+        if demande.cachee_le is None:
+            demande.cachee_le, demande.cachee_motif, demande.cachee_par_id = maintenant, decision[:500], administrateur.id
+        mails.envoyer_mail(db.get_one(Compte, demande.client_id).email, "rafals : votre demande a été cachée",
+                           f"L'administrateur de rafals a caché votre demande « {demande.titre} ». Motif : « {decision} ».")
     elif action == "prevenir":
         # Avertissement par mail à la personne visée par une conversation signalée (lot 8.1)
         if signalement.conversation_id is None:

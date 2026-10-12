@@ -390,3 +390,25 @@ def test_conversation_de_3_ans_videe_mais_gardee_avec_sa_proposition(fabrique_pr
     assert karim.client.get(f"/api/conversations/{conversation}").json()["messages"] == []
     assert [p["id"] for p in propositions_vues(karim, conversation)] == [proposition["id"]]
     assert base.execute(text("SELECT count(*) FROM conversation WHERE id = :id"), {"id": conversation}).scalar_one() == 1
+
+
+def test_signaler_une_demande_puis_l_administrateur_la_cache(fabrique_prestataire, fabrique_compte, fuite, client, mails_envoyes) -> None:  # noqa: F811
+    karim, admin = fabrique_prestataire(), fabrique_compte(administrateur=True)
+
+    trop_court = karim.client.post(f"/api/demandes/{fuite.demande}/signaler", json={"motif": "non"})
+    par_une_cliente = fuite.client.post(f"/api/demandes/{fuite.demande}/signaler", json={"motif": "Je signale ma propre demande."})
+    signalee = karim.client.post(f"/api/demandes/{fuite.demande}/signaler", json={"motif": "Elle demande de ne rien déclarer."})
+    deux_fois = karim.client.post(f"/api/demandes/{fuite.demande}/signaler", json={"motif": "Elle demande de ne rien déclarer."})
+    vue = next(s for s in admin.client.get("/api/admin/signalements").json() if s["id"] == signalee.json()["id"])
+    sans_motif = admin.client.post(f"/api/admin/signalements/{vue['id']}", json={"action": "cacher_demande"})
+    cachee = admin.client.post(f"/api/admin/signalements/{vue['id']}", json={"action": "cacher_demande", "decision": "Demande contraire à la loi."})
+
+    assert trop_court.status_code == 400 and par_une_cliente.status_code == 404  # une cliente n'est pas prestataire
+    assert signalee.status_code == 201 and deux_fois.status_code == 400
+    assert vue["demande_id"] == fuite.demande and vue["demande_titre"] == "Fuite sous l'évier" and vue["prestataire_statut"] == "client"
+    assert sans_motif.status_code == 400 and cachee.status_code == 200 and cachee.json() == {"statut": "suivi"}
+    # Cachée : elle quitte l'accueil ; la cliente la voit encore dans « Mes demandes », marquée cachée, et reçoit le motif
+    assert sur_l_accueil(client, fuite.demande) is None
+    assert next(d for d in fuite.client.get("/api/moi/demandes").json() if d["id"] == fuite.demande)["cachee"] is True
+    recu = [m for m in mails_envoyes if m["a"] == fuite.email and "votre demande a été cachée" in m["sujet"]]
+    assert len(recu) == 1 and "Demande contraire à la loi." in recu[0]["texte"] and "Karim" not in recu[0]["texte"]
