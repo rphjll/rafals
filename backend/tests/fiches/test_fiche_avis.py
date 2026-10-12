@@ -8,7 +8,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.modeles.annonces import Annonce
-from app.modeles.avis import Avis, MotInterdit
+from app.modeles.avis import Avis, AvisClient, MotInterdit
+from app.modeles.prestataires import AlerteCoupee
 from app.modeles.rendez_vous import RendezVous
 from tests.fiches.outils import relire_et_comparer, valeurs
 from tests.fiches.test_fiche_annonce import _supprimer, decor  # noqa: F401 (le décor est une fixture)
@@ -46,12 +47,50 @@ def test_fiche_avis(base: Session, decor) -> None:  # noqa: F811
     base.commit()
     relire_et_comparer(base, Avis, avis.id, modification)
 
+    # L'avis dans l'autre sens (lot 8.5) : le prestataire note le client, mêmes rubriques
+    ajout_client = valeurs(AvisClient, 1, {**liens, "note": 4})
+    avis_client = AvisClient(**ajout_client)
+    base.add(avis_client)
+    base.commit()
+    relire_et_comparer(base, AvisClient, avis_client.id, ajout_client)
+    modification_client = valeurs(AvisClient, 2, {**liens, "note": 1})
+    for rubrique, valeur in modification_client.items():
+        setattr(avis_client, rubrique, valeur)
+    base.commit()
+    relire_et_comparer(base, AvisClient, avis_client.id, modification_client)
+
+    # Le rendez-vous ne disparaît pas tant qu'un avis existe (dans un sens ou dans l'autre)
     base.delete(base.get_one(RendezVous, rdv.id))
     with pytest.raises(IntegrityError):
         base.commit()
     base.rollback()
-    for modele, identifiant in ((Avis, avis.id), (RendezVous, rdv.id), (Annonce, annonce.id)):
+    _supprimer(base, Avis, avis.id)
+    base.delete(base.get_one(RendezVous, rdv.id))
+    with pytest.raises(IntegrityError):
+        base.commit()
+    base.rollback()
+    for modele, identifiant in ((AvisClient, avis_client.id), (RendezVous, rdv.id), (Annonce, annonce.id)):
         _supprimer(base, modele, identifiant)
+
+
+def test_fiche_alerte_coupee(base: Session, decor) -> None:  # noqa: F811
+    """« Ne pas me prévenir » pour un métier : ajout → modification → le prestataire ne disparaît pas → suppression."""
+    _, prestataire, (plombier, electricien), _ = decor
+    ajout = valeurs(AlerteCoupee, 1, {"prestataire_id": prestataire.id, "metier_id": plombier.id})
+    alerte = AlerteCoupee(**ajout)
+    base.add(alerte)
+    base.commit()
+    relire_et_comparer(base, AlerteCoupee, alerte.id, ajout)
+    modification = valeurs(AlerteCoupee, 2, {"prestataire_id": prestataire.id, "metier_id": electricien.id})
+    for rubrique, valeur in modification.items():
+        setattr(alerte, rubrique, valeur)
+    base.commit()
+    relire_et_comparer(base, AlerteCoupee, alerte.id, modification)
+    base.delete(base.get_one(type(prestataire), prestataire.id))
+    with pytest.raises(IntegrityError):
+        base.commit()
+    base.rollback()
+    _supprimer(base, AlerteCoupee, alerte.id)
 
 
 def test_fiche_mot_interdit(base: Session, decor) -> None:  # noqa: F811

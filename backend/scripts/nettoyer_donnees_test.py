@@ -60,9 +60,13 @@ RATTACHEES: dict[str, list[str]] = {
         "DELETE FROM piece_dossier WHERE dossier_id IN (SELECT id FROM dossier_creation WHERE compte_id = :id)",
         "DELETE FROM dossier_creation WHERE compte_id = :id",
         "DELETE FROM avis WHERE client_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
+        # Avis sur les clients et alertes (lot 8.5)
+        "DELETE FROM avis_client WHERE client_id = :id OR cache_par_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
+        "DELETE FROM alerte_coupee WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM mot_interdit WHERE ajoute_par_id = :id",
         # Signalements et rappels URSSAF d'essai (lot 6.3)
         "DELETE FROM signalement WHERE auteur_id = :id OR traite_par_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)"
+        " OR demande_id IN (SELECT d.id FROM demande d WHERE d.client_id = :id)"
         " OR conversation_id IN (SELECT c.id FROM conversation c WHERE c.client_id = :id OR c.prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id))",
         "DELETE FROM rappel_declaration WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         # Déclarations URSSAF et accords d'essai (lot 7.3) : déclarations, puis accords

@@ -28,11 +28,13 @@ def test_fiche_prestataire(base: Session) -> None:
     liens_1 = {"compte_id": compte.id, "metier_principal_id": plombier.id, "commune_id": pessac.id, "photo_id": None,
                "siret": "44306184100047", "siret_statut": "a_verifier", "statut": "en_pause",
                "metier_principal_suivant_id": electricien.id, "agenda_pas_minutes": 15,
-               "annulation_delai_heures": 24, "declaration_periodicite": "mois", "lieu": "chez_moi"}
+               "annulation_delai_heures": 24, "declaration_periodicite": "mois", "lieu": "chez_moi",
+               "alerte_mail": "resume"}
     liens_2 = {"compte_id": compte.id, "metier_principal_id": electricien.id, "commune_id": talence.id, "photo_id": None,
                "siret": None, "siret_statut": "absent", "statut": "actif",
                "metier_principal_suivant_id": None, "agenda_pas_minutes": 30,
-               "annulation_delai_heures": 48, "declaration_periodicite": "trimestre", "lieu": "les_deux"}
+               "annulation_delai_heures": 48, "declaration_periodicite": "trimestre", "lieu": "les_deux",
+               "alerte_mail": "aucun"}
 
     # 1. Ajout, puis relecture
     ajout = valeurs(Prestataire, 1, liens_1)

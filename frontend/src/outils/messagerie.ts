@@ -14,6 +14,9 @@ export interface ConversationResumee {
   apercu: string
   non_lus: number
   bloquee: boolean
+  /** La moyenne de l'autre personne (avis reçus) ; vide sans avis */
+  avec_note: number | null
+  avec_avis: number
 }
 
 export interface MessageVisible {
@@ -107,3 +110,13 @@ export function repeteUneCarte(texte: string): boolean {
 // Prestataire sans SIRET vérifié (RM-PRESTATAIRES.md § « Limites d'un prestataire sans SIRET »)
 export const ETIQUETTE_PARTICULIER = 'Particulier, non professionnel'
 export const AVERTISSEMENT_PARTICULIER = 'Pas de facture, pas de garantie, pas d’assurance professionnelle.'
+
+/** Un rendez-vous tenu entre les deux personnes, encore notable : la carte « Rendez-vous passé » du fil */
+export interface ANoter {
+  rendez_vous_id: number
+  titre: string
+  debut: string
+  jusqu_au: string
+  deja_note: boolean
+  quand: string
+}

@@ -27,3 +27,43 @@ export function etoiles(note: number): string {
 
 export const AVIS_TEXTE_MIN = 10
 export const AVIS_TEXTE_MAX = 1000
+
+// ---------- Avis d'un prestataire sur un client (RM-AVIS.md § « Notation dans les deux sens ») ----------
+
+export const AVIS_CLIENT_TEXTE_MAX = 500
+
+export interface AvisClientPublic {
+  id: number
+  note: number
+  texte: string
+  /** « Karim Benali » */
+  auteur: string
+  mois: string
+  reponse: string | null
+}
+
+/** Un avis que j'ai reçu comme client (« Mes avis reçus ») */
+export interface AvisClientRecu extends AvisClientPublic {
+  rendez_vous_id: number
+  titre: string
+  modifiable_jusqu_au: string
+  retire: boolean
+  cache_motif: string | null
+  signale: boolean
+}
+
+/** La page publique d'un client : « Marie D. », jamais le nom complet */
+export interface ClientPublic {
+  id: number
+  nom: string
+  membre_depuis: string
+  note: number | null
+  nombre_avis: number
+  avis: AvisClientPublic[]
+}
+
+/** « 4,8 ★ · 6 avis » ; sans avis : « Aucun avis pour l'instant » */
+export function texteNote(note: number | null, nombre: number): string {
+  if (!nombre || note === null) return 'Aucun avis pour l’instant'
+  return `${note.toFixed(1).replace('.', ',')} ★ · ${nombre} avis`
+}

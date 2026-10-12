@@ -16,6 +16,7 @@ from app.routes.prestataires import mon_profil_ou_404
 from app.services import absences
 from app.services import paiements as service_paiements
 from app.services import avis as service_avis
+from app.services import avis_clients as service_avis_clients
 from app.services import rendez_vous as service
 
 routeur = APIRouter(prefix="/api")
@@ -96,6 +97,8 @@ class RendezVousVisible(BaseModel):
     absence: Absence | None
     avis: dict | None  # l'avis laissé sur ce rendez-vous (voir routes/avis.py, AvisDetaille)
     peut_noter: bool  # client : rendez-vous tenu, dans les 30 jours, pas encore d'avis
+    avis_client: dict | None = None  # prestataire : l'avis qu'il a laissé sur le client (routes/avis_clients.py)
+    peut_noter_client: bool = False  # prestataire : rendez-vous tenu, dans les 30 jours, client pas encore noté
     autre: dict  # le prestataire (vu par le client) ou le client (vu par le prestataire)
     paiement: dict | None = None  # payé par carte (voir routes/paiements.py, PaiementVisible)
     paye_direct_le: datetime | None = None  # [Payé] : argent reçu hors de rafals (lot 5.5)
@@ -161,6 +164,15 @@ def vu_par_le_client(db: Base, rdv: RendezVous) -> RendezVousVisible:
     )
 
 
+def _avis_client(db: Base, rdv: RendezVous) -> dict | None:
+    """L'avis du prestataire sur le client pour ce rendez-vous (note, texte, réponse…), s'il en a laissé un."""
+    avis = service_avis_clients.du_rendez_vous(db, rdv.id)
+    if avis is None:
+        return None
+    return {"id": avis.id, "note": avis.note, "texte": avis.texte, "reponse": avis.reponse, "retire": avis.retire_le is not None,
+            "cache_motif": avis.cache_motif, "modifiable_jusqu_au": service_avis_clients.service_avis.limite(rdv).isoformat()}
+
+
 def vu_par_le_prestataire(db: Base, prestataire: Prestataire, rdv: RendezVous) -> RendezVousVisible:
     """Le prestataire voit le nom, le téléphone et l'adresse du client seulement selon RM-CLIENTS (3 mois après)."""
     visibles = service.coordonnees_client_visibles(db, prestataire, rdv.client_id, maintenant())
@@ -170,6 +182,7 @@ def vu_par_le_prestataire(db: Base, prestataire: Prestataire, rdv: RendezVous) -
         prix_centimes=rdv.prix_centimes, heures=rdv.heures, lieu=rdv.lieu, adresse=_adresse(db, rdv) if visibles else None,
         mode_paiement=rdv.mode_paiement, statut=rdv.statut, motif=rdv.motif, reponse_avant=rdv.reponse_avant,
         annulable_jusqu_au=None, absence=absence_visible(rdv), avis=_avis(db, rdv), peut_noter=False,
+        avis_client=_avis_client(db, rdv), peut_noter_client=service_avis_clients.peut_noter(db, rdv, maintenant()),
         # RM-RENDEZ-VOUS : chaque prestataire qui reçoit une réservation voit les absences du client
         autre={"client_id": client.id, "nom": f"{client.prenom} {client.nom}" if visibles else "Client",
                "telephone": client.telephone if visibles else None,

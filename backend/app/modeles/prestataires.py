@@ -54,6 +54,12 @@ class Prestataire(Base):
     declaration_periodicite: Mapped[str | None] = mapped_column(Text)
     rendez_vous_bloque_autres_metiers: Mapped[bool] = mapped_column(Boolean, server_default="true")
     activite_occasionnelle_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v26
+    # Alertes des nouvelles demandes (schema_v27, RM-ALERTES)
+    alerte_mail: Mapped[str] = mapped_column(Text, server_default="chaque_demande")
+    demandes_vues_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    alertes_mail_jour: Mapped[date | None] = mapped_column(Date)
+    alertes_mail_nombre: Mapped[int] = mapped_column(Integer, server_default="0")
+    resume_envoye_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     lieu: Mapped[str] = mapped_column(Text, server_default="chez_client")
 
 
@@ -73,3 +79,14 @@ class PhotoPrestataire(Base):
     prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
     fichier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("fichier.id"))
     ordre: Mapped[int] = mapped_column(Integer)
+
+
+class AlerteCoupee(Base):
+    """« Ne pas me prévenir » pour un métier (schema_v27). Pas de ligne = prévenu."""
+
+    __tablename__ = "alerte_coupee"
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
+    metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
+    cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

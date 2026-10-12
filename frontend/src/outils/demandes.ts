@@ -14,6 +14,10 @@ export interface DemandeVisible {
   lieu: 'chez_moi' | 'chez_prestataire'
   budget_centimes: number | null
   client: string
+  client_id: number
+  /** Moyenne des avis laissés par des prestataires ; vide sans avis */
+  client_note: number | null
+  client_avis: number
   cree_le: string
   nombre_photos: number
   a_moi: boolean

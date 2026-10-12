@@ -6,6 +6,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, ErreurServeur, messageErreur } from '../api'
 import FenetreTexte, { type DemandeTexte } from '../components/FenetreTexte.vue'
+import FenetreAvis from '../components/avis/FenetreAvis.vue'
 import CarteProposition from '../components/messagerie/CarteProposition.vue'
 import FenetreProposition from '../components/messagerie/FenetreProposition.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
@@ -16,11 +17,12 @@ import AppPicto from '../components/ui/AppPicto.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 import { useNonLus } from '../composables/useNonLus'
-import { formaterDateHeure } from '../outils/dates'
+import { texteNote } from '../outils/avis'
+import { formaterDate, formaterDateHeure } from '../outils/dates'
 import { type DemandeVisible, texteBudget, texteQuand } from '../outils/demandes'
 import { initialesDe } from '../outils/noms'
 import {
-  type ConversationResumee, type ConversationVisible, type MessageVisible, type PropositionVisible, repeteUneCarte,
+  type ANoter, type ConversationResumee, type ConversationVisible, type MessageVisible, type PropositionVisible, repeteUneCarte,
 } from '../outils/messagerie'
 
 const PHOTOS_MAX = 5
@@ -37,6 +39,10 @@ const liste = ref<ConversationResumee[] | null>(null)
 const conversation = ref<ConversationVisible | null>(null)
 const propositions = ref<PropositionVisible[]>([])
 const demandes = ref<DemandeVisible[]>([])
+// Rendez-vous passés entre nous deux, encore notables : une carte « Comment ça s'est passé ? » dans le fil
+const aNoter = ref<ANoter[]>([])
+const cibleAvis = ref<{ rendezVousId: number; avis: null; prestataire: string; quoi: string; versClient: boolean } | null>(null)
+const joursRestants = (jusquAu: string) => Math.max(0, Math.ceil((new Date(jusquAu).getTime() - Date.now()) / 86400000))
 const erreur = ref('')
 
 const texte = ref('')
@@ -53,13 +59,14 @@ const plusOuvert = ref(false)
 const aSignaler = ref<DemandeTexte | null>(null)
 
 // Messages et propositions mêlés, du plus ancien au plus récent
-type Element = { cle: string; quand: string; message?: MessageVisible; proposition?: PropositionVisible }
+type Element = { cle: string; quand: string; message?: MessageVisible; proposition?: PropositionVisible; noter?: ANoter }
 const fil = computed<Element[]>(() => {
   const messages = (conversation.value?.messages ?? [])
     .filter((m) => !(m.genre === 'information' && repeteUneCarte(m.texte)))
     .map((m) => ({ cle: `m${m.id}`, quand: m.cree_le, message: m }))
   const cartes = propositions.value.map((p) => ({ cle: `p${p.id}`, quand: p.cree_le, proposition: p }))
-  return [...messages, ...cartes].sort((a, b) => a.quand.localeCompare(b.quand))
+  const notes = aNoter.value.map((n) => ({ cle: `n${n.rendez_vous_id}`, quand: n.quand, noter: n }))
+  return [...messages, ...cartes, ...notes].sort((a, b) => a.quand.localeCompare(b.quand))
 })
 // Le prestataire propose pour une demande encore ouverte à laquelle il a répondu
 const demandesOuvertes = computed(() => demandes.value.filter((d) => d.peut_repondre))
@@ -73,15 +80,17 @@ async function charger(defiler = false) {
     } else {
       const id = conversationId.value
       const avant = conversation.value?.messages.length ?? 0
-      const [lue, sesPropositions, sesDemandes] = await Promise.all([
+      const [lue, sesPropositions, sesDemandes, sesNotes] = await Promise.all([
         appelerServeur<ConversationVisible>(`/api/conversations/${id}`),
         appelerServeur<PropositionVisible[]>(`/api/conversations/${id}/propositions`),
         appelerServeur<DemandeVisible[]>(`/api/conversations/${id}/demandes`),
+        appelerServeur<ANoter[]>(`/api/conversations/${id}/a-noter`),
       ])
       if (id !== conversationId.value) return // on a changé de page pendant la lecture
       conversation.value = lue
       propositions.value = sesPropositions
       demandes.value = sesDemandes
+      aNoter.value = sesNotes
       if (defiler || lue.messages.length > avant) nextTick(() => basDuFil.value?.scrollIntoView({ block: 'end' }))
       // La liste de gauche, relue après le fil : la conversation ouverte n'y compte plus comme « non lue »
       liste.value = await appelerServeur<ConversationResumee[]>('/api/moi/conversations')
@@ -218,7 +227,19 @@ function signaler() {
               <span class="grid size-11 shrink-0 place-items-center rounded-full bg-primaire-doux font-bold text-primaire" aria-hidden="true">
                 {{ initialesDe(conversation.avec) }}
               </span>
-              <h2 class="mr-auto min-w-0 text-xl font-extrabold">{{ conversation.avec }}</h2>
+              <div class="mr-auto flex min-w-0 flex-col leading-tight">
+                <h2 class="text-xl font-extrabold">{{ conversation.avec }}</h2>
+                <span class="text-[13.5px] text-texte-doux">
+                  {{ texteNote(conversation.avec_note, conversation.avec_avis) }}
+                  <RouterLink
+                    v-if="conversation.avec_avis"
+                    :to="conversation.cote === 'prestataire' ? `/clients/${conversation.client_id}/avis` : `/prestataires/${conversation.prestataire_id}`"
+                    class="ml-1 font-semibold text-primaire underline"
+                  >
+                    Voir les avis
+                  </RouterLink>
+                </span>
+              </div>
               <AppBouton variante="secondaire" @click="plusOuvert = !plusOuvert">Plus…</AppBouton>
               <div v-if="plusOuvert" class="flex w-full flex-wrap justify-end gap-2">
                 <AppBouton variante="secondaire" @click="signaler">Signaler…</AppBouton>
@@ -244,6 +265,24 @@ function signaler() {
                   :avec="conversation.avec"
                   @change="charger(true)"
                 />
+                <div v-else-if="element.noter" class="carte flex flex-col gap-2 p-4" :class="element.noter.deja_note ? 'opacity-80' : ''">
+                  <span class="text-[13px] text-texte-doux">
+                    Rendez-vous passé · {{ element.noter.titre }} · {{ formaterDate(element.noter.debut) }}
+                  </span>
+                  <b>Comment ça s'est passé avec {{ conversation.avec }} ?</b>
+                  <div v-if="element.noter.deja_note"><AppBadge etat="ok">avis laissé</AppBadge></div>
+                  <div v-else class="flex flex-wrap items-center gap-2">
+                    <AppBouton
+                      @click="cibleAvis = {
+                        rendezVousId: element.noter.rendez_vous_id, avis: null, prestataire: conversation.avec,
+                        quoi: `${element.noter.titre} · ${formaterDate(element.noter.debut)}`, versClient: conversation.cote === 'prestataire',
+                      }"
+                    >
+                      Noter {{ conversation.avec }}
+                    </AppBouton>
+                    <span class="text-[13px] text-texte-doux">encore {{ joursRestants(element.noter.jusqu_au) }} jours</span>
+                  </div>
+                </div>
                 <p v-else-if="element.message?.genre === 'information'" class="self-center rounded-full bg-neutre-doux px-3 py-1 text-center text-[13px] text-texte-doux">
                   {{ element.message.texte }}
                 </p>
@@ -338,5 +377,6 @@ function signaler() {
       </template>
     </AppFenetre>
     <FenetreTexte :demande="aSignaler" @fermer="aSignaler = null" @fait="aSignaler = null" />
+    <FenetreAvis :cible="cibleAvis" @fermer="cibleAvis = null" @enregistre="(cibleAvis = null), charger()" />
   </div>
 </template>

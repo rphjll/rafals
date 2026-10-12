@@ -13,6 +13,7 @@ from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune
 from app.routes.dependances import Base, CompteConnecte, CompteOuPersonne, maintenant
 from app import reglages
+from app.services import alertes, avis_clients
 from app.services import demandes as service
 from app.services import prestataires as service_prestataires
 from app.services import propositions as service_propositions
@@ -37,6 +38,9 @@ class DemandeVisible(BaseModel):
     lieu: str
     budget_centimes: int | None
     client: str  # « Marie D. »
+    client_id: int  # pour [Voir les avis] : /clients/12/avis
+    client_note: float | None  # moyenne des avis laissés par des prestataires (ex. 4.8) ; vide sans avis
+    client_avis: int  # nombre d'avis
     cree_le: datetime
     nombre_photos: int
     a_moi: bool
@@ -86,7 +90,9 @@ def _visible(db: Base, compte: Compte | None, demande: Demande) -> DemandeVisibl
     verrou = None
     if prestataire is not None and ma_reponse is None and not peut and service_propositions.demande_sur_l_accueil(demande, maintenant()):
         verrou = service_propositions.raison_verrou(db, prestataire, demande, maintenant())
+    note, nombre_avis = avis_clients.note_de(db, demande.client_id)
     return DemandeVisible(
+        client_id=demande.client_id, client_note=note, client_avis=nombre_avis,
         nombre_reponses=reponses, complete=complete, peut_repondre=peut, raison_verrou=verrou,
         conversation_id=ma_reponse.conversation_id if ma_reponse is not None else None,
         id=demande.id, titre=demande.titre, description=demande.description, metier_id=demande.metier_id,
@@ -141,6 +147,7 @@ async def publier(
     jointes = [Photo(nom_fichier=p.filename or "photo", type_mime=p.content_type or "", contenu=await p.read())
                for p in photos or []]
     demande = service.publier(db, compte, saisie, jointes, maintenant())
+    alertes.prevenir_nouvelle_demande(db, demande, maintenant())  # RM-ALERTES : un mail aux prestataires concernés
     db.commit()
     return _mienne(db, compte, demande)
 

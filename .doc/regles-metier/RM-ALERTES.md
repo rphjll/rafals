@@ -53,6 +53,17 @@ Dans « Mon compte » : « Recevoir les notifications sur ce téléphone » oui 
 - Une notification ne contient jamais le nom complet, le téléphone ni l'adresse : « Nouvelle demande : Fuite sous l'évier, Talence (5 km) ».
 - Une notification de message ne recopie pas le message : « Karim vous a écrit ».
 
+## Précisions prises au lot 8.5 (choix de Claude le 12/10/2026, en mode « sans question » ; à relire par Raphael)
+Construit : le mail à chaque nouvelle demande, les réglages par métier, le résumé de 18 h, le plafond de 20, le compteur de « Demandes près de chez moi » (côté serveur), les mails des étapes d'une proposition. **Pas encore construit** : les notifications sur le téléphone (lot 8.7), la pastille rouge à l'écran, le réglage du client.
+- **Le mail d'une nouvelle demande** a pour objet « rafals : nouvelle demande, Fuite sous l'évier, Talence (5 km) » ; il ne contient ni nom, ni téléphone, ni adresse. La distance est celle entre les centres des deux villes, arrondie au kilomètre.
+- **Un prestataire sans SIRET n'est pas prévenu** d'une demande d'un métier qui demande un SIRET : il ne pourrait pas y répondre (`RM-PRESTATAIRES.md`, limites sans SIRET).
+- **Le résumé de 18 h** part une fois par jour, à partir de 18 h (heure de Paris), seulement s'il y a au moins une demande. Il liste les demandes du jour encore ouvertes. Pour celui qui a choisi « un mail à chaque demande » et dépassé 20 mails, il ne liste que les demandes en trop.
+  - Exemple 1 : Julie a choisi le résumé ; 15 demandes dans la journée → 1 mail à 18 h avec les 15.
+  - Exemple 2 : Karim reçoit un mail par demande ; 23 demandes → 20 mails, puis à 18 h un mail avec les 3 dernières.
+- **Le résumé ne compte pas les demandes publiées avant l'inscription du prestataire.**
+- **Mails ajoutés aux étapes d'une proposition** (tableau « Ce qui déclenche une notification ») : « Karim Benali a répondu à votre demande », « Karim Benali vous fait une proposition », « Marie D. vous propose un autre prix », « Karim Benali accepte votre prix », « Karim Benali garde son prix ». Ils disent seulement ce qui s'est passé et renvoient à « Messages ». La proposition acceptée garde le mail « rendez-vous confirmé » qui existait.
+- **Le compteur rouge** compte les demandes de ses métiers et de son rayon arrivées depuis sa dernière visite de « Demandes près de chez moi », même pour un métier où il a choisi « Ne pas me prévenir ».
+
 ## Qui peut faire quoi
 | Action | Qui | Condition |
 |---|---|---|

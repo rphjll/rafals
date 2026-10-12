@@ -16,8 +16,9 @@ from app.db import moteur
 from app.routes import (
     accords, activite, administration, agenda, avis, clients, comptes, creation_entreprise, demandes, devis, factures, messagerie, metiers,
     paiements, propositions,
-    prestataires, recherche, rendez_vous, services_en_plus,
+    prestataires, recherche, rendez_vous, services_en_plus, avis_clients,
 )
+from app.services import alertes as service_alertes
 from app.services import avis as service_avis
 from app.services import clients as service_clients
 from app.services import creation_entreprise as service_creation
@@ -94,6 +95,10 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
             "demandes et propositions (expirations, rappels)", reglages.TACHE_DEMANDES_MINUTES * 60,
             _dans_une_session(service_propositions.traiter),
         )),
+        # Résumé de 18 h des demandes du jour, pour les prestataires qui l'ont choisi (lot 8.5)
+        asyncio.create_task(_tache_periodique(
+            "alertes (résumé de 18 h)", 15 * 60, _dans_une_session(service_alertes.envoyer_resumes),
+        )),
         # Devis sans réponse après « Valable jusqu'au », rappels du solde (lot 5.3)
         asyncio.create_task(_tache_periodique(
             "devis (expirations, rappels du solde)", 60 * 60, _dans_une_session(service_devis.traiter),
@@ -130,6 +135,7 @@ app.include_router(agenda.routeur)
 app.include_router(recherche.routeur)
 app.include_router(rendez_vous.routeur)
 app.include_router(avis.routeur)
+app.include_router(avis_clients.routeur)
 app.include_router(clients.routeur)
 app.include_router(paiements.routeur)
 app.include_router(devis.routeur)

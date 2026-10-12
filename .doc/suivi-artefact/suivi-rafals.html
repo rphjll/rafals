@@ -54,12 +54,12 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
     <h1>Suivi de rafals<i>.</i></h1>
     <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 12/10/2026. 67 lots, du niveau 0 au niveau 11, et 3 tâches hors lot.</p>
   </div>
-  <div class="barre" role="img" aria-label="46 faits, 13 à vérifier, 2 en cours, 9 à faire">
-    <span class="fait" style="width:65.71428571428571%"></span><span class="verifier" style="width:18.571428571428573%"></span><span class="cours" style="width:2.857142857142857%"></span><span class="faire" style="width:12.857142857142856%"></span>
+  <div class="barre" role="img" aria-label="46 faits, 15 à vérifier, 2 en cours, 7 à faire">
+    <span class="fait" style="width:65.71428571428571%"></span><span class="verifier" style="width:21.428571428571427%"></span><span class="cours" style="width:2.857142857142857%"></span><span class="faire" style="width:10%"></span>
   </div>
   <div class="filtres" role="group" aria-label="Montrer seulement un état">
     <button type="button" data-f="tout" aria-pressed="true">Tout <b>70</b></button>
-    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>9</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>2</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>13</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>46</b></button>
+    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>7</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>2</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>15</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>46</b></button>
   </div>
   <p class="doux" id="vide" hidden>Aucun lot dans cet état.</p>
   <section><header><h2><span>Hors lot</span>Travail en cours</h2></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="cours">
@@ -295,14 +295,14 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
   <td class="lot">8.4</td>
   <td><span class="titre">Mes demandes, demandes près de chez moi</span><span class="type">Écrans</span><p><b>Fait le 07/10/2026.</b> « Mes demandes » (fermer, prolonger, rouvrir), « Demandes près de chez moi », [Répondre] sur l'accueil, cartes de proposition et de négociation dans la conversation, fenêtre « Faire une proposition ». Modifier une demande à l'écran, tant que personne n'a répondu (12/10/2026)</p></td>
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
-</tr><tr data-etat="faire">
+</tr><tr data-etat="verifier">
   <td class="lot">8.5</td>
-  <td><span class="titre">Alertes, notation du client</span><span class="type">Serveur</span><p>Alertes (réglages par métier, mail à chaque demande / résumé de 18 h / aucun, plafond de 20) ; notation du client par le prestataire ; page publique d'un client ; signalements étendus aux demandes et aux conversations</p></td>
-  <td class="etat"><span class="badge faire">À faire</span></td>
-</tr><tr data-etat="faire">
+  <td><span class="titre">Alertes, notation du client</span><span class="type">Serveur</span><p><b>Fait le 12/10/2026</b> (<code>schema_v27.sql</code>). Alertes (réglages par métier, mail à chaque demande / résumé de 18 h / aucun, plafond de 20, compteur) ; mails des étapes d'une proposition ; notation du client par le prestataire ; page publique d'un client ; « Mes avis reçus ». <b>Reste</b> : signaler une demande et la cacher (administrateur)</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
   <td class="lot">8.6</td>
-  <td><span class="titre">Onglet Alertes, avis reçus</span><span class="type">Écrans</span><p>Onglet « Alertes » ; carte « Rendez-vous passé : noter » dans la conversation ; moyenne + [Voir les avis] à côté de chaque nom ; page publique d'un client ; « Mes avis reçus »</p></td>
-  <td class="etat"><span class="badge faire">À faire</span></td>
+  <td><span class="titre">Onglet Alertes, avis reçus</span><span class="type">Écrans</span><p><b>Fait le 12/10/2026.</b> Page « Alertes » ; carte « Rendez-vous passé : noter » dans la conversation ; moyenne + « Voir les avis » à côté des noms ; page publique d'un client ; « Mes avis reçus ». <b>Reste</b> : pastilles rouges des compteurs, écran d'administration des avis signalés sur un client</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr><tr data-etat="faire">
   <td class="lot">8.7</td>
   <td><span class="titre">Site installable et notifications</span><span class="type">Serveur + Écrans</span><p>Site installable : [Installer rafals], icône, page « Pas de connexion » ; notifications sur l'appareil (accord par appareil, envoi à chaque événement de RM-ALERTES)</p></td>

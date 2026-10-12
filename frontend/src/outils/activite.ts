@@ -30,10 +30,11 @@ export const GROUPES_ACTIVITE: { cle: GroupeActivite; titre: string; titreClient
 
 export const FONCTIONS_ACTIVITE: FonctionActivite[] = [
   { cle: 'demandes-pres', groupe: 'clients', texte: 'Demandes près de chez moi', detail: 'Les clients qui cherchent mon métier', picto: 'repere', pour: 'prestataire', vers: '/demandes-pres-de-chez-moi', sousMenu: true },
-  { cle: 'alertes', groupe: 'clients', texte: 'Alertes', detail: 'Un mail à chaque nouvelle demande', picto: 'cloche', pour: 'prestataire' },
+  { cle: 'alertes', groupe: 'clients', texte: 'Alertes', detail: 'Un mail à chaque nouvelle demande', picto: 'cloche', pour: 'prestataire', vers: '/alertes', sousMenu: true },
   { cle: 'mise-en-avant', groupe: 'clients', texte: 'Être mis en avant', detail: 'Apparaître en premier dans les résultats', picto: 'evenements', pour: 'prestataire' },
 
   { cle: 'mes-demandes', groupe: 'gerer', texte: 'Mes demandes', detail: 'Ce que j’ai publié, et les réponses', picto: 'liste', pour: 'tous', vers: '/mes-demandes', sousMenu: true },
+  { cle: 'mes-avis-recus', groupe: 'gerer', texte: 'Mes avis reçus', detail: 'Ce que les prestataires disent de moi', picto: 'liste', pour: 'tous', vers: '/mes-avis-recus', sousMenu: true },
   // Un seul endroit pour les rendez-vous : le calendrier (la page « Rendez-vous » a été retirée le 07/10/2026)
   { cle: 'agenda-prestataire', groupe: 'gerer', texte: 'Mon agenda', detail: 'Mes rendez-vous, mes horaires, mes jours fermés', picto: 'menu-reservations', pour: 'prestataire', vers: '/mon-agenda', sousMenu: true },
   { cle: 'agenda-client', groupe: 'gerer', texte: 'Mon agenda', detail: 'Le calendrier de mes rendez-vous', picto: 'menu-reservations', pour: 'client', vers: '/mon-agenda', sousMenu: true },

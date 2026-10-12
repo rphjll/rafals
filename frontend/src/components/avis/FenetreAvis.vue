@@ -4,7 +4,7 @@
 import { ref, watch } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
-import { AVIS_TEXTE_MAX, type AvisDetaille } from '../../outils/avis'
+import { AVIS_CLIENT_TEXTE_MAX, AVIS_TEXTE_MAX, type AvisDetaille } from '../../outils/avis'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
@@ -12,7 +12,8 @@ import AppZoneTexte from '../ui/AppZoneTexte.vue'
 
 /** cible : le rendez-vous à noter (nouvel avis) ou l'avis à modifier ; null = fenêtre fermée */
 const props = defineProps<{
-  cible: { rendezVousId: number; avis: AvisDetaille | null; prestataire: string; quoi: string } | null
+  // versClient : c'est le prestataire qui note son client (lot 8.6) ; « prestataire » est alors le nom du client
+  cible: { rendezVousId: number; avis: Pick<AvisDetaille, 'id' | 'note' | 'texte'> | null; prestataire: string; quoi: string; versClient?: boolean } | null
 }>()
 const emit = defineEmits<{ fermer: []; enregistre: [] }>()
 const { afficherMessage } = useMessage()
@@ -40,7 +41,9 @@ async function publier() {
   }
   envoiEnCours.value = true
   try {
-    const chemin = c.avis ? `/api/moi/avis/${c.avis.id}/modifier` : `/api/moi/rendez-vous/${c.rendezVousId}/avis`
+    const chemin = c.versClient
+      ? c.avis ? `/api/moi/prestataire/avis-clients/${c.avis.id}/modifier` : `/api/moi/prestataire/rendez-vous/${c.rendezVousId}/avis-client`
+      : c.avis ? `/api/moi/avis/${c.avis.id}/modifier` : `/api/moi/rendez-vous/${c.rendezVousId}/avis`
     await appelerServeur(chemin, { note: note.value, texte: texte.value })
     afficherMessage(c.avis ? 'Votre avis est modifié.' : 'Merci : votre avis est publié.')
     emit('enregistre')
@@ -78,8 +81,8 @@ async function publier() {
         v-model="texte"
         etiquette="Votre avis"
         obligatoire
-        :maximum="AVIS_TEXTE_MAX"
-        aide="De 10 à 1000 caractères. Signé de votre prénom et de l'initiale de votre nom."
+        :maximum="cible.versClient ? AVIS_CLIENT_TEXTE_MAX : AVIS_TEXTE_MAX"
+        :aide="cible.versClient ? 'De 10 à 500 caractères. Signé de votre nom affiché, visible sur la page publique de ce client.' : 'De 10 à 1000 caractères. Signé de votre prénom et de l’initiale de votre nom.'"
       />
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     </div>

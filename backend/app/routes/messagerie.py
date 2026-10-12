@@ -12,6 +12,8 @@ from app.modeles.messagerie import Conversation, Message
 from app.modeles.prestataires import Prestataire
 from app.routes.dependances import Administrateur, Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
+from app.services import avis as service_avis
+from app.services import avis_clients
 from app.services import messagerie as service
 from app.services import stockage
 from app.services.erreurs import ErreurRegle
@@ -50,6 +52,8 @@ class ConversationResumee(BaseModel):
     apercu: str
     non_lus: int
     bloquee: bool
+    avec_note: float | None = None  # la moyenne de l'autre : avis sur le client, ou avis sur le prestataire
+    avec_avis: int = 0
 
 
 class ConversationVisible(ConversationResumee):
@@ -62,6 +66,16 @@ def _texte(message: Message, masque: bool) -> str:
     return service.masquer(message.texte) if masque and message.genre == "texte" else message.texte
 
 
+def _note_de_l_autre(db: Base, compte: Compte, conversation: Conversation) -> dict:
+    """« Marie D. · 4,8 ★ · 6 avis » pour le prestataire ; « Karim B. · 4,7 ★ · 3 avis » pour le client."""
+    if service.cote(db, compte, conversation) == "prestataire":
+        note, nombre = avis_clients.note_de(db, conversation.client_id)
+    else:
+        somme, nombre = service_avis.notes(db, [conversation.prestataire_id]).get(conversation.prestataire_id, (0, 0))
+        note = round(somme / nombre, 1) if nombre else None
+    return {"avec_note": note, "avec_avis": nombre}
+
+
 def _resumee(db: Base, compte: Compte, conversation: Conversation) -> ConversationResumee:
     messages = service.messages_de(db, conversation)
     dernier = messages[-1] if messages else None
@@ -72,6 +86,7 @@ def _resumee(db: Base, compte: Compte, conversation: Conversation) -> Conversati
         prestataire_id=conversation.prestataire_id, client_id=conversation.client_id,
         dernier_message_le=conversation.dernier_message_le, apercu=apercu[:120],
         non_lus=service.non_lus(db, compte, conversation), bloquee=conversation.bloquee_le is not None,
+        **_note_de_l_autre(db, compte, conversation),
     )
 
 

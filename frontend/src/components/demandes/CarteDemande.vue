@@ -6,6 +6,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
 import { useCompte } from '../../composables/useCompte'
+import { texteNote } from '../../outils/avis'
 import { formaterDate } from '../../outils/dates'
 import { initialesDe } from '../../outils/noms'
 import { type DemandeVisible, REPONSES_MAX, texteBudget, texteQuand } from '../../outils/demandes'
@@ -43,6 +44,10 @@ async function repondre() {
       </span>
       <div class="mr-auto flex min-w-0 flex-col leading-tight">
         <b>{{ demande.client }}</b>
+        <span v-if="demande.client_avis" class="text-[13.5px]">
+          <b class="text-accent">{{ texteNote(demande.client_note, demande.client_avis) }}</b>
+          <RouterLink :to="`/clients/${demande.client_id}/avis`" class="ml-1 font-semibold text-primaire underline">Voir les avis</RouterLink>
+        </span>
         <span class="text-[13.5px] text-texte-doux">{{ demande.ville }} · {{ formaterDate(demande.cree_le) }}</span>
       </div>
       <b v-if="demande.budget_centimes" class="rounded-full bg-primaire px-3.5 py-1 text-[17px] whitespace-nowrap text-primaire-texte tabular-nums">

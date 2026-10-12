@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AccueilPage from './pages/AccueilPage.vue'
 import AdministrationPage from './pages/AdministrationPage.vue'
 import AgendaPage from './pages/AgendaPage.vue'
+import AlertesPage from './pages/AlertesPage.vue'
+import AvisClientPage from './pages/AvisClientPage.vue'
 import ClientPage from './pages/ClientPage.vue'
 import BientotPage from './pages/BientotPage.vue'
 import CataloguePage from './pages/CataloguePage.vue'
@@ -14,6 +16,7 @@ import FacturesPage from './pages/FacturesPage.vue'
 import ConnexionPage from './pages/ConnexionPage.vue'
 import InscriptionPage from './pages/InscriptionPage.vue'
 import MesClientsPage from './pages/MesClientsPage.vue'
+import MesAvisRecusPage from './pages/MesAvisRecusPage.vue'
 import MesDemandesPage from './pages/MesDemandesPage.vue'
 import MessagesPage from './pages/MessagesPage.vue'
 import MonActivitePage from './pages/MonActivitePage.vue'
@@ -47,6 +50,9 @@ export const routeur = createRouter({
     { path: '/messages/:id(\\d+)', name: 'conversation', component: MessagesPage },
     { path: '/mon-activite', name: 'mon-activite', component: MonActivitePage },
     { path: '/mes-clients', name: 'mes-clients', component: MesClientsPage },
+    { path: '/clients/:id(\\d+)/avis', name: 'avis-client', component: AvisClientPage },
+    { path: '/alertes', name: 'alertes', component: AlertesPage },
+    { path: '/mes-avis-recus', name: 'mes-avis-recus', component: MesAvisRecusPage },
     { path: '/clients/:id(\\d+)', name: 'client', component: ClientPage },
     { path: '/mes-demandes', name: 'mes-demandes', component: MesDemandesPage },
     { path: '/demandes-pres-de-chez-moi', name: 'demandes-pres', component: DemandesPresPage },

@@ -13,6 +13,7 @@ from app.modeles.rendez_vous import RendezVous
 from app.routes.demandes import DemandeVisible, MaDemande, _mienne, _visible
 from app.routes.dependances import Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
+from app.services import alertes
 from app.services import demandes as service_demandes
 from app.services import messagerie
 from app.services import paiements as service_paiements
@@ -141,9 +142,61 @@ def cocher_activite_occasionnelle(db: Base, compte: CompteConnecte) -> LimitesVi
 
 @routeur.get("/moi/prestataire/demandes")
 def demandes_pres_de_chez_moi(db: Base, compte: CompteConnecte) -> list[DemandeVisible]:
-    """« Demandes près de chez moi » : celles de mes métiers, dans mon rayon."""
+    """« Demandes près de chez moi » : celles de mes métiers, dans mon rayon. L'ouvrir remet le compteur rouge à zéro."""
     prestataire = mon_profil_ou_404(db, compte)
-    return [_visible(db, compte, d) for d in service.demandes_pour(db, prestataire, maintenant())]
+    liste = [_visible(db, compte, d) for d in service.demandes_pour(db, prestataire, maintenant())]
+    alertes.marquer_vues(prestataire, maintenant())
+    db.commit()
+    return liste
+
+
+@routeur.get("/moi/prestataire/demandes/nouvelles")
+def nouvelles_demandes(db: Base, compte: CompteConnecte) -> dict[str, int]:
+    """Le compteur rouge de « Demandes près de chez moi » : celles arrivées depuis ma dernière visite."""
+    return {"nombre": alertes.nouvelles_demandes(db, mon_profil_ou_404(db, compte), maintenant())}
+
+
+class MetierAlerte(BaseModel):
+    id: int
+    nom: str
+    prevenu: bool  # « Me prévenir » (au départ) ou « Ne pas me prévenir »
+
+
+class AlertesVisibles(BaseModel):
+    alerte_mail: str  # chaque_demande, resume ou aucun
+    metiers: list[MetierAlerte]
+    distance_km: int
+    ville: str
+
+
+class ReglageAlertes(BaseModel):
+    alerte_mail: str
+    metiers_coupes: list[int] = []
+
+
+def _alertes(db: Base, prestataire: Prestataire) -> AlertesVisibles:
+    from app.modeles.prestataires import Commune
+    from app.services import prestataires as service_prestataires
+
+    coupes = alertes.metiers_coupes(db, prestataire)
+    exerces = service_prestataires.metiers_exerces(db, prestataire, maintenant().astimezone(alertes.PARIS).date())
+    return AlertesVisibles(
+        alerte_mail=prestataire.alerte_mail, distance_km=prestataire.distance_km,
+        ville=db.get_one(Commune, prestataire.commune_id).nom,
+        metiers=[MetierAlerte(id=m, nom=db.get_one(Metier, m).nom, prevenu=m not in coupes) for m in exerces])
+
+
+@routeur.get("/moi/prestataire/alertes")
+def mes_alertes(db: Base, compte: CompteConnecte) -> AlertesVisibles:
+    return _alertes(db, mon_profil_ou_404(db, compte))
+
+
+@routeur.post("/moi/prestataire/alertes")
+def regler_mes_alertes(donnees: ReglageAlertes, db: Base, compte: CompteConnecte) -> AlertesVisibles:
+    prestataire = mon_profil_ou_404(db, compte)
+    alertes.regler(db, prestataire, donnees.alerte_mail, donnees.metiers_coupes, maintenant())
+    db.commit()
+    return _alertes(db, prestataire)
 
 
 @routeur.post("/demandes/{demande_id}/repondre", status_code=201)

@@ -33,6 +33,7 @@ const groupes = computed(() => {
 
 // Les chiffres du haut (RM-MON-ACTIVITE.md) : relus à chaque ouverture de la page ; sans eux, la page reste utilisable
 const chiffres = ref<ActiviteChiffree | null>(null)
+const pastilles = ref<Record<string, number>>({})
 const affiches = computed(() =>
   chiffres.value ? chiffresAffiches(chiffres.value, montant, new Date().toLocaleDateString('fr-FR', { month: 'long', timeZone: 'Europe/Paris' })) : [],
 )
@@ -58,6 +59,12 @@ watch(
       chiffres.value = await appelerServeur<ActiviteChiffree>('/api/moi/activite')
     } catch {
       // serveur injoignable : les tuiles suffisent
+    }
+    // Pastilles rouges (RM-ALERTES) : nouvelles demandes près de chez moi, nouveaux avis reçus
+    const nombre = (chemin: string) => appelerServeur<{ nombre: number }>(chemin).then((r) => r.nombre).catch(() => 0)
+    pastilles.value = {
+      'demandes-pres': connecte.prestataire_id ? await nombre('/api/moi/prestataire/demandes/nouvelles') : 0,
+      'mes-avis-recus': await nombre('/api/moi/avis-recus/non-vus'),
     }
   },
   { immediate: true },
@@ -140,6 +147,13 @@ function ouvrir(fonction: FonctionActivite, adresse: string | null) {
               <span class="flex flex-wrap items-center gap-1.5">
                 <b class="text-[17px] leading-tight">{{ tuile.fonction.texte }}</b>
                 <AppBadge v-if="!tuile.adresse" etat="attente">bientôt</AppBadge>
+                <span
+                  v-if="pastilles[tuile.fonction.cle]"
+                  class="rounded-full bg-erreur px-2 py-0.5 text-xs font-bold text-sur-etat"
+                  :aria-label="`${pastilles[tuile.fonction.cle]} nouveau${pastilles[tuile.fonction.cle] > 1 ? 'x' : ''}`"
+                >
+                  {{ pastilles[tuile.fonction.cle] }}
+                </span>
               </span>
               <small class="text-[13.5px] text-texte-doux">{{ tuile.fonction.detail }}</small>
             </span>

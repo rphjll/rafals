@@ -15,7 +15,7 @@ from tests.fiches.test_fiche_annonce import _supprimer, decor  # noqa: F401 (le 
 
 def test_fiche_signalement(base: Session, decor) -> None:  # noqa: F811
     compte, prestataire, _, _ = decor
-    liens = {"auteur_id": compte.id, "prestataire_id": prestataire.id, "annonce_id": None, "conversation_id": None}
+    liens = {"auteur_id": compte.id, "prestataire_id": prestataire.id, "annonce_id": None, "conversation_id": None, "demande_id": None}
     # Valeurs imposées : motif de 10 à 1000 caractères, statut dans la liste, traitement cohérent (date + auteur)
     ajout = valeurs(Signalement, 1, {**liens, "statut": "a_traiter", "traite_par_id": None, "traite_le": None, "decision": None,
                                      "motif": "Prix mensonger, il demande 80 € sur place"})

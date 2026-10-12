@@ -37,3 +37,6 @@ Sous-menu « Mon activité », deuxième onglet ; réservée aux prestataires (m
 3. Liste vide : « Aucune demande ouverte pour vos métiers près de chez vous en ce moment. »
 
 Pas encore fait : la distance (« à 5 km »), [Signaler] une demande, la note du client (lots 8.5 et 8.6).
+
+## Note du client sur la carte d'une demande (ajoutée le 12/10/2026, lot 8.6)
+Sous le nom du client : « 5,0 ★ · 1 avis » en orange et le lien « Voir les avis » → `/clients/12/avis` (`RM-AVIS-CLIENTS-IHM.md`). Rien si le client n'a aucun avis.

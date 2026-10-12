@@ -97,3 +97,15 @@ Demandé par Raphael le 04/10/2026 (« je veux faire le 1,2,3,5,6 »). Sur AlloV
 
 ## Références
 - `GLOSSAIRE-METIER.md`, `RM-CLIENTS.md`, `RM-RECHERCHE.md`, `RM-RENDEZ-VOUS.md`
+
+## Notation dans les deux sens : précisions prises au lot 8.5 (choix de Claude le 12/10/2026, en mode « sans question » ; à relire par Raphael)
+Construit : noter un client, modifier et retirer son avis (serveur), page publique d'un client, « Mes avis reçus » (répondre une fois, signaler), décision de l'administrateur (serveur), la note à côté du nom, la carte « Rendez-vous passé » dans la conversation. Table à part : `avis_client` (elle n'entre jamais dans le classement de la recherche).
+- **Texte d'un avis sur un client** : 10 à 500 caractères ; la réponse du client : 2 à 500.
+- **Le client est prévenu par mail** quand il reçoit un avis (« Karim Benali vous a laissé un avis »), sans recopier l'avis.
+- **Un avis signalé reste affiché** jusqu'à la décision ; **caché**, il ne compte plus dans la moyenne, le client le voit encore dans « Mes avis reçus » avec le motif, et le prestataire qui l'a écrit reçoit le motif par mail.
+- **Un avis retiré par le prestataire** disparaît partout, y compris de « Mes avis reçus ».
+- **Moyenne** : arrondie au dixième (« 4,8 ★ · 6 avis ») ; sans avis : « Aucun avis pour l'instant ».
+- **Adresse de la page publique** : `/clients/12/avis` (et non `/clients/12`, déjà prise par la fiche « Mes clients » du prestataire).
+- **Compte fermé** : la page publique répond « Cette personne n'est pas (ou plus) sur rafals. » ; on ne peut plus la noter.
+- **La carte « noter »** apparaît pour chaque rendez-vous tenu des 30 derniers jours entre les deux personnes ; elle reste, grisée (« avis laissé »), jusqu'à la fin des 30 jours.
+- **Pas encore fait** : écran d'administration des avis sur un client signalés ; modifier ou retirer son avis à l'écran ; ces avis dans « Télécharger mes données ».

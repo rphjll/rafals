@@ -190,3 +190,10 @@ PARTICULIER_PRIX_MAX_CENTIMES = 100_00  # 100 € au plus par proposition
 PARTICULIER_RENDEZ_VOUS_PAR_MOIS = 2  # rendez-vous confirmés dans un même mois du calendrier
 PARTICULIER_TOTAL_CENTIMES = 1000_00  # 1 000 € de rendez-vous qui ont eu lieu…
 PARTICULIER_TOTAL_SUR = timedelta(days=365)  # … sur les 12 derniers mois
+
+# Avis d'un prestataire sur un client (RM-AVIS.md § « Notation dans les deux sens », validé le 04/10/2026)
+AVIS_CLIENT_TEXTE = (10, 500)
+
+# Alertes des nouvelles demandes (RM-ALERTES.md, validé le 04/10/2026)
+ALERTE_MAILS_PAR_JOUR = 20  # au-delà, les demandes suivantes vont dans le résumé du soir
+ALERTE_RESUME_HEURE = 18  # heure de Paris

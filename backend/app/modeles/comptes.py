@@ -25,6 +25,7 @@ class Compte(Base):
     cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     est_administrateur: Mapped[bool] = mapped_column(Boolean, server_default="false")  # schema_v3
     ferme_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v6
+    avis_recus_vus_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v27
     inactivite_prevenue_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v6
 
 

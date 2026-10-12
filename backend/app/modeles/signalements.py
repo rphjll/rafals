@@ -16,6 +16,7 @@ class Signalement(Base):
     prestataire_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("prestataire.id"))  # facultatif depuis schema_v21
     annonce_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("annonce.id"))
     conversation_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("conversation.id"))  # schema_v21
+    demande_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("demande.id"))  # schema_v27
     traite_par_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("compte.id"))
     motif: Mapped[str] = mapped_column(Text)
     cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
