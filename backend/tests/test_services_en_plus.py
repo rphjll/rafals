@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.services import demarches
 from tests.test_absences import passe
 from tests.test_agenda import MARDI, lea  # noqa: F401 (fixtures)
-from tests.test_annonces import AUJOURD_HUI, fabrique_prestataire, menage, metiers, publier, siret_verifie  # noqa: F401
+from tests.test_prestataires import AUJOURD_HUI, fabrique_prestataire, metiers, siret_verifie  # noqa: F401
 from tests.test_paiements import lea_carte, paye, traiter  # noqa: F401 (fixtures)
 from tests.test_rendez_vous import a, dupont, reserver  # noqa: F401 (fixtures)
 
@@ -32,7 +32,7 @@ def test_tableau_de_bord_reserve_a_l_administrateur(paye, dupont, fabrique_compt
 def test_une_absence_contestee_compte_dans_ce_qui_est_a_traiter(lea, dupont, fabrique_compte, base: Session) -> None:  # noqa: F811
     admin = fabrique_compte(administrateur=True)
     avant = admin.client.get("/api/admin/tableau-de-bord").json()["a_traiter"]["absences"]
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()["id"]
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()["id"]
     passe(base, rdv)
     lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv}/absent")
     dupont.client.post(f"/api/moi/rendez-vous/{rdv}/contester", json={"explication": "J'étais là à 10 h, porte fermée."})
@@ -48,7 +48,7 @@ def test_liste_de_tous_les_paiements_par_pages_de_30(paye, lea_carte, dupont, fa
     assert page["par_page"] == 30 and page["total"] >= 1 and len(page["paiements"]) <= 30
     dernier = page["paiements"][0]  # le plus récent d'abord : celui de ce test
     assert (dernier["titre"], dernier["montant_centimes"], dernier["commission_centimes"], dernier["statut"]) == (
-        "Coupe carte", 5000, 250, "paye")
+        "Coiffeur / Coiffeuse", 5000, 250, "paye")
     assert dernier["prestataire"] == "Karim Benali" and dernier["client"] == "Essai ZZTEST"
 
 
@@ -66,7 +66,7 @@ def test_chiffre_a_declarer_ventes_moins_avoirs(lea, dupont, base: Session) -> N
     siret_verifie(base, lea)
     vide = lea.client.get("/api/moi/prestataire/demarches").json()
     for heure in (10, 14):
-        rdv = reserver(dupont, lea.annonce, a(MARDI, heure)).json()["id"]
+        rdv = reserver(dupont, lea, a(MARDI, heure)).json()["id"]
         passe(base, rdv)
         assert lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv}/paye", json={"moyen": "especes"}).status_code == 200
     demarche = lea.client.get("/api/moi/prestataire/demarches").json()
@@ -92,7 +92,7 @@ def test_un_avoir_se_retire_du_chiffre(paye, lea_carte, dupont, base: Session) -
 def test_avec_tva_le_chiffre_est_hors_taxe(lea, dupont, base: Session) -> None:  # noqa: F811
     siret_verifie(base, lea)
     lea.client.post("/api/moi/prestataire/tva", json={"facture_tva": True})
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()["id"]
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()["id"]
     passe(base, rdv)
     lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv}/paye", json={"moyen": "cheque"})
 

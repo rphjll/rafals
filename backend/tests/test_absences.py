@@ -10,7 +10,7 @@ from app import reglages
 from app.modeles.rendez_vous import RendezVous
 from app.services import absences
 from tests.test_agenda import MARDI, heures, lea  # noqa: F401 (fixtures)
-from tests.test_annonces import AUJOURD_HUI, fabrique_prestataire, menage, metiers, publier  # noqa: F401 (fixtures)
+from tests.test_prestataires import AUJOURD_HUI, fabrique_prestataire, metiers  # noqa: F401 (fixtures)
 from tests.test_rendez_vous import a, dupont, reserver, statut  # noqa: F401 (fixtures)
 
 
@@ -31,7 +31,7 @@ def vieillir_signalement(base: Session, rdv_id: int, jours: int) -> None:
 @pytest.fixture
 def rdv_passe(lea, dupont, base: Session):
     """Un rendez-vous confirmé de Mme Dupont chez Léa, dont l'heure est passée."""
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
     passe(base, rdv["id"])
     return rdv["id"]
 
@@ -40,7 +40,7 @@ def rdv_passe(lea, dupont, base: Session):
 
 
 def test_pas_d_absence_avant_l_heure(lea, dupont) -> None:
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
 
     reponse = lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv['id']}/absent")
 
@@ -119,13 +119,13 @@ def test_un_non_administrateur_ne_tranche_pas(dupont) -> None:
 
 def test_trois_absences_un_mois_sans_reserver(lea, dupont, base: Session, client) -> None:
     for heure_ in (9, 10, 11):
-        rdv = reserver(dupont, lea.annonce, a(MARDI, heure_)).json()
+        rdv = reserver(dupont, lea, a(MARDI, heure_)).json()
         passe(base, rdv["id"])
         lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv['id']}/absent")
         vieillir_signalement(base, rdv["id"], 8)
 
     compteur = dupont.client.get("/api/moi/absences").json()
-    refus = reserver(dupont, lea.annonce, a(MARDI, 14))
+    refus = reserver(dupont, lea, a(MARDI, 14))
 
     assert compteur["absences"] == 3 and compteur["reservation_suspendue_jusqu_au"] is not None
     assert refus.status_code == 403 and "ne pouvez plus réserver" in refus.json()["detail"]
@@ -135,7 +135,7 @@ def test_trois_absences_un_mois_sans_reserver(lea, dupont, base: Session, client
 
 
 def test_bloquer_une_periode_avec_un_rendez_vous_choisir(lea, dupont, client, mails_envoyes) -> None:
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
     periode = {"debut": f"{MARDI}T00:00", "fin": f"{MARDI + timedelta(days=1)}T00:00", "motif": "Congés"}
 
     sans_choix = lea.client.post("/api/moi/agenda/blocages", json=periode)
@@ -143,11 +143,11 @@ def test_bloquer_une_periode_avec_un_rendez_vous_choisir(lea, dupont, client, ma
 
     assert sans_choix.status_code == 409 and "annuler ou de les garder" in sans_choix.json()["detail"]
     assert garder.status_code == 200 and statut(dupont, rdv["id"]) == "confirme"
-    assert heures(client, lea.annonce) == []  # tout le reste du jour est bloqué
+    assert heures(lea) == []  # tout le reste du jour est bloqué
 
 
 def test_bloquer_en_annulant_les_rendez_vous(lea, dupont, mails_envoyes) -> None:
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
 
     lea.client.post("/api/moi/agenda/blocages", json={"debut": f"{MARDI}T09:00", "fin": f"{MARDI}T12:00", "rendez_vous": "annuler"})
 
@@ -156,7 +156,7 @@ def test_bloquer_en_annulant_les_rendez_vous(lea, dupont, mails_envoyes) -> None
 
 
 def test_changer_de_semaine_type_avec_un_rendez_vous(lea, dupont) -> None:
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
     sans_mardi = {"plages": [{"jour_semaine": 6, "debut": "09:00", "fin": "12:00"}]}
 
     sans_choix = lea.client.post("/api/moi/agenda/semaine", json=sans_mardi)
@@ -167,7 +167,7 @@ def test_changer_de_semaine_type_avec_un_rendez_vous(lea, dupont) -> None:
 
 
 def test_date_de_fin_d_un_metier_annule_les_rendez_vous_apres(lea, dupont, metiers) -> None:  # noqa: F811
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
 
     lea.client.post("/api/moi/prestataire/metiers/fin", json={"metier_id": metiers["Coiffeur"], "fin_le": AUJOURD_HUI.isoformat()})
 
@@ -175,7 +175,7 @@ def test_date_de_fin_d_un_metier_annule_les_rendez_vous_apres(lea, dupont, metie
 
 
 def test_blocage_par_l_administrateur_annule_les_rendez_vous(lea, dupont, fabrique_compte) -> None:
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
     raphael = fabrique_compte(administrateur=True)
     prestataire_id = lea.client.get("/api/moi/prestataire").json()["id"]
 
@@ -185,7 +185,7 @@ def test_blocage_par_l_administrateur_annule_les_rendez_vous(lea, dupont, fabriq
 
 
 def test_arreter_son_activite_refuse_avec_des_rendez_vous(lea, dupont) -> None:
-    reserver(dupont, lea.annonce, a(MARDI, 10))
+    reserver(dupont, lea, a(MARDI, 10))
 
     reponse = lea.client.post("/api/moi/prestataire/statut", json={"action": "arreter"})
 
@@ -193,7 +193,7 @@ def test_arreter_son_activite_refuse_avec_des_rendez_vous(lea, dupont) -> None:
 
 
 def test_fermer_son_compte_refuse_avec_un_rendez_vous_a_venir(lea, dupont) -> None:
-    reserver(dupont, lea.annonce, a(MARDI, 10))
+    reserver(dupont, lea, a(MARDI, 10))
 
     reponse = dupont.client.post("/api/moi/fermer", json={"mot_de_passe": "MaisonBleue44"})
 
@@ -218,7 +218,7 @@ def test_signaler_seulement_dans_les_7_jours(lea, dupont, rdv_passe, base: Sessi
 
 
 def test_annulations_de_derniere_minute_vues_par_l_administrateur(lea, dupont, base: Session, fabrique_compte) -> None:
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
     # Le rendez-vous a lieu dans 3 h : l'annulation est « de dernière minute »
     base.execute(text("UPDATE rendez_vous SET debut = now() + interval '3 hours', fin = now() + interval '4 hours' WHERE id = :id"),
                  {"id": rdv["id"]})

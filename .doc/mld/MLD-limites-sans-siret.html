@@ -1,0 +1,114 @@
+<title>MLD rafals limites sans SIRET</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1040px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; white-space:nowrap; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+  .note + .note { margin-top:8px; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — limites d'un prestataire sans SIRET</h1>
+    <p class="sous">rafals · proposé le 09/10/2026 · règles validées par Raphael le 09/10/2026 : <code>RM-PRESTATAIRES.md</code> (§ « Limites d'un prestataire sans SIRET »), <code>RM-METIERS-SANS-SIRET.md</code> · aucune table nouvelle, aucune suppression · 2 rubriques ajoutées.</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)<br/>compte_id (FK)<br/>metier_principal_id (FK)<br/>commune_id (FK)"]
+  METIER["<b>METIER</b><br/>id (PK)<br/>categorie_id (FK)"]
+  DEMANDE["<b>DEMANDE</b><br/>id (PK)<br/>client_id (FK)<br/>metier_id (FK)"]
+  PROPOSITION["<b>PROPOSITION</b><br/>id (PK)<br/>conversation_id (FK)<br/>demande_id (FK)<br/>metier_id (FK)"]
+  RENDEZ_VOUS["<b>RENDEZ_VOUS</b><br/>id (PK)<br/>prestataire_id (FK)<br/>proposition_id (FK)<br/>metier_id (FK)"]
+  COMPTE -- "propose ses services · (0,1) —— (1,1)" --- PRESTATAIRE
+  METIER -- "métier principal de · (0,n) —— (1,1)" --- PRESTATAIRE
+  METIER -- "range · (0,n) —— (1,1)" --- DEMANDE
+  METIER -- "range · (0,n) —— (1,1)" --- PROPOSITION
+  PROPOSITION -- "devient · (0,1) —— (0,1)" --- RENDEZ_VOUS
+  PRESTATAIRE -- "assure · (0,n) —— (1,1)" --- RENDEZ_VOUS
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>(1,n)</b><span>un ou plusieurs (pas utilisé dans ce schéma).</span>
+      <b>lecture</b><span>la 1re cardinalité est du côté de la table de gauche. Ex. « METIER range · (0,n) —— (1,1) DEMANDE » : un métier a zéro, une ou plusieurs demandes ; une demande est rangée dans un et un seul métier.</span>
+      <b>à savoir</b><span>toutes ces tables et tous ces liens existent déjà. Le schéma montre seulement où tombent les 2 rubriques ajoutées (METIER et PRESTATAIRE) et les tables que la règle lit pour compter (PROPOSITION, RENDEZ_VOUS).</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ce qui change</h2>
+    <div class="tables">
+      <div class="carte">
+        <h3>METIER <span class="nouveau">1 rubrique ajoutée</span></h3>
+        <ul>
+          <li><code>siret_obligatoire</code> — oui / non. Oui : un prestataire sans SIRET vérifié ne peut pas répondre aux demandes de ce métier.</li>
+          <li>Valeur de départ : <b>oui</b> pour tout métier (donc aussi pour un métier ajouté plus tard) ; puis mise à <b>non</b> pour les 50 métiers « autorisés sans SIRET » de <code>RM-METIERS-SANS-SIRET.md</code>.</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>PRESTATAIRE <span class="nouveau">1 rubrique ajoutée</span></h3>
+        <ul>
+          <li><code>activite_occasionnelle_le</code> — date et heure où il a coché « Mon activité est occasionnelle et je déclare mes revenus aux impôts ». Vide : pas encore cochée.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ce qui ne demande aucune rubrique</h2>
+    <p class="note"><b>100 € au plus par proposition</b> : vérifié au moment où il l'envoie, sur <code>PROPOSITION.prix_centimes</code>.</p>
+    <p class="note"><b>2 rendez-vous par mois</b> : compté dans RENDEZ_VOUS (confirmés, non annulés, dont le jour tombe dans ce mois).</p>
+    <p class="note"><b>1 000 € sur les 12 derniers mois</b> : additionné dans RENDEZ_VOUS (ceux qui ont eu lieu). Rien n'est gardé en double : le total est recalculé à chaque fois, il ne peut donc jamais être faux.</p>
+    <p class="note"><b>Vrai nom et vraie adresse</b> : déjà dans COMPTE (prénom, nom) et dans la table ADRESSE.</p>
+    <p class="note"><b>Étiquette « Particulier, non professionnel »</b> : affichée quand <code>PRESTATAIRE.siret_statut</code> n'est pas « vérifié ». C'est un calcul, pas une rubrique.</p>
+    <p class="note"><b>Les plafonds</b> (100 €, 2, 1 000 €) : des réglages du serveur, modifiables sans toucher à la base.</p>
+    <p class="note"><b>Base actuelle :</b> aucune ligne n'est supprimée ni modifiée, sauf la nouvelle rubrique de METIER, remplie pour les 129 métiers existants.</p>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>METIER</code> « Plombier » : catégorie = Maison &amp; travaux, siret_obligatoire = oui. <code>METIER</code> « Promeneur de chiens » : catégorie = Animaux, siret_obligatoire = non.
+      <p class="trad"><b>Traduction :</b> Karim, sans SIRET, ne voit pas [Répondre] sur « Fuite sous l'évier ». Emma, sans SIRET, peut répondre à « Promener mon chien le midi ».</p>
+    </div>
+    <div class="exemple">
+      <code>PRESTATAIRE</code> Emma : siret_statut = absent, activite_occasionnelle_le = 10/10/2026 à 14 h 05. <code>PRESTATAIRE</code> Léo : siret_statut = absent, activite_occasionnelle_le = vide.
+      <p class="trad"><b>Traduction :</b> Emma a coché la case le 10/10 : elle peut répondre aux demandes autorisées. Léo ne l'a pas cochée : son bouton [Répondre] est verrouillé 🔒 avec la raison.</p>
+    </div>
+    <div class="exemple">
+      <code>RENDEZ_VOUS</code> n° 31 : prestataire = Emma, proposition n° 12, « Promener mon chien le midi », 1500, le 12/10/2026 de 12 h à 12 h 30, confirmé. <code>RENDEZ_VOUS</code> n° 34 : prestataire = Emma, proposition n° 15, 1500, le 20/10/2026, confirmé.
+      <p class="trad"><b>Traduction :</b> Emma a 2 rendez-vous confirmés en octobre. Mme Martin ne peut pas accepter sa proposition pour le 28/10 ; elle peut accepter celle pour le 03/11.</p>
+    </div>
+  </section>
+</div>

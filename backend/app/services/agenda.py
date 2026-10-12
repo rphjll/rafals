@@ -1,5 +1,5 @@
 """Agenda du prestataire : un calendrier par métier (semaine type, fermetures et ouvertures exceptionnelles),
-réglages, horaires libres d'une annonce. Règles : .doc/regles-metier/RM-AGENDA.md (validé le 29/09/2026, refonte du 03/10/2026).
+réglages, horaires libres d'un métier pour une durée. Règles : .doc/regles-metier/RM-AGENDA.md (validé le 29/09/2026, refonte du 03/10/2026).
 « Blocage » dans le code = « fermeture exceptionnelle » à l'écran.
 
 Heures : la semaine type est une heure « de pendule » à Paris (9 h 00 reste 9 h 00 été comme hiver) ;
@@ -13,12 +13,11 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.agenda import Blocage, Ouverture, PlageHoraire
-from app.modeles.annonces import Annonce
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
 from app.services import journal
 from app.services import rendez_vous_communs as communs
-from app.services.annonces import verifier_modifiable
+from app.services.locaux import verifier_modifiable
 from app.services.erreurs import ErreurRegle
 from app.services.prestataires import aujourd_hui, lignes_secondaires, metiers_exerces
 
@@ -335,34 +334,20 @@ def _reglages(p: Prestataire) -> dict:
 # ---------- Horaires libres ----------
 
 
-def duree_reservee(annonce: Annonce, heures: int | None) -> timedelta:
-    """Prix fixe : la durée de l'annonce. À l'heure : les heures choisies par le client, dans les limites (au départ, le minimum).
-    Sur devis : pas d'agenda (demande écrite)."""
-    if annonce.forme_prix == "devis":
-        raise ErreurRegle("Cette annonce est sur devis : pas de rendez-vous, le client écrit sa demande.")
-    if annonce.forme_prix == "heure":
-        heures = annonce.heures_min if heures is None else heures
-        if not (annonce.heures_min or 1) <= heures <= (annonce.heures_max or 1):
-            raise ErreurRegle(f"Choisissez entre {annonce.heures_min} h et {annonce.heures_max} h.")
-        return timedelta(hours=heures)
-    return timedelta(minutes=annonce.duree_minutes or 0)
-
-
 OCCUPENT_L_AGENDA = ("en_attente", "confirme")  # une demande en attente garde l'horaire (RM-RENDEZ-VOUS)
 
 
 def horaires_libres(
-    db: Session, prestataire: Prestataire, annonce: Annonce, jour: date, maintenant: datetime, heures: int | None = None,
-    ignorer_rendez_vous_id: int | None = None,
+    db: Session, prestataire: Prestataire, metier_id: int, duree: timedelta, jour: date, maintenant: datetime,
 ) -> list[datetime]:
-    """Heures de début réservables ce jour-là, dans le calendrier du métier de l'annonce. Ex. Léa, mardi 9 h-12 h, coupe de
-    45 min, pas de 15 min → 9 h 00, 9 h 15 … 11 h 15 (la dernière finit à 12 h). S'ajoutent les ouvertures exceptionnelles.
+    """Heures de début libres ce jour-là dans le calendrier d'un métier, pour un service de cette durée. Sert au
+    prestataire (le client ne voit plus les horaires : RM-AGENDA § « Sans annonces »). Ex. Léa, mardi 9 h-12 h, 45 min,
+    pas de 15 min → 9 h 00, 9 h 15 … 11 h 15 (la dernière finit à 12 h). S'ajoutent les ouvertures exceptionnelles.
     Sont retirés : ce qui est trop tôt (« au plus tôt 2 h avant »), trop loin (« au plus tard 2 mois »), les fermetures,
     et les rendez-vous pris + la pause qui les suit (ceux des autres métiers aussi, si le prestataire l'a réglé ainsi)."""
-    duree = duree_reservee(annonce, heures)
-    if prestataire.statut != "actif" or annonce.statut != "en_ligne":
+    if prestataire.statut != "actif":
         return []
-    if annonce.metier_id not in metiers_exerces(db, prestataire, jour):
+    if metier_id not in metiers_exerces(db, prestataire, jour):
         return []  # métier arrêté ce jour-là (date d'arrêt passée)
     if jour > ajouter_mois(aujourd_hui(maintenant), prestataire.reservation_delai_max_mois):
         return []
@@ -374,9 +359,9 @@ def horaires_libres(
     # Périodes ouvertes : la semaine type de ce jour + les ouvertures exceptionnelles (qui peuvent déborder sur le
     # lendemain : un service commencé à 23 h 30 dans une ouverture sans arrêt peut finir après minuit), fusionnées.
     ouvertes = [(a_paris(jour, p.debut), a_paris(jour, p.fin))
-                for p in plages_de(db, prestataire, annonce.metier_id) if p.jour_semaine == jour.isoweekday()]
+                for p in plages_de(db, prestataire, metier_id) if p.jour_semaine == jour.isoweekday()]
     ouvertes += [(max(o.debut, debut_jour), o.fin) for o in db.scalars(select(Ouverture).where(
-        Ouverture.prestataire_id == prestataire.id, Ouverture.metier_id == annonce.metier_id,
+        Ouverture.prestataire_id == prestataire.id, Ouverture.metier_id == metier_id,
         Ouverture.debut < fin_jour, Ouverture.fin > debut_jour,
     ))]
     fenetres: list[tuple[datetime, datetime]] = []
@@ -393,19 +378,17 @@ def horaires_libres(
     blocages = [
         (b.debut, b.fin) for b in db.scalars(select(Blocage).where(
             Blocage.prestataire_id == prestataire.id, Blocage.debut < fin_jour + duree, Blocage.fin > debut_jour,
-        )) if b.metier_id == annonce.metier_id or (autres_metiers and b.id in travaux)
+        )) if b.metier_id == metier_id or (autres_metiers and b.id in travaux)
     ]
     # Rendez-vous pris (et demandes en attente), avec la pause du prestataire avant et après : un nouveau rendez-vous
     # ne peut ni commencer pendant la pause qui suit, ni finir moins d'une pause avant le suivant.
-    # (ignorer_rendez_vous_id : pour déplacer un rendez-vous, son propre horaire ne compte pas.)
     pause = timedelta(minutes=prestataire.agenda_pause_minutes)
     pris = db.scalars(select(RendezVous).where(
         RendezVous.prestataire_id == prestataire.id, RendezVous.statut.in_(OCCUPENT_L_AGENDA),
         RendezVous.debut < fin_jour + duree + pause, RendezVous.fin > debut_jour - pause,
     ))
     occupes = blocages + [
-        (r.debut - pause, r.fin + pause) for r in pris if r.id != ignorer_rendez_vous_id
-        and (autres_metiers or r.metier_id == annonce.metier_id)
+        (r.debut - pause, r.fin + pause) for r in pris if autres_metiers or r.metier_id == metier_id
     ]
 
     libres: list[datetime] = []

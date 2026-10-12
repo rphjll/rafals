@@ -28,7 +28,7 @@ watch(
 
 // Les entrées principales (« liens ») viennent de useMenu : la barre du bas, sur téléphone, montre les mêmes
 const liensCompte = computed(() => [
-  { vers: '/compte', texte: 'Mon compte' },
+  { vers: '/profil', texte: 'Mon profil' },
   // Visible seulement des administrateurs (lot 1.4)
   ...(compte.value?.est_administrateur ? [{ vers: '/administration', texte: 'Administration' }] : []),
 ])

@@ -11,7 +11,7 @@ from app import config
 from app.services import factures
 from tests.test_absences import passe
 from tests.test_agenda import MARDI, lea  # noqa: F401 (fixtures)
-from tests.test_annonces import AUJOURD_HUI, fabrique_prestataire, menage, metiers, publier, siret_verifie  # noqa: F401
+from tests.test_prestataires import AUJOURD_HUI, fabrique_prestataire, metiers, siret_verifie  # noqa: F401
 from tests.test_devis import accepte_carte, au_debut_des_travaux, envoye, paul, paul_carte  # noqa: F401 (fixtures)
 from tests.test_paiements import lea_carte, paye, traiter  # noqa: F401 (fixtures)
 from tests.test_rendez_vous import a, dupont, reserver  # noqa: F401 (fixtures)
@@ -36,7 +36,7 @@ def test_facture_creee_apres_un_paiement_par_carte(paye, lea_carte, dupont, fabr
     curieux = fabrique_compte().client.get(f"/api/factures/{facture['id']}/pdf")
 
     assert (facture["numero"], facture["sorte"], facture["ttc_centimes"]) == (f"F-{ANNEE}-0001", "vente", 5000)
-    assert facture["moyen_paiement"] == "carte" and facture["objet"].startswith("Coupe carte")
+    assert facture["moyen_paiement"] == "carte" and facture["objet"].startswith("Coiffeur")
     assert facture["acheteur"] == "Essai ZZTEST" and "Karim Benali" in facture["vendeur"]
     assert [f["id"] for f in du_prestataire(lea_carte)] == [facture["id"]]
     assert pdf.status_code == 200 and pdf.headers["content-type"] == "application/pdf" and pdf.content.startswith(b"%PDF-1.4")
@@ -60,7 +60,7 @@ def test_un_remboursement_donne_un_avoir(qui_annule, rendu, paye, lea_carte, dup
 
 
 def test_paye_en_especes_seulement_avec_un_siret(lea, dupont, base: Session) -> None:  # noqa: F811
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()["id"]
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()["id"]
     passe(base, rdv)
     sans_siret = lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv}/paye", json={"moyen": "especes"})
     siret_verifie(base, lea)
@@ -79,7 +79,7 @@ def test_paye_en_especes_seulement_avec_un_siret(lea, dupont, base: Session) -> 
 def test_avec_tva_le_total_reste_le_prix_paye(lea, dupont, base: Session) -> None:  # noqa: F811
     siret_verifie(base, lea)
     lea.client.post("/api/moi/prestataire/tva", json={"facture_tva": True})
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()["id"]
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()["id"]
     passe(base, rdv)
     lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv}/paye", json={"moyen": "cheque"})
 

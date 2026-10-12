@@ -15,7 +15,7 @@ interface TableauDeBord {
     mois: string
     nouveaux_comptes: number
     prestataires_actifs: number
-    annonces_en_ligne: number
+    demandes_ouvertes: number
     rendez_vous: number
     paiements: number
     paiements_centimes: number
@@ -77,7 +77,7 @@ const titreDuMois = computed(() => {
         <h3 class="text-[17px] font-bold">En ce moment</h3>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2.5">
           <AppChiffre titre="Prestataires actifs" :valeur="String(tableau.activite.prestataires_actifs)" />
-          <AppChiffre titre="Annonces en ligne" :valeur="String(tableau.activite.annonces_en_ligne)" />
+          <AppChiffre titre="Demandes ouvertes" :valeur="String(tableau.activite.demandes_ouvertes)" />
         </div>
         <p class="text-[13.5px] text-texte-doux">
           Depuis le 1er du mois. Les paiements comptés sont ceux gardés (ni abandonnés, ni remboursés).

@@ -1,6 +1,6 @@
 // Paiement par carte : types et textes montrés, à un seul endroit (RM-PAIEMENTS.md ; lot 5.2).
 
-import { euros } from './annonces'
+import { euros } from './prix'
 import { jourCourt, aParis } from './agenda'
 import type { BadgeEtat } from './prestataires'
 

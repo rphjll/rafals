@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Carte d'une adresse unique, ajoutée, modifiée ou effacée : adresse du client (Mon compte, RM-CLIENTS.md)
-// et local du prestataire (Mon activité, RM-ANNONCES.md). `chemin` : GET chemin, POST chemin, POST chemin/effacer.
+// et adresse où le prestataire reçoit ses clients (RM-PRESTATAIRES.md). `chemin` : GET chemin, POST chemin, POST chemin/effacer.
 // Les champs eux-mêmes (rue, ville, code postal) sont dans ChampsAdresse.
 import { onMounted, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../api'
@@ -96,7 +96,7 @@ async function effacer() {
     adresse.value = null
     emit('change', null)
   } catch (e) {
-    erreur.value = messageErreur(e) // ex. « Des annonces en ligne ont lieu chez vous… »
+    erreur.value = messageErreur(e) // ex. « Vos clients viennent chez vous : changez d'abord le lieu de vos services… »
   }
 }
 </script>

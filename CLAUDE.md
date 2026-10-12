@@ -80,6 +80,7 @@ Dès la 2ᵉ apparition d'une même logique ou d'un même style, la regrouper à
 
 - `.doc/SUIVI-DEV.md` (pas de Notion, décidé le 28/09/2026) : états ⬜ à faire / 🟡 en cours / 🔎 à vérifier / ✅ fait.
 - Claude met « à vérifier », jamais « fait ». Seul Raphael passe un lot à « fait ». Sans validation explicite, lui demander.
+- Page du suivi (demande de Raphael du 08/10/2026) : après toute modification de `.doc/SUIVI-DEV.md`, dans la même réponse, lancer `node .doc/suivi-artefact/generer.js` puis republier `.doc/suivi-artefact/suivi-rafals.html` sur https://claude.ai/artifact/ArjXcQ9XcV87srh54GYXj6 (même lien, jamais une nouvelle page). Nouveau lot ou tâche hors lot : ajouter d'abord son titre court dans `generer.js` (`TITRES`, `HORS_LOT`).
 - Fin de chaque lot : repasser `.doc/INVARIANTS-TRANSVERSES.md`.
 - Règles métier : lire `.doc/SUIVI_REGLES_METIER.md` avant de répondre sur une règle.
 

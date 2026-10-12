@@ -1,0 +1,371 @@
+<title>Suivi rafals</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&display=swap">
+<style>
+/* Une colonne : résumé et filtres en haut, puis un tableau par niveau. Couleurs de la charte rafals. */
+:root{--fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;--primaire:#2F6B4F;--primaire-texte:#FFFFFF;--primaire-doux:#E2EEE7;--accent:#D9793A;
+  --fait:#2E7D4F;--fait-doux:#E3F2E8;--cours:#B26A00;--cours-doux:#FCF0DC;--verifier:#1D4A72;--verifier-doux:#DCEAF7;--faire:#5D6673;--faire-doux:#E8ECF1;--ombre:0 8px 28px rgba(31,77,56,.10)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --fait:#6CC592;--fait-doux:#17301F;--cours:#F0B35A;--cours-doux:#33260F;--verifier:#93C2EC;--verifier-doux:#17293A;--faire:#9AA5B4;--faire-doux:#262E39;--ombre:0 8px 28px rgba(0,0,0,.35);color-scheme:dark}}
+:root[data-theme="dark"]{--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;
+  --fait:#6CC592;--fait-doux:#17301F;--cours:#F0B35A;--cours-doux:#33260F;--verifier:#93C2EC;--verifier-doux:#17293A;--faire:#9AA5B4;--faire-doux:#262E39;--ombre:0 8px 28px rgba(0,0,0,.35);color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font:500 15px/1.5 Nunito,system-ui,sans-serif;padding-inline:16px;padding-block:28px 56px}
+.page{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,p{margin:0}
+h1{font-weight:900;font-size:clamp(28px,4.5vw,38px);line-height:1.1}
+h1 i{font-style:normal;color:var(--accent)}
+.doux{color:var(--doux)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.barre{display:flex;height:14px;border-radius:99px;overflow:hidden;background:var(--faire-doux)}
+.barre span{display:block}
+.filtres{display:flex;flex-wrap:wrap;gap:8px}
+.filtres button{font:inherit;font-weight:700;min-height:42px;padding:6px 16px;border-radius:99px;border:2px solid transparent;background:var(--surface);color:var(--texte);cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--ombre)}
+.filtres button[aria-pressed="true"]{border-color:var(--primaire);background:var(--primaire-doux)}
+.filtres b{font-weight:900;font-variant-numeric:tabular-nums}
+.point{width:10px;height:10px;border-radius:50%;flex:none}
+section{background:var(--surface);border-radius:20px;box-shadow:var(--ombre);padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+section header{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;justify-content:space-between}
+h2{font-weight:900;font-size:19px;line-height:1.25;text-wrap:balance}
+h2 span{display:block;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--doux)}
+.avance{font-weight:700;color:var(--doux);font-variant-numeric:tabular-nums;white-space:nowrap}
+.defile{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--doux);padding:6px 10px 6px 0}
+td{vertical-align:top;padding:11px 10px 11px 0;border-top:1px solid var(--bord)}
+td:last-child,th:last-child{padding-right:0}
+.lot{font-weight:900;font-size:16px;font-variant-numeric:tabular-nums;white-space:nowrap;width:56px}
+.titre{font-weight:700;font-size:16px;margin-right:8px}
+.type{font-size:12px;font-weight:700;color:var(--doux);border:1px solid var(--bord);border-radius:99px;padding:1px 8px;white-space:nowrap}
+td p{color:var(--doux);font-size:13.5px;line-height:1.45;margin-top:3px;max-width:70ch}
+code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;overflow-wrap:anywhere}
+.etat{width:128px}
+.etat small{display:block;color:var(--doux);font-size:12px;line-height:1.3;margin-top:4px}
+.badge{display:inline-block;border-radius:99px;padding:3px 12px;font-size:13px;font-weight:700;white-space:nowrap}
+.badge.fait,.point.fait{background:var(--fait-doux);color:var(--fait)}
+.badge.cours,.point.cours{background:var(--cours-doux);color:var(--cours)}
+.badge.verifier,.point.verifier{background:var(--verifier-doux);color:var(--verifier)}
+.badge.faire,.point.faire{background:var(--faire-doux);color:var(--faire)}
+.point.fait,.barre .fait{background:var(--fait)}.point.cours,.barre .cours{background:var(--cours)}.point.verifier,.barre .verifier{background:var(--verifier)}.point.faire,.barre .faire{background:var(--faire)}
+@media (max-width:560px){section{padding:14px}.lot{width:44px}.etat{width:auto}td p{display:none}tr.ouvert td p{display:block}.titre{display:block}}
+</style>
+
+<div class="page">
+  <div>
+    <h1>Suivi de rafals<i>.</i></h1>
+    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 12/10/2026. 65 lots, du niveau 0 au niveau 10, et 3 tâches hors lot.</p>
+  </div>
+  <div class="barre" role="img" aria-label="46 faits, 11 à vérifier, 2 en cours, 9 à faire">
+    <span class="fait" style="width:67.64705882352942%"></span><span class="verifier" style="width:16.176470588235293%"></span><span class="cours" style="width:2.941176470588235%"></span><span class="faire" style="width:13.23529411764706%"></span>
+  </div>
+  <div class="filtres" role="group" aria-label="Montrer seulement un état">
+    <button type="button" data-f="tout" aria-pressed="true">Tout <b>68</b></button>
+    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>9</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>2</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>11</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>46</b></button>
+  </div>
+  <p class="doux" id="vide" hidden>Aucun lot dans cet état.</p>
+  <section><header><h2><span>Hors lot</span>Travail en cours</h2></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="cours">
+  <td class="lot">—</td>
+  <td><span class="titre">Simplifier « Mon agenda › Calendrier »</span><span class="type">Écrans</span><p>Maquette F retenue, en pause : à valider par Raphael avant de coder. Aucun fichier du site modifié.</p></td>
+  <td class="etat"><span class="badge cours">En cours</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">—</td>
+  <td><span class="titre">Nouvelle présentation du site (style chaleureux)</span><span class="type">Écrans</span><p>Demande du 04/10/2026. Plusieurs étapes faites, à vérifier à l'écran par Raphael.</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="cours">
+  <td class="lot">—</td>
+  <td><span class="titre">Retrait des annonces</span><span class="type">Serveur + Écrans</span><p>Décision du 04/10/2026. Lots 9.1 à 9.3 faits (à vérifier) ; reste le lot 9.4 : supprimer les tables des annonces, avec l'accord de Raphael.</p></td>
+  <td class="etat"><span class="badge cours">En cours</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 0</span>Amorçage</h2><span class="avance">4 faits sur 4</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <td class="lot">0.1</td>
+  <td><span class="titre">Docker et scripts de démarrage</span><span class="type">Serveur</span><p>Conteneurs Docker (<code>db</code>, <code>backend</code>, <code>frontend</code> ; le « placard » à fichiers plus tard), fichier <code>.env</code> (mots de passe, jamais sur GitHub), <code>demarrer.bat</code>, <code>arreter.bat</code>, <code>sauver.bat</code></p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">0.2</td>
+  <td><span class="titre">Connexion à la base</span><span class="type">Serveur</span><p>Connexion à la base avec les 2 comptes (<code>rafals_user</code>, <code>rafals_app</code>), adresse de contrôle <code>/health</code></p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">0.3</td>
+  <td><span class="titre">Tests et base de test</span><span class="type">Serveur</span><p>Squelette de tests, base <code>rafals_test_db</code>, <code>lancer-tests.bat</code>, <code>nettoyer-donnees-test.bat</code>, <code>restaurer_base.bat</code></p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">0.4</td>
+  <td><span class="titre">Squelette des écrans et charte</span><span class="type">Écrans</span><p>Squelette Vue + Tailwind avec la charte Vert sauge, en-tête + menu ☰, composants <code>AppBouton</code>, <code>AppChamp</code>, <code>AppFenetre</code>, <code>AppBadge</code>, <code>AppMessage</code></p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 1</span>Fondations</h2><span class="avance">4 faits sur 4</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <td class="lot">1.1</td>
+  <td><span class="titre">Comptes : inscription et connexion</span><span class="type">Serveur</span><p>Comptes : inscription, mail de vérification (conteneur de mails de test en local), connexion, rester connecté 30 jours, mot de passe oublié (lien 1 h), blocage après 5 erreurs</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">1.2</td>
+  <td><span class="titre">Pages Inscription, Connexion, Mot de passe oublié</span><span class="type">Écrans</span><p>Pages Inscription, Connexion, Mot de passe oublié</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">1.3</td>
+  <td><span class="titre">Fichiers, âge, administrateurs, journal</span><span class="type">Serveur</span><p>« Placard » à fichiers : Garage (choisi le 28/09/2026). Âge (16 ans) et accord des parents (document déposé), rôle administrateur (jamais retirer le dernier), journal des actions</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">1.4</td>
+  <td><span class="titre">Mon compte et administration des comptes</span><span class="type">Écrans</span><p>Mon compte (premiers éléments, accord des parents) ; Administration : comptes et administrateurs</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 2</span>Objets communs</h2><span class="avance">7 faits sur 7</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <td class="lot">2.1</td>
+  <td><span class="titre">Métiers et catégories</span><span class="type">Serveur</span><p>Métiers et catégories : liste triée (relue par Raphael), mots-clés, recherche sans accents, propositions de métier</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">2.2</td>
+  <td><span class="titre">Choix d'un métier, administration des métiers</span><span class="type">Écrans</span><p>Choix d'un métier (recherche par lettres, dossiers) ; Administration des métiers et des propositions</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">2.3</td>
+  <td><span class="titre">Profil prestataire</span><span class="type">Serveur</span><p>Profil prestataire : « Proposer mes services », métier principal et secondaires, ville + distance (liste officielle des communes avec coordonnées), pause / blocage / arrêt</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">2.4</td>
+  <td><span class="titre">Vérification du SIRET</span><span class="type">Serveur</span><p>Vérification automatique du SIRET (répertoire de l'État), « en attente » si panne</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">2.5</td>
+  <td><span class="titre">Proposer mes services, profil, SIRET</span><span class="type">Écrans</span><p>Proposer mes services / mon profil prestataire / SIRET ; Administration : prestataires, blocage</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">2.6</td>
+  <td><span class="titre">Clients : adresse, données, fermeture du compte</span><span class="type">Serveur</span><p>Clients : adresse, « Télécharger mes données », « Fermer mon compte », comptes inactifs après 3 ans</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">2.7</td>
+  <td><span class="titre">Mon compte : adresse, données, fermeture</span><span class="type">Écrans</span><p>Mon compte : adresse, télécharger mes données, fermer mon compte</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 3</span>Cœur</h2><span class="avance">5 faits sur 5</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <td class="lot">3.0</td>
+  <td><span class="titre">Règles des annonces et de l'agenda</span><span class="type">Règles</span><p>Écrire les règles des sujets 05 Annonces et 06 Agenda, puis découper le niveau 3 en lots</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">3.1</td>
+  <td><span class="titre">Annonces</span><span class="type">Serveur</span><p>Annonces : adresse du local dans le profil ; annonce (titre, métier du profil, prix fixe / à l'heure avec heures min-max / sur devis, durée, lieu, paiement selon le SIRET, description, 5 photos) ; publier, pause, retrait, republier ; 20 en ligne au plus ; date de fin d'un métier (remplace le retrait direct d'un métier)</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">3.2</td>
+  <td><span class="titre">Mes annonces</span><span class="type">Écrans</span><p>Mes annonces (liste, écrire / modifier, photos, pause, retrait, annonces retirées) ; adresse du local et date de fin d'un métier dans « Mon activité » ; aperçu d'une annonce telle que le client la verra</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">3.3</td>
+  <td><span class="titre">Agenda : semaine type, blocages, horaires libres</span><span class="type">Serveur</span><p>Agenda : semaine type (plusieurs plages par jour), blocages de dates, réglages (pas, pause, délais), calcul des horaires libres d'une annonce pour un jour donné</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">3.4</td>
+  <td><span class="titre">Mon agenda</span><span class="type">Écrans</span><p>Mon agenda : semaine type, calendrier (blocages, dates de fin de métier), réglages ; aperçu des horaires libres</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 4</span>Action principale</h2><span class="avance">9 faits sur 9</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <td class="lot">4.0</td>
+  <td><span class="titre">Règles : recherche, rendez-vous, avis</span><span class="type">Règles</span><p>Écrire les règles des sujets 07 Recherche, 08 Rendez-vous, 09 Avis, puis découper le niveau 4</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">4.1</td>
+  <td><span class="titre">Recherche de prestataires</span><span class="type">Serveur</span><p>Recherche : métier + ville dans le rayon, métier principal d'abord, note pondérée, badge « Nouveau », distance, tri « Les plus proches », 4 filtres, pages de 30, métiers voisins si aucun résultat ; page publique d'un prestataire</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">4.2</td>
+  <td><span class="titre">Trouver un prestataire, page publique</span><span class="type">Écrans</span><p>« Trouver un prestataire » : résultats (une carte par prestataire), filtres, tri ; page publique d'un prestataire (profil + annonces)</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">4.3</td>
+  <td><span class="titre">Rendez-vous</span><span class="type">Serveur</span><p>Rendez-vous : réserver (horaire libre, adresse si chez le client, valeurs recopiées), confirmation automatique ou « j'accepte chaque demande », expiration 24 h, refuser, annuler et déplacer (délai du prestataire), annulation par le prestataire avec motif, rappels par mail ; les rendez-vous pris (+ pause) retirés des horaires libres</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">4.4</td>
+  <td><span class="titre">Réserver, mes rendez-vous</span><span class="type">Écrans</span><p>Réserver depuis une annonce ; « Mes rendez-vous » (client) ; rendez-vous du prestataire (liste + calendrier) ; réglages confirmation et délai d'annulation</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">4.5</td>
+  <td><span class="titre">Absences et annulations</span><span class="type">Serveur</span><p>Absences (des deux côtés), contestation sous 7 jours, compteurs, 1 mois sans réserver ; branchement des annulations déjà prévues (blocage, semaine type, date de fin d'un métier, blocage par l'administrateur, fermeture de compte) avec le choix « annuler ou garder »</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">4.6</td>
+  <td><span class="titre">Boutons d'absence, contestations</span><span class="type">Écrans</span><p>Boutons [Client absent] / [N'est pas venu] / [Je suis venu] ; compteurs (Mon compte, page publique) ; Administration › contestations ; fenêtre « annuler ou garder » dans l'agenda</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">4.7</td>
+  <td><span class="titre">Avis</span><span class="type">Serveur</span><p>Avis : 30 jours avec rappel, réponse du prestataire, filtre de gros mots (liste modifiable), signalement, avis caché par l'administrateur ; note pondérée et badge « Nouveau » branchés dans la recherche</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">4.8</td>
+  <td><span class="titre">Laisser un avis, avis signalés</span><span class="type">Écrans</span><p>Laisser / modifier / retirer un avis ; avis sur la page publique ; Administration › avis signalés et liste des gros mots</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 5</span>Argent</h2><span class="avance">7 faits sur 7</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <td class="lot">5.0</td>
+  <td><span class="titre">Règles de l'argent (Stripe, 5 %)</span><span class="type">Règles</span><p>Choix du service de paiement (Stripe), commission (5 %), sujets 10 Devis, 11 Factures, 12 Paiements, puis découper le niveau 5 ; vérification juridique confiée à Raphael (3 points ⚠️ dans les règles)</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">5.1</td>
+  <td><span class="titre">Paiement par carte</span><span class="type">Serveur</span><p>Paiement par carte (Stripe Connect) : relier le compte Stripe du prestataire (avec le mandat de facturation), paiement à la réservation, 5 % pour rafals, versement 48 h après la fin, remboursements (refus, expiration, annulation, absence) avec les frais pour celui qui annule, 48 h pour signaler l'absence du prestataire si payé par carte ; faux Stripe pour les tests</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">5.2</td>
+  <td><span class="titre">Activer la carte, payer, mes paiements</span><span class="type">Écrans</span><p>« Activer le paiement par carte » (prestataire), payer en réservant, remboursements visibles, « Mes paiements »</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">5.3</td>
+  <td><span class="titre">Devis</span><span class="type">Serveur</span><p>Devis : demande écrite avec photos, lignes, TVA (case du profil), arrhes, dates des travaux, [Demander une autre date], accepter / refuser, expiration, [Travail terminé], solde, [Signaler un problème], annulation, [Payé] ; « sur devis » réservé au SIRET</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">5.4</td>
+  <td><span class="titre">Écrans des devis</span><span class="type">Écrans</span><p>Devis côté client et côté prestataire</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">5.5</td>
+  <td><span class="titre">Factures</span><span class="type">Serveur</span><p>Factures : numéros par prestataire, PDF, avoirs, [Payé] pour les rendez-vous en espèces, facture mensuelle des commissions de rafals</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">5.6</td>
+  <td><span class="titre">Mes factures</span><span class="type">Écrans</span><p>« Mes factures » (client et prestataire), télécharger le PDF</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 6</span>Services</h2><span class="avance">5 faits sur 7</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <td class="lot">6.0</td>
+  <td><span class="titre">Règles des services</span><span class="type">Règles</span><p>Sujets 13 à 16 (sites vitrines, aide à la création, démarches, administration), puis découper le niveau 6</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">6.1</td>
+  <td><span class="titre">Chiffres de l'administration, chiffre d'affaires à déclarer</span><span class="type">Serveur</span><p>Sans nouvelle table : chiffres du tableau de bord de l'administration, liste de tous les paiements ; chiffre d'affaires à déclarer par mois et par trimestre (d'après les factures)</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">6.2</td>
+  <td><span class="titre">Tableau de bord, Mes démarches, guide auto-entreprise</span><span class="type">Écrans</span><p>Administration › Tableau de bord et Paiements ; « Mes démarches » ; guide « Créer mon auto-entreprise » (5 étapes)</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">6.3</td>
+  <td><span class="titre">Signalements, rappels URSSAF</span><span class="type">Serveur</span><p>Avec nouvelles tables (MLD à valider) : signalements d'annonces et de prestataires ; choix « chaque mois / chaque trimestre » et rappels URSSAF par mail</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">6.4</td>
+  <td><span class="titre">Signaler, administration des signalements</span><span class="type">Écrans</span><p>[Signaler] sur une annonce et un prestataire ; Administration › Signalements ; réglage et rappels dans « Mes démarches »</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">6.5</td>
+  <td><span class="titre">Sites vitrines</span><span class="type">Serveur</span><p>Sites vitrines (MLD à valider) : adresse choisie, modèle, style, accroche, en ligne / hors ligne, page servie sur le sous-domaine</p></td>
+  <td class="etat"><span class="badge faire">À faire</span><small>reporté (Raphael, 04/10/2026)</small></td>
+</tr><tr data-etat="faire">
+  <td class="lot">6.6</td>
+  <td><span class="titre">Mon site</span><span class="type">Écrans</span><p>« Mon site » (choisir l'adresse, le modèle, le style, aperçu) et le site lui-même (3 modèles × 5 styles)</p></td>
+  <td class="etat"><span class="badge faire">À faire</span><small>reporté (Raphael, 04/10/2026)</small></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 7</span>Démarches par API</h2><span class="avance">4 faits sur 4</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <td class="lot">7.0</td>
+  <td><span class="titre">Règles des démarches par API</span><span class="type">Règles</span><p>Étude des API de l'INPI et de l'URSSAF ; règles de la création d'auto-entreprise par rafals ; « j'ai déjà une entreprise »</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">7.1</td>
+  <td><span class="titre">Dossier de création d'auto-entreprise</span><span class="type">Serveur</span><p>Dossier de création (2 tables, schema_v18 et v19), papiers en PDF, pouvoir et attestation écrits par rafals, envoi au guichet de l'État (faux guichet dans les tests, mode démonstration sans compte INPI), suivi toutes les heures, SIRET ajouté au profil, données sensibles effacées, ajout d'un SIRET existant</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">7.2</td>
+  <td><span class="titre">Créer mon auto-entreprise</span><span class="type">Écrans</span><p>« Créer mon auto-entreprise » : départ, 5 étapes, suivi, correction, « Vous avez déjà une entreprise ? » ; le guide reste</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="fait">
+  <td class="lot">7.3</td>
+  <td><span class="titre">Déclarer à l'URSSAF</span><span class="type">Serveur + Écrans</span><p>Bouton « Déclarer à l'URSSAF » (API Tierce Déclaration), avec un faux URSSAF dans les tests</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 8</span>Comme AlloVoisins</h2><span class="avance">1 fait sur 9</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <td class="lot">8.0</td>
+  <td><span class="titre">Règles « comme AlloVoisins »</span><span class="type">Règles</span><p>Sujets 17 à 21 (demandes, alertes, messagerie, notation dans les deux sens, application à installer), une question à la fois, puis découper le niveau 8</p></td>
+  <td class="etat"><span class="badge fait">Fait</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">8.1</td>
+  <td><span class="titre">Messagerie</span><span class="type">Serveur</span><p>MLD du niveau 8 (une seule validation pour toutes les tables), puis messagerie : conversation par couple client / prestataire, messages, photos, coordonnées masquées avant le premier rendez-vous, filtre des mots interdits et IA, lu / non lu, mail après 15 min, bloquer, signaler</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">8.2</td>
+  <td><span class="titre">Écran Messages</span><span class="type">Écrans</span><p><b>Fait dans la conversation « retrait des annonces » le 07/10/2026.</b> « Messages » (liste, fil relu toutes les 15 s, écrire, photos, bloquer, signaler) ; compteur rouge sur l'entrée « Messages » de l'en-tête. [Écrire à Karim] sur la page publique d'un prestataire</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">8.3a</td>
+  <td><span class="titre">Demandes des clients</span><span class="type">Serveur + Écrans</span><p><b>Fait dans la conversation « retrait des annonces » le 06/10/2026.</b> Demandes : publier (métier, titre, description, adresse avec position, quand, où, budget, 5 photos), liste de l'accueil lue par tous, « mes demandes », modifier, fermer, prolonger, expirer, rappel 3 jours avant ; accueil branché (liste + carte « Publier une demande »)</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">8.3b</td>
+  <td><span class="titre">Répondre à une demande, propositions</span><span class="type">Serveur</span><p><b>Fait le 07/10/2026.</b> Qui peut répondre (métier + rayon) ; répondre (10 au plus) ; proposition, [Accepter] → rendez-vous confirmé, [Refuser], [Négocier le prix], [Retirer] ; demande pourvue, les autres prévenus ; rouvrir après un rendez-vous annulé ; le rendez-vous porte son métier (<code>schema_v23.sql</code>)</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">8.4</td>
+  <td><span class="titre">Mes demandes, demandes près de chez moi</span><span class="type">Écrans</span><p><b>Fait le 07/10/2026.</b> « Mes demandes » (fermer, prolonger, rouvrir), « Demandes près de chez moi », [Répondre] sur l'accueil, cartes de proposition et de négociation dans la conversation, fenêtre « Faire une proposition ». <b>Reste</b> : modifier une demande à l'écran</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">8.5</td>
+  <td><span class="titre">Alertes, notation du client</span><span class="type">Serveur</span><p>Alertes (réglages par métier, mail à chaque demande / résumé de 18 h / aucun, plafond de 20) ; notation du client par le prestataire ; page publique d'un client ; signalements étendus aux demandes et aux conversations</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">8.6</td>
+  <td><span class="titre">Onglet Alertes, avis reçus</span><span class="type">Écrans</span><p>Onglet « Alertes » ; carte « Rendez-vous passé : noter » dans la conversation ; moyenne + [Voir les avis] à côté de chaque nom ; page publique d'un client ; « Mes avis reçus »</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">8.7</td>
+  <td><span class="titre">Site installable et notifications</span><span class="type">Serveur + Écrans</span><p>Site installable : [Installer rafals], icône, page « Pas de connexion » ; notifications sur l'appareil (accord par appareil, envoi à chaque événement de RM-ALERTES)</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 9</span>Retrait des annonces</h2><span class="avance">0 fait sur 4</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="verifier">
+  <td class="lot">9.1</td>
+  <td><span class="titre">Retrait des annonces : ajouts dans la base</span><span class="type">Serveur</span><p>1er fichier SQL, <b>ajouts seulement</b> (PHOTO_PRESTATAIRE, <code>lieu</code> dans PRESTATAIRE, <code>metier_id</code> dans RENDEZ_VOUS et DEMANDE_DEVIS, <code>demande_id</code> dans DEMANDE_DEVIS) ; profil : photos et lieu ; visible dès que le profil est rempli ; recherche sans annonces</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">9.2</td>
+  <td><span class="titre">Rendez-vous par proposition, retrait du code des annonces</span><span class="type">Serveur</span><p><b>Fait le 09/10/2026 par une autre conversation, qui s'est arrêtée sans le noter ni sauvegarder ; relu et vérifié par les tests le 12/10/2026.</b> Rendez-vous seulement par proposition acceptée ; [Demander un devis] depuis le profil ou une demande ; signalements sans annonce ; tableau de bord ; retrait du code et des tests des annonces et de la réservation directe</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">9.3</td>
+  <td><span class="titre">Écrans sans annonces</span><span class="type">Écrans</span><p><b>Fait le 09/10/2026 par une autre conversation, qui s'est arrêtée sans le noter ni sauvegarder ; types vérifiés le 12/10/2026, pas regardé à l'écran.</b> « Mon activité » (photos, lieu) ; page publique ([Écrire à Karim], [Demander un devis]) ; carte de résultat ; retrait de « Mes annonces », du formulaire et de la page d'annonce, de la fenêtre de réservation ; fichiers <code>RM-*-IHM.md</code> ; l'écran « Mon agenda » ne change pas</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">9.4</td>
+  <td><span class="titre">Retrait des annonces : suppressions dans la base</span><span class="type">Serveur + Règles</span><p>2e fichier SQL, <b>suppressions</b> (tables ANNONCE et PHOTO_ANNONCE, <code>annonce_id</code> dans RENDEZ_VOUS, DEMANDE_DEVIS et SIGNALEMENT, <code>confirmation_automatique</code>), après comptage et accord de Raphael ; <code>RM-ANNONCES.md</code> rangé aux archives, ses deux parties encore valables recopiées</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 10</span>Faire ce que fait AlloVoisins</h2><span class="avance">0 fait sur 5</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="verifier">
+  <td class="lot">10.1</td>
+  <td><span class="titre">Chiffres de Mon activité</span><span class="type">Serveur + Écrans</span><p>Chiffres en haut de « Mon activité » : prestataire (demandes près de chez moi, rendez-vous de la semaine, devis en attente, encaissé du mois, encaissé de l'année + barre de la TVA) ; client (demandes en ligne, réponses à lire, rendez-vous à venir)</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">10.2</td>
+  <td><span class="titre">Mes clients</span><span class="type">Serveur + Écrans</span><p>« Mes clients » : les personnes avec qui le prestataire a eu un rendez-vous ou un devis sur rafals (nombre, total, dernier jour)</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">10.3</td>
+  <td><span class="titre">Relance d'un devis</span><span class="type">Serveur</span><p>Relance d'un devis sans réponse : un seul mail au client au bout de 3 jours</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">10.4</td>
+  <td><span class="titre">Ma carte de visite</span><span class="type">Serveur + Écrans</span><p>« Ma carte de visite » : PDF à imprimer (nom, métier, ville, note, carré à scanner vers la page publique)</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">10.5</td>
+  <td><span class="titre">Être mis en avant</span><span class="type">Règles + Serveur + Écrans</span><p>« Être mis en avant » : payer pour apparaître en premier dans les résultats</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr></tbody></table></div></section>
+</div>
+
+<script>
+  // Filtre par état : cache les lignes des autres états, et les niveaux qui n'ont plus de ligne
+  const boutons = document.querySelectorAll('.filtres button')
+  function filtrer(f) {
+    let vus = 0
+    document.querySelectorAll('section').forEach((s) => {
+      let n = 0
+      s.querySelectorAll('tbody tr').forEach((tr) => {
+        tr.hidden = f !== 'tout' && tr.dataset.etat !== f
+        if (!tr.hidden) n++
+      })
+      s.hidden = !n
+      vus += n
+    })
+    document.getElementById('vide').hidden = vus > 0
+    boutons.forEach((b) => b.setAttribute('aria-pressed', b.dataset.f === f))
+  }
+  boutons.forEach((b) => (b.onclick = () => filtrer(b.dataset.f)))
+  // Sur téléphone, la description est repliée : un toucher sur la ligne la montre
+  document.querySelectorAll('tbody tr').forEach((tr) => (tr.onclick = () => tr.classList.toggle('ouvert')))
+</script>

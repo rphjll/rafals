@@ -61,7 +61,7 @@ async function actualiser() {
   <AppSection v-if="accord" titre="Accord de tes parents">
     <template v-if="accord.statut === 'accepte'">
       <div><AppBadge etat="ok">Accepté</AppBadge></div>
-      <p class="text-texte-doux">Tu peux réserver et publier des annonces.</p>
+      <p class="text-texte-doux">Tu peux prendre des rendez-vous et proposer tes services.</p>
     </template>
 
     <template v-else-if="accord.statut === 'en_attente'">
@@ -72,7 +72,7 @@ async function actualiser() {
 
     <template v-else>
       <AppAlerte etat="attente">
-        Tu as {{ age(compte.date_naissance ?? '') }} ans : pour réserver ou publier une annonce, il faut l'accord signé de
+        Tu as {{ age(compte.date_naissance ?? '') }} ans : pour prendre un rendez-vous ou proposer tes services, il faut l'accord signé de
         tes parents, vérifié par rafals.
       </AppAlerte>
       <AppAlerte v-if="accord.statut === 'refuse'">

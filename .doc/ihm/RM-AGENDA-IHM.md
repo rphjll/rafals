@@ -1,6 +1,22 @@
 # Mon agenda — Interface
 
+> **Changé le 09/10/2026** (lot 9.3, retrait des annonces) : dans le détail d'un jour, le bloc « **Ce que voit un client** » (liste des annonces, horaires proposés en pastilles) est retiré, avec le fichier `HorairesClient.vue`. La page ne lit plus les annonces. La fenêtre [Réglages] ne change pas (Raphael, 09/10/2026 : « laisse les pauses entres rdv et tout les reglages tels quel »). Le reste du calendrier ne change pas.
+
 > Fichiers : `frontend/src/pages/AgendaPage.vue` (onglets, choix du métier, chargement) ; dans `frontend/src/components/agenda/` : `OngletCalendrier` (mois, détail des jours, boutons), `FenetrePeriode` (fermeture / ouverture exceptionnelle), `FenetreArret` (date d'arrêt), `FenetreSemaine` (semaine type), `FenetreReglages`, `HorairesClient` (« Ce que voit un client »), `OngletRendezVous`, `OngletPaiements` ; `frontend/src/outils/agenda.ts` (heures, jours, périodes, heures ouvertes d'un jour) ; composants communs `AppOnglets`, `AppSegment`. Construit au lot 3.4 (30/09/2026), **refait le 03/10/2026** (maquette validée : `maquette-refonte-calendrier.html` ; variante dépouillée gardée au cas où : `maquette-calendrier-simple.html`). Règles : `RM-AGENDA.md`, `RM-ANNONCES.md` (date d'arrêt d'un métier).
+
+## Changé le 07/10/2026 (demande de Raphael, voir `RM-RENDEZ-VOUS-IHM.md`)
+« Mon agenda » est maintenant ouvert à tout compte connecté. Ce paragraphe complète « Accès » ci-dessous ; le calendrier par métier, ses onglets, ses couleurs et ses fenêtres ne changent pas.
+- **Un client (sans profil de prestataire)** : titre « Mon agenda », puis le **calendrier du client** (ci-dessous). Pas d'onglets. Présentation du reste du site (style « chaleureux »).
+- **Un prestataire** : comme avant, avec une seule différence dans l'onglet « Calendrier » : la ligne « Calendrier : » montre toujours des cases collées, une par métier puis **« Mes rendez-vous de client »** (ex. « Plombier | Électricien | Mes rendez-vous de client »). Avant, cette ligne n'apparaissait qu'avec plusieurs métiers. La case « Mes rendez-vous de client » remplace le calendrier du métier par le calendrier du client ; le choix est dans l'adresse (`?calendrier=client`). La page garde les formes d'avant (`style-classique`).
+- Personne n'est connecté : carte « Mon agenda — Connectez-vous pour voir vos rendez-vous. » et [Se connecter].
+
+### Calendrier du client (`CalendrierClient.vue`)
+Les rendez-vous que la personne a pris chez des prestataires. De haut en bas :
+1. Bandeaux éventuels : erreur, retour du paiement par carte (« Paiement reçu : votre rendez-vous est confirmé. »…).
+2. **Le mois** dans une carte : [‹] « octobre 2026 » [›], les 7 jours de la semaine (lundi d'abord), une case par jour. Une case avec un rendez-vous à venir est en vert vif avec « 1 rdv » ; avec seulement des rendez-vous passés ou annulés, en gris avec « 1 rdv » ; aujourd'hui a un anneau orange ; le jour choisi est en vert plein. Légende sous la grille.
+3. **Un clic sur un jour** ne montre dessous que ses rendez-vous (titre « vendredi 16 octobre », bouton [Voir tout le mois]) ; un 2ᵉ clic sur le même jour, ou [Voir tout le mois], remontre ceux du mois affiché. Changer de mois enlève le jour choisi.
+4. **La liste** (du jour ou du mois), du plus tôt au plus tard, une ligne par rendez-vous (`LigneRendezVous`, « Avec Karim Benali ») et ses boutons : à venir → [Déplacer], [Annuler…], ou le texte d'attente et [Annuler la demande] ; passé → [Donner mon avis] ou l'avis donné avec [Modifier] / [Retirer], [Karim n'est pas venu…], [Je suis venu…]. Mêmes règles et mêmes fenêtres qu'avant.
+5. Rien à montrer : « Aucun rendez-vous ce jour-là. » / « Aucun rendez-vous ce mois-ci. » ; si la personne n'a jamais eu de rendez-vous, bouton [Publier une demande] → accueil.
 
 ## Accès
 Menu « Mon agenda » (`/mon-agenda`), seulement pour un prestataire (même gardien que « Mes annonces » : se connecter / proposer ses services). Titre « Mon agenda », puis **3 onglets** : Calendrier, Rendez-vous (lot 4.4, voir `RM-RENDEZ-VOUS-IHM.md`, compteur orange des demandes), Paiements (lot 5.2) ; l'onglet choisi est dans l'adresse (`?onglet=rendez-vous`, `paiements` ; rien = Calendrier). Le calendrier prend toute la largeur de la page (1080 px) ; les deux autres onglets restent à 720 px. Les anciens onglets « Semaine type » et « Réglages » sont des boutons du calendrier ; « Horaires libres » est dans le détail du jour.

@@ -1,5 +1,5 @@
 """Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8, v9, v12, v13, v17, v16)
-et photo_prestataire (db/schema_v24.sql). Aucun calcul ici."""
+et photo_prestataire (db/schema_v24.sql), prestataire.lieu (db/schema_v25.sql). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -53,6 +53,7 @@ class Prestataire(Base):
     facture_tva: Mapped[bool] = mapped_column(Boolean, server_default="false")
     declaration_periodicite: Mapped[str | None] = mapped_column(Text)
     rendez_vous_bloque_autres_metiers: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    lieu: Mapped[str] = mapped_column(Text, server_default="chez_client")
 
 
 class MetierSecondaire(Base):

@@ -18,7 +18,7 @@ Demande, mot pour mot : « quand je suis dans l'onglet y'a la recherche en haut 
 - **Carte** : photo de profil ou initiales, nom, métier, « Pessac · à 2 km », « SIRET vérifié » ou « Particulier » (sans SIRET vérifié), les **2 premières photos de son travail** (choix de Raphael : « Oui, tout de suite » ; réglage `RECHERCHE_PHOTOS_SUR_CARTE`), la note et le nombre d'avis ou « Nouveau sur rafals ». Pas de prix. Pas repris d'AlloVoisins : « Profil boosté », « En ligne à 15:36 ».
 - ⚠️ À faire vérifier : le mot « Particulier » pour un prestataire dont le SIRET est absent, à vérifier ou refusé (choix de Claude, repris de la capture).
 
-## Sans annonces (décision de Raphael du 04/10/2026 ; « Qui apparaît » construit le 07/10/2026, le reste pas encore)
+## Sans annonces (décision de Raphael du 04/10/2026 ; construit le 07/10/2026 et le 09/10/2026, lot 9.2)
 > **Construit le 07/10/2026**, en avance sur le lot 9.1, pour que les rubriques ne soient pas vides : la condition « au moins une annonce en ligne » a disparu de la recherche. Tant que les annonces existent, celles d'un prestataire donnent encore son prix et servent aux filtres : avec « Vient chez moi », « Paiement par carte » ou « Libre dans les 7 jours », un prestataire sans annonce n'est pas montré (choix de Claude, jusqu'au lot 9.2).
 
 Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Après les lots 8.3 et 8.4, ce fichier se lira ainsi (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
@@ -28,6 +28,11 @@ Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Aprè
   - Exemple 2 : « Julie Martin · Ménage · Nouveau · à 2 km · carte bancaire acceptée ».
 - **Page publique** : profil, photos de son travail, avis, et les boutons [Écrire à Karim] et [Demander un devis] (SIRET vérifié seulement). Plus de liste d'annonces.
 - L'ordre des résultats ne change pas (métier principal d'abord, puis les mieux notés).
+
+**Construit le 09/10/2026 (lot 9.2)** : la carte d'un résultat n'a plus de prix ni de nombre d'annonces ; la page publique n'a plus de liste d'annonces.
+- **Filtres (choix de Claude)** : il reste « Vient chez moi » (lieu du profil : « chez le client » ou « les deux ») et « Paiement par carte » (SIRET vérifié et paiement par carte activé). « Prix maximum » et « Libre dans les 7 jours » sont retirés : il n'y a plus de prix affiché, et le client ne voit plus les horaires libres.
+  - Exemple 1 : Léa reçoit au salon (lieu « chez moi ») → elle disparaît avec le filtre « Vient chez moi ».
+  - Exemple 2 : Julie a un SIRET vérifié et a activé la carte → elle reste avec le filtre « Paiement par carte » ; Paul, sans SIRET, disparaît.
 
 ## Objectif
 Comment un client trouve un prestataire : un métier + une ville, et l'ordre des résultats.

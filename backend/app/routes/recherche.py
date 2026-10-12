@@ -2,21 +2,17 @@
 
 from fastapi import APIRouter
 from pydantic import BaseModel
-from sqlalchemy import select
 
 from app import reglages
-from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
-from app.routes.annonces import AnnoncePublique, annonce_publique
 from app.routes.dependances import Base, CompteOuPersonne, maintenant
 from app.routes.prestataires import CommuneVisible, MetierCourt, commune_visible
 from app.services import absences
 from app.services import avis as service_avis
 from app.services import prestataires as service_prestataires
 from app.services import recherche as service
-from app.services.annonces import modes_de_paiement, raison_cachee
 from app.services.erreurs import ErreurRegle
 from app.services.prestataires import aujourd_hui, metiers_exerces
 
@@ -38,9 +34,6 @@ class CarteResultat(BaseModel):
     note: float | None
     nombre_avis: int
     nouveau: bool
-    a_partir_de_centimes: int | None
-    a_partir_de_par_heure: bool
-    nombre_annonces: int
     vient_chez_vous: bool
     carte_possible: bool
 
@@ -79,40 +72,34 @@ class PrestatairePublic(BaseModel):
     a_une_photo: bool
     ville: str
     distance_km: int
+    lieu: str  # chez_client, chez_moi ou les_deux
     metiers: list[MetierCourt]
     siret_verifie: bool
     note: float | None
     nombre_avis: int
     absences: int  # « 1 absence sans prévenir » en 6 mois (RM-RENDEZ-VOUS)
     photos: list[int]  # rangs des photos de son travail (10 au plus)
-    annonces: list[AnnoncePublique]
 
 
 def carte(db: Base, r: service.Resultat) -> CarteResultat:
-    moins_cher = r.a_partir_de
     photos = service_prestataires.photos_de(db, r.prestataire.id)[: reglages.RECHERCHE_PHOTOS_SUR_CARTE]
     return CarteResultat(
         prestataire_id=r.prestataire.id, nom_affiche=r.prestataire.nom_affiche, a_une_photo=r.prestataire.photo_id is not None,
         ville=r.commune.nom, distance_km=round(r.distance_km), metier=db.get_one(Metier, r.metier_id).nom,
         principal=r.principal, siret_verifie=r.prestataire.siret_statut == "verifie", photos=[p.ordre for p in photos],
         note=r.note, nombre_avis=r.nombre_avis,
-        nouveau=r.nouveau, a_partir_de_centimes=moins_cher.prix_centimes if moins_cher else None,
-        a_partir_de_par_heure=bool(moins_cher and moins_cher.forme_prix == "heure"), nombre_annonces=len(r.annonces),
-        vient_chez_vous=any(a.lieu in ("chez_client", "les_deux") for a in r.annonces),
-        carte_possible=any("carte" in modes_de_paiement(a, r.prestataire) for a in r.annonces),
+        nouveau=r.nouveau, vient_chez_vous=service.vient_chez_le_client(r),
+        carte_possible=service.carte_acceptee(r.prestataire),
     )
 
 
 @routeur.get("/recherche")
 def rechercher(
     metier_id: int, commune_id: int, db: Base, tri: str = "note", page: int = 1, vient_chez_moi: bool = False,
-    carte_bancaire: bool = False, libre_7_jours: bool = False, prix_max: float | None = None,
+    carte_bancaire: bool = False,
 ) -> PageResultats:
-    """Ex. /api/recherche?metier_id=3&commune_id=33522&carte_bancaire=true&prix_max=60 (prix en euros). Ouvert à tous."""
-    filtres = service.Filtres(
-        vient_chez_moi=vient_chez_moi, carte=carte_bancaire, libre_7_jours=libre_7_jours,
-        prix_max_centimes=None if prix_max is None else round(prix_max * 100),
-    )
+    """Ex. /api/recherche?metier_id=3&commune_id=33522&carte_bancaire=true. Ouvert à tous."""
+    filtres = service.Filtres(vient_chez_moi=vient_chez_moi, carte=carte_bancaire)
     resultat = service.rechercher(
         db, metier_id=metier_id, commune_id=commune_id, maintenant=maintenant(), filtres=filtres, tri=tri, page=page
     )
@@ -166,22 +153,17 @@ def prestataire_visible_ou_404(db: Base, prestataire_id: int, compte: Compte | N
 
 @routeur.get("/prestataires/{prestataire_id}")
 def page_publique(prestataire_id: int, db: Base, compte: CompteOuPersonne) -> PrestatairePublic:
-    """Profil, note et annonces en ligne d'un prestataire."""
+    """Profil, note et photos du travail d'un prestataire."""
     prestataire = prestataire_visible_ou_404(db, prestataire_id, compte)
     maintenant_ = maintenant()
-    annonces = [
-        a for a in db.scalars(select(Annonce).where(Annonce.prestataire_id == prestataire.id).order_by(Annonce.cree_le))
-        if raison_cachee(db, a, prestataire, maintenant_) is None
-    ]
     metiers = [db.get_one(Metier, i) for i in metiers_exerces(db, prestataire, aujourd_hui(maintenant_))]
     somme, nombre = service_avis.notes(db, [prestataire.id]).get(prestataire.id, (0, 0))
     note = somme / nombre if nombre else None
     return PrestatairePublic(
         id=prestataire.id, nom_affiche=prestataire.nom_affiche, presentation=prestataire.presentation,
         a_une_photo=prestataire.photo_id is not None, ville=db.get_one(Commune, prestataire.commune_id).nom,
-        distance_km=prestataire.distance_km, metiers=[MetierCourt(id=m.id, nom=m.nom) for m in metiers],
+        distance_km=prestataire.distance_km, lieu=prestataire.lieu, metiers=[MetierCourt(id=m.id, nom=m.nom) for m in metiers],
         siret_verifie=prestataire.siret_statut == "verifie", note=note, nombre_avis=nombre,
         absences=len(absences.absences_du_prestataire(db, prestataire.id, maintenant_)),
         photos=[p.ordre for p in service_prestataires.photos_de(db, prestataire.id)],
-        annonces=[annonce_publique(db, a, prestataire) for a in annonces],
     )

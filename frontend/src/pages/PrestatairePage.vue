@@ -1,10 +1,11 @@
 <script setup lang="ts">
-// Page publique d'un prestataire (.doc/ihm/RM-PRESTATAIRE-PUBLIC-IHM.md ; RM-RECHERCHE.md) : profil et annonces en ligne.
+// Page publique d'un prestataire (.doc/ihm/RM-PRESTATAIRE-PUBLIC-IHM.md ; RM-RECHERCHE.md) : profil, photos de son travail et avis.
 // Jamais le téléphone, le mail ni la rue : ils sont donnés après une réservation.
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import AvisAffiche from '../components/avis/AvisAffiche.vue'
+import FenetreDemandeDevis from '../components/devis/FenetreDemandeDevis.vue'
 import AvatarPrestataire from '../components/prestataire/AvatarPrestataire.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
@@ -12,8 +13,9 @@ import AppBouton from '../components/ui/AppBouton.vue'
 import AppSection from '../components/ui/AppSection.vue'
 import BoutonSignaler from '../components/BoutonSignaler.vue'
 import { useCompte } from '../composables/useCompte'
-import { lieuPourLeClient, paiement, prixCourt } from '../outils/annonces'
+import { useMessage } from '../composables/useMessage'
 import { type AvisPublic, etoiles } from '../outils/avis'
+import { lieuPourUnClient } from '../outils/prestataires'
 import { type PrestatairePublic, adressePhotoTravail, noteLisible } from '../outils/recherche'
 
 const route = useRoute()
@@ -56,6 +58,19 @@ async function ecrire() {
   }
 }
 
+// [Demander un devis] : seulement à un prestataire au SIRET vérifié (RM-DEVIS § « Sans annonces »)
+const devisOuvert = ref(false)
+const { afficherMessage } = useMessage()
+function demanderDevis() {
+  if (!compte.value) return routeur.push({ path: '/connexion', query: { retour: route.fullPath } })
+  devisOuvert.value = true
+}
+function devisEnvoye() {
+  devisOuvert.value = false
+  afficherMessage(`Demande envoyée : ${prenom.value} vous répond par un devis.`)
+  routeur.push('/devis')
+}
+
 const monProfil = computed(() => !!prestataire.value && compte.value?.prestataire_id === prestataire.value.id)
 // Retour à la page d'avant (ex. les résultats) ; ouverte directement par un lien : la recherche
 function retour() {
@@ -75,11 +90,11 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
       </p>
       <AppAlerte v-if="monProfil" etat="attente">
         Votre page, telle que les clients la voient.
-        <RouterLink to="/proposer" class="font-semibold underline">Mon profil</RouterLink>
+        <RouterLink to="/profil" class="font-semibold underline">Mon profil</RouterLink>
       </AppAlerte>
 
       <!-- Ordinateur : la fiche à gauche, la carte « Besoin de Karim ? » à droite, qui reste visible.
-           Téléphone : la présentation, la carte, puis les annonces et les avis. -->
+           Téléphone : la présentation, la carte, puis les photos et les avis. -->
       <div class="grid items-start gap-8" :class="monProfil ? '' : 'md:grid-cols-[1fr_340px]'">
         <div class="flex min-w-0 flex-col gap-6">
           <div class="grid items-center gap-5 sm:grid-cols-[auto_1fr]">
@@ -103,7 +118,7 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
                 · aussi {{ prestataire.metiers.slice(1).map((m) => m.nom).join(', ') }}
               </template>
             </p>
-            <p>Part de {{ prestataire.ville }}, se déplace jusqu'à {{ prestataire.distance_km }} km</p>
+            <p>{{ lieuPourUnClient(prestataire) }}</p>
           </div>
           <AppAlerte v-if="prestataire.absences" etat="attente">
             {{ prestataire.absences }} absence{{ prestataire.absences > 1 ? 's' : '' }} sans prévenir ces 6 derniers mois
@@ -115,7 +130,8 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
           <h2 class="text-[22px] font-extrabold">Besoin de {{ prenom }} ?</h2>
           <AppBouton variante="accent" pleine-largeur @click="ecrire">Écrire à {{ prenom }}</AppBouton>
           <AppAlerte v-if="erreurEcrire">{{ erreurEcrire }}</AppAlerte>
-          <p class="text-[13.5px] text-sur-fonce-doux">Son téléphone et son adresse vous sont donnés après une réservation.</p>
+          <AppBouton v-if="prestataire.siret_verifie" variante="secondaire" pleine-largeur @click="demanderDevis">Demander un devis</AppBouton>
+          <p class="text-[13.5px] text-sur-fonce-doux">Son téléphone et son adresse vous sont donnés après un rendez-vous.</p>
         </aside>
       </div>
 
@@ -129,28 +145,6 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
               class="aspect-[4/3] w-full rounded-rafals object-cover hover:ring-2 hover:ring-primaire"
             />
           </a>
-        </div>
-      </AppSection>
-
-      <AppSection titre="Ses annonces">
-        <p v-if="!prestataire.annonces.length" class="text-texte-doux">
-          {{ prenom }} n'a pas d'annonce en ligne pour l'instant.
-        </p>
-        <div class="flex flex-col divide-y divide-bord">
-          <div
-            v-for="annonce in prestataire.annonces"
-            :key="annonce.id"
-            class="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0"
-          >
-            <div class="flex flex-col gap-0.5">
-              <b>{{ annonce.titre }}</b>
-              <p class="text-[13.5px] text-texte-doux">
-                <span class="font-bold text-primaire">{{ prixCourt(annonce) }}</span> · {{ lieuPourLeClient(annonce) }} ·
-                {{ paiement(annonce.modes_de_paiement).toLowerCase() }}
-              </p>
-            </div>
-            <AppBouton variante="secondaire" @click="routeur.push(`/annonces/${annonce.id}`)">Voir l'annonce</AppBouton>
-          </div>
         </div>
       </AppSection>
 
@@ -175,6 +169,7 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
         <p v-else class="text-[14px] text-texte-doux">Pas encore d'avis.</p>
       </AppSection>
       <BoutonSignaler v-if="!monProfil" :prestataire-id="prestataire.id" :nom-prestataire="prestataire.nom_affiche" />
+      <FenetreDemandeDevis :prestataire="prestataire" :ouverte="devisOuvert" @fermer="devisOuvert = false" @envoyee="devisEnvoye" />
     </template>
   </div>
 </template>

@@ -1,5 +1,7 @@
 # Signalements — Interface
 
+> **Changé le 09/10/2026** (lot 9.3, retrait des annonces) : on ne signale plus une annonce. `BoutonSignaler` n'a plus qu'une forme, [Signaler ce prestataire…], en bas de la page publique. Dans Administration › Signalements : plus de ligne « Annonce », plus de bouton [Retirer l'annonce…] ; il reste [Rien à faire] et [Bloquer le prestataire…] (et [Prévenir…] pour une conversation).
+
 > Fichiers : `frontend/src/components/BoutonSignaler.vue` (commun à l'annonce et à la page du prestataire), `frontend/src/components/admin/OngletSignalements.vue` ; fenêtre commune `FenetreTexte`. Construit au lot 6.4 (04/10/2026). Règles : `RM-ADMINISTRATION.md`. Maquette validée : `maquette-lot-6.4-signalements-rappels.html`.
 
 ## Signaler une annonce (page d'une annonce) ou un prestataire (sa page publique)

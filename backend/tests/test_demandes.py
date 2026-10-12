@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.services import demandes
-from tests.test_annonces import metiers  # noqa: F401 (fixture)
+from tests.test_prestataires import metiers  # noqa: F401 (fixture)
 from tests.test_prestataires import JPG, PDF
 
 AUJOURD_HUI = datetime.now(reglages.FUSEAU_AFFICHAGE).date()

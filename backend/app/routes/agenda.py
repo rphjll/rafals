@@ -1,16 +1,16 @@
-"""Adresses de l'agenda du prestataire et des horaires libres d'une annonce (écrans au lot 3.4). Règles : RM-AGENDA.md."""
+"""Adresses de l'agenda du prestataire et de ses horaires libres (écrans au lot 3.4). Règles : RM-AGENDA.md."""
 
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from typing import Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 
 from app.modeles.prestataires import Prestataire
-from app.routes.annonces import annonce_visible_ou_404
-from app.routes.dependances import Base, CompteConnecte, CompteOuPersonne, maintenant
+from app.routes.dependances import Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
 from app.services import agenda as service
+from app.services.erreurs import ErreurRegle
 
 routeur = APIRouter(prefix="/api")
 
@@ -156,15 +156,18 @@ def reglages(donnees: Reglages, db: Base, compte: CompteConnecte) -> AgendaVisib
     return agenda_visible(db, prestataire)
 
 
-# ---------- Horaires libres d'une annonce (pour tous) ----------
+# ---------- Horaires libres d'un de ses calendriers (pour le prestataire) ----------
 
 
-@routeur.get("/annonces/{annonce_id}/horaires")
-def horaires(annonce_id: int, jour: date, db: Base, compte: CompteOuPersonne, heures: int | None = None) -> Horaires:
-    """Ex. /api/annonces/12/horaires?jour=2026-10-14 ; à l'heure : &heures=3. Seulement les horaires libres, jamais
-    les autres rendez-vous ni la raison d'un blocage (RM-AGENDA, « Ce que voit le client »)."""
-    annonce, prestataire = annonce_visible_ou_404(db, annonce_id, compte)
-    duree = service.duree_reservee(annonce, heures)
-    return Horaires(jour=jour, duree_minutes=int(duree.total_seconds() // 60),
-                    debuts=service.horaires_libres(db, prestataire, annonce, jour, maintenant(), heures))
+@routeur.get("/moi/agenda/horaires")
+def horaires(jour: date, duree_minutes: int, db: Base, compte: CompteConnecte, metier_id: int | None = None) -> Horaires:
+    """Ex. /api/moi/agenda/horaires?jour=2026-10-14&duree_minutes=45 : les heures de début libres ce jour-là dans un de
+    ses calendriers (sans metier_id : celui du métier principal). Pour le prestataire seulement : le client ne voit
+    plus les horaires libres (RM-AGENDA § « Sans annonces »)."""
+    prestataire = mon_profil_ou_404(db, compte)
+    if not 1 <= duree_minutes <= 24 * 60:
+        raise ErreurRegle("La durée doit faire entre 1 minute et 24 heures.")
+    metier = service.metier_du_calendrier(db, prestataire, metier_id)
+    return Horaires(jour=jour, duree_minutes=duree_minutes,
+                    debuts=service.horaires_libres(db, prestataire, metier, timedelta(minutes=duree_minutes), jour, maintenant()))
 

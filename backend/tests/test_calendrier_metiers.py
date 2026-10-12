@@ -6,7 +6,7 @@ from datetime import timedelta
 import pytest
 
 from tests.test_agenda import LEA_MARDI, MARDI, heures, lea, reglages_agenda  # noqa: F401 (fixtures)
-from tests.test_annonces import fabrique_prestataire, menage, metiers, publier  # noqa: F401 (fixtures)
+from tests.test_prestataires import fabrique_prestataire, metiers  # noqa: F401 (fixtures)
 from tests.test_rendez_vous import a, dupont, reserver, statut  # noqa: F401 (fixtures)
 
 MERCREDI = MARDI + timedelta(days=1)  # fermé dans la semaine type de Léa
@@ -16,14 +16,17 @@ MERCREDI_MATIN = [{"jour_semaine": 3, "debut": "09:00", "fin": "12:00"}]
 
 @pytest.fixture
 def karim(fabrique_prestataire, metiers):  # noqa: F811
-    """Karim, plombier (mardi matin) et électricien (mercredi matin) : deux calendriers, une annonce de 2 h dans chacun."""
+    """Karim, plombier (mardi matin) et électricien (mercredi matin) : deux calendriers. Ses services durent 2 h."""
     compte = fabrique_prestataire()
     compte.plombier, compte.electricien = metiers["Plombier"], metiers["Électricien"]
     assert compte.client.post("/api/moi/agenda/semaine", json={"metier_id": compte.plombier, "plages": MARDI_MATIN}).status_code == 200
     assert compte.client.post("/api/moi/agenda/semaine", json={"metier_id": compte.electricien, "plages": MERCREDI_MATIN}).status_code == 200
-    compte.fuite = publier(compte, menage(compte.plombier)).json()["id"]
-    compte.prise = publier(compte, menage(compte.electricien, titre="Pose d'une prise")).json()["id"]
     return compte
+
+
+def libres(karim, metier_id: int, jour=MARDI) -> list[str]:
+    """Les horaires libres de Karim dans un de ses calendriers, pour un service de 2 h."""
+    return heures(karim, jour, 120, metier_id=metier_id)
 
 
 def ouvrir(compte, debut: str, fin: str, **autres):
@@ -40,8 +43,8 @@ def test_chaque_metier_a_sa_semaine_type(karim, client) -> None:
     assert [p["jour_semaine"] for p in plombier["plages"]] == [2] and plombier["metier_id"] == karim.plombier
     assert [p["jour_semaine"] for p in electricien["plages"]] == [3]
     # Les clients : la fuite se réserve le mardi, la prise le mercredi
-    assert heures(client, karim.fuite)[:1] == ["09:00"] and heures(client, karim.fuite, MERCREDI) == []
-    assert heures(client, karim.prise) == [] and heures(client, karim.prise, MERCREDI)[:1] == ["09:00"]
+    assert libres(karim, karim.plombier)[:1] == ["09:00"] and libres(karim, karim.plombier, MERCREDI) == []
+    assert libres(karim, karim.electricien) == [] and libres(karim, karim.electricien, MERCREDI)[:1] == ["09:00"]
 
 
 def test_sans_metier_c_est_le_calendrier_du_metier_principal(karim) -> None:
@@ -62,8 +65,8 @@ def test_fermeture_ne_ferme_que_son_calendrier(karim, client) -> None:
     karim.client.post("/api/moi/agenda/blocages", json={
         "metier_id": karim.electricien, "debut": f"{MARDI}T00:00", "fin": f"{MARDI + timedelta(days=5)}T00:00"})
 
-    assert heures(client, karim.prise, MERCREDI) == []
-    assert heures(client, karim.fuite)[:1] == ["09:00"]
+    assert libres(karim, karim.electricien, MERCREDI) == []
+    assert libres(karim, karim.plombier)[:1] == ["09:00"]
     assert karim.client.get("/api/moi/agenda", params={"metier_id": karim.plombier}).json()["blocages"] == []
 
 
@@ -74,8 +77,8 @@ def test_ouverture_exceptionnelle_un_jour_ferme(lea, client) -> None:
     # Léa est fermée le mercredi ; elle ouvre ce mercredi de 10 h à 13 h : coupes de 45 min de 10 h 00 à 12 h 15
     agenda = ouvrir(lea, f"{MERCREDI}T10:00", f"{MERCREDI}T13:00", motif="Mariage de Julie").json()
 
-    libres = heures(client, lea.annonce, MERCREDI)
-    reponse = client.get(f"/api/annonces/{lea.annonce}/horaires", params={"jour": MERCREDI.isoformat()})
+    libres = heures(lea, MERCREDI)
+    reponse = lea.client.get("/api/moi/agenda/horaires", params={"jour": MERCREDI.isoformat(), "duree_minutes": 45})
 
     assert len(agenda["ouvertures"]) == 1 and agenda["ouvertures"][0]["motif"] == "Mariage de Julie"
     assert libres[0] == "10:00" and libres[-1] == "12:15"
@@ -86,7 +89,7 @@ def test_ouverture_qui_prolonge_la_semaine_type(lea, client) -> None:
     # Mardi 9 h-12 h, ouverture 12 h-14 h : une seule période 9 h-19 h, on peut réserver à 11 h 30 et à 13 h 15
     ouvrir(lea, f"{MARDI}T12:00", f"{MARDI}T14:00")
 
-    libres = heures(client, lea.annonce)
+    libres = heures(lea)
 
     assert "11:30" in libres and "13:15" in libres
 
@@ -95,10 +98,10 @@ def test_ouverture_de_plusieurs_jours_sans_arret(lea, client) -> None:
     # Du mercredi 9 h au vendredi 18 h : ouvert jour et nuit, le jeudi à 3 h du matin est réservable
     ouvrir(lea, f"{MERCREDI}T09:00", f"{MERCREDI + timedelta(days=2)}T18:00")
 
-    jeudi = heures(client, lea.annonce, MERCREDI + timedelta(days=1))
+    jeudi = heures(lea, MERCREDI + timedelta(days=1))
 
     assert jeudi[0] == "00:00" and "03:00" in jeudi and jeudi[-1] == "23:45"
-    assert heures(client, lea.annonce, MERCREDI)[0] == "09:00"
+    assert heures(lea, MERCREDI)[0] == "09:00"
 
 
 def test_retirer_une_ouverture(lea, client) -> None:
@@ -107,12 +110,12 @@ def test_retirer_une_ouverture(lea, client) -> None:
     apres = lea.client.post(f"/api/moi/agenda/ouvertures/{agenda['ouvertures'][0]['id']}/retirer")
 
     assert apres.status_code == 200 and apres.json()["ouvertures"] == []
-    assert heures(client, lea.annonce, MERCREDI) == []
+    assert heures(lea, MERCREDI) == []
 
 
 def test_retirer_une_ouverture_avec_un_rendez_vous_choisir(lea, dupont) -> None:
     agenda = ouvrir(lea, f"{MERCREDI}T10:00", f"{MERCREDI}T13:00").json()
-    rdv = reserver(dupont, lea.annonce, a(MERCREDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MERCREDI, 10)).json()
     adresse = f"/api/moi/agenda/ouvertures/{agenda['ouvertures'][0]['id']}/retirer"
 
     sans_choix = lea.client.post(adresse)
@@ -150,7 +153,7 @@ def test_fermeture_au_milieu_coupe_l_ouverture_en_deux(lea, client) -> None:
     agenda = lea.client.post("/api/moi/agenda/blocages", json={"debut": f"{MERCREDI}T11:00", "fin": f"{MERCREDI}T12:00"}).json()
 
     assert len(agenda["ouvertures"]) == 2 and {o["motif"] for o in agenda["ouvertures"]} == {"Mariage"}
-    assert heures(client, lea.annonce, MERCREDI) == ["10:00", "10:15", "12:00", "12:15"]
+    assert heures(lea, MERCREDI) == ["10:00", "10:15", "12:00", "12:15"]
 
 
 def test_retirer_la_fermeture_ne_recolle_pas_l_ouverture(lea, client) -> None:
@@ -160,7 +163,7 @@ def test_retirer_la_fermeture_ne_recolle_pas_l_ouverture(lea, client) -> None:
     apres = lea.client.post(f"/api/moi/agenda/blocages/{agenda['blocages'][0]['id']}/retirer").json()
 
     assert len(apres["ouvertures"]) == 2
-    assert heures(client, lea.annonce, MERCREDI) == ["10:00", "10:15", "12:00", "12:15"]
+    assert heures(lea, MERCREDI) == ["10:00", "10:15", "12:00", "12:15"]
 
 
 def test_ouverture_par_dessus_une_fermeture_enregistree_coupee(lea) -> None:
@@ -176,24 +179,6 @@ def test_ouverture_par_dessus_une_fermeture_enregistree_coupee(lea) -> None:
 # ---------- Un rendez-vous dans un métier bloque-t-il les autres calendriers ? (au choix du prestataire) ----------
 
 
-def test_un_rendez_vous_bloque_les_autres_calendriers_au_depart(karim, dupont, client) -> None:
-    # Les deux métiers sont ouverts le mardi matin ; Mme Dupont réserve la fuite de 9 h à 11 h
-    karim.client.post("/api/moi/agenda/semaine", json={"metier_id": karim.electricien, "plages": MARDI_MATIN})
-    assert reserver(dupont, karim.fuite, a(MARDI, 9)).status_code == 201
-
-    assert karim.client.get("/api/moi/agenda").json()["reglages"]["rendez_vous_bloque_autres_metiers"] is True
-    assert heures(client, karim.prise) == []  # la prise (2 h) ne tient plus entre 11 h et 12 h
-
-
-def test_calendriers_independants_si_le_prestataire_le_choisit(karim, dupont, client) -> None:
-    karim.client.post("/api/moi/agenda/semaine", json={"metier_id": karim.electricien, "plages": MARDI_MATIN})
-    reglages_agenda(karim, rendez_vous_bloque_autres_metiers=False)
-    assert reserver(dupont, karim.fuite, a(MARDI, 9)).status_code == 201
-
-    assert heures(client, karim.prise)[:1] == ["09:00"]  # la prise reste réservable à 9 h
-    assert "09:00" not in heures(client, karim.fuite)  # dans son propre calendrier, l'horaire est pris
-
-
 def test_reglage_inchange_si_non_envoye(karim) -> None:
     reglages_agenda(karim, rendez_vous_bloque_autres_metiers=False)
 
@@ -202,8 +187,26 @@ def test_reglage_inchange_si_non_envoye(karim) -> None:
     assert karim.client.get("/api/moi/agenda").json()["reglages"]["rendez_vous_bloque_autres_metiers"] is False
 
 
+def test_un_rendez_vous_bloque_les_autres_calendriers_au_depart(karim, dupont) -> None:
+    # Les deux métiers sont ouverts le mardi matin ; Mme Dupont a un rendez-vous Plombier de 9 h à 11 h
+    karim.client.post("/api/moi/agenda/semaine", json={"metier_id": karim.electricien, "plages": MARDI_MATIN})
+    assert reserver(dupont, karim, a(MARDI, 9), duree_minutes=120).status_code == 201
+
+    assert karim.client.get("/api/moi/agenda").json()["reglages"]["rendez_vous_bloque_autres_metiers"] is True
+    assert libres(karim, karim.electricien) == []  # 2 h ne tiennent plus entre 11 h et 12 h
+
+
+def test_calendriers_independants_si_le_prestataire_le_choisit(karim, dupont) -> None:
+    karim.client.post("/api/moi/agenda/semaine", json={"metier_id": karim.electricien, "plages": MARDI_MATIN})
+    reglages_agenda(karim, rendez_vous_bloque_autres_metiers=False)
+    assert reserver(dupont, karim, a(MARDI, 9), duree_minutes=120).status_code == 201
+
+    assert libres(karim, karim.electricien)[:1] == ["09:00"]  # le calendrier Électricien reste libre à 9 h
+    assert "09:00" not in libres(karim, karim.plombier)  # dans son propre calendrier, l'horaire est pris
+
+
 def test_changer_la_semaine_d_un_metier_ne_touche_pas_les_rendez_vous_de_l_autre(karim, dupont) -> None:
-    rdv = reserver(dupont, karim.fuite, a(MARDI, 9)).json()
+    rdv = reserver(dupont, karim, a(MARDI, 9), duree_minutes=120).json()
 
     # Karim vide la semaine type Électricien : le rendez-vous Plombier n'est pas concerné, aucun choix demandé
     reponse = karim.client.post("/api/moi/agenda/semaine", json={"metier_id": karim.electricien, "plages": []})

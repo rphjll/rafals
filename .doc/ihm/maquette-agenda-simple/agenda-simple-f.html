@@ -1,0 +1,175 @@
+<title>Agenda simple F</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Figtree:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="commun.css">
+<link rel="stylesheet" href="agenda2.css">
+<style>
+  .case.sel{outline:3px solid var(--accent);outline-offset:1px}
+  .grille.O .case.sel{outline-color:var(--ok)}
+  .grille.F,.grille.O{touch-action:none}
+  .grille{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+</style>
+
+<div class="page">
+  <aside class="note">
+    <span class="lettre">Maquette · proposition F, 2ᵉ version</span>
+    <h2>Fermer des jours sans fenêtre</h2>
+    <p>On clique [Fermeture exceptionnelle], puis un jour : il est fermé toute la journée, tout de suite. Pour plusieurs jours, on maintient appuyé sur le premier, on glisse jusqu'au dernier et on lâche. Le bouton reste activé pour continuer ; [Terminer] l'arrête. Essayez : [Fermeture exceptionnelle], puis maintenez du mardi 27 au samedi 31.</p>
+    <ul>
+      <li>Les deux boutons sont au-dessus du calendrier, pour que le bandeau et les jours soient sous les yeux, même sur téléphone</li>
+      <li>[Ouverture exceptionnelle] : même geste, le jour est ouvert toute la journée, sans fenêtre</li>
+      <li>Clic droit sur un jour (appui long sur téléphone) : une petite fenêtre pour changer ses horaires, qu'il soit ouvert ou fermé</li>
+      <li>Plus de détail du jour sous le calendrier : tout se lit dans les cases et dans les deux listes</li>
+      <li>Une fermeture ou une ouverture posée par erreur se retire à droite, avec [Retirer]</li>
+    </ul>
+  </aside>
+
+  <h1>Mon agenda</h1>
+  <div id="haut"></div>
+
+  <div class="deux">
+    <section class="carte">
+      <div id="mois"></div>
+      <div class="sous-grille">
+        <div class="boutons">
+          <button type="button" class="btn fer" id="bf" aria-pressed="false">Fermeture exceptionnelle</button>
+          <button type="button" class="btn ouv" id="bo" aria-pressed="false">Ouverture exceptionnelle</button>
+        </div>
+        <div id="bandeau" aria-live="polite"></div>
+        <p class="doux" style="font-size:13px">Changer les horaires d'un seul jour : clic droit sur ce jour (sur téléphone, appui long).</p>
+      </div>
+      <div id="grille" class="grille"></div>
+      <div id="legende"></div>
+    </section>
+
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <section class="carte">
+        <div class="titre-bloc"><h3>Fermetures exceptionnelles</h3><span class="compte F" id="nf"></span></div>
+        <div id="lf"></div>
+      </section>
+      <section class="carte">
+        <div class="titre-bloc"><h3>Ouvertures exceptionnelles</h3><span class="compte O" id="no"></span></div>
+        <div id="lo"></div>
+      </section>
+      <p class="doux">Le motif n'est jamais montré aux clients : ils voient seulement plus ou moins d'horaires.</p>
+    </div>
+  </div>
+</div>
+
+<script src="agenda2.js"></script>
+<script>
+  const $ = (id) => document.getElementById(id)
+  const g = $('grille')
+  // mode : 'F' ou 'O' quand un bouton est activé ; debut / fin : jours sous le doigt pendant qu'on maintient
+  let mode = null, debut = null, fin = null, pointeur = false
+  let attente = null, appuiLong = false // appui long au doigt, quand aucun bouton n'est activé
+
+  function rendre() {
+    grille(g, {
+      choisis: [],
+      clic: (n) => {
+        if (appuiLong) appuiLong = false // la fenêtre des horaires vient de s'ouvrir
+        else if (!mode) dire('Clic droit (ou appui long) : changer les horaires de ce jour. Pour le fermer ou l\'ouvrir en entier : [Fermeture exceptionnelle] ou [Ouverture exceptionnelle].')
+        else if (!pointeur) poser(n, n) // clavier : touche Entrée sur un jour
+      },
+    })
+    g.className = 'grille' + (mode ? ' ' + mode : '')
+    $('bf').classList.toggle('plein', mode === 'F')
+    $('bo').classList.toggle('plein', mode === 'O')
+    $('bf').setAttribute('aria-pressed', mode === 'F')
+    $('bo').setAttribute('aria-pressed', mode === 'O')
+    const texte = mode === 'F'
+      ? 'Fermeture exceptionnelle : cliquez un jour, ou maintenez et glissez pour plusieurs jours. Ils sont fermés toute la journée dès que vous lâchez.'
+      : 'Ouverture exceptionnelle : cliquez un jour, ou maintenez et glissez pour plusieurs jours. Ils sont ouverts toute la journée dès que vous lâchez.'
+    $('bandeau').innerHTML = mode ? `<div class="bandeau ${mode}"><span>${texte}</span><button type="button" class="btn sec petit" id="fini">Terminer</button></div>` : ''
+    if (mode) $('fini').onclick = () => activer(mode)
+    $('nf').textContent = listes($('lf'), 'F', rendre)
+    $('no').textContent = listes($('lo'), 'O', rendre)
+  }
+  const activer = (s) => { mode = mode === s ? null : s; debut = fin = null; rendre() }
+
+  // Les jours de a à b sont choisis : la fermeture ou l'ouverture se pose aussitôt, pour toute la journée
+  function poser(a, b) {
+    if (a < AUJ) return dire('Ce jour est passé : choisissez un jour à venir.')
+    const ferm = mode === 'F', p = ajouter(ferm ? F : O, a, b)
+    if (!p) return dire(`${a === b ? 'Ce jour est' : 'Ces jours sont'} déjà ${ferm ? 'fermé' : 'ouvert'}${a === b ? '' : 's'} toute la journée.`)
+    const nb = ferm ? RDV.filter((r) => r.j >= a && r.j <= b).length : 0
+    dire(`${ferm ? 'Fermé' : 'Ouvert'} toute la journée : ${enPhrase(p)}.` + (nb ? ` Comme aujourd'hui, une fenêtre demanderait quoi faire de ${nb} rendez-vous.` : ''))
+    rendre()
+  }
+  // Ajoute les jours de a à b à la liste t (fermetures ou ouvertures), sans doublon : rien si tous y sont déjà,
+  // et une seule ligne quand ils recouvrent une période déjà posée (ex. 20-24 puis 23-26 → 20-26)
+  function ajouter(t, a, b) {
+    const deja = (n) => t.some((p) => entier(p) && p.de <= n && p.a >= n)
+    let tous = true
+    for (let n = a; n <= b; n++) if (!deja(n)) tous = false
+    if (tous) return null
+    const p = { de: a, hd: 0, a: b, ha: 24, motif: '' }
+    for (let i = t.length - 1; i >= 0; i--) {
+      const q = t[i]
+      if (!entier(q) || q.de > p.a || q.a < p.de) continue
+      p.de = Math.min(p.de, q.de)
+      p.a = Math.max(p.a, q.a)
+      p.motif = p.motif || q.motif
+      t.splice(i, 1)
+      i = t.length // la période a grandi : on revérifie toute la liste
+    }
+    t.push(p)
+    return p
+  }
+  function marquer() {
+    const a = Math.min(debut, fin), b = Math.max(debut, fin)
+    g.querySelectorAll('.case').forEach((c) => c.classList.toggle('sel', +c.dataset.n >= a && +c.dataset.n <= b))
+  }
+  // Clic droit sur un jour : la fenêtre de ses horaires
+  g.addEventListener('contextmenu', (e) => {
+    const c = e.target.closest('.case')
+    if (!c) return
+    e.preventDefault()
+    clearTimeout(attente)
+    if (!appuiLong) fenetreHoraires(+c.dataset.n, rendre)
+  })
+  const lacher = () => clearTimeout(attente)
+  g.addEventListener('pointerdown', (e) => {
+    const c = e.target.closest('.case')
+    if (c && !mode && e.pointerType !== 'mouse') {
+      clearTimeout(attente)
+      appuiLong = false
+      attente = setTimeout(() => { appuiLong = true; fenetreHoraires(+c.dataset.n, rendre) }, 550)
+    }
+    if (!mode || !c) return
+    e.preventDefault()
+    pointeur = true
+    if (+c.dataset.n < AUJ) return dire('Ce jour est passé : choisissez un jour à venir.')
+    debut = fin = +c.dataset.n
+    marquer()
+  })
+  window.addEventListener('pointermove', (e) => {
+    if (debut === null) return
+    const sous = document.elementFromPoint(e.clientX, e.clientY)
+    const c = sous && sous.closest('#grille .case')
+    if (!c) return
+    const n = Math.max(+c.dataset.n, AUJ)
+    if (n !== fin) { fin = n; marquer() }
+  })
+  g.addEventListener('pointermove', (e) => { if (Math.abs(e.movementX) + Math.abs(e.movementY) > 6) lacher() })
+  window.addEventListener('pointerup', () => {
+    lacher()
+    setTimeout(() => (pointeur = false), 100)
+    if (debut === null) return
+    const a = Math.min(debut, fin), b = Math.max(debut, fin)
+    debut = fin = null
+    poser(a, b)
+  })
+  window.addEventListener('pointercancel', () => {
+    lacher()
+    pointeur = false
+    if (debut !== null) { debut = fin = null; rendre() }
+  })
+
+  $('bf').onclick = () => activer('F')
+  $('bo').onclick = () => activer('O')
+  haut($('haut'))
+  $('mois').innerHTML = MOIS_NAV
+  $('legende').innerHTML = LEGENDE
+  rendre()
+</script>

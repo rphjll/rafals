@@ -8,12 +8,15 @@ import AppSousMenu from './components/AppSousMenu.vue'
 import AppMessage from './components/ui/AppMessage.vue'
 import { useCompte } from './composables/useCompte'
 
-const { chargerCompte } = useCompte()
+const { compte, chargerCompte } = useCompte()
 onMounted(chargerCompte)
 
-// « Mon agenda » garde les formes d'avant (coins de 10 px, bordures, Figtree) : voir style.css, « style-classique »
+// « Mon agenda » du prestataire garde les formes d'avant (coins de 10 px, bordures, Figtree) : voir style.css,
+// « style-classique ». Le calendrier d'un simple client, lui, est dans le style du reste du site.
 const route = useRoute()
-watchEffect(() => document.documentElement.classList.toggle('style-classique', route.name === 'mon-agenda'))
+watchEffect(() =>
+  document.documentElement.classList.toggle('style-classique', route.name === 'mon-agenda' && !!compte.value?.prestataire_id),
+)
 </script>
 
 <template>

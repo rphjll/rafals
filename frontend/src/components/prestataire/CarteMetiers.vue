@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Mon activité › Mes métiers (.doc/ihm/RM-PROPOSER-IHM.md ; RM-ANNONCES.md) : la liste des métiers et leur date
+// Mon activité › Mes métiers (.doc/ihm/RM-PROPOSER-IHM.md ; RM-PRESTATAIRES.md) : la liste des métiers et leur date
 // d'arrêt. La date d'arrêt se règle dans « Mon agenda › Calendrier » (bouton [Date d'arrêt], refonte du 03/10/2026).
 // Métier arrêté : [Reprendre ce métier].
 import { appelerServeur, messageErreur } from '../../api'
@@ -19,7 +19,7 @@ async function reprendre(metier: MetierExerce) {
     emit('maj', await appelerServeur<ProfilPrestataire>('/api/moi/prestataire/metiers/fin', {
       metier_id: metier.id, fin_le: null, suivant_id: null,
     }))
-    afficherMessage(`${metier.nom} repris : republiez ses annonces dans « Mes annonces ».`)
+    afficherMessage(`${metier.nom} repris : vous apparaissez de nouveau dans ses recherches.`)
   } catch (e) {
     afficherMessage(messageErreur(e), 'erreur')
   }
@@ -39,7 +39,7 @@ async function reprendre(metier: MetierExerce) {
             <template v-if="profil.metier_principal_suivant">
               ensuite, {{ profil.metier_principal_suivant.nom }} deviendra votre métier principal.
             </template>
-            <template v-else>c'est votre seul métier ; votre profil restera affiché, sans annonce.</template>
+            <template v-else>c'est votre seul métier ; votre profil restera affiché.</template>
           </p>
         </div>
       </div>
@@ -64,7 +64,7 @@ async function reprendre(metier: MetierExerce) {
           <p class="flex flex-wrap items-center gap-2 font-semibold">
             {{ metier.nom }} <AppBadge>arrêté depuis le {{ formaterDate(metier.fin_le ?? '') }}</AppBadge>
           </p>
-          <p class="text-[13.5px] text-texte-doux">Ses annonces sont en pause : reprenez le métier, puis republiez-les.</p>
+          <p class="text-[13.5px] text-texte-doux">Vous n'apparaissez plus dans les recherches de ce métier.</p>
         </div>
         <AppBouton @click="reprendre(metier)">Reprendre ce métier</AppBouton>
       </div>
@@ -72,7 +72,7 @@ async function reprendre(metier: MetierExerce) {
     <p class="text-[13px] text-texte-doux">
       Ajouter un métier : [Modifier mon profil]. Arrêter un métier : dans
       <RouterLink to="/mon-agenda" class="font-semibold text-primaire">Mon agenda › Calendrier</RouterLink>, bouton
-      « Date d'arrêt ». Après cette date, les annonces du métier sont mises en pause (gardées), et les rendez-vous de ce
+      « Date d'arrêt ». Après cette date, vous n'apparaissez plus dans les recherches de ce métier, et les rendez-vous de ce
       métier pris après cette date sont annulés (clients prévenus).
     </p>
   </AppSection>

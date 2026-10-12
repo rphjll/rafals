@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Mon agenda › Calendrier › [Date d'arrêt] (.doc/ihm/RM-AGENDA-IHM.md ; RM-ANNONCES.md) : le dernier jour de travail
+// Mon agenda › Calendrier › [Date d'arrêt] (.doc/ihm/RM-AGENDA-IHM.md ; RM-PRESTATAIRES.md) : le dernier jour de travail
 // du métier de ce calendrier. Tous les jours d'après sont fermés. Métier principal : on choisit lequel le remplacera.
 import { computed, ref, watch } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
@@ -55,7 +55,7 @@ async function arreter() {
       <p>Dernier jour de travail : <b>{{ jourLisible(jour) }}</b>.</p>
       <p class="text-[13.5px] text-texte-doux">
         À partir du {{ jourCourt(ajouterJours(jour, 1)) }}, tous les jours du calendrier « {{ metier.nom }} » sont fermés
-        et ses annonces sont mises en pause. Les rendez-vous de ce métier pris après cette date sont annulés : chaque
+        . Les rendez-vous de ce métier pris après cette date sont annulés : chaque
         client est prévenu par mail.
       </p>
       <AppSelection
@@ -69,7 +69,7 @@ async function arreter() {
         Ensuite, {{ profil.metiers_secondaires[0]?.nom }} deviendra votre métier principal.
       </p>
       <p v-else-if="estPrincipal" class="text-[13.5px]">
-        C'est votre seul métier : après cette date, votre profil restera affiché, sans annonce.
+        C'est votre seul métier : après cette date, votre profil restera affiché.
       </p>
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     </div>

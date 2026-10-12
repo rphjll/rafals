@@ -13,7 +13,16 @@ Ce qu'un prestataire renseigne sur rafals (métiers, zone, SIRET) et quand les c
 ## Sans annonces : le prestataire se présente (décision de Raphael du 04/10/2026)
 Réponse de Raphael, mot pour mot : « je vais enlever le sistème d'annonce car c trop dur je vais plutot faire en sorte que ca soit les comptes qui se présentent et les clients qui postes des demandes et les prestataires qui acceptent ou non ou ne font rien ». Puis choix « b » : enlever vraiment les annonces. MLD validé par Raphael le 04/10/2026 (« oui ») : `.doc/mld/MLD-retrait-annonces.html`. Les lignes « (choix de Claude) » ont été proposées avec le MLD.
 
-⚠️ **Construit en partie le 07/10/2026** (demande de Raphael pour « Trouver un prestataire ») : les **photos de son travail** (table `photo_prestataire`, `db/schema_v24.sql`) et « **visible dès que le profil est rempli** » (la recherche ne demande plus d'annonce). Le reste (lieu dans le profil, devis sans annonce, retrait des annonces) attend les lots 9.1 à 9.4 ; d'ici là, le code suit encore `RM-ANNONCES.md` pour ces points.
+⚠️ **Construit en partie le 07/10/2026** (demande de Raphael pour « Trouver un prestataire ») : les **photos de son travail** (table `photo_prestataire`, `db/schema_v24.sql`) et « **visible dès que le profil est rempli** » (la recherche ne demande plus d'annonce). **Le lieu dans le profil est construit depuis le 08/10/2026** (lot 9.1, `db/schema_v25.sql`). **Le code des annonces est retiré depuis le 09/10/2026** (lots 9.2 et 9.3) : plus de page « Mes annonces », plus de réservation directe, devis demandé depuis le profil. Les tables des annonces restent dans la base jusqu'au lot 9.4. Un métier se retire maintenant du profil sans condition (avant : refusé s'il avait des annonces).
+
+**Lieu des services, précisions du 08/10/2026** (choix de Claude, lot 9.1) :
+- Les profils existants et les nouveaux partent sur « chez le client ».
+- « Chez moi » ou « les deux » demande que « Mon adresse » soit remplie (depuis le 07/10/2026, c'est aussi l'adresse du local), sinon : « Vos clients viennent chez vous : indiquez d'abord votre adresse dans « Mon adresse ». »
+  - Exemple 1 : Léa, coiffeuse, choisit « chez moi » sans adresse → refusé ; elle enregistre « 12 rue des Lilas, Talence », puis choisit « chez moi » → accepté.
+  - Exemple 2 : Karim, plombier, laisse « chez le client » → aucune adresse demandée.
+- Tant que le lieu n'est pas « chez le client », l'adresse ne s'efface pas : « Vos clients viennent chez vous : changez d'abord le lieu de vos services dans votre profil. »
+- Le filtre « Vient chez moi » de la recherche lit le lieu du profil (« chez le client » ou « les deux ») ; un prestataire qui a encore des annonces en ligne reste jugé sur elles jusqu'au lot 9.4.
+- La page publique dit le lieu : « Part de Pessac, se déplace jusqu'à 15 km », « Vous reçoit à Pessac (adresse donnée après un rendez-vous) », ou les deux.
 
 **Photos de son travail, précisions du 07/10/2026** (choix de Claude) : une photo ajoutée prend le rang suivant ; en retirer une fait remonter les suivantes d'un rang (on retire la n° 2 : la n° 3 devient la n° 2) ; les 2 premières sont sur sa carte dans « Trouver un prestataire », toutes sont sur sa page publique ; visibles par tous, sauf si l'activité est en pause, arrêtée ou bloquée ; une activité arrêtée ne peut plus en ajouter ni en retirer ; le fichier d'une photo retirée reste rangé (comme une ancienne photo de profil).
 - Exemple 1 : Karim ajoute « cuisine.jpg » puis « bain.jpg » → photos n° 1 et n° 2 ; il retire la n° 1 → « bain.jpg » devient la n° 1.
@@ -40,6 +49,58 @@ Réponse de Raphael, mot pour mot : « je vais enlever le sistème d'annonce car
 **Ce qui disparaît** : la réservation directe d'un horaire par le client, les prix affichés, la limite de 20 annonces, le réglage « confirmation automatique ».
 
 **Les moyens de paiement** se choisissent dans chaque proposition : espèces ; carte seulement avec un SIRET vérifié et le paiement par carte activé (`RM-PAIEMENTS.md`).
+
+## Limites d'un prestataire sans SIRET (validé par Raphael le 09/10/2026, règle par règle)
+Demande de Raphael du 04/10/2026, mot pour mot : « je veux que les prestataires ai une tres gros limite car sinon je pourrais avoir des problemes juridiques ». Proposition de Claude du 04/10/2026, reprise le 08/10/2026 (« c un peut strict sur certaines regles et d'autre pas assez »), puis tranchée une règle à la fois le 09/10/2026 ; écriture demandée par Raphael (« oui »).
+
+⚠️ **Pas encore construit** : aujourd'hui le code ne pose aucune de ces limites. ⚠️ **À montrer à un avocat avant la mise en ligne** : aucun de ces chiffres ne vient de la loi, et il n'existe pas de montant en dessous duquel on a le droit de travailler sans se déclarer.
+
+Ces limites valent pour tout prestataire dont le SIRET n'est pas « vérifié » (absent, à vérifier ou refusé). **Dès que le SIRET est vérifié, elles tombent toutes.**
+
+| # | Règle | Décision de Raphael |
+|---|---|---|
+| 1 | Métiers interdits sans SIRET | Plomberie, électricité, gaz, bâtiment, coiffure, esthétique, réparation auto, santé, garde d'enfants de moins de 3 ans, transport de personnes, alimentation (« A » : la liste proposée) |
+| 2 | Prix d'une proposition | 100 € au plus (« A ») |
+| 3 | Rendez-vous par mois | 2 au plus (« C 2 par mois » ; la proposition était 4) |
+| 4 | Total des rendez-vous par an | 1 000 € au plus (« A ») |
+| 5 | Durée sans SIRET | Pas de limite (« b pas de durés » ; la proposition était 6 mois) |
+| 6 | Affichage | Étiquette « Particulier, non professionnel » sur le profil et sur chaque proposition ; avertissement au client avant d'accepter : « Pas de facture, pas de garantie, pas d'assurance professionnelle. » (« A ») |
+| 7 | À fournir avant la première réponse | Vrai nom, vraie adresse (cachés du public, gardés par rafals), et la case « Mon activité est occasionnelle et je déclare mes revenus aux impôts », avec sa date (« bien comme ca ») |
+
+**Exemples.**
+- Emma, 19 ans, sans SIRET, fait 2 promenades de chien à 15 € en octobre. Un 3e client veut accepter sa proposition pour le 28/10 : refusé, « Emma a atteint sa limite du mois ». Elle peut de nouveau en avoir à partir du 1er novembre, et continuer ainsi des années tant qu'elle reste sous 1 000 € par an.
+- Karim, plombier sans SIRET : il ne voit pas de bouton [Répondre] sur « Fuite sous l'évier » (« La plomberie demande un SIRET »). Il se fait aider par rafals pour créer son auto-entreprise ; SIRET vérifié, il répond à tout, sans limite.
+- Emma propose « Débarrasser un garage, 250 € » : refusé, « Sans SIRET, une proposition ne peut pas dépasser 100 € ».
+- Emma a déjà fait 980 € cette année : une proposition de 40 € ne peut pas être acceptée ; elle lit « Vous avez atteint la limite des particuliers : créez votre auto-entreprise ».
+
+**Ce qui ne change pas** (règles déjà en place) : espèces seulement, pas de devis, pas de facture, pas de commission pour rafals.
+
+**Précisions données par Raphael le 09/10/2026** (réponses mot pour mot entre guillemets) :
+1. **Les métiers interdits sont rangés automatiquement, sans écran d'administration** (« non je ne veux pas m'ochuper de ca dans l'amin commande faut que ca soit automatique »). Claude range une fois pour toutes chaque métier de la liste en « SIRET obligatoire » ou « autorisé sans SIRET » ; un métier ajouté plus tard est « SIRET obligatoire » d'office (choix de Claude, par prudence).
+   - SIRET obligatoire, par exemple : Plombier, Électricien, Maçon, Coiffeur / Coiffeuse, Esthéticienne, Mécanicien, Infirmier / Infirmière, Assistante maternelle, Chauffeur privé / VTC, Traiteur.
+   - Autorisé sans SIRET, par exemple : Promeneur de chiens, Repassage, Montage de meubles, Soutien scolaire, Jardinier, Femme / Homme de ménage.
+   - La liste complète (129 métiers au 09/10/2026) sera écrite au moment de construire, et montrée à l'avocat avec le reste.
+2. **Les 1 000 € comptent seulement les rendez-vous qui ont eu lieu** (« ceux qui ont lieux ») : confirmés, dont l'heure est passée, ni annulés ni marqués « absent ». Un rendez-vous à venir ou annulé ne compte pas.
+3. **L'année, ce sont les 12 derniers mois** (« les 12 derrniers mois »). Ex. le 09/10/2026, on additionne les rendez-vous d'Emma qui ont eu lieu du 09/10/2025 au 09/10/2026.
+4. **2 rendez-vous par mois, pas 2 propositions** (choix « B ») : il peut envoyer autant de propositions qu'il veut ; il est bloqué quand 2 de ses propositions ont été acceptées pour ce mois-là.
+   - Exemple 1 : en octobre, Mme Dupont et M. Petit refusent les propositions d'Emma ; elle peut en envoyer une troisième à Mme Martin.
+   - Exemple 2 : Emma a déjà 2 rendez-vous confirmés en octobre (le 12 et le 20) ; Mme Martin ne peut pas accepter sa proposition pour le 28/10, mais elle peut accepter celle pour le 03/11.
+   - Précisé par Claude (à relire) : le mois est celui du calendrier, et c'est le jour du rendez-vous qui compte ; les rendez-vous confirmés à venir comptent dans les 2, un rendez-vous annulé ne compte plus.
+5. **Quand les 1 000 € sont atteints** (« si le plafond est atteit de plus de 1000 euro par ans a ce mement la oui elles sont retirés mais le resataire est prévenue ») : ses propositions encore en attente sont retirées, il est prévenu par mail, et il ne peut plus en envoyer tant qu'il est au-dessus (ou sans SIRET vérifié).
+   - Exemple : le rendez-vous du 20/10 porte Emma à 1 010 € sur 12 mois ; ses 2 propositions en attente passent à « retirée » et elle reçoit « Vous avez atteint la limite des particuliers : créez votre auto-entreprise ».
+   - Précisé par Claude (à relire) : un rendez-vous déjà confirmé n'est jamais annulé par rafals pour cette raison ; le total peut donc dépasser un peu 1 000 € (au plus de 2 rendez-vous de 100 €).
+
+**Pourquoi la règle 5 est à signaler à l'avocat** : sans limite de durée, un particulier peut rester sans SIRET indéfiniment ; la règle des 6 mois était celle qui poussait à se déclarer (remarque de Claude du 09/10/2026, Raphael a maintenu son choix).
+
+## Une seule adresse : l'adresse du prestataire est aussi son local (décision de Raphael du 07/10/2026)
+Réponse de Raphael, mot pour mot : « mon local et mon adress c la meme chose donc compress les pour que ca fasse que 1 fin juste pour le titre met mon adresse ».
+- Un prestataire n'a plus qu'une adresse à remplir, « Mon adresse ». L'enregistrer l'écrit aussi comme adresse de son local ; l'effacer efface aussi le local.
+  - Exemple 1 : Karim enregistre « 3 rue du Moulin, 33600 Pessac » dans « Mon adresse » → c'est son adresse de client **et** celle de son local.
+  - Exemple 2 : Léa, coiffeuse avec une annonce en ligne « au salon », veut effacer son adresse → refusé : « Des annonces en ligne ont lieu chez vous : mettez-les en pause ou changez leur lieu d'abord. »
+- L'adresse d'un simple client ne crée aucun local.
+- La base ne change pas : les tables `adresse` et `local` restent ; c'est le serveur qui recopie (`services/clients.py`). Choix de Claude, pour ne toucher à aucune table sans MLD.
+- ⚠️ Conséquence à connaître : un prestataire dont le salon n'est pas à son domicile ne peut plus donner deux adresses différentes.
+- Profil arrêté ou bloqué : l'adresse du compte se modifie toujours, le local ne bouge plus (choix de Claude).
 
 ## Un métier principal et des métiers secondaires (décidé le 27/09/2026)
 Un prestataire choisit **un métier principal** et peut ajouter **des métiers secondaires**. Il apparaît dans les recherches de tous ses métiers, mais pour un métier secondaire, il apparaît **après** les prestataires dont c'est le métier principal. Dans chaque groupe, les mieux notés d'abord.
@@ -118,7 +179,7 @@ Un prestataire sans annonce publiée n'apparaît dans aucune recherche (ex. Kari
 Le nom, l'adresse et le SIRET du prestataire sont recopiés sur chaque devis et chaque facture au moment où ils sont émis. Ex. Julie change de nom commercial en 2027 → ses factures de 2026 gardent l'ancien nom.
 
 ## Questions ouvertes
-- ⚠️ Prestataires sans SIRET payés en espèces : à faire vérifier juridiquement.
+- ⚠️ Prestataires sans SIRET payés en espèces : à faire vérifier juridiquement, avec les limites du § « Limites d'un prestataire sans SIRET » (09/10/2026).
 
 ## Références
 - `GLOSSAIRE-METIER.md`, `RM-COMPTES.md`

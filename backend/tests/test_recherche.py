@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.services.recherche import note_ponderee
-from tests.test_annonces import AUJOURD_HUI, carte_activee, menage, metiers, publier, siret_verifie  # noqa: F401 (fixture)
+from tests.test_prestataires import AUJOURD_HUI, carte_activee, metiers, siret_verifie  # noqa: F401 (fixture)
 from tests.test_prestataires import JPG, devenir, id_commune, id_metier
 
 
@@ -17,26 +17,21 @@ def villes(client) -> dict[str, int]:
 
 
 @pytest.fixture
-def fabrique(fabrique_compte, metiers, villes, base: Session):  # noqa: F811
-    """Un prestataire avec une annonce en ligne : fabrique("Sophie", "Bordeaux", "Électricien", km=30, prix=5000…).
+def fabrique(fabrique_compte, metiers, villes):  # noqa: F811
+    """Un prestataire visible : fabrique("Sophie", "Bordeaux", "Électricien", km=30…).
     fabrique.noms(page) : les noms des prestataires créés PAR CE TEST, dans l'ordre des résultats (la base de test
     contient aussi ceux des autres tests, parfois avec le même nom)."""
     crees: dict[int, str] = {}
 
-    def fabriquer(nom: str, ville: str, principal: str, *, secondaires: tuple[str, ...] = (), km: int = 30,
-                  annonce_dans: str | None = None, **annonce):
+    def fabriquer(nom: str, ville: str, principal: str, *, secondaires: tuple[str, ...] = (), km: int = 30):
         compte = fabrique_compte()
-        reponse = devenir(compte, {"nom_affiche": f"ZZTEST {nom}", "metier_principal_id": metiers[principal],
-                                   "commune_id": villes[ville], "distance_km": km,
-                                   "metiers_secondaires": [metiers[m] for m in secondaires]})
+        compte.profil = {"nom_affiche": f"ZZTEST {nom}", "metier_principal_id": metiers[principal],
+                         "commune_id": villes[ville], "distance_km": km,
+                         "metiers_secondaires": [metiers[m] for m in secondaires]}
+        reponse = devenir(compte, compte.profil)
         assert reponse.status_code == 201, reponse.text
         compte.prestataire_id = reponse.json()["id"]
         crees[compte.prestataire_id] = nom
-        if annonce.get("forme_prix") == "devis":
-            siret_verifie(base, compte)  # « sur devis » demande un SIRET vérifié (lot 5.3)
-        if annonce_dans != "":
-            reponse = publier(compte, menage(metiers[annonce_dans or principal], titre=f"Annonce de {nom}", **annonce))
-            assert reponse.status_code == 201, reponse.text
         return compte
 
     fabriquer.noms = lambda page: [crees[r["prestataire_id"]] for r in page["resultats"] if r["prestataire_id"] in crees]
@@ -69,25 +64,25 @@ def test_seulement_dans_le_rayon(fabrique, client, metiers, villes) -> None:
     assert 3 <= karim["distance_km"] <= 10 and karim["ville"] == "Pessac"
 
 
-def test_sans_annonce_on_apparait_quand_meme_sauf_en_pause(fabrique, client, metiers, villes) -> None:
+def test_profil_rempli_on_apparait_sauf_en_pause(fabrique, client, metiers, villes) -> None:
     # RM-RECHERCHE § « Sans annonces » : il suffit d'être actif, d'exercer le métier et de couvrir la ville
-    fabrique("Sans annonce", "Pessac", "Plombier", annonce_dans="")
-    fabrique("Annonce ailleurs", "Pessac", "Plombier", secondaires=("Électricien",), annonce_dans="Électricien")
-    fabrique("Autre métier", "Pessac", "Coiffeur", annonce_dans="")
+    fabrique("Plombier seul", "Pessac", "Plombier")
+    fabrique("Deux métiers", "Pessac", "Plombier", secondaires=("Électricien",))
+    fabrique("Autre métier", "Pessac", "Coiffeur")
     en_pause = fabrique("En pause", "Pessac", "Plombier")
     en_pause.client.post("/api/moi/prestataire/statut", json={"action": "pause"})
 
     page = chercher(client, metiers["Plombier"], villes["Talence"])
     noms = set(fabrique.noms(page))
 
-    assert {"Sans annonce", "Annonce ailleurs"} <= noms and not {"Autre métier", "En pause"} & noms
-    sans = next(r for r in page["resultats"] if fabrique.noms({"resultats": [r]}) == ["Sans annonce"])
-    assert sans["metier"] == "Plombier" and sans["a_partir_de_centimes"] is None and sans["nombre_annonces"] == 0
-    assert sans["siret_verifie"] is False and sans["photos"] == []
+    assert {"Plombier seul", "Deux métiers"} <= noms and not {"Autre métier", "En pause"} & noms
+    seul = next(r for r in page["resultats"] if fabrique.noms({"resultats": [r]}) == ["Plombier seul"])
+    assert seul["metier"] == "Plombier" and "a_partir_de_centimes" not in seul and "nombre_annonces" not in seul
+    assert seul["siret_verifie"] is False and seul["photos"] == [] and seul["vient_chez_vous"] is True
 
 
 def test_metier_arrete_n_apparait_plus(fabrique, client, metiers, villes, base: Session) -> None:
-    karim = fabrique("Karim", "Pessac", "Plombier", secondaires=("Électricien",), annonce_dans="Électricien")
+    karim = fabrique("Karim", "Pessac", "Plombier", secondaires=("Électricien",))
     karim.client.post("/api/moi/prestataire/metiers/fin", json={"metier_id": metiers["Électricien"], "fin_le": AUJOURD_HUI.isoformat()})
     base.execute(text("UPDATE metier_secondaire SET fin_le = fin_le - 1 WHERE prestataire_id = :id"), {"id": karim.prestataire_id})
     base.commit()
@@ -100,7 +95,7 @@ def test_metier_arrete_n_apparait_plus(fabrique, client, metiers, villes, base: 
 
 def test_metier_principal_avant_secondaire_meme_plus_loin(fabrique, client, metiers, villes) -> None:
     # RM-PRESTATAIRES : Sophie électricienne (principal) passe avant Karim (électricien en métier secondaire)
-    fabrique("Karim", "Talence", "Plombier", secondaires=("Électricien",), annonce_dans="Électricien")
+    fabrique("Karim", "Talence", "Plombier", secondaires=("Électricien",))
     fabrique("Sophie", "Bordeaux", "Électricien")
 
     ordre = fabrique.noms(chercher(client, metiers["Électricien"], villes["Talence"]))
@@ -120,7 +115,7 @@ def test_sans_avis_tous_nouveaux_puis_le_plus_proche(fabrique, client, metiers, 
 
 
 def test_tri_les_plus_proches(fabrique, client, metiers, villes) -> None:
-    fabrique("Secondaire proche", "Talence", "Plombier", secondaires=("Maçon",), annonce_dans="Maçon")
+    fabrique("Secondaire proche", "Talence", "Plombier", secondaires=("Maçon",))
     fabrique("Principal loin", "Mérignac", "Maçon")
 
     par_note = fabrique.noms(chercher(client, metiers["Maçon"], villes["Talence"]))
@@ -140,19 +135,13 @@ def test_note_ponderee() -> None:
 # ---------- Carte d'un prestataire ----------
 
 
-def test_une_carte_par_prestataire_a_partir_du_moins_cher(fabrique, client, metiers, villes, base: Session) -> None:
-    karim = fabrique("Karim", "Pessac", "Plombier", prix_centimes=5000)
-    siret_verifie(base, karim)  # « sur devis » demande un SIRET vérifié (lot 5.3)
-    publier(karim, menage(metiers["Plombier"], titre="À l'heure", forme_prix="heure", prix_centimes=4000,
-                          duree_minutes=None, heures_min=1, heures_max=3))
-    publier(karim, menage(metiers["Plombier"], titre="Chauffe-eau", forme_prix="devis", prix_centimes=None, duree_minutes=None))
+def test_une_carte_par_prestataire_sans_coordonnees(fabrique, client, metiers, villes) -> None:
+    karim = fabrique("Karim", "Pessac", "Plombier", secondaires=("Électricien",))
 
     page = chercher(client, metiers["Plombier"], villes["Talence"])
     cartes = [r for r in page["resultats"] if r["prestataire_id"] == karim.prestataire_id]
 
-    assert len(cartes) == 1
-    assert cartes[0]["nombre_annonces"] == 3
-    assert cartes[0]["a_partir_de_centimes"] == 4000 and cartes[0]["a_partir_de_par_heure"] is True
+    assert len(cartes) == 1 and cartes[0]["carte_possible"] is False
     assert "telephone" not in str(page) and "0600000000" not in str(page)
 
 
@@ -160,9 +149,10 @@ def test_une_carte_par_prestataire_a_partir_du_moins_cher(fabrique, client, meti
 
 
 def test_filtre_vient_chez_moi(fabrique, client, metiers, villes) -> None:
-    lea = fabrique("Léa salon", "Talence", "Coiffeur", annonce_dans="")
-    lea.client.post("/api/moi/local", json={"ligne": "12 rue des Lilas", "commune_id": villes["Talence"], "code_postal": "33400"})
-    publier(lea, menage(metiers["Coiffeur"], titre="Coupe au salon", lieu="chez_moi"))
+    # Léa reçoit au salon (lieu « chez moi » dans son profil, avec son adresse) ; Nina se déplace
+    lea = fabrique("Léa salon", "Talence", "Coiffeur")
+    lea.client.post("/api/moi/adresse", json={"ligne": "12 rue des Lilas", "commune_id": villes["Talence"], "code_postal": "33400"})
+    assert lea.client.post("/api/moi/prestataire/modifier", json=lea.profil | {"lieu": "chez_moi"}).status_code == 200
     fabrique("Nina domicile", "Talence", "Coiffeur")
 
     tous = fabrique.noms(chercher(client, metiers["Coiffeur"], villes["Talence"]))
@@ -173,36 +163,15 @@ def test_filtre_vient_chez_moi(fabrique, client, metiers, villes) -> None:
 
 
 def test_filtre_paiement_par_carte(fabrique, client, metiers, villes, base: Session) -> None:
-    julie = fabrique("Julie carte", "Talence", "Maçon", annonce_dans="")
+    # « Carte bancaire acceptée » : SIRET vérifié et paiement par carte activé
+    julie = fabrique("Julie carte", "Talence", "Maçon")
     siret_verifie(base, julie)
     carte_activee(base, julie)
-    publier(julie, menage(metiers["Maçon"], titre="Muret", paiement_carte=True))
     fabrique("Paul espèces", "Talence", "Maçon")
 
     avec_carte = fabrique.noms(chercher(client, metiers["Maçon"], villes["Talence"], carte_bancaire=True))
 
     assert "Julie carte" in avec_carte and "Paul espèces" not in avec_carte
-
-
-def test_filtre_prix_maximum_garde_les_devis(fabrique, client, metiers, villes) -> None:
-    fabrique("Cher", "Talence", "Maçon", prix_centimes=8000)
-    fabrique("Pas cher", "Talence", "Maçon", prix_centimes=4500)
-    fabrique("Devis", "Talence", "Maçon", forme_prix="devis", prix_centimes=None, duree_minutes=None)
-
-    resultat = fabrique.noms(chercher(client, metiers["Maçon"], villes["Talence"], prix_max=60))
-
-    assert {"Pas cher", "Devis"} <= set(resultat) and "Cher" not in resultat
-
-
-def test_filtre_libre_dans_les_7_jours(fabrique, client, metiers, villes) -> None:
-    ouvert = fabrique("Ouvert", "Talence", "Maçon")
-    tous_les_jours = [{"jour_semaine": j, "debut": "08:00", "fin": "20:00"} for j in range(1, 8)]
-    ouvert.client.post("/api/moi/agenda/semaine", json={"plages": tous_les_jours})
-    fabrique("Sans horaires", "Talence", "Maçon")
-
-    libres = fabrique.noms(chercher(client, metiers["Maçon"], villes["Talence"], libre_7_jours=True))
-
-    assert "Ouvert" in libres and "Sans horaires" not in libres
 
 
 # ---------- Pages et aucun résultat ----------
@@ -252,9 +221,9 @@ def rubrique_entiere(client, dossier_id: int, ville_id: int) -> dict:
 
 
 def test_rubriques_par_dossier_pour_une_ville(fabrique, client, metiers, villes, base: Session) -> None:
-    karim = fabrique("Karim", "Pessac", "Plombier", secondaires=("Coiffeur",), annonce_dans="")
-    fabrique("Luc", "Libourne", "Plombier", km=10, annonce_dans="")  # Talence est hors de son rayon
-    en_pause = fabrique("En pause", "Pessac", "Plombier", annonce_dans="")
+    karim = fabrique("Karim", "Pessac", "Plombier", secondaires=("Coiffeur",))
+    fabrique("Luc", "Libourne", "Plombier", km=10)  # Talence est hors de son rayon
+    en_pause = fabrique("En pause", "Pessac", "Plombier")
     en_pause.client.post("/api/moi/prestataire/statut", json={"action": "pause"})
     dossier = {nom: base.execute(text("SELECT categorie_id FROM metier WHERE id = :id"), {"id": metiers[nom]}).scalar_one()
                for nom in ("Plombier", "Coiffeur")}
@@ -281,7 +250,7 @@ def test_rubriques_par_dossier_pour_une_ville(fabrique, client, metiers, villes,
 
 def test_rubrique_une_seule_carte_par_prestataire_avec_ses_2_premieres_photos(fabrique, client, metiers, villes, base: Session) -> None:
     # Plombier et électricien sont dans le même dossier : une seule carte, celle du métier principal
-    karim = fabrique("Karim", "Pessac", "Électricien", secondaires=("Plombier",), annonce_dans="")
+    karim = fabrique("Karim", "Pessac", "Électricien", secondaires=("Plombier",))
     dossiers = {base.execute(text("SELECT categorie_id FROM metier WHERE id = :id"), {"id": metiers[nom]}).scalar_one()
                 for nom in ("Plombier", "Électricien")}
     siret_verifie(base, karim)
@@ -300,7 +269,7 @@ def test_rubrique_une_seule_carte_par_prestataire_avec_ses_2_premieres_photos(fa
 def test_rubriques_limitees_a_10_cartes_et_voir_tout(fabrique, client, metiers, villes, monkeypatch, base: Session) -> None:
     monkeypatch.setattr(reglages, "RECHERCHE_CARTES_PAR_RUBRIQUE", 2)
     for nom in ("Un", "Deux", "Trois"):
-        fabrique(nom, "Talence", "Maçon", annonce_dans="")
+        fabrique(nom, "Talence", "Maçon")
     dossier_id = base.execute(text("SELECT categorie_id FROM metier WHERE id = :id"), {"id": metiers["Maçon"]}).scalar_one()
 
     courte = next(r for r in rubriques_de(client, villes["Talence"]) if r["dossier_id"] == dossier_id)
@@ -318,13 +287,13 @@ def test_rubriques_ville_inconnue_ou_dossier_vide(client, villes) -> None:
 # ---------- Page publique d'un prestataire ----------
 
 
-def test_page_publique_profil_et_annonces_sans_coordonnees(fabrique, client) -> None:
+def test_page_publique_profil_sans_coordonnees(fabrique, client) -> None:
     karim = fabrique("Karim", "Pessac", "Plombier", secondaires=("Électricien",))
 
     page = client.get(f"/api/prestataires/{karim.prestataire_id}")
 
     assert page.status_code == 200
-    assert page.json()["nom_affiche"] == "ZZTEST Karim" and len(page.json()["annonces"]) == 1
+    assert page.json()["nom_affiche"] == "ZZTEST Karim" and "annonces" not in page.json()
     assert [m["nom"] for m in page.json()["metiers"]] == ["Plombier", "Électricien"]
     assert karim.email not in page.text and "0600000000" not in page.text
 

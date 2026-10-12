@@ -70,7 +70,7 @@ function modifier(metier: MetierComplet) {
   erreurFenetre.value = ''
 }
 
-// Désactiver : le métier disparaît pour tout le monde (recherche, dossiers, nouvelles annonces) ; réversible
+// Désactiver : le métier disparaît pour tout le monde (recherche, dossiers, profils) ; réversible
 async function basculer(metier: MetierComplet) {
   try {
     await appelerServeur(`/api/admin/metiers/${metier.id}`, {

@@ -35,6 +35,7 @@ class ProfilDemande(BaseModel):
     presentation: str | None = None
     siret: str | None = None
     metiers_secondaires: list[int] = []
+    lieu: str = "chez_client"
 
 
 class MetierCourt(BaseModel):
@@ -58,6 +59,7 @@ class ProfilVisible(BaseModel):
     metiers_arretes: list[MetierExerce]
     commune: CommuneVisible
     distance_km: int
+    lieu: str  # chez_client, chez_moi ou les_deux
     siret: str | None
     siret_statut: str
     statut: str
@@ -116,6 +118,7 @@ def visible(db: Base, prestataire: Prestataire) -> ProfilVisible:
         ],
         commune=commune_visible(db.get_one(Commune, prestataire.commune_id)),
         distance_km=prestataire.distance_km,
+        lieu=prestataire.lieu,
         siret=prestataire.siret,
         siret_statut=prestataire.siret_statut,
         statut=prestataire.statut,
@@ -176,7 +179,7 @@ async def photo(fichier: UploadFile, db: Base, compte: CompteConnecte) -> Profil
 
 @routeur.post("/moi/prestataire/metiers/fin")
 def fin_metier(donnees: FinMetier, db: Base, compte: CompteConnecte) -> ProfilVisible:
-    """Date de fin d'un métier (vide = l'enlever, ou reprendre un métier arrêté) : RM-ANNONCES."""
+    """Date de fin d'un métier (vide = l'enlever, ou reprendre un métier arrêté)."""
     prestataire = service.fixer_fin_metier(
         db, mon_profil_ou_404(db, compte), donnees.metier_id, donnees.fin_le, donnees.suivant_id, maintenant()
     )
@@ -191,7 +194,7 @@ def statut(donnees: ActionStatut, db: Base, compte: CompteConnecte) -> ProfilVis
     return visible(db, prestataire)
 
 
-# ---------- Photo d'un prestataire (pour tous : elle sera montrée sur ses annonces) ----------
+# ---------- Photo d'un prestataire (pour tous) ----------
 
 
 @routeur.post("/moi/prestataire/photos")

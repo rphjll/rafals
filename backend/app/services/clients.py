@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.agenda import Blocage, Ouverture, PlageHoraire
-from app.modeles.annonces import Annonce, Local
+from app.modeles.annonces import Local
 from app.modeles.avis import Avis
 from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte, SessionConnexion
@@ -19,11 +19,20 @@ from app.modeles.journal import JournalAction
 from app.modeles.metiers import Metier, PropositionMetier
 from app.modeles.prestataires import Commune, MetierSecondaire, Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import communes, journal, mails
+from app.services import communes, journal, locaux, mails
 from app.services.erreurs import ErreurRegle
 from app.services.securite import hacher_mot_de_passe, mot_de_passe_correct
 
 # ---------- Adresse ----------
+# Pour un prestataire, « Mon adresse » est aussi l'adresse de son local (décision de Raphael du 07/10/2026 :
+# « mon local et mon adress c la meme chose ») : l'enregistrer ou l'effacer fait la même chose sur le local.
+
+
+def _prestataire_modifiable(db: Session, compte: Compte) -> Prestataire | None:
+    """Son profil de prestataire, sauf s'il est arrêté ou bloqué (son local ne se modifie plus)."""
+    prestataire = db.scalar(select(Prestataire).where(Prestataire.compte_id == compte.id))
+    return prestataire if prestataire is not None and prestataire.statut not in ("arrete", "bloque") else None
+
 
 
 def adresse_de(db: Session, compte: Compte) -> Adresse | None:
@@ -50,10 +59,20 @@ def enregistrer_adresse(
         db, auteur_id=compte.id, action="enregistrer_adresse", table_cible="adresse", ligne_id=adresse.id,
         avant=avant, apres={"ligne": ligne, "commune_id": commune.id}, maintenant=maintenant,
     )
+    prestataire = _prestataire_modifiable(db, compte)
+    if prestataire is not None:
+        locaux.enregistrer_local(db, prestataire, ligne=ligne, complement=complement, commune_id=commune.id,
+                                 code_postal=code_postal, maintenant=maintenant)
     return adresse
 
 
 def effacer_adresse(db: Session, compte: Compte, maintenant: datetime) -> None:
+    """Prestataire : refusé tant que ses clients viennent chez lui (il n'aurait plus d'adresse à leur donner)."""
+    prestataire = _prestataire_modifiable(db, compte)
+    if prestataire is not None:
+        if prestataire.lieu != "chez_client":
+            raise ErreurRegle("Vos clients viennent chez vous : changez d'abord le lieu de vos services dans votre profil.")
+        locaux.effacer_local(db, prestataire, maintenant)
     adresse = adresse_de(db, compte)
     if adresse is None:
         return
@@ -169,13 +188,6 @@ def exporter(db: Session, compte: Compte, maintenant: datetime) -> dict[str, Any
                  "commune": db.get_one(Commune, local.commune_id).nom}
                 for local in db.scalars(select(Local).where(Local.prestataire_id == prestataire.id))
             ],
-            "annonces": [
-                {"titre": a.titre, "metier": db.get_one(Metier, a.metier_id).nom, "description": a.description,
-                 "forme_prix": a.forme_prix, "prix_centimes": a.prix_centimes, "duree_minutes": a.duree_minutes,
-                 "heures_min": a.heures_min, "heures_max": a.heures_max, "lieu": a.lieu, "statut": a.statut,
-                 "cree_le": _date(a.cree_le)}
-                for a in db.scalars(select(Annonce).where(Annonce.prestataire_id == prestataire.id).order_by(Annonce.cree_le))
-            ],
             "agenda": {
                 "semaine_type": [
                     {"metier": db.get_one(Metier, p.metier_id).nom, "jour": p.jour_semaine, "debut": p.debut.isoformat(),
@@ -211,7 +223,7 @@ def _effacer_donnees_personnelles(db: Session, compte: Compte, maintenant: datet
     adresse = adresse_de(db, compte)
     if adresse is not None:
         db.delete(adresse)
-    # L'adresse du local d'un ancien prestataire peut être son domicile : effacée aussi (ses annonces restent, sans adresse)
+    # L'adresse du local d'un ancien prestataire peut être son domicile : effacée aussi
     prestataire = db.scalar(select(Prestataire).where(Prestataire.compte_id == compte.id))
     if prestataire is not None:
         for local in db.scalars(select(Local).where(Local.prestataire_id == prestataire.id)):

@@ -8,10 +8,10 @@ from pydantic import BaseModel
 from sqlalchemy import select
 
 from app import reglages
-from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
 from app.modeles.devis import DemandeDevis, Devis
 from app.modeles.fichiers import Fichier
+from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
 from app.routes.dependances import Administrateur, Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
@@ -26,7 +26,8 @@ routeur = APIRouter(prefix="/api")
 
 
 class NouvelleDemande(BaseModel):
-    annonce_id: int
+    prestataire_id: int
+    metier_id: int
     texte: str
 
 
@@ -113,8 +114,7 @@ class DevisVisible(BaseModel):
 
 class DemandeVisible(BaseModel):
     id: int
-    annonce_id: int
-    titre: str  # le titre de l'annonce (« Muret de jardin »)
+    titre: str  # le métier concerné (« Maçon »)
     texte: str
     nombre_photos: int
     lieu: str | None  # « 8 allée des Pins, 33400 Talence »
@@ -163,7 +163,7 @@ def demande_visible(db: Base, demande: DemandeDevis, *, cote: Literal["client", 
         commune = db.get_one(Commune, demande.commune_id).nom if demande.commune_id else ""
         lieu = f"{demande.adresse_ligne}{complement}, {demande.code_postal} {commune}"
     return DemandeVisible(
-        id=demande.id, annonce_id=demande.annonce_id, titre=db.get_one(Annonce, demande.annonce_id).titre, texte=demande.texte,
+        id=demande.id, titre=db.get_one(Metier, demande.metier_id).nom, texte=demande.texte,
         nombre_photos=len(service.photos_de(db, demande)), lieu=lieu, statut=demande.statut, motif=demande.motif,
         cree_le=demande.cree_le, autre=autre, devis=devis_visible(db, devis) if devis else None,
     )
@@ -189,7 +189,7 @@ class ProblemeAdministre(BaseModel):
 
 @routeur.post("/devis/demandes", status_code=201)
 def demander(donnees: NouvelleDemande, db: Base, compte: CompteConnecte) -> DemandeVisible:
-    demande = service.demander(db, compte, donnees.annonce_id, donnees.texte, maintenant())
+    demande = service.demander(db, compte, donnees.prestataire_id, donnees.metier_id, donnees.texte, maintenant())
     db.commit()
     return demande_visible(db, demande, cote="client")
 
@@ -358,7 +358,7 @@ def problemes(db: Base, _admin: Administrateur) -> list[ProblemeAdministre]:
         demande = service.demande_de(db, devis)
         client = db.get_one(Compte, demande.client_id)
         lignes.append(ProblemeAdministre(
-            devis_id=devis.id, numero=service.numero(devis), titre=db.get_one(Annonce, demande.annonce_id).titre,
+            devis_id=devis.id, numero=service.numero(devis), titre=db.get_one(Metier, demande.metier_id).nom,
             client=f"{client.prenom} {client.nom}", prestataire=db.get_one(Prestataire, demande.prestataire_id).nom_affiche,
             probleme=devis.probleme or "", probleme_le=devis.probleme_le or devis.envoye_le,
         ))

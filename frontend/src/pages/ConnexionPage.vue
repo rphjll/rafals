@@ -13,7 +13,7 @@ import { useMessage } from '../composables/useMessage'
 
 const route = useRoute()
 const routeur = useRouter()
-// Retour à la page d'avant (ex. une annonce : /connexion?retour=/annonces/12) ; seulement une page de rafals
+// Retour à la page d'avant (ex. la page d'un prestataire : /connexion?retour=/prestataires/12) ; seulement une page de rafals
 const retour = typeof route.query.retour === 'string' && /^\/(?!\/)/.test(route.query.retour) ? route.query.retour : '/'
 const { seConnecter, compte } = useCompte()
 const { afficherMessage } = useMessage()

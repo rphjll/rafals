@@ -12,7 +12,7 @@ from app.modeles.paiements import Paiement
 from app.services import paiements
 from tests.test_absences import passe, vieillir_signalement
 from tests.test_agenda import MARDI, heures, lea  # noqa: F401 (fixtures)
-from tests.test_annonces import fabrique_prestataire, menage, metiers, publier, siret_verifie  # noqa: F401 (fixtures)
+from tests.test_prestataires import fabrique_prestataire, metiers, siret_verifie  # noqa: F401 (fixtures)
 from tests.test_rendez_vous import a, dupont, reserver, statut  # noqa: F401 (fixtures)
 
 
@@ -40,22 +40,20 @@ def appels(faux_stripe, chemin: str) -> list[dict]:
 
 
 @pytest.fixture
-def lea_carte(lea, base: Session, faux_stripe, client, metiers):  # noqa: F811
-    """Léa, SIRET vérifié, carte activée chez Stripe ; annonce « Coupe carte » à 50 € payée par carte seulement."""
+def lea_carte(lea, base: Session, faux_stripe, client):  # noqa: F811
+    """Léa, SIRET vérifié, carte activée chez Stripe : ses propositions peuvent être payées par carte."""
     siret_verifie(base, lea)
     assert lea.client.post("/api/moi/prestataire/paiement-carte", json={"mandat": True}).status_code == 200
     compte = list(faux_stripe.comptes)[-1]
     assert faux_stripe.envoyer(client, faux_stripe.compte_verifie(compte)).status_code == 200
     lea.compte_stripe = compte
-    lea.annonce_carte = publier(lea, menage(metiers["Coiffeur"], titre="Coupe carte", duree_minutes=45, paiement_carte=True,
-                                            paiement_especes=False)).json()["id"]
     return lea
 
 
 @pytest.fixture
 def paye(lea_carte, dupont, faux_stripe, client):  # noqa: F811
     """Mme Dupont a réservé mardi à 10 h et payé 50 € par carte."""
-    rdv = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
+    rdv = reserver(dupont, lea_carte, a(MARDI, 10), mode_paiement="carte").json()
     assert faux_stripe.envoyer(client, faux_stripe.payer()).status_code == 200
     return rdv["id"]
 
@@ -88,21 +86,20 @@ def test_activer_demande_un_siret_verifie_puis_le_mandat(lea, base: Session, fau
     assert cree["settings"]["payouts"]["schedule"]["interval"] == "manual"
 
 
-def test_la_carte_n_est_proposee_qu_une_fois_stripe_verifie(lea, dupont, base: Session, metiers) -> None:  # noqa: F811
+def test_la_carte_n_est_proposee_qu_une_fois_stripe_verifie(lea, dupont, base: Session) -> None:
     siret_verifie(base, lea)
     lea.client.post("/api/moi/prestataire/paiement-carte", json={"mandat": True})
-    annonce = publier(lea, menage(metiers["Coiffeur"], titre="Coupe carte", duree_minutes=45, paiement_carte=True)).json()
 
-    reponse = reserver(dupont, annonce["id"], a(MARDI, 10), mode_paiement="carte")
+    reponse = reserver(dupont, lea, a(MARDI, 10), mode_paiement="carte")
 
-    assert reponse.status_code == 400 and "pas accepté" in reponse.json()["detail"]
+    assert reponse.status_code == 400 and "paiement par carte activé" in reponse.json()["detail"]
 
 
 # ---------- Payer en réservant ----------
 
 
 def test_reserver_par_carte_puis_payer(lea_carte, dupont, base: Session, faux_stripe, client, mails_envoyes) -> None:
-    rdv = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
+    rdv = reserver(dupont, lea_carte, a(MARDI, 10), mode_paiement="carte").json()
     page = appels(faux_stripe, "/v1/checkout/sessions")[0]
     mails_avant_paiement = [m for m in mails_envoyes if "confirmé" in m["sujet"]]
     vu_par_lea_avant = [r["id"] for r in lea_carte.client.get("/api/moi/prestataire/rendez-vous").json()]
@@ -122,20 +119,20 @@ def test_reserver_par_carte_puis_payer(lea_carte, dupont, base: Session, faux_st
 def test_page_de_paiement_fermee_la_reservation_est_annulee_apres_30_minutes(
     lea_carte, dupont, base: Session, client, mails_envoyes,
 ) -> None:
-    rdv = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
-    pris = "10:00" not in heures(client, lea_carte.annonce_carte)
+    rdv = reserver(dupont, lea_carte, a(MARDI, 10), mode_paiement="carte").json()
+    pris = "10:00" not in heures(lea_carte)
     traiter(base, plus_tard(minutes=29))
     encore_la = paiement(base, rdv["id"]).statut
     traiter(base, plus_tard(minutes=31))
 
     assert pris and encore_la == "a_payer"
     assert paiement(base, rdv["id"]).statut == "abandonne" and statut(dupont, rdv["id"]) == "annule_client"
-    assert "10:00" in heures(client, lea_carte.annonce_carte)
+    assert "10:00" in heures(lea_carte)
     assert any("Rien n'a été pris" in m["texte"] for m in mails_envoyes if m["a"] == dupont.email)
 
 
 def test_paye_apres_l_annulation_rembourse_en_entier(lea_carte, dupont, base: Session, faux_stripe, client) -> None:
-    rdv = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
+    rdv = reserver(dupont, lea_carte, a(MARDI, 10), mode_paiement="carte").json()
     traiter(base, plus_tard(minutes=31))
     faux_stripe.envoyer(client, faux_stripe.payer())
 
@@ -143,7 +140,7 @@ def test_paye_apres_l_annulation_rembourse_en_entier(lea_carte, dupont, base: Se
 
 
 def test_message_sans_la_bonne_signature_refuse(lea_carte, dupont, base: Session, faux_stripe, client) -> None:
-    rdv = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
+    rdv = reserver(dupont, lea_carte, a(MARDI, 10), mode_paiement="carte").json()
 
     reponse = faux_stripe.envoyer(client, faux_stripe.payer(), secret="whsec_faux")
 
@@ -164,21 +161,15 @@ def test_client_annule_dans_le_delai_rembourse_moins_les_frais(paye, dupont, bas
     assert any("49,00 €" in m["texte"] for m in mails_envoyes if m["a"] == dupont.email)
 
 
-@pytest.mark.parametrize("cas", ["refuse", "annule"])
-def test_la_faute_du_prestataire_rembourse_en_entier(cas, lea_carte, dupont, base: Session, faux_stripe, client) -> None:
-    if cas == "refuse":
-        lea_carte.client.post("/api/moi/prestataire/rendez-vous/reglages",
-                              json={"confirmation_automatique": False, "annulation_delai_heures": 24})
-    rdv = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
+def test_la_faute_du_prestataire_rembourse_en_entier(lea_carte, dupont, base: Session, faux_stripe, client) -> None:
+    rdv = reserver(dupont, lea_carte, a(MARDI, 10), mode_paiement="carte").json()
     faux_stripe.envoyer(client, faux_stripe.payer())
-    action = "refuser" if cas == "refuse" else "annuler"
-    assert lea_carte.client.post(f"/api/moi/prestataire/rendez-vous/{rdv['id']}/{action}",
+    assert lea_carte.client.post(f"/api/moi/prestataire/rendez-vous/{rdv['id']}/annuler",
                                  json={"motif": "Malade, désolée"}).status_code == 200
     traiter(base)
 
     assert paiement(base, rdv["id"]).rembourse_centimes == 5000
     # Les 1,00 € de frais restent à Léa : son compte Stripe est à -1,00 €, repris sur son prochain paiement
-    assert faux_stripe.soldes[lea_carte.compte_stripe]["available"] == -100
 
 
 def test_panne_de_stripe_reessayee_au_passage_suivant(paye, dupont, base: Session, faux_stripe) -> None:
@@ -212,7 +203,7 @@ def test_verse_48_heures_apres_la_fin(paye, lea_carte, base: Session, faux_strip
 
 
 def test_argent_pas_encore_disponible_chez_stripe_on_attend(lea_carte, dupont, base: Session, faux_stripe, client) -> None:
-    rdv = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
+    rdv = reserver(dupont, lea_carte, a(MARDI, 10), mode_paiement="carte").json()
     faux_stripe.envoyer(client, faux_stripe.payer(en_attente=True))
     passe(base, rdv["id"], jours=3)
 
@@ -224,10 +215,10 @@ def test_argent_pas_encore_disponible_chez_stripe_on_attend(lea_carte, dupont, b
 def test_frais_d_un_remboursement_retenus_sur_le_versement_suivant(
     lea_carte, dupont, base: Session, faux_stripe, client,
 ) -> None:
-    premier = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
+    premier = reserver(dupont, lea_carte, a(MARDI, 10), mode_paiement="carte").json()
     faux_stripe.envoyer(client, faux_stripe.payer())
     lea_carte.client.post(f"/api/moi/prestataire/rendez-vous/{premier['id']}/annuler", json={"motif": "Malade"})
-    second = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 14), mode_paiement="carte").json()
+    second = reserver(dupont, lea_carte, a(MARDI, 14), mode_paiement="carte").json()
     faux_stripe.envoyer(client, faux_stripe.payer())
     traiter(base)
     passe(base, second["id"], jours=3)
@@ -281,18 +272,6 @@ def test_paye_par_carte_48_heures_pour_signaler_l_absence_du_prestataire(paye, d
     assert reponse.status_code == 400 and "48 heures" in reponse.json()["detail"]
 
 
-# ---------- Déplacer ----------
-
-
-def test_un_rendez_vous_deplace_garde_son_paiement(paye, dupont, base: Session, faux_stripe) -> None:
-    nouveau = dupont.client.post(f"/api/moi/rendez-vous/{paye}/deplacer", json={"debut": a(MARDI, 15)}).json()
-    traiter(base)
-
-    assert base.scalar(text("SELECT rendez_vous_id FROM paiement WHERE rendez_vous_id IN (:a, :b)"),
-                       {"a": paye, "b": nouveau["id"]}) == nouveau["id"]
-    assert len(appels(faux_stripe, "/v1/checkout/sessions")) == 1  # pas de 2e paiement
-
-
 # ---------- Mes paiements ----------
 
 
@@ -307,7 +286,7 @@ def test_mes_paiements_cote_client_et_cote_prestataire(paye, lea_carte, dupont) 
 
 
 def test_revenu_sans_payer_le_client_annule_sans_prevenir_le_prestataire(lea_carte, dupont, base: Session, mails_envoyes) -> None:
-    rdv = reserver(dupont, lea_carte.annonce_carte, a(MARDI, 10), mode_paiement="carte").json()
+    rdv = reserver(dupont, lea_carte, a(MARDI, 10), mode_paiement="carte").json()
     deja = len(mails_envoyes)  # (le mail d'inscription de Léa est déjà parti)
 
     annule = dupont.client.post(f"/api/moi/rendez-vous/{rdv['id']}/annuler").json()

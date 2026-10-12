@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Pages réservées aux prestataires (Mes annonces…) : pas connecté → se connecter ; pas prestataire → proposer ses
+// Pages réservées aux prestataires (Mon agenda…) : pas connecté → se connecter ; pas prestataire → proposer ses
 // services ; sinon le contenu de la page.
 import { useRouter } from 'vue-router'
 import { useCompte } from '../../composables/useCompte'
@@ -13,7 +13,7 @@ const { compte, chargementFait } = useCompte()
 </script>
 
 <template>
-  <AppCarte v-if="chargementFait && !compte" :titre="titre" intro="Connectez-vous pour gérer vos annonces.">
+  <AppCarte v-if="chargementFait && !compte" :titre="titre" intro="Connectez-vous pour gérer votre activité.">
     <AppBouton pleine-largeur @click="routeur.push('/connexion')">Se connecter</AppBouton>
   </AppCarte>
   <AppCarte v-else-if="compte && !compte.prestataire_id" :titre="titre" intro="Créez d'abord votre profil de prestataire.">

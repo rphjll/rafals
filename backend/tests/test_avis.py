@@ -10,7 +10,7 @@ from app import reglages
 from app.services import avis as service
 from tests.test_absences import passe
 from tests.test_agenda import MARDI, lea  # noqa: F401 (fixtures)
-from tests.test_annonces import fabrique_prestataire, metiers  # noqa: F401 (fixtures)
+from tests.test_prestataires import fabrique_prestataire, metiers  # noqa: F401 (fixtures)
 from tests.test_rendez_vous import a, dupont, reserver  # noqa: F401 (fixtures)
 
 PARIS = reglages.FUSEAU_AFFICHAGE
@@ -19,7 +19,7 @@ PARIS = reglages.FUSEAU_AFFICHAGE
 @pytest.fixture
 def rdv_tenu(lea, dupont, base: Session) -> int:
     """Mme Dupont a eu sa coupe chez Léa hier."""
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
     passe(base, rdv["id"])
     return rdv["id"]
 
@@ -46,7 +46,7 @@ def test_laisser_un_avis_apres_un_rendez_vous_tenu(lea, dupont, rdv_tenu, client
 
 
 def test_pas_d_avis_avant_le_rendez_vous_ni_deux_fois(lea, dupont, rdv_tenu) -> None:
-    a_venir = reserver(dupont, lea.annonce, a(MARDI, 11)).json()
+    a_venir = reserver(dupont, lea, a(MARDI, 11)).json()
 
     avant = noter(dupont, a_venir["id"])
     noter(dupont, rdv_tenu)
@@ -190,7 +190,7 @@ def test_la_note_ponderee_classe_la_recherche(lea, dupont, rdv_tenu, client, met
 
 
 def test_rappel_le_lendemain_une_seule_fois(lea, dupont, base: Session, mails_envoyes) -> None:
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()
     lendemain_10h = datetime.combine(MARDI + timedelta(days=1), time(10, 5), tzinfo=PARIS)
 
     service.envoyer_rappels(base, lendemain_10h)

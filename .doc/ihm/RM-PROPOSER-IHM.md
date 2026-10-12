@@ -1,8 +1,14 @@
 # Proposer mes services / Mon profil — Interface
 
+> **Changé le 09/10/2026** (lot 9.3, retrait des annonces) : dans la carte « Mes métiers », les phrases ne parlent plus d'annonces (« Vous n'apparaissez plus dans les recherches de ce métier. », « Coiffeur repris : vous apparaissez de nouveau dans ses recherches. ») ; carte « Paiement par carte » : « Vous pouvez accepter la carte dans vos propositions. »
+
 > **Renommé le 07/10/2026** (demande de Raphael : « l'onglet actuel mon activité il vas s'appeler mon profil ») : partout où ce document écrit « Mon activité » pour cette page, lire **« Mon profil »** (entrée du menu, titre de la page, fils d'Ariane, messages « page « Mon profil » »). « Mon activité » désigne maintenant la page d'ensemble `/mon-activite` (`RM-MON-ACTIVITE-IHM.md`). Le contenu de la page ne change pas.
 
 > Fichiers : `frontend/src/pages/ProposerPage.vue`, `frontend/src/components/prestataire/FormulaireProfil.vue`, `FicheActivite.vue`, `CarteMesAnnonces.vue`, `CarteMetiers.vue`, `frontend/src/components/CarteAdresse.vue` (local), `frontend/src/components/AppChoixCommune.vue`, `frontend/src/outils/prestataires.ts`. Construit au lot 2.5 (29/09/2026), complété au lot 3.2 (29/09/2026). Règles : `RM-PRESTATAIRES.md`, `RM-ANNONCES.md`. Maquettes : `maquette-lot-2.5-prestataire.html`, `maquette-lot-3.2-annonces.html`.
+
+> ⚠️ **Depuis le 07/10/2026, « Mon profil » et « Mon compte » sont une seule page** (`/profil`, `frontend/src/pages/ProfilPage.vue`), ouverte par le rond des initiales : voir `RM-PROFIL-IHM.md`. `ProposerPage.vue` n'existe plus ; `/proposer` mène à `/profil` ; pour un client, « Proposer mes services » est une carte de cette page, dont le bouton déplie le formulaire. Les cartes décrites ci-dessous n'ont pas changé.
+
+> **07/10/2026 : la carte « Mon local » n'existe plus** ; l'adresse du local est la carte « Mon adresse » (`RM-PROFIL-IHM.md` § « Une seule adresse »).
 
 ## Page `/proposer`
 Entrée de menu « Proposer mes services », qui devient « Mon activité » quand le compte a un profil de prestataire. Contenu centré (720 px au maximum).
@@ -24,6 +30,7 @@ Entrée de menu « Proposer mes services », qui devient « Mon activité » qua
 **Carte « Où intervenez-vous ? »** (2 colonnes sur ordinateur)
 4. Ville de départ * — recherche par nom ou code postal (« ex. Pessac ou 33600 ») ; choisie : « ✓ Pessac (33600) » + [Changer].
 5. Jusqu'à (km) * — nombre, 15 par défaut ; aide « De 1 à 100 km, à vol d'oiseau. »
+5 bis. (lot 9.1, 08/10/2026) Où ont lieu vos services ? * — 3 cases côte à côte (`AppChoix`) : « Chez le client — Je me déplace » (choisie au départ), « Chez moi — Le client vient à mon adresse », « Les deux — Au choix, à chaque proposition ». Avec « Chez moi » ou « Les deux », une ligne dessous : « Il faut que « Mon adresse » soit remplie. Votre rue n'est montrée à un client qu'après un rendez-vous. » Erreur du serveur si l'adresse manque : « Vos clients viennent chez vous : indiquez d'abord votre adresse dans « Mon adresse ». »
 
 **Carte « Présentation et SIRET »**
 6. Présentation — zone de texte avec compteur « 57 / 1000 » (rouge au-delà).

@@ -1,8 +1,6 @@
 // Recherche : types de ce que renvoie le serveur, et textes des cartes (RM-RECHERCHE.md).
 
-import type { AnnoncePublique } from './annonces'
-import { euros } from './annonces'
-import type { CommuneVisible } from './prestataires'
+import type { CommuneVisible, LieuService } from './prestataires'
 
 export interface CarteResultat {
   prestataire_id: number
@@ -19,9 +17,6 @@ export interface CarteResultat {
   note: number | null
   nombre_avis: number
   nouveau: boolean
-  a_partir_de_centimes: number | null
-  a_partir_de_par_heure: boolean
-  nombre_annonces: number
   vient_chez_vous: boolean
   carte_possible: boolean
 }
@@ -59,6 +54,7 @@ export interface PrestatairePublic {
   a_une_photo: boolean
   ville: string
   distance_km: number
+  lieu: LieuService
   metiers: { id: number; nom: string }[]
   siret_verifie: boolean
   note: number | null
@@ -66,7 +62,6 @@ export interface PrestatairePublic {
   absences: number
   /** Rangs des photos de son travail (10 au plus) */
   photos: number[]
-  annonces: AnnoncePublique[]
 }
 
 /** 4.5 → « 4,5 » */
@@ -74,13 +69,7 @@ export function noteLisible(note: number): string {
   return note.toFixed(1).replace('.', ',')
 }
 
-/** « à partir de 40 €/h » ; « à partir de 45 € » ; « Sur devis » */
-export function aPartirDe(r: Pick<CarteResultat, 'a_partir_de_centimes' | 'a_partir_de_par_heure'>): string {
-  if (r.a_partir_de_centimes === null) return 'Sur devis'
-  return `à partir de ${euros(r.a_partir_de_centimes)}${r.a_partir_de_par_heure ? '/h' : ''}`
-}
-
-/** 1 → « 1 annonce » ; 3 → « 3 annonces » (mot qui prend un « s » au pluriel) */
+/** 1 → « 1 avis » … 3 → « 3 photos » (mot qui prend un « s » au pluriel) */
 export function pluriel(nombre: number, mot: string): string {
   return `${nombre} ${mot}${nombre > 1 ? 's' : ''}`
 }

@@ -2,7 +2,7 @@
 
 > Validé et formalisé le 29/09/2026 (lot 3.0). Modifié le 03/10/2026 (refonte du calendrier : un calendrier par métier, ouvertures exceptionnelles).
 
-## Sans annonces (décision de Raphael du 04/10/2026, pas encore construit)
+## Sans annonces (décision de Raphael du 04/10/2026 ; construit le 09/10/2026, lot 9.2)
 Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). **L'écran « Mon agenda » ne change pas.** Après les lots 8.3 et 8.4 (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
 - Le client **ne voit plus les horaires libres** : c'est le prestataire qui propose un jour et une heure. Une proposition est refusée si elle tombe sur un autre de ses rendez-vous (`RM-DEMANDES.md`).
   - Exemple 1 : Karim a un rendez-vous lundi 12/10 de 8 h 30 à 9 h 30 → il ne peut pas proposer lundi à 9 h à un autre client.
@@ -10,6 +10,13 @@ Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). **L'�
 - Le calendrier par métier, les congés, les fermetures, les ouvertures exceptionnelles et la date d'arrêt d'un métier restent ; ils servent au prestataire pour s'organiser.
 - Un rendez-vous tombe dans le calendrier du **métier écrit dans le rendez-vous** (avant : le métier de l'annonce) ; les jours de travaux d'un devis, dans celui du métier de la demande de devis.
 - Date d'arrêt d'un métier : les rendez-vous d'après sont toujours annulés ; il n'y a plus d'annonce à cacher.
+
+**Précisions prises au lot 9.2 (09/10/2026)** :
+- Raphael, le 09/10/2026, mot pour mot : « laisse les pauses entres rdv et tout les reglages tels quel ». Les réglages (heures de début, pause, réservation au plus tôt et au plus tard) et leur fenêtre ne changent donc pas.
+- Les horaires libres se calculent toujours, mais **pour le prestataire seulement**, pour un de ses métiers et une durée (adresse `/api/moi/agenda/horaires`). Aucun écran ne les montre encore (choix de Claude : garder le calcul et ses tests ; à proposer à Raphael dans la fenêtre « Faire une proposition »).
+  - Exemple 1 : Léa, mardi 9 h-12 h, service de 45 min, pas de 15 min → 9 h 00, 9 h 15 … 11 h 15.
+  - Exemple 2 : Karim a un rendez-vous Plombier mardi de 9 h à 11 h → son calendrier Électricien n'a plus d'horaire libre de 2 h ce matin-là (réglage « bloque mes autres calendriers » à Oui).
+- Le bloc « Ce que voit un client » du détail d'un jour est retiré (il listait les horaires d'une annonce).
 
 ## Objectif
 Quand un prestataire travaille, et donc quels horaires un client peut réserver.

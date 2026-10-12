@@ -25,7 +25,7 @@ class EtatCarte(BaseModel):
     siret_verifie: bool
     mandat_facturation_le: datetime | None
     compte_cree: bool  # il a commencé chez Stripe
-    pret: bool  # Stripe a vérifié son identité et son RIB : ses annonces peuvent proposer « carte »
+    pret: bool  # Stripe a vérifié son identité et son RIB : ses propositions peuvent accepter la carte
 
 
 class Activation(BaseModel):

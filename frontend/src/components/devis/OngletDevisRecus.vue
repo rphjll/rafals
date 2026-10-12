@@ -90,7 +90,7 @@ async function confirmerPaye(moyen: MoyenDirect) {
 
 <template>
   <AppSection v-if="!demandes.length">
-    <p class="text-texte-doux">Aucune demande de devis pour l'instant : vos clients vous écrivent depuis vos annonces « sur devis ».</p>
+    <p class="text-texte-doux">Aucune demande de devis pour l'instant : vos clients vous en demandent depuis votre page, avec [Demander un devis].</p>
   </AppSection>
 
   <AppSection v-for="d in demandes" :key="d.id" :titre="`${d.titre} · ${d.autre.nom}`">

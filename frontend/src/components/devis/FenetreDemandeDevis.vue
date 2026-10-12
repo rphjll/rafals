@@ -1,22 +1,26 @@
 <script setup lang="ts">
-// Fenêtre « Demander un devis à Paul Petit » (.doc/ihm/RM-DEVIS-IHM.md ; RM-DEVIS.md) : le besoin (10 à 2000
+// Fenêtre « Demander un devis à Paul Petit », ouverte depuis sa page (.doc/ihm/RM-DEVIS-IHM.md ; RM-DEVIS.md) :
+// le métier s'il en a plusieurs, le besoin (10 à 2000
 // caractères), jusqu'à 5 photos, le lieu des travaux (l'adresse du client quand le prestataire vient chez lui).
 import { ref, watch } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
-import type { AnnoncePublique } from '../../outils/annonces'
+import type { PrestatairePublic } from '../../outils/recherche'
 import type { DemandeVisible } from '../../outils/devis'
 import CarteAdresse from '../CarteAdresse.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppChampFichier from '../ui/AppChampFichier.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
+import AppSelection from '../ui/AppSelection.vue'
 import AppZoneTexte from '../ui/AppZoneTexte.vue'
 
 const PHOTOS_MAX = 5
-const props = defineProps<{ annonce: AnnoncePublique; ouverte: boolean }>()
+const props = defineProps<{ prestataire: PrestatairePublic; ouverte: boolean }>()
 const emit = defineEmits<{ fermer: []; envoyee: [demande: DemandeVisible] }>()
 
 const texte = ref('')
+// Le métier concerné : un seul métier → déjà choisi
+const metierId = ref<number | null>(props.prestataire.metiers[0]?.id ?? null)
 const photos = ref<File[]>([])
 const choisie = ref<File | null>(null)
 const aUneAdresse = ref(false)
@@ -29,13 +33,17 @@ watch(choisie, (f) => {
   if (f) choisie.value = null
 })
 
-const chezLeClient = () => props.annonce.lieu !== 'chez_moi'
+const chezLeClient = () => props.prestataire.lieu !== 'chez_moi'
 
 async function envoyer() {
   erreur.value = ''
   envoiEnCours.value = true
   try {
-    let demande = await appelerServeur<DemandeVisible>('/api/devis/demandes', { annonce_id: props.annonce.id, texte: texte.value })
+    let demande = await appelerServeur<DemandeVisible>('/api/devis/demandes', {
+      prestataire_id: props.prestataire.id,
+      metier_id: metierId.value,
+      texte: texte.value,
+    })
     for (const photo of photos.value) {
       const formulaire = new FormData()
       formulaire.append('fichier', photo)
@@ -51,11 +59,18 @@ async function envoyer() {
 </script>
 
 <template>
-  <AppFenetre :ouverte="ouverte" :titre="`Demander un devis à ${annonce.prestataire.nom_affiche}`" @fermer="emit('fermer')">
+  <AppFenetre :ouverte="ouverte" :titre="`Demander un devis à ${prestataire.nom_affiche}`" @fermer="emit('fermer')">
     <div class="flex flex-col gap-3 text-texte">
       <p class="text-[14px] text-texte-doux">
-        {{ annonce.titre }}. Décrivez votre besoin : {{ annonce.prestataire.nom_affiche }} vous répond par un devis.
+        Décrivez votre besoin : {{ prestataire.nom_affiche }} vous répond par un devis.
       </p>
+      <AppSelection
+        v-if="prestataire.metiers.length > 1"
+        v-model="metierId"
+        etiquette="Pour quel métier ?"
+        obligatoire
+        :options="prestataire.metiers.map((m) => ({ valeur: m.id, texte: m.nom }))"
+      />
       <AppZoneTexte
         v-model="texte"
         etiquette="Votre besoin"
@@ -91,7 +106,7 @@ async function envoyer() {
     </div>
     <template #pied>
       <AppBouton
-        v-if="annonce.lieu === 'chez_client' && !aUneAdresse"
+        v-if="prestataire.lieu === 'chez_client' && !aUneAdresse"
         variante="verrouille"
         raison-verrou="Ajoutez d'abord votre adresse, juste au-dessus."
       >

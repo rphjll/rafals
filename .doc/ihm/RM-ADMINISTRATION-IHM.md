@@ -1,5 +1,7 @@
 # Administration — Interface
 
+> **Changé le 09/10/2026** (lot 9.3, retrait des annonces) : dans le tableau de bord, le chiffre « Annonces en ligne » devient « **Demandes ouvertes** ».
+
 > Fichiers : `frontend/src/pages/AdministrationPage.vue` (onglets, par le composant commun `AppOnglets` depuis le lot 3.4, et accès) et un fichier par onglet dans `frontend/src/components/admin/`. Construit au lot 1.4, onglets des métiers au lot 2.2 (28/09/2026). Règles : `RM-COMPTES.md`. Maquette : `maquette-lot-1.4-compte-administration.html`.
 
 ## Page « Administration » (`/administration`)

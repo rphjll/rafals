@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app import reglages
-from app.modeles.annonces import Annonce
+from app.modeles.demandes import Demande
 from app.modeles.comptes import Compte
 from app.modeles.fichiers import AccordParental
 from app.modeles.metiers import PropositionMetier
@@ -41,7 +41,7 @@ class Activite:
     mois: str  # « 2026-10 »
     nouveaux_comptes: int
     prestataires_actifs: int
-    annonces_en_ligne: int
+    demandes_ouvertes: int
     rendez_vous: int
     paiements: int
     paiements_centimes: int
@@ -80,7 +80,7 @@ def activite(db: Session, maintenant: datetime) -> Activite:
         mois=f"{depuis:%Y-%m}",
         nouveaux_comptes=compter(Compte, Compte.cree_le >= depuis),
         prestataires_actifs=compter(Prestataire, Prestataire.statut == "actif"),
-        annonces_en_ligne=compter(Annonce, Annonce.statut == "en_ligne"),
+        demandes_ouvertes=compter(Demande, Demande.statut == "ouverte"),
         rendez_vous=compter(RendezVous, RendezVous.cree_le >= depuis),
         paiements=compter(Paiement, *payes),
         paiements_centimes=db.scalar(select(func.coalesce(func.sum(Paiement.montant_centimes), 0)).where(*payes)) or 0,

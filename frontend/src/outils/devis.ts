@@ -1,7 +1,7 @@
 // Devis : types et textes montrés (états, quantités, dates), à un seul endroit (RM-DEVIS.md ; lot 5.4).
 
 import { aParis, jourCourt, jourLisible } from './agenda'
-import { versCentimes } from './annonces'
+import { versCentimes } from './prix'
 import type { BadgeEtat } from './prestataires'
 
 export type StatutDemande = 'envoyee' | 'devis_recu' | 'declinee' | 'annulee'
@@ -56,7 +56,6 @@ export interface DevisVisible {
 
 export interface DemandeVisible {
   id: number
-  annonce_id: number
   titre: string
   texte: string
   nombre_photos: number

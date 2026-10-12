@@ -2,6 +2,10 @@
 
 > Fichiers : `frontend/src/pages/ComptePage.vue` (assemble les cartes) et une carte par fichier dans `frontend/src/components/compte/` (`CarteInformations`, `CarteAccordParental`, `CarteDonnees`, `CarteFermeture`) ; « Mon adresse » est la carte commune `components/CarteAdresse.vue` (aussi utilisée pour le local du prestataire, lot 3.2) ; cadre commun `components/ui/AppSection.vue`. Construit au lot 1.4 (28/09/2026), complété au lot 2.7 (29/09/2026). Règles : `RM-COMPTES.md`, `RM-CLIENTS.md`. Maquettes : `maquette-lot-1.4-compte-administration.html`, `maquette-lot-2.7-mon-compte.html`.
 
+> ⚠️ **Depuis le 07/10/2026, « Mon profil » et « Mon compte » sont une seule page** (`/profil`, `frontend/src/pages/ProfilPage.vue`), ouverte par le rond des initiales : voir `RM-PROFIL-IHM.md`. La page « Mon compte » et `ComptePage.vue` n'existent plus ; `/compte` mène à `/profil`. Les cartes décrites ci-dessous n'ont pas changé.
+
+> **07/10/2026 : pour un prestataire, « Mon adresse » est aussi l'adresse de son local** (`RM-PROFIL-IHM.md` § « Une seule adresse »).
+
 ## Page « Mon compte » (`/compte`)
 **(pas connecté)** carte « Mon compte » — « Connectez-vous pour voir votre compte. » — bouton principal [Se connecter] → `/connexion`.
 

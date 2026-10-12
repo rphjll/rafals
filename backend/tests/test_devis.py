@@ -11,7 +11,7 @@ from app.modeles.agenda import Blocage
 from app.modeles.devis import Devis
 from app.services import devis as service
 from app.services import paiements
-from tests.test_annonces import AUJOURD_HUI, fabrique_prestataire, menage, metiers, publier, siret_verifie  # noqa: F401
+from tests.test_prestataires import AUJOURD_HUI, fabrique_prestataire, metiers, siret_verifie  # noqa: F401
 from tests.test_prestataires import JPG
 from tests.test_rendez_vous import dupont  # noqa: F401 (fixture)
 
@@ -30,12 +30,10 @@ def un_devis(**modifs) -> dict:
 
 
 @pytest.fixture
-def paul(fabrique_prestataire, metiers, base: Session):  # noqa: F811
-    """Paul, maçon avec SIRET vérifié ; annonce « Muret de jardin — sur devis », chez le client, espèces ou carte."""
+def paul(fabrique_prestataire, base: Session):  # noqa: F811
+    """Paul, maçon avec SIRET vérifié : on peut lui demander un devis depuis son profil. Il vient chez le client."""
     compte = fabrique_prestataire("Maçon", ())
     siret_verifie(base, compte)
-    compte.annonce = publier(compte, menage(metiers["Maçon"], titre="Muret de jardin", forme_prix="devis", prix_centimes=None,
-                                            duree_minutes=None, paiement_carte=True)).json()["id"]
     return compte
 
 
@@ -48,8 +46,11 @@ def paul_carte(paul, faux_stripe, client):
     return paul
 
 
-def demander(compte, annonce_id: int, texte: str = "Muret de 5 mètres au fond du jardin"):
-    return compte.client.post("/api/devis/demandes", json={"annonce_id": annonce_id, "texte": texte})
+def demander(compte, prestataire, texte: str = "Muret de 5 mètres au fond du jardin", metier_id: int | None = None):
+    """[Demander un devis] sur le profil du prestataire, pour un de ses métiers (sans précision : son métier principal)."""
+    profil = prestataire.client.get("/api/moi/prestataire").json()
+    return compte.client.post("/api/devis/demandes", json={
+        "prestataire_id": profil["id"], "metier_id": metier_id or profil["metier_principal"]["id"], "texte": texte})
 
 
 def envoyer(prestataire, demande_id: int, **modifs):
@@ -59,7 +60,7 @@ def envoyer(prestataire, demande_id: int, **modifs):
 @pytest.fixture
 def envoye(paul, dupont):  # noqa: F811
     """Le devis de Paul (1 190 €, arrhes 30 %) envoyé à Mme Dupont ; renvoie son numéro (id)."""
-    demande = demander(dupont, paul.annonce).json()
+    demande = demander(dupont, paul).json()
     return envoyer(paul, demande["id"]).json()["demande"]["devis"]["id"]
 
 
@@ -96,18 +97,21 @@ def test_totaux_sans_et_avec_tva() -> None:
 # ---------- La demande ----------
 
 
-def test_sur_devis_reserve_aux_prestataires_avec_siret(fabrique_prestataire, metiers) -> None:  # noqa: F811
-    tom = fabrique_prestataire("Plombier", ())
+def test_devis_reserve_aux_prestataires_avec_siret_et_a_leurs_metiers(fabrique_prestataire, paul, dupont, metiers) -> None:  # noqa: F811
+    tom = fabrique_prestataire("Plombier", ())  # sans SIRET
 
-    reponse = publier(tom, menage(metiers["Plombier"], titre="Taille de haie", forme_prix="devis", prix_centimes=None,
-                                  duree_minutes=None))
+    sans_siret = demander(dupont, tom)
+    autre_metier = demander(dupont, paul, metier_id=metiers["Coiffeur"])
+    a_soi_meme = demander(paul, paul)
 
-    assert reponse.status_code == 400 and "SIRET vérifié" in reponse.json()["detail"]
+    assert sans_siret.status_code == 400 and "SIRET" in sans_siret.json()["detail"]
+    assert autre_metier.status_code == 400 and "métiers de ce prestataire" in autre_metier.json()["detail"]
+    assert a_soi_meme.status_code == 400 and "vous-même" in a_soi_meme.json()["detail"]
 
 
 def test_demande_avec_photos_vue_par_le_prestataire(paul, dupont, fabrique_compte, mails_envoyes) -> None:  # noqa: F811
-    trop_court = demander(dupont, paul.annonce, "Muret")
-    demande = demander(dupont, paul.annonce).json()
+    trop_court = demander(dupont, paul, "Muret")
+    demande = demander(dupont, paul).json()
     for _ in range(5):
         dupont.client.post(f"/api/moi/demandes-devis/{demande['id']}/photos", files={"fichier": ("muret.jpg", JPG, "image/jpeg")})
     sixieme = dupont.client.post(f"/api/moi/demandes-devis/{demande['id']}/photos",
@@ -117,7 +121,7 @@ def test_demande_avec_photos_vue_par_le_prestataire(paul, dupont, fabrique_compt
     photo_curieux = fabrique_compte().client.get(f"/api/demandes-devis/{demande['id']}/photos/1")
 
     assert trop_court.status_code == 400
-    assert demande["statut"] == "envoyee" and demande["lieu"].startswith("8 allée des Pins")
+    assert demande["statut"] == "envoyee" and demande["lieu"].startswith("8 allée des Pins") and demande["titre"] == "Maçon"
     assert sixieme.status_code == 400 and "5 photos" in sixieme.json()["detail"]
     assert recue["nombre_photos"] == 5 and recue["autre"]["nom"] == "Essai ZZTEST"
     assert photo_paul.status_code == 200 and photo_curieux.status_code == 404
@@ -125,7 +129,7 @@ def test_demande_avec_photos_vue_par_le_prestataire(paul, dupont, fabrique_compt
 
 
 def test_le_prestataire_peut_decliner(paul, dupont, mails_envoyes) -> None:  # noqa: F811
-    demande = demander(dupont, paul.annonce).json()
+    demande = demander(dupont, paul).json()
 
     decline = paul.client.post(f"/api/moi/prestataire/demandes-devis/{demande['id']}/decliner",
                                json={"motif": "Je ne fais pas ce genre de travaux"}).json()
@@ -138,8 +142,8 @@ def test_le_prestataire_peut_decliner(paul, dupont, mails_envoyes) -> None:  # n
 
 
 def test_devis_numerotes_qui_se_suivent(paul, dupont, mails_envoyes) -> None:  # noqa: F811
-    premier = envoyer(paul, demander(dupont, paul.annonce).json()["id"]).json()["demande"]["devis"]
-    second = envoyer(paul, demander(dupont, paul.annonce).json()["id"], travaux_debut=(FIN + timedelta(days=3)).isoformat(),
+    premier = envoyer(paul, demander(dupont, paul).json()["id"]).json()["demande"]["devis"]
+    second = envoyer(paul, demander(dupont, paul).json()["id"], travaux_debut=(FIN + timedelta(days=3)).isoformat(),
                      travaux_fin=(FIN + timedelta(days=3)).isoformat()).json()["demande"]["devis"]
 
     annee = AUJOURD_HUI.year
@@ -151,7 +155,7 @@ def test_devis_numerotes_qui_se_suivent(paul, dupont, mails_envoyes) -> None:  #
 
 def test_avec_tva_un_taux_par_ligne(paul, dupont) -> None:  # noqa: F811
     paul.client.post("/api/moi/prestataire/tva", json={"facture_tva": True})
-    demande = demander(dupont, paul.annonce).json()
+    demande = demander(dupont, paul).json()
     sans_taux = envoyer(paul, demande["id"])
     avec_taux = envoyer(paul, demande["id"], lignes=[{"libelle": "Muret", "quantite_centiemes": 100,
                                                       "prix_unitaire_centimes": 100000, "tva_pour_mille": 100}]).json()
@@ -169,7 +173,7 @@ def test_avec_tva_un_taux_par_ligne(paul, dupont) -> None:  # noqa: F811
     ({"travaux_fin": (DEBUT - timedelta(days=1)).isoformat()}, "après le premier"),
 ])
 def test_devis_verifies(paul, dupont, modifs, morceau) -> None:  # noqa: F811
-    reponse = envoyer(paul, demander(dupont, paul.annonce).json()["id"], **modifs)
+    reponse = envoyer(paul, demander(dupont, paul).json()["id"], **modifs)
 
     assert reponse.status_code == 400 and morceau in reponse.json()["detail"]
 
@@ -178,7 +182,7 @@ def test_jours_des_travaux_libres_dans_l_agenda(paul, dupont) -> None:  # noqa: 
     paul.client.post("/api/moi/agenda/blocages", json={"debut": f"{DEBUT}T00:00", "fin": f"{DEBUT}T23:00",
                                                        "motif": "ZZTEST congés", "rendez_vous": "annuler"})
 
-    reponse = envoyer(paul, demander(dupont, paul.annonce).json()["id"])
+    reponse = envoyer(paul, demander(dupont, paul).json()["id"])
 
     assert reponse.status_code == 400 and "n'est pas libre" in reponse.json()["detail"]
 
@@ -262,7 +266,7 @@ def test_probleme_signale_puis_traite_par_l_administrateur(paul, dupont, envoye,
 @pytest.fixture
 def accepte_carte(paul_carte, dupont, faux_stripe, client, base: Session):  # noqa: F811
     """Mme Dupont accepte le devis par carte et paie 357 € d'arrhes."""
-    demande = demander(dupont, paul_carte.annonce).json()
+    demande = demander(dupont, paul_carte).json()
     devis_id = envoyer(paul_carte, demande["id"]).json()["demande"]["devis"]["id"]
     reponse = dupont.client.post(f"/api/moi/devis/{devis_id}/accepter", json={"mode_paiement": "carte"}).json()
     paul_carte.avant_paiement = reponse
@@ -314,7 +318,7 @@ def test_prestataire_annule_les_arrhes_sont_rendues(accepte_carte, paul_carte, d
 
 
 def test_arrhes_payees_trop_tard_remboursees(paul_carte, dupont, faux_stripe, client, base: Session) -> None:  # noqa: F811
-    devis_id = envoyer(paul_carte, demander(dupont, paul_carte.annonce).json()["id"]).json()["demande"]["devis"]["id"]
+    devis_id = envoyer(paul_carte, demander(dupont, paul_carte).json()["id"]).json()["demande"]["devis"]["id"]
     dupont.client.post(f"/api/moi/devis/{devis_id}/accepter", json={"mode_paiement": "carte"})
     dupont.client.post(f"/api/moi/devis/{devis_id}/refuser", json={})
     faux_stripe.envoyer(client, faux_stripe.payer())
@@ -324,7 +328,7 @@ def test_arrhes_payees_trop_tard_remboursees(paul_carte, dupont, faux_stripe, cl
 
 
 def test_page_d_arrhes_fermee_on_peut_recommencer(paul_carte, dupont, base: Session) -> None:  # noqa: F811
-    devis_id = envoyer(paul_carte, demander(dupont, paul_carte.annonce).json()["id"]).json()["demande"]["devis"]["id"]
+    devis_id = envoyer(paul_carte, demander(dupont, paul_carte).json()["id"]).json()["demande"]["devis"]["id"]
     dupont.client.post(f"/api/moi/devis/{devis_id}/accepter", json={"mode_paiement": "carte"})
     deux_fois = dupont.client.post(f"/api/moi/devis/{devis_id}/accepter", json={"mode_paiement": "carte"})
     traiter(base, datetime.now(UTC) + timedelta(minutes=31))

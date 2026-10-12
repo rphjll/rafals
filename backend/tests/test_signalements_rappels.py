@@ -10,7 +10,7 @@ from app import reglages
 from app.services import demarches
 from tests.test_absences import passe
 from tests.test_agenda import MARDI, heures, lea  # noqa: F401 (fixtures)
-from tests.test_annonces import fabrique_prestataire, menage, metiers, publier, siret_verifie  # noqa: F401 (fixtures)
+from tests.test_prestataires import fabrique_prestataire, metiers, siret_verifie  # noqa: F401 (fixtures)
 from tests.test_rendez_vous import a, dupont, reserver  # noqa: F401 (fixtures)
 
 PARIS = reglages.FUSEAU_AFFICHAGE
@@ -28,50 +28,41 @@ def mon_signalement(admin, lea_compte) -> dict:  # noqa: F811
 # ---------- Signaler ----------
 
 
-def test_signaler_une_annonce_puis_la_retirer(lea, dupont, fabrique_compte, client, mails_envoyes) -> None:  # noqa: F811
-    trop_court = signaler(dupont, annonce_id=lea.annonce, motif="Nul")
-    cree = signaler(dupont, annonce_id=lea.annonce, motif="Prix mensonger, elle demande 80 € sur place")
-    deux_fois = signaler(dupont, annonce_id=lea.annonce, motif="Prix mensonger, encore une fois")
-    admin = fabrique_compte(administrateur=True)
-    avant = admin.client.get("/api/admin/tableau-de-bord").json()["a_traiter"]["signalements"]
-    vu = mon_signalement(admin, lea)
-    sans_motif = admin.client.post(f"/api/admin/signalements/{vu['id']}", json={"action": "retirer_annonce"})
-    retire = admin.client.post(f"/api/admin/signalements/{vu['id']}", json={"action": "retirer_annonce", "decision": "Prix mensonger"})
-
-    assert trop_court.status_code == 400 and cree.status_code == 201
-    assert deux_fois.status_code == 400 and "déjà signalé" in deux_fois.json()["detail"]
-    assert avant >= 1 and vu["annonce"] == "Coupe femme" and vu["auteur"] == "Essai ZZTEST" and vu["motif"].startswith("Prix mensonger")
-    assert sans_motif.status_code == 400 and retire.status_code == 200 and retire.json()["statut"] == "suivi"
-    assert client.get(f"/api/annonces/{lea.annonce}").status_code == 404  # plus visible des clients
-    # Léa reçoit le motif de l'administrateur, jamais le nom de celui qui a signalé
-    mail = next(m for m in mails_envoyes if m["a"] == lea.email and "retirée" in m["sujet"])
-    assert "Prix mensonger" in mail["texte"] and "ZZTEST" not in mail["texte"]
-    assert dupont.client.get("/api/admin/signalements").status_code == 403
-    # Léa ne peut pas remettre en ligne une annonce retirée par l'administrateur (demande de Raphael, 04/10/2026)
-    republier = lea.client.post(f"/api/moi/annonces/{lea.annonce}/statut", json={"action": "republier"})
-    mienne = next(x for x in lea.client.get("/api/moi/annonces").json() if x["id"] == lea.annonce)
-    assert republier.status_code == 403 and "retirée par l'administrateur" in republier.json()["detail"]
-    assert mienne["statut"] == "retiree" and mienne["retiree_par_administrateur"] is True
-
-
-def test_signaler_un_prestataire_puis_classer_ou_bloquer(lea, dupont, fabrique_compte) -> None:  # noqa: F811
+def test_signaler_un_prestataire_puis_classer_ou_bloquer(lea, dupont, fabrique_compte, mails_envoyes) -> None:  # noqa: F811
     prestataire_id = lea.client.get("/api/moi/prestataire").json()["id"]
     soi_meme = signaler(lea, prestataire_id=prestataire_id, motif="Je me signale moi-même pour voir")
-    signaler(dupont, prestataire_id=prestataire_id, motif="Elle ne répond plus au téléphone")
+    trop_court = signaler(dupont, prestataire_id=prestataire_id, motif="Nul")
+    cree = signaler(dupont, prestataire_id=prestataire_id, motif="Elle ne répond plus au téléphone")
+    deux_fois = signaler(dupont, prestataire_id=prestataire_id, motif="Elle ne répond toujours pas")
     admin = fabrique_compte(administrateur=True)
-    classe = admin.client.post(f"/api/admin/signalements/{mon_signalement(admin, lea)['id']}", json={"action": "classer"})
+    avant = admin.client.get("/api/admin/tableau-de-bord").json()["a_traiter"]["signalements"]
+    premier = mon_signalement(admin, lea)
+    classe = admin.client.post(f"/api/admin/signalements/{premier['id']}", json={"action": "classer"})
     signaler(dupont, prestataire_id=prestataire_id, motif="Faux profil, la photo est volée")
     second = mon_signalement(admin, lea)
+    sans_motif = admin.client.post(f"/api/admin/signalements/{second['id']}", json={"action": "bloquer_prestataire"})
     bloque = admin.client.post(f"/api/admin/signalements/{second['id']}", json={"action": "bloquer_prestataire", "decision": "Faux profil"})
+    ancienne_action = admin.client.post(f"/api/admin/signalements/{second['id']}", json={"action": "retirer_annonce", "decision": "Prix mensonger"})
 
     assert soi_meme.status_code == 400 and "vous-même" in soi_meme.json()["detail"]
+    assert trop_court.status_code == 400 and cree.status_code == 201
+    assert deux_fois.status_code == 400 and "déjà signalé" in deux_fois.json()["detail"]
+    assert avant >= 1 and premier["auteur"] == "Essai ZZTEST" and premier["motif"].startswith("Elle ne répond plus")
     assert classe.json()["statut"] == "classe"
-    assert second["annonce"] is None and second["deja_signale"] == 1  # l'administrateur voit qu'il y en a déjà eu un
+    assert second["deja_signale"] == 1  # l'administrateur voit qu'il y en a déjà eu un
+    assert sans_motif.status_code == 400
     assert bloque.json()["statut"] == "suivi" and lea.client.get("/api/moi/prestataire").json()["statut"] == "bloque"
+    assert ancienne_action.status_code == 422  # « retirer l'annonce » n'existe plus
+    # Léa reçoit le motif de l'administrateur, jamais le nom de celle qui a signalé
+    mail = next(m for m in mails_envoyes if m["a"] == lea.email and "bloqué" in m["sujet"])
+    assert "Faux profil" in mail["texte"] and "ZZTEST" not in mail["texte"]
+    assert dupont.client.get("/api/admin/signalements").status_code == 403
 
 
 def test_il_faut_etre_connecte_pour_signaler(lea, client) -> None:  # noqa: F811
-    assert client.post("/api/signalements", json={"annonce_id": lea.annonce, "motif": "Annonce mensongère, vraiment"}).status_code == 401
+    prestataire_id = lea.client.get("/api/moi/prestataire").json()["id"]
+
+    assert client.post("/api/signalements", json={"prestataire_id": prestataire_id, "motif": "Faux profil, vraiment"}).status_code == 401
 
 
 # ---------- Rappels URSSAF ----------

@@ -1,6 +1,7 @@
 // Le menu (.doc/ihm/RM-ENTETE-IHM.md) : l'en-tête, la barre du bas et le sous-menu lisent la même liste.
 // Depuis le 07/10/2026 (demande de Raphael) : tout est rangé dans « Mon activité » ; l'ancienne entrée
 // « Mon activité » (la fiche du prestataire) s'appelle « Mon profil » ; « Mes réservations » n'existe plus.
+// Le même jour, « Mon profil » et « Mon compte » ont fusionné : la page /profil s'ouvre par le rond des initiales.
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { adresseDe, fonctionsPour } from '../outils/activite'
@@ -36,7 +37,8 @@ export function useMenu() {
       .filter((f) => f.sousMenu)
       .map((f) => ({ vers: adresseDe(f, prestataireId) ?? PAGE_ACTIVITE, texte: f.texte }))
   })
-  const dansActivite = computed(() => estSur(PAGE_ACTIVITE) || pagesActivite.value.some((page) => estSur(page.vers)))
+  // Le profil d'un client (/clients/12) s'ouvre depuis « Mes clients » : il fait partie de « Mon activité »
+  const dansActivite = computed(() => estSur(PAGE_ACTIVITE) || estSur('/clients') || pagesActivite.value.some((page) => estSur(page.vers)))
 
   // Sous l'en-tête, sur une page de « Mon activité » (pas sur la page d'ensemble, qui montre déjà tout en tuiles)
   const sousMenu = computed<LienMenu[]>(() =>
@@ -53,13 +55,10 @@ export function useMenu() {
       ? [{ vers: '/messages', texte: 'Messages', court: 'Messages', picto: 'menu-messages', actif: estSur('/messages'), compteur: nonLus.value }]
       : []),
     { vers: PAGE_ACTIVITE, texte: 'Mon activité', court: 'Activité', picto: 'menu-activite', actif: dansActivite.value },
-    {
-      vers: '/proposer',
-      texte: estPrestataire.value ? 'Mon profil' : 'Proposer mes services',
-      court: estPrestataire.value ? 'Profil' : 'Proposer',
-      picto: 'services-personne',
-      actif: estSur('/proposer'),
-    },
+    // « Mon profil » s'ouvre par le rond des initiales (AppEntete) ; ici il ne reste que l'invitation à devenir prestataire
+    ...(estPrestataire.value
+      ? []
+      : [{ vers: '/profil?proposer=1', texte: 'Proposer mes services', court: 'Proposer', picto: 'services-personne', actif: estSur('/profil') }]),
   ])
 
   return { sousMenu, estPrestataire, estSur, entrees }

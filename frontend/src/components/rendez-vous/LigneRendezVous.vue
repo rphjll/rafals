@@ -2,7 +2,7 @@
 // Un rendez-vous dans une liste (.doc/ihm/RM-RENDEZ-VOUS-IHM.md) : titre, état, plage horaire, l'autre personne
 // (et son téléphone quand c'est permis), lieu, prix ; les boutons viennent de la page (slot « actions »).
 import { computed } from 'vue'
-import { euros } from '../../outils/annonces'
+import { euros } from '../../outils/prix'
 import { jourCourt, aParis } from '../../outils/agenda'
 import { MOYENS_DIRECTS } from '../../outils/devis'
 import { prixPayeClient, prixPayePrestataire } from '../../outils/paiements'

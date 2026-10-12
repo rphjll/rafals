@@ -24,14 +24,14 @@ De haut en bas :
 | | Alertes | Un mail à chaque nouvelle demande | *bientôt* (lot 8.6) | prestataire |
 | | Être mis en avant | Apparaître en premier dans les résultats | *bientôt* (à construire) | prestataire |
 | Gérer mon activité (pour un client : « Mes services ») | Mes demandes | Ce que j'ai publié, et les réponses | `/mes-demandes` | tous |
-| | Mon agenda | Mes horaires et mes jours fermés | `/mon-agenda` | prestataire |
-| | Rendez-vous | À venir et passés | `/rendez-vous` | tous |
+| | Mon agenda | Mes rendez-vous, mes horaires, mes jours fermés | `/mon-agenda` | prestataire |
+| | Mon agenda | Le calendrier de mes rendez-vous | `/mon-agenda` | client |
 | | Devis | Demandes de devis et devis envoyés | `/devis` | tous |
 | | Factures | Toutes mes factures en PDF | `/factures` | tous |
 | | Paiements | Ce que j'ai encaissé, par carte et en espèces | `/mon-agenda?onglet=paiements` | prestataire |
 | | Paiements | Ce que j'ai payé par carte | `/compte` | client |
-| | Mes clients | Les personnes pour qui j'ai déjà travaillé | *bientôt* (à construire) | prestataire |
-| | Mes avis | À donner après un rendez-vous passé | `/rendez-vous?onglet=passes` | client |
+| | Mes clients | Les personnes pour qui j'ai déjà travaillé | `/mes-clients` (lot 10.2, 07/10/2026) | prestataire |
+| | Mes avis | À donner après un rendez-vous passé | `/mon-agenda` | client |
 | Me faire connaître | Mes avis | Ce que mes clients disent de moi | sa page publique `/prestataires/12` | prestataire |
 | | Ma carte de visite | À imprimer, avec un carré à scanner | *bientôt* (à construire) | prestataire |
 | | Mon site | Une page à mon nom, visible sur Google | *bientôt* (lots 6.5 et 6.6) | prestataire |
@@ -41,13 +41,45 @@ De haut en bas :
 4. **Tuile « bientôt »** (fonction pas encore construite) : contour en pointillés, badge orange « bientôt ». Un clic affiche le message court « « Alertes » n'est pas encore disponible : bientôt. » (un clic produit toujours quelque chose de visible).
 5. Pour un compte sans profil de prestataire, en bas : bandeau gris « Vous proposez vos services ? Créez votre profil : les demandes des clients, l'agenda et les démarches s'ajoutent ici. » et [Proposer mes services].
 
-Exemples : Julie (cliente) voit un seul groupe « Mes services » avec 6 tuiles (Mes demandes, Rendez-vous, Devis, Factures, Paiements, Mes avis). Karim (prestataire) voit 4 groupes et 15 tuiles, dont 5 « bientôt ».
+Exemples : Julie (cliente) voit un seul groupe « Mes services » avec 6 tuiles (Mes demandes, Rendez-vous, Devis, Factures, Paiements, Mes avis). Karim (prestataire) voit 4 groupes et 15 tuiles, dont 4 « bientôt ».
+
+**Changé le 07/10/2026** : la tuile « Rendez-vous » est retirée (demande de Raphael) ; les rendez-vous se voient dans « Mon agenda », en calendrier (`RM-AGENDA-IHM.md`). Julie voit donc toujours 6 tuiles (« Mon agenda » à la place de « Rendez-vous ») et Karim 14, dont 4 « bientôt ».
 
 ## Sous-menu
 Sur une page de « Mon activité » (Rendez-vous, Devis, Mon agenda…), le sous-menu sous l'en-tête montre : « ‹ Mon activité » (retour à la page d'ensemble), puis Mes demandes, Rendez-vous, Devis, Factures, et pour un prestataire Demandes près de chez moi, Mon agenda, Déclarer à l'URSSAF. Pas de sous-menu sur la page d'ensemble.
 
+## Page « Mes clients » (`/mes-clients`, lot 10.2)
+> Fichier : `frontend/src/pages/MesClientsPage.vue`. Construit le 07/10/2026. Règles : `RM-MON-ACTIVITE.md` § « Mes clients ». Raphael a choisi « Tout le résumé » sur un dessin en texte de la liste (pas de maquette cliquable).
+
+Réservée aux prestataires (pas connecté : [Se connecter] ; pas prestataire : [Proposer mes services]). Largeur 720 px. De haut en bas :
+1. Titre « Mes clients » et, à droite, « 3 clients ».
+2. Phrase grise : « Les personnes qui ont eu un rendez-vous ou un devis avec vous sur rafals. Le nom complet et le téléphone restent visibles 3 mois après le dernier rendez-vous. »
+3. Au-delà de 10 clients : champ « Chercher un client » (ex. « Julie »), qui filtre sur le nom à chaque lettre. Aucun trouvé : « Aucun client ne s'appelle « zoé ». »
+4. Une carte par client, le plus récent d'abord :
+   - un rond vert clair avec ses initiales (« JM ») ;
+   - son nom en gras (« Julie Martin », ou « Julie M. » quand les coordonnées ne sont plus visibles, ou « Personne ayant quitté rafals ») ;
+   - une ligne « 2 rendez-vous · 1 devis (1 en attente) · 85,00 € payés » (les rendez-vous et les devis à zéro ne sont pas écrits ; la somme l'est toujours) ;
+   - une ligne grise « Prochain rendez-vous : 10/10/2026 » (ou « Dernier rendez-vous : 28/05/2026 », ou « Pas encore de rendez-vous »), suivie de « · Tél. 06 12 34 56 78 » quand il est visible ;
+   - à droite (dessous sur téléphone), le bouton secondaire **[Écrire à Julie]** → ouvre la conversation `/messages/12`. Refus (ex. conversation bloquée) : bandeau rouge sous la ligne de ce client. Pas de bouton pour un compte fermé.
+4 bis. **Changé le 07/10/2026 : la ligne d'un client s'ouvre** (remplace les deux derniers tirets du point 4). Toute la ligne est un bouton, avec « ▾ » à droite ; le téléphone et [Écrire] ne sont plus sur la ligne. Un clic ouvre le détail dessous (« ▴ »), un 2ᵉ clic le referme ; un seul client ouvert à la fois ; le détail est lu sur le serveur au 1er clic (« Lecture… »). Le détail (`components/clients/DetailClient.vue`) montre :
+   - « Téléphone », « Adresse », « Payé par rafals » ; téléphone caché : « caché (plus de 3 mois après le dernier rendez-vous, ou pas encore de rendez-vous) » ; adresse : « cachée », ou « pas de rendez-vous chez ce client » ;
+   - « Vos rendez-vous ensemble » : une ligne par rendez-vous « 16/10/2026 · Plombier · 35,00 € · [à venir] » (badge vert « à venir », gris « passé ») ; aucun : « Pas encore de rendez-vous. » ;
+   - « Vos devis pour Julie » (s'il y en a) : « 07/10/2026 · Devis D-2026-0001 · 315,00 € · [en attente de réponse] » ;
+   - les boutons **[Écrire à Julie]** (principal ; pas pour un compte fermé) et **[Voir le profil]** (secondaire) → `/clients/12`.
+5. Au-delà de 30 clients affichés : bouton [Voir les 30 suivants].
+6. Liste vide : cadre en pointillés « Pas encore de client. Dès qu'un client confirme un rendez-vous ou reçoit un devis de votre part, il apparaît ici. »
+Tri : fixé par le serveur (rendez-vous ou devis le plus récent d'abord).
+
+## Page « Profil d'un client » (`/clients/12`)
+> Fichier : `frontend/src/pages/ClientPage.vue`. Construit le 07/10/2026. Même mise en page que la page publique d'un prestataire (`RM-PRESTATAIRE-PUBLIC-IHM.md`), réservée aux prestataires qui ont ce client.
+
+1. Lien « ‹ Mes clients ». Refus du serveur : bandeau rouge « Cette personne ne fait pas partie de vos clients. »
+2. À gauche : un grand rond avec les initiales, le nom en très grand, « Client · sur rafals depuis octobre 2026 », puis la carte « Avec vous » qui reprend le même détail que dans « Mes clients ».
+3. À droite (dessous sur téléphone), la carte vert foncé « Joindre Julie », qui reste visible : bouton orange [Écrire à Julie], le téléphone en gras s'il est visible, et la phrase « Son nom complet, son téléphone et son adresse restent visibles 3 mois après votre dernier rendez-vous. » Pas de carte pour un compte fermé.
+4. Dessous : « Ses demandes en ligne » — une ligne par demande (« Tondre ma pelouse · Pessac », [Voir sur l'accueil]) ou « Julie n'a pas de demande en ligne en ce moment. »
+« Mon activité » reste surlignée dans le menu, et le sous-menu est affiché.
+
 ## Pas encore fait (décidé par Raphael le 07/10/2026, une question par fonction)
-- **Mes clients** (« Oui, clients de rafals ») : les personnes avec qui le prestataire a eu un rendez-vous ou un devis sur rafals ; pas de client saisi à la main.
 - **Relance d'un devis sans réponse** (« Prévenir Julie tout seul ») : un seul mail au client au bout de 3 jours.
 - **Ma carte de visite** (« Oui, carte de visite ») : un PDF à imprimer avec le nom, le métier, la ville, la note et un carré à scanner vers la page publique ; pas de prospectus.
 - **Être mis en avant** (« Oui, maintenant ») : payer pour apparaître en premier ; règles (prix, durée, étiquette), MLD et paiement à écrire d'abord.

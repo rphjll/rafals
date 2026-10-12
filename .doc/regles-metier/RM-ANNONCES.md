@@ -1,5 +1,7 @@
 # Règle métier — Annonces (sujet 05)
 
+> ⚠️ **Plus appliqué depuis le 09/10/2026** (lots 9.2 et 9.3) : le code des annonces est retiré du serveur et des écrans. Ce fichier sera rangé aux archives au lot 9.4. Restent valables et repris ailleurs : la date de fin d'un métier (`RM-PRESTATAIRES.md`) et l'adresse où le prestataire reçoit (`RM-PRESTATAIRES.md` § « Une seule adresse »).
+
 > Validé et formalisé le 29/09/2026 (lot 3.0).
 >
 > ⚠️ **Annonces retirées : décision de Raphael du 04/10/2026** (« je vais enlever le sistème d'annonce car c trop dur », puis choix « b » : les enlever vraiment). La règle qui les remplace est dans `RM-PRESTATAIRES.md` § « Sans annonces ». MLD validé : `.doc/mld/MLD-retrait-annonces.html`.

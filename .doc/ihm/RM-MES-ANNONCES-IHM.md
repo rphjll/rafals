@@ -1,5 +1,7 @@
 # Mes annonces / Écrire une annonce — Interface
 
+> ⚠️ **Écran supprimé le 09/10/2026** (lot 9.3, retrait des annonces) : les pages « Mes annonces » et « Écrire une annonce » n'existent plus. Document gardé pour mémoire jusqu'au lot 9.4.
+
 > Fichiers : `frontend/src/pages/MesAnnoncesPage.vue`, `AnnonceFormulairePage.vue`, `frontend/src/components/annonces/LigneAnnonce.vue`, `PhotosAnnonce.vue`, `frontend/src/components/prestataire/GardePrestataire.vue`, `frontend/src/outils/annonces.ts` (prix, durée, lieu, paiement), composants `AppChoix`, `AppCase`. Construit au lot 3.2 (29/09/2026). Règles : `RM-ANNONCES.md`. Maquette : `maquette-lot-3.2-annonces.html`.
 
 ## Accès

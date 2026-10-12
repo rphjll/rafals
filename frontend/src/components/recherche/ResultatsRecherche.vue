@@ -24,14 +24,12 @@ const chargement = ref(false)
 // Filtres et tri, lus dans l'adresse
 const q = computed(() => route.query)
 const tri = computed(() => (q.value.tri === 'distance' ? 'distance' : 'note'))
-const filtres = ref({ chezMoi: false, carte: false, libre: false, prixMax: '' })
+const filtres = ref({ chezMoi: false, carte: false })
 
 function lireAdresse() {
   filtres.value = {
     chezMoi: q.value.chez_moi === '1',
     carte: q.value.carte === '1',
-    libre: q.value.libre === '1',
-    prixMax: typeof q.value.prix_max === 'string' ? q.value.prix_max : '',
   }
 }
 
@@ -56,8 +54,6 @@ async function charger() {
   if (q.value.page) parametres.set('page', String(q.value.page))
   if (filtres.value.chezMoi) parametres.set('vient_chez_moi', 'true')
   if (filtres.value.carte) parametres.set('carte_bancaire', 'true')
-  if (filtres.value.libre) parametres.set('libre_7_jours', 'true')
-  if (filtres.value.prixMax) parametres.set('prix_max', filtres.value.prixMax.replace(',', '.'))
   try {
     page.value = await appelerServeur<PageResultats>(`/api/recherche?${parametres}`)
     emit('charge', page.value)
@@ -73,25 +69,15 @@ watch(() => route.fullPath, charger, { immediate: true })
 const PASTILLES = [
   { cle: 'chez_moi', champ: 'chezMoi', texte: 'Vient chez moi' },
   { cle: 'carte', champ: 'carte', texte: 'Paiement par carte' },
-  { cle: 'libre', champ: 'libre', texte: 'Libre dans les 7 jours' },
 ] as const
 
-// Un clic sur une pastille relance la recherche aussitôt ; le prix maximum, après une petite pause de frappe
-function filtre(cle: 'chez_moi' | 'carte' | 'libre', coche: boolean) {
+// Un clic sur une pastille relance la recherche aussitôt
+function filtre(cle: 'chez_moi' | 'carte', coche: boolean) {
   aller({ [cle]: coche ? '1' : undefined })
 }
-let minuterie: ReturnType<typeof setTimeout> | undefined
-watch(
-  () => filtres.value.prixMax,
-  (prix) => {
-    clearTimeout(minuterie)
-    if (prix === (q.value.prix_max ?? '')) return
-    minuterie = setTimeout(() => aller({ prix_max: prix.trim() || undefined }), 600)
-  },
-)
-const avecFiltres = computed(() => ['chez_moi', 'carte', 'libre', 'prix_max'].some((cle) => q.value[cle]))
+const avecFiltres = computed(() => ['chez_moi', 'carte'].some((cle) => q.value[cle]))
 function enleverFiltres() {
-  aller({ chez_moi: undefined, carte: undefined, libre: undefined, prix_max: undefined })
+  aller({ chez_moi: undefined, carte: undefined })
 }
 </script>
 
@@ -132,16 +118,6 @@ function enleverFiltres() {
         >
           {{ pastille.texte }}
         </button>
-        <label class="flex min-h-[42px] items-center gap-2 rounded-full border border-bord bg-surface px-4 font-medium">
-          Prix maximum
-          <input
-            v-model="filtres.prixMax"
-            inputmode="decimal"
-            placeholder="ex. 60"
-            class="w-16 border-b border-bord bg-transparent py-0.5 text-texte focus:border-primaire"
-          />
-          €
-        </label>
       </div>
 
       <p v-if="chargement" class="text-texte-doux">Recherche…</p>

@@ -22,9 +22,9 @@ from sqlalchemy import Select, or_, select
 from sqlalchemy.orm import Session
 
 from app import config, reglages
-from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
 from app.modeles.devis import DemandeDevis, Devis
+from app.modeles.metiers import Metier
 from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
@@ -37,7 +37,7 @@ journal_serveur = logging.getLogger("rafals")
 
 EN_COURS = ("a_payer", "paye")  # paiements que la tâche de fond suit encore
 CACHES_AU_PRESTATAIRE = ("a_payer", "abandonne")  # réservation pas encore payée (ou jamais) : le prestataire ne la voit pas
-PAGE_PROFIL = "/proposer"
+PAGE_PROFIL = "/profil"
 PAGE_RENDEZ_VOUS = "/rendez-vous"
 PAGE_DEVIS = "/devis"
 
@@ -92,7 +92,7 @@ def sujet(db: Session, paiement: Paiement) -> Sujet:
     demande = db.get_one(DemandeDevis, devis.demande_devis_id)
     quoi = "arrhes" if paiement.sorte == "arrhes" else "solde"
     return Sujet(db.get_one(Prestataire, demande.prestataire_id), demande.client_id,
-                 db.get_one(Annonce, demande.annonce_id).titre, f"devis {numero_devis(devis)} ({quoi})", devis=devis)
+                 db.get_one(Metier, demande.metier_id).nom, f"devis {numero_devis(devis)} ({quoi})", devis=devis)
 
 
 def _prevenir(db: Session, s: Sujet, *, objet: str, client: str | None = None, prestataire: str | None = None) -> None:
@@ -188,7 +188,7 @@ def commencer(db: Session, rdv: RendezVous, client: Compte, maintenant: datetime
     Ex. coupe à 50 € → Stripe prend 50 € sur la carte de Paul, dont 2,50 € pour rafals."""
     prestataire = db.get_one(Prestataire, rdv.prestataire_id)
     if not prestataire.stripe_compte or rdv.prix_centimes is None:
-        raise ErreurRegle("Ce mode de paiement n'est pas accepté pour cette annonce.")
+        raise ErreurRegle("Ce mode de paiement n'est pas accepté pour ce rendez-vous.")
     paiement = Paiement(rendez_vous_id=rdv.id, sorte="rendez_vous", montant_centimes=rdv.prix_centimes,
                         commission_centimes=commission(rdv.prix_centimes), statut="a_payer", cree_le=maintenant)
     db.add(paiement)
@@ -217,7 +217,7 @@ def commencer_devis(db: Session, devis: Devis, sorte: str, montant: int, client:
         paiement.statut, paiement.cree_le = "a_payer", maintenant
         paiement.montant_centimes, paiement.commission_centimes = montant, commission(montant)
     db.flush()
-    titre = db.get_one(Annonce, demande.annonce_id).titre
+    titre = db.get_one(Metier, demande.metier_id).nom
     quoi = "arrhes" if sorte == "arrhes" else "solde"
     return _page_de_paiement(paiement, client, prestataire, f"{titre} — devis {numero_devis(devis)} ({quoi})",
                              f"{PAGE_DEVIS}?devis={devis.id}&paiement=", maintenant)

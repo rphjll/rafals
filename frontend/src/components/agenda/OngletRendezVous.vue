@@ -1,10 +1,10 @@
 <script setup lang="ts">
-// Mon agenda › Rendez-vous (.doc/ihm/RM-RENDEZ-VOUS-IHM.md) : demandes à accepter, rendez-vous à venir, puis passés.
+// Mon agenda › Rendez-vous (.doc/ihm/RM-RENDEZ-VOUS-IHM.md) : rendez-vous à venir, puis passés.
 import { computed, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import { type MoyenDirect, ouvrirPdf } from '../../outils/factures'
-import { type RendezVousVisible, absenceSignalable, aVenir, contestable, encaissable, momentCourt, plage } from '../../outils/rendez_vous'
+import { type RendezVousVisible, absenceSignalable, aVenir, contestable, encaissable, plage } from '../../outils/rendez_vous'
 import FenetrePayeDirect from '../FenetrePayeDirect.vue'
 import FenetreTexte, { type DemandeTexte } from '../FenetreTexte.vue'
 import AvisAffiche from '../avis/AvisAffiche.vue'
@@ -19,19 +19,8 @@ const props = defineProps<{ rendezVous: RendezVousVisible[]; siretVerifie: boole
 const emit = defineEmits<{ maj: [] }>()
 const { afficherMessage } = useMessage()
 
-const demandes = computed(() => props.rendezVous.filter((r) => r.statut === 'en_attente' && aVenir(r)).sort((a, b) => a.debut.localeCompare(b.debut)))
 const confirmes = computed(() => props.rendezVous.filter((r) => r.statut === 'confirme' && aVenir(r)).sort((a, b) => a.debut.localeCompare(b.debut)))
 const passes = computed(() => props.rendezVous.filter((r) => !aVenir(r)))
-
-async function accepter(r: RendezVousVisible) {
-  try {
-    await appelerServeur(`/api/moi/prestataire/rendez-vous/${r.id}/accepter`, {})
-    afficherMessage(`Rendez-vous accepté : ${r.autre.nom} est prévenu.`)
-    emit('maj')
-  } catch (e) {
-    afficherMessage(messageErreur(e), 'erreur')
-  }
-}
 
 // [Payé…] (lot 5.6) : rendez-vous payé en espèces, prestataire avec SIRET → rafals crée la facture
 const aEncaisser = ref<RendezVousVisible | null>(null)
@@ -111,18 +100,6 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
 </script>
 
 <template>
-  <AppSection v-if="demandes.length" titre="Demandes à accepter">
-    <div class="flex flex-col divide-y divide-bord">
-      <LigneRendezVous v-for="r in demandes" :key="r.id" :rdv="r" libelle-autre="Client">
-        <template #actions>
-          <AppBouton @click="accepter(r)">Accepter</AppBouton>
-          <AppBouton variante="secondaire" @click="ouvrir(r, 'refuser')">Refuser…</AppBouton>
-          <span class="text-[13.5px] text-texte-doux">Répondez avant le {{ momentCourt(r.reponse_avant ?? r.debut) }}.</span>
-        </template>
-      </LigneRendezVous>
-    </div>
-  </AppSection>
-
   <AppSection titre="À venir">
     <p v-if="!confirmes.length" class="text-texte-doux">Aucun rendez-vous à venir.</p>
     <div class="flex flex-col divide-y divide-bord">

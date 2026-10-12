@@ -1,5 +1,7 @@
 # Trouver un prestataire — Interface
 
+> **Changé le 09/10/2026** (lot 9.3, retrait des annonces) : dans les résultats d'une recherche par métier, les filtres sont réduits à deux pastilles, « Vient chez moi » et « Paiement par carte ». La pastille « Libre dans les 7 jours » et le champ « Prix maximum » sont retirés.
+
 > Fichiers : `frontend/src/pages/TrouverPage.vue`, `frontend/src/components/recherche/CarteResultat.vue`, `frontend/src/components/prestataire/AvatarPrestataire.vue`, `frontend/src/outils/recherche.ts`. Construit au lot 2.2 (choix du métier), complété au lot 4.2 (30/09/2026). Règles : `RM-RECHERCHE.md`. Maquette : `maquette-lot-4.2-recherche.html`.
 
 > Fichiers ajoutés le 07/10/2026 : `frontend/src/components/recherche/RubriquesPrestataires.vue`.

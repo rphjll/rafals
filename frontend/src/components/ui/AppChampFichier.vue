@@ -1,6 +1,5 @@
 <script setup lang="ts">
 // Zone « choisir un fichier » : un clic ouvre le sélecteur, le nom du fichier choisi s'affiche.
-// Resservira pour les photos des annonces.
 import { ref, useId } from 'vue'
 
 defineProps<{ etiquette: string; aide: string; accepte: string }>()

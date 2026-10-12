@@ -17,6 +17,21 @@ export interface MetierExerce {
   fin_le: string | null
 }
 
+/** Où ont lieu les services d'un prestataire (RM-PRESTATAIRES § « Sans annonces ») */
+export type LieuService = 'chez_client' | 'chez_moi' | 'les_deux'
+export const LIEUX_SERVICE: { valeur: LieuService; texte: string; detail: string }[] = [
+  { valeur: 'chez_client', texte: 'Chez le client', detail: 'Je me déplace' },
+  { valeur: 'chez_moi', texte: 'Chez moi', detail: 'Le client vient à mon adresse' },
+  { valeur: 'les_deux', texte: 'Les deux', detail: 'Au choix, à chaque proposition' },
+]
+/** Ce que lit un client sur la page d'un prestataire, ex. « Part de Pessac, se déplace jusqu'à 15 km » */
+export function lieuPourUnClient(p: { lieu: LieuService; ville: string; distance_km: number }): string {
+  const seDeplace = `se déplace jusqu'à ${p.distance_km} km`
+  if (p.lieu === 'chez_moi') return `Vous reçoit à ${p.ville} (adresse donnée après un rendez-vous)`
+  if (p.lieu === 'les_deux') return `Part de ${p.ville}, ${seDeplace}, ou vous reçoit à ${p.ville}`
+  return `Part de ${p.ville}, ${seDeplace}`
+}
+
 export interface ProfilPrestataire {
   id: number
   nom_affiche: string
@@ -29,6 +44,7 @@ export interface ProfilPrestataire {
   metiers_arretes: MetierExerce[]
   commune: CommuneVisible
   distance_km: number
+  lieu: LieuService
   siret: string | null
   siret_statut: 'absent' | 'a_verifier' | 'verifie' | 'refuse'
   /** Case « Je facture la TVA » (lot 5.4) */

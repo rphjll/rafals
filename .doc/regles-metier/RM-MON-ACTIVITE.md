@@ -41,3 +41,57 @@ En haut de « Mon activité », quelques chiffres disent où on en est aujourd'h
 ## Ce qui n'est pas fait
 - Pas de comparaison avec le mois d'avant, pas de courbe.
 - Pas de chiffres « client » pour un prestataire (il les retrouve dans « Mes demandes » et « Rendez-vous »).
+
+---
+
+# Mes clients (lot 10.2)
+
+> Écrit le 07/10/2026. Raphael a choisi « Oui, clients de rafals » (pas de client saisi à la main), puis « Tout le résumé » pour ce que la liste montre. Les détails ci-dessous sont proposés par Claude : **à valider par Raphael**.
+
+## Principe
+Un prestataire voit la liste des personnes pour qui il a déjà travaillé, ou à qui il a envoyé un devis, **sur rafals**. Rien n'est enregistré en plus : la liste se calcule à partir de ses rendez-vous, de ses devis et de ses factures.
+- Exemple : Julie a eu 2 rendez-vous avec Karim et lui a demandé 1 devis → elle est dans « Mes clients » de Karim.
+- Exemple : Paul a seulement écrit un message à Karim, sans rendez-vous ni devis → il n'y est pas.
+
+## Qui est dans la liste
+Un compte y figure s'il a, avec ce prestataire, **au moins un rendez-vous confirmé** (passé ou à venir) **ou au moins un devis envoyé**.
+- Un rendez-vous refusé, annulé ou encore en attente de confirmation ne suffit pas.
+- Une demande de devis à laquelle le prestataire n'a pas répondu ne suffit pas.
+- Chaque prestataire ne voit que ses propres clients, jamais ceux d'un autre.
+
+## Ce qui est montré pour chaque client
+| Rubrique | Ce que c'est | Exemple |
+|---|---|---|
+| Nom | Le nom complet tant que la règle des coordonnées le permet (voir plus bas), sinon le prénom et l'initiale | « Julie Martin », puis « Julie M. » |
+| Rendez-vous | Le nombre de rendez-vous confirmés avec lui, passés et à venir | « 2 rendez-vous » |
+| Devis | Le nombre de devis qu'il lui a envoyés, et combien attendent encore une réponse | « 1 devis », « 1 devis en attente » |
+| Payé | Tout ce que ce client lui a payé par rafals : ses factures de vente moins ses avoirs (même calcul que le chiffre à déclarer, `RM-DEMARCHES.md`) | « 85,00 € payés » |
+| Prochain ou dernier rendez-vous | Le prochain rendez-vous confirmé s'il y en a un, sinon le dernier, sinon « Pas encore de rendez-vous » | « Prochain rendez-vous : 10/10/2026 » |
+| Téléphone | Seulement si la règle des coordonnées le permet | « 06 12 34 56 78 » |
+| [Écrire à Julie] | Ouvre la conversation avec ce client (`RM-MESSAGERIE.md` : un prestataire peut écrire à un client qui a un rendez-vous ou un devis avec lui) | |
+
+## Règle des coordonnées (déjà validée, `RM-CLIENTS.md`)
+Le nom complet et le téléphone d'un client ne sont montrés que tant qu'il a un rendez-vous en cours avec ce prestataire, et jusqu'à **3 mois après le dernier**. « Mes clients » applique la même règle, sans exception.
+- Exemple : dernier rendez-vous de Julie le 10/10/2026 → Karim voit « Julie Martin » et son téléphone jusqu'au 10/01/2027 ; ensuite « Julie M. », sans téléphone.
+- Exemple : Nadia n'a qu'un devis, aucun rendez-vous → « Nadia B. », sans téléphone.
+- L'adresse du client n'est **pas** dans la liste : elle reste sur chaque rendez-vous.
+
+## Détail d'un client et profil (ajoutés le 07/10/2026)
+Demande de Raphael, mot pour mot : « dans mes clients je veux que si je clic sur mon client y'ai un truc en dessous qui s'ouvre et y'a toute les info et un bouton voir le profil aussi », puis, pour le profil : « ca dois ouvrir le meem profil que les prestataires mais avec les infos que le client a mis du coup ».
+- **Le détail** (sous la ligne du client) montre : son téléphone, l'adresse de son dernier rendez-vous chez lui, ce qu'il a payé, la liste de ses rendez-vous confirmés avec ce prestataire (jour, titre, prix, « à venir » ou « passé ») et la liste des devis que ce prestataire lui a envoyés (jour, numéro, total, état).
+- **Le profil** est une page présentée comme la page publique d'un prestataire, mais **elle n'est pas publique** : seul un prestataire qui a ce client peut l'ouvrir (les autres, et les visiteurs, lisent « Cette personne ne fait pas partie de vos clients. »). Elle montre son nom, « Client · sur rafals depuis octobre 2026 », le même détail, et ses demandes encore en ligne (déjà visibles de tous sur l'accueil).
+- Le téléphone, le nom complet et l'adresse suivent la règle des coordonnées ci-dessus : cachés 3 mois après le dernier rendez-vous, ou s'il n'y a qu'un devis.
+  - Exemple : Julie, rendez-vous le 16/10/2026 → « Julie Martin », « 06 12 34 56 78 », « 8 allée des Pins, 33600 Pessac ».
+  - Exemple : Hugo, dernier rendez-vous il y a 130 jours → « Hugo P. », téléphone et adresse cachés ; son rendez-vous reste dans la liste.
+- Jamais montrés : son adresse mail, sa date de naissance, ses rendez-vous avec d'autres prestataires, ses absences.
+- Un client n'a aujourd'hui ni photo ni texte de présentation : le profil montre ses initiales. En ajouter serait une évolution des données (MLD d'abord).
+
+## Compte fermé
+Un client qui a fermé son compte reste dans la liste sous le nom « Personne ayant quitté rafals », avec ses nombres et ce qu'il a payé (le prestataire en a besoin pour ses comptes), sans téléphone et sans bouton [Écrire].
+
+## Ordre
+Le client vu le plus récemment en premier : on regarde la date de son rendez-vous le plus récent (ou à venir) et celle de son dernier devis.
+
+## Ce qui n'est pas fait
+- Pas de client saisi à la main, pas d'import d'un fichier (choix de Raphael).
+- Pas de note personnelle sur un client, pas d'export.

@@ -1,5 +1,7 @@
 # Une annonce (vue par un client) — Interface
 
+> ⚠️ **Écran supprimé le 09/10/2026** (lot 9.3, retrait des annonces) : la page d'une annonce et la fenêtre de réservation n'existent plus. Le bouton [Demander un devis] est maintenant sur la page publique d'un prestataire (`RM-PRESTATAIRE-PUBLIC-IHM.md`). Document gardé pour mémoire jusqu'au lot 9.4.
+
 > Fichiers : `frontend/src/pages/AnnoncePage.vue`, `frontend/src/outils/annonces.ts`. Construit au lot 3.2 (29/09/2026). Règles : `RM-ANNONCES.md`. Maquette : `maquette-lot-3.2-annonces.html` (écran 5).
 
 ## Page `/annonces/12`

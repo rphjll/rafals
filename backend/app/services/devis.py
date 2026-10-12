@@ -11,13 +11,14 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.agenda import Blocage
-from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
 from app.modeles.devis import DemandeDevis, Devis, LigneDevis, PhotoDemande
+from app.modeles.metiers import Metier
 from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import absences, annonces, clients, droits, fichiers, journal, mails, paiements
+from app.services import absences, clients, droits, fichiers, journal, locaux, mails, paiements, stripe_api
+from app.services import prestataires as service_prestataires
 from app.services import rendez_vous_communs as communs
 from app.services.erreurs import ErreurRegle
 
@@ -122,7 +123,8 @@ def devis_du_prestataire(db: Session, prestataire: Prestataire, devis_id: int) -
 
 
 def _titre(db: Session, demande: DemandeDevis) -> str:
-    return db.get_one(Annonce, demande.annonce_id).titre
+    """Le métier concerné, ex. « Maçon » (avant le retrait des annonces : le titre de l'annonce)."""
+    return db.get_one(Metier, demande.metier_id).nom
 
 
 def _prevenir(db: Session, demande: DemandeDevis, *, objet: str, client: str | None = None, prestataire: str | None = None) -> None:
@@ -141,45 +143,45 @@ def _noter(db: Session, auteur_id: int | None, action: str, table: str, ligne_id
 # ---------- Le client demande un devis ----------
 
 
-def demander(db: Session, client: Compte, annonce_id: int, texte: str, maintenant: datetime) -> DemandeDevis:
-    """Ex. Mme Dupont écrit à Paul, maçon : « Muret de 5 mètres au fond du jardin » (photos ensuite, 5 au plus)."""
+def demander(db: Session, client: Compte, prestataire_id: int, metier_id: int, texte: str, maintenant: datetime) -> DemandeDevis:
+    """[Demander un devis] sur le profil d'un prestataire au SIRET vérifié, pour un de ses métiers.
+    Ex. Mme Dupont écrit à Paul, maçon : « Muret de 5 mètres au fond du jardin » (photos ensuite, 5 au plus)."""
     if not droits.peut_reserver_ou_publier(db, client, maintenant):
         raise ErreurRegle("Vérifiez d'abord votre adresse mail (ou l'accord de vos parents) pour demander un devis.", 403)
     suspendu = absences.reservation_suspendue_jusqu_au(db, client.id, maintenant)
     if suspendu is not None:
         raise ErreurRegle(f"Vous ne pouvez plus réserver ni demander de devis jusqu'au {suspendu.astimezone(PARIS):%d/%m/%Y}.", 403)
-    annonce = db.get(Annonce, annonce_id)
-    if annonce is None:
-        raise ErreurRegle("Cette annonce n'existe pas.", 404)
-    prestataire = db.get_one(Prestataire, annonce.prestataire_id)
-    if annonces.raison_cachee(db, annonce, prestataire, maintenant) is not None:
-        raise ErreurRegle("Cette annonce n'existe pas.", 404)
-    if annonce.forme_prix != "devis":
-        raise ErreurRegle("Cette annonce a un prix : choisissez un horaire pour réserver.")
+    prestataire = db.get(Prestataire, prestataire_id)
+    if prestataire is None or prestataire.statut != "actif":
+        raise ErreurRegle("Ce prestataire n'existe pas.", 404)
     if prestataire.compte_id == client.id:
-        raise ErreurRegle("Vous ne pouvez pas demander un devis sur votre propre annonce.")
+        raise ErreurRegle("Vous ne pouvez pas vous demander un devis à vous-même.")
     if prestataire.siret_statut != "verifie":
         raise ErreurRegle("Ce prestataire ne peut pas faire de devis en ce moment (SIRET pas vérifié).")
+    if metier_id not in service_prestataires.metiers_exerces(db, prestataire, maintenant.astimezone(PARIS).date()):
+        raise ErreurRegle("Choisissez un des métiers de ce prestataire.")
     texte = (texte or "").strip()
     mini, maxi = reglages.DEMANDE_DEVIS_TEXTE
     if not mini <= len(texte) <= maxi:
         raise ErreurRegle(f"Décrivez votre besoin en {mini} à {maxi} caractères (ex. « Muret de 5 mètres au fond du jardin »).")
 
-    # Lieu des travaux : l'adresse du client, recopiée (obligatoire si le prestataire vient chez le client)
-    adresse = clients.adresse_de(db, client) if annonce.lieu in ("chez_client", "les_deux") else None
-    if annonce.lieu == "chez_client" and adresse is None:
+    # Lieu des travaux : l'adresse du client, recopiée (obligatoire si le prestataire ne reçoit pas chez lui)
+    adresse = clients.adresse_de(db, client) if prestataire.lieu in ("chez_client", "les_deux") else None
+    if prestataire.lieu == "chez_client" and adresse is None:
         raise ErreurRegle("Indiquez d'abord votre adresse : le prestataire vient chez vous.", 400)
     demande = DemandeDevis(
-        client_id=client.id, annonce_id=annonce.id, prestataire_id=prestataire.id, texte=texte, statut="envoyee",
+        client_id=client.id, annonce_id=None, prestataire_id=prestataire.id, metier_id=metier_id, texte=texte,
+        statut="envoyee",
         commune_id=adresse.commune_id if adresse else None, adresse_ligne=adresse.ligne if adresse else None,
         adresse_complement=adresse.complement if adresse else None, code_postal=adresse.code_postal if adresse else None,
         cree_le=maintenant, statut_change_le=maintenant,
     )
     db.add(demande)
     db.flush()
-    _noter(db, client.id, "demander_devis", "demande_devis", demande.id, maintenant, annonce_id=annonce.id)
-    _prevenir(db, demande, objet=f"rafals : demande de devis « {annonce.titre} »",
-              prestataire=f"Nouvelle demande de devis pour « {annonce.titre} » : « {texte[:200]} ». Répondez sur rafals "
+    titre = _titre(db, demande)
+    _noter(db, client.id, "demander_devis", "demande_devis", demande.id, maintenant, metier_id=metier_id)
+    _prevenir(db, demande, objet=f"rafals : demande de devis « {titre} »",
+              prestataire=f"Nouvelle demande de devis pour « {titre} » : « {texte[:200]} ». Répondez sur rafals "
                           "(« Mes devis »).")
     return demande
 
@@ -279,7 +281,7 @@ def _verifier_dates(db: Session, prestataire: Prestataire, debut: date, fin: dat
 def envoyer(db: Session, prestataire: Prestataire, demande: DemandeDevis, lignes: list[Ligne], *, arrhes_pourcent: int,
             travaux_debut: date, travaux_fin: date, valable_jusqu_au: date, maintenant: datetime) -> Devis:
     """Ex. devis D-2026-0002 de Paul : 3 lignes, 1 190 €, arrhes 30 %, travaux du 19/10 au 20/10, valable jusqu'au 01/11."""
-    annonces.verifier_modifiable(prestataire)
+    locaux.verifier_modifiable(prestataire)
     if demande.statut != "envoyee":
         raise ErreurRegle("Cette demande n'attend plus de devis.")
     if prestataire.siret_statut != "verifie":
@@ -369,10 +371,11 @@ def refuser(db: Session, client: Compte, devis: Devis, motif: str | None, mainte
 
 
 def modes_possibles(db: Session, devis: Devis) -> list[str]:
-    """« carte » si l'annonce accepte la carte (SIRET vérifié, Stripe vérifié) ; « direct » si elle accepte les espèces."""
-    demande = demande_de(db, devis)
-    modes = annonces.modes_de_paiement(db.get_one(Annonce, demande.annonce_id), db.get_one(Prestataire, demande.prestataire_id))
-    return [m for m, oui in (("carte", "carte" in modes), ("direct", "especes" in modes)) if oui]
+    """« carte » si le prestataire a un SIRET vérifié et la carte activée chez Stripe ; « direct » toujours
+    (choix de Claude au lot 9.2 : aucune rubrique nouvelle dans le devis)."""
+    prestataire = db.get_one(Prestataire, demande_de(db, devis).prestataire_id)
+    carte = prestataire.siret_statut == "verifie" and prestataire.stripe_pret and stripe_api.disponible()
+    return (["carte"] if carte else []) + ["direct"]
 
 
 def accepter(db: Session, client: Compte, devis: Devis, mode_paiement: str, maintenant: datetime) -> str | None:
@@ -398,7 +401,7 @@ def _accepte(db: Session, devis: Devis, mode_paiement: str, maintenant: datetime
     """Accepté : les jours des travaux sont bloqués dans l'agenda du prestataire (« Travaux D-2026-0002 »)."""
     demande = demande_de(db, devis)
     de, a = _limites(devis.travaux_debut, devis.travaux_fin)
-    blocage = Blocage(prestataire_id=demande.prestataire_id, metier_id=db.get_one(Annonce, demande.annonce_id).metier_id,
+    blocage = Blocage(prestataire_id=demande.prestataire_id, metier_id=demande.metier_id,
                       debut=de, fin=a, motif=f"Travaux {numero(devis)}", cree_le=maintenant)
     db.add(blocage)
     db.flush()

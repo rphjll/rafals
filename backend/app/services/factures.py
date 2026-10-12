@@ -11,11 +11,12 @@ from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from app import config, reglages
-from app.modeles.annonces import Annonce, Local
+from app.modeles.annonces import Local
 from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte
 from app.modeles.devis import DemandeDevis, Devis
 from app.modeles.factures import Facture, LigneFacture
+from app.modeles.metiers import Metier
 from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Commune, Prestataire
 from app.modeles.rendez_vous import RendezVous
@@ -167,7 +168,7 @@ def _lignes_arrhes(db: Session, devis: Devis, signe: int = 1) -> list[Ligne]:
 def _parties_du_devis(db: Session, devis: Devis) -> tuple[Prestataire, Compte, str]:
     demande = db.get_one(DemandeDevis, devis.demande_devis_id)
     return (db.get_one(Prestataire, demande.prestataire_id), db.get_one(Compte, demande.client_id),
-            db.get_one(Annonce, demande.annonce_id).titre)
+            db.get_one(Metier, demande.metier_id).nom)
 
 
 def pour_paiement(db: Session, paiement: Paiement, maintenant: datetime) -> Facture | None:

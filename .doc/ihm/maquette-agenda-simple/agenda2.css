@@ -1,0 +1,41 @@
+/* Complément de commun.css pour les propositions D, E, F : cases comme dans l'agenda actuel, fenêtre, boutons colorés. */
+:root{--voile:rgba(16,22,30,.55)}
+
+/* Cases : numéro, heures de la semaine type, étiquettes sur fond blanc */
+.case{aspect-ratio:auto;min-height:80px;justify-content:flex-start;gap:3px}
+.case>*{position:relative;z-index:1}
+.case.partiel::after,.case.plus::after{content:none}
+.case.plus{border:2px dashed var(--ouvert-texte)}
+.case .bande{position:absolute;z-index:0;top:0;bottom:0;background:repeating-linear-gradient(45deg,var(--hach1) 0 6px,var(--hach2) 6px 12px)}
+.hh{font-size:11.5px;font-weight:600;line-height:1.2}
+.eti{background:var(--surface);color:var(--texte);border-radius:5px;font-size:11px;font-weight:600;padding:0 4px;line-height:1.35;text-align:left}
+.eti i,.btn i{font-style:normal}
+.bref{display:none}
+@media (max-width:700px){.long,.hh{display:none}.bref{display:inline}.case{min-height:56px}}
+.legende .pt{border:2px dashed var(--ouvert-texte)}
+
+/* Boutons des fermetures (orange) et des ouvertures (vert) */
+.btn.fer{background:var(--surface);color:var(--attente);border-color:var(--accent)}
+.btn.ouv{background:var(--surface);color:var(--ok);border-color:var(--ok)}
+.btn.fer.plein{background:var(--accent);color:var(--surface)}
+.btn.ouv.plein{background:var(--ok);color:var(--surface)}
+.bandeau{border-radius:10px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;font-weight:600}
+.bandeau.F{background:var(--attente-doux);color:var(--attente)}
+.bandeau.O{background:var(--ok-doux);color:var(--ok)}
+.t-fer{color:var(--attente);font-weight:600}
+.t-ouv{color:var(--ok);font-weight:600}
+.detail-jour{display:flex;flex-direction:column;gap:10px}
+.sous-grille{display:flex;flex-direction:column;gap:8px}
+.compte{border-radius:99px;padding:1px 9px;font-size:13px;font-weight:700}
+.compte.F{background:var(--attente-doux);color:var(--attente)}
+.compte.O{background:var(--ok-doux);color:var(--ok)}
+.titre-bloc{display:flex;gap:8px;align-items:center}
+.bas{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+
+/* Fenêtre */
+.voile{position:fixed;inset:0;background:var(--voile);display:flex;align-items:center;justify-content:center;padding:16px;z-index:8}
+.fenetre{background:var(--surface);border-radius:10px;padding:20px;width:100%;max-width:640px;max-height:92%;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.fenetre .champs{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px 12px}
+.fenetre label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13.5px;min-width:0}
+.fenetre select,.fenetre input{width:100%;min-width:0}
+input[type=text]{min-height:42px;border-radius:10px;border:1px solid var(--bord);background:var(--surface);padding:0 10px;font:inherit;color:inherit}

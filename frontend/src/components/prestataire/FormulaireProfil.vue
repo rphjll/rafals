@@ -6,12 +6,13 @@ import { useRoute } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
 import type { MetierVisible } from '../../composables/useMetiers'
 import { useMetiers } from '../../composables/useMetiers'
-import { type CommuneVisible, type ProfilPrestataire, siretLisible } from '../../outils/prestataires'
+import { type CommuneVisible, LIEUX_SERVICE, type LieuService, type ProfilPrestataire, siretLisible } from '../../outils/prestataires'
 import AppChoixCommune from '../AppChoixCommune.vue'
 import AppChoixMetier from '../AppChoixMetier.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppChamp from '../ui/AppChamp.vue'
+import AppChoix from '../ui/AppChoix.vue'
 import AppRecherche from '../ui/AppRecherche.vue'
 import AppZoneTexte from '../ui/AppZoneTexte.vue'
 import AppSection from '../ui/AppSection.vue'
@@ -31,8 +32,9 @@ const principal = ref<MetierVisible | null>(e ? { ...e.metier_principal, code: '
 const secondaires = ref<{ id: number; nom: string }[]>(e ? [...e.metiers_secondaires] : [])
 const commune = ref<CommuneVisible | null>(e?.commune ?? null)
 const distance = ref(String(e?.distance_km ?? 15))
+const lieu = ref<LieuService>(e?.lieu ?? 'chez_client')
 const presentation = ref(e?.presentation ?? '')
-// Création : le SIRET peut arriver de « Créer mon auto-entreprise » (/proposer?siret=91234567800017)
+// Création : le SIRET peut arriver de « Créer mon auto-entreprise » (/profil?siret=91234567800017)
 const siretAnnonce = typeof route.query.siret === 'string' ? route.query.siret : null
 const siret = ref(siretLisible(e ? e.siret : siretAnnonce))
 const erreur = ref('')
@@ -59,6 +61,7 @@ async function enregistrer() {
       metiers_secondaires: secondaires.value.map((m) => m.id),
       commune_id: commune.value.id,
       distance_km: Number(distance.value),
+      lieu: lieu.value,
       presentation: presentation.value,
       siret: siret.value,
     })
@@ -127,6 +130,10 @@ async function enregistrer() {
           aide="De 1 à 100 km, à vol d'oiseau."
         />
       </div>
+      <AppChoix v-model="lieu" etiquette="Où ont lieu vos services ?" :options="LIEUX_SERVICE" obligatoire />
+      <p v-if="lieu !== 'chez_client'" class="text-[13px] text-texte-doux">
+        Il faut que « Mon adresse » soit remplie. Votre rue n'est montrée à un client qu'après un rendez-vous.
+      </p>
     </AppSection>
 
     <AppSection titre="Présentation et SIRET">

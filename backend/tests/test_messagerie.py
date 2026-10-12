@@ -10,7 +10,7 @@ from app import reglages
 from app.services import messagerie
 from tests.conftest import MOT_DE_PASSE_TEST
 from tests.test_agenda import MARDI, lea  # noqa: F401 (fixtures)
-from tests.test_annonces import fabrique_prestataire, metiers  # noqa: F401 (fixtures)
+from tests.test_prestataires import fabrique_prestataire, metiers  # noqa: F401 (fixtures)
 from tests.test_prestataires import JPG, PDF
 from tests.test_rendez_vous import a, dupont, reserver  # noqa: F401 (fixtures)
 
@@ -68,7 +68,7 @@ def test_le_prestataire_voit_le_client_sans_son_nom_complet(lea, dupont) -> None
 
 def test_un_prestataire_n_ecrit_pas_en_premier_a_un_inconnu(lea, dupont) -> None:
     inconnu = lea.client.post("/api/conversations", json={"client_id": dupont.id})
-    reserver(dupont, lea.annonce, a(MARDI, 10))
+    reserver(dupont, lea, a(MARDI, 10))
     apres_un_rendez_vous = lea.client.post("/api/conversations", json={"client_id": dupont.id})
 
     assert inconnu.status_code == 403 and "rendez-vous ou un devis" in inconnu.json()["detail"]
@@ -156,7 +156,7 @@ def test_coordonnees_masquees_puis_visibles_apres_la_reservation(lea, dupont) ->
 
     avant = lire(dupont, conversation["id"])
     apercu_avant = dupont.client.get("/api/moi/conversations").json()[0]["apercu"]
-    reserver(dupont, lea.annonce, a(MARDI, 10))
+    reserver(dupont, lea, a(MARDI, 10))
     apres = lire(dupont, conversation["id"])
 
     assert avant["coordonnees_masquees"] is True

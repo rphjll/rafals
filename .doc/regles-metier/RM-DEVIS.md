@@ -2,7 +2,7 @@
 
 > Rédigé au lot 5.0, à partir des réponses de Raphael. En cours d'écriture. Point de départ : `RM-ANNONCES.md` § « Sur devis » (le client envoie une demande écrite, avec photos, et le prestataire répond par un devis).
 
-## Sans annonces (décision de Raphael du 04/10/2026, pas encore construit)
+## Sans annonces (décision de Raphael du 04/10/2026 ; porte d'entrée « profil » construite le 09/10/2026, lot 9.2)
 Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Après les lots 8.3 et 8.4, seule la **porte d'entrée** du devis change (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
 - Le client clique **[Demander un devis]** sur le profil d'un prestataire avec SIRET vérifié, et choisit un de ses métiers.
   - Exemple : Mme Dupont ouvre le profil de Paul, maçon, choisit « Maçon » et écrit « Muret de 5 mètres au fond du jardin », avec 2 photos.
@@ -10,6 +10,12 @@ Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Aprè
   - Exemple : M. Petit publie « Refaire ma salle de bain » ; Karim clique [Répondre], puis [Faire un devis] : 1 800 €, arrhes de 30 %.
 - **Moyens de paiement** : le prestataire les choisit en écrivant le devis (avant, ils venaient de l'annonce).
 - Tout le reste ne change pas : lignes, arrhes, acceptation, jours de travaux, facture.
+- **Préparé le 08/10/2026 (lot 9.1, `db/schema_v25.sql`)** : une demande de devis porte maintenant son métier (recopié de l'annonce, ex. demande n° 5 → « Plombier ») et peut porter la demande publiée dont elle vient ; l'annonce n'y est plus obligatoire. Les deux nouvelles portes d'entrée ci-dessus sont au lot 9.2.
+
+**Construit le 09/10/2026 (lot 9.2)** : [Demander un devis] sur la page d'un prestataire au SIRET vérifié, avec le choix du métier s'il en a plusieurs. Le titre d'une demande de devis est le nom du métier (ex. « Maçon »).
+- Refus : pas de SIRET vérifié ; métier que le prestataire n'exerce pas ; devis demandé à soi-même.
+- **Moyens de paiement d'un devis (choix de Claude, différent de la ligne ci-dessus)** : « carte » si le prestataire a un SIRET vérifié et le paiement par carte activé, « en direct » toujours. Le choix par le prestataire en écrivant le devis demanderait une rubrique nouvelle dans la base (MLD à valider par Raphael).
+- **Pas encore construit** : répondre à une demande publiée par un devis ([Faire un devis] dans la conversation). La rubrique `demande_id` existe déjà dans la base (lot 9.1).
 
 ## Paiement d'un devis accepté : arrhes, puis solde (choix de Raphael le 02/10/2026)
 - Le prestataire fixe des **arrhes** dans son devis (un pourcentage du total). Elles sont payées par carte **dès que le client accepte** le devis, et versées au prestataire sans attendre, pour qu'il puisse acheter ses matériaux.

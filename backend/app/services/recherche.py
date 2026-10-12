@@ -4,20 +4,18 @@ Règles : .doc/regles-metier/RM-RECHERCHE.md (validé le 30/09/2026 ; « Sans an
 Qui apparaît : un prestataire actif, qui exerce le métier, et dont le rayon couvre la ville du client (plus besoin d'annonce).
 Ordre : métier principal d'abord ; puis les prestataires notés, du meilleur au moins bon selon la note pondérée ;
 puis les nouveaux (sans avis, badge « Nouveau ») ; à égalité, le plus proche, puis le plus ancien sur rafals.
-Aucune table : tout se calcule à partir des prestataires, des annonces, des communes et de l'agenda."""
+Aucune table : tout se calcule à partir des prestataires, de leurs avis et des communes."""
 
-from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta
+from dataclasses import dataclass
+from datetime import date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import reglages
-from app.modeles.annonces import Annonce
 from app.modeles.metiers import CategorieMetier, Metier
 from app.modeles.prestataires import Commune, Prestataire
-from app.services import agenda, avis, communes
-from app.services.annonces import modes_de_paiement
+from app.services import avis, communes, stripe_api
 from app.services.erreurs import ErreurRegle
 from app.services.prestataires import aujourd_hui, en_cours, metiers_exerces
 
@@ -26,8 +24,6 @@ from app.services.prestataires import aujourd_hui, en_cours, metiers_exerces
 class Filtres:
     vient_chez_moi: bool = False
     carte: bool = False
-    libre_7_jours: bool = False
-    prix_max_centimes: int | None = None
 
 
 @dataclass
@@ -37,7 +33,6 @@ class Resultat:
     distance_km: float
     principal: bool  # le métier cherché (ou montré) est son métier principal
     metier_id: int  # le métier écrit sur sa carte
-    annonces: list[Annonce] = field(default_factory=list)
     note: float | None = None  # vraie note moyenne, montrée au client
     nombre_avis: int = 0
     note_classement: float | None = None  # note pondérée, sert seulement à l'ordre
@@ -45,12 +40,6 @@ class Resultat:
     @property
     def nouveau(self) -> bool:
         return self.nombre_avis == 0
-
-    @property
-    def a_partir_de(self) -> Annonce | None:
-        """L'annonce la moins chère (prix fixe, ou prix de l'heure) ; None s'il n'a que des annonces sur devis."""
-        avec_prix = [a for a in self.annonces if a.prix_centimes is not None]
-        return min(avec_prix, key=lambda a: a.prix_centimes or 0) if avec_prix else None
 
 
 @dataclass
@@ -82,25 +71,20 @@ def _avis(db: Session, prestataires: list[Prestataire]) -> dict[int, tuple[int, 
     return avis.notes(db, [p.id for p in prestataires])
 
 
-def _libre_dans_7_jours(db: Session, r: Resultat, maintenant: datetime) -> bool:
-    jour = aujourd_hui(maintenant)
-    for annonce in (a for a in r.annonces if a.forme_prix != "devis"):
-        for decalage in range(7):
-            if agenda.horaires_libres(db, r.prestataire, annonce, jour + timedelta(days=decalage), maintenant):
-                return True
-    return False
+def vient_chez_le_client(r: Resultat) -> bool:
+    """Lu dans le profil : « chez le client » ou « les deux » (RM-PRESTATAIRES § « Sans annonces »)."""
+    return r.prestataire.lieu != "chez_moi"
 
 
-def _garder(db: Session, r: Resultat, filtres: Filtres, maintenant: datetime) -> bool:
-    if filtres.vient_chez_moi and not any(a.lieu in ("chez_client", "les_deux") for a in r.annonces):
+def carte_acceptee(prestataire: Prestataire) -> bool:
+    """SIRET vérifié et paiement par carte activé : il peut proposer la carte dans ses propositions."""
+    return prestataire.siret_statut == "verifie" and prestataire.stripe_pret and stripe_api.disponible()
+
+
+def _garder(r: Resultat, filtres: Filtres) -> bool:
+    if filtres.vient_chez_moi and not vient_chez_le_client(r):
         return False
-    if filtres.carte and not any("carte" in modes_de_paiement(a, r.prestataire) for a in r.annonces):
-        return False
-    moins_cher = r.a_partir_de
-    if filtres.prix_max_centimes is not None and moins_cher is not None:
-        if (moins_cher.prix_centimes or 0) > filtres.prix_max_centimes:
-            return False  # « sur devis » seulement : il reste affiché
-    return not (filtres.libre_7_jours and not _libre_dans_7_jours(db, r, maintenant))
+    return not (filtres.carte and not carte_acceptee(r.prestataire))
 
 
 def _dans_le_rayon(db: Session, client: Commune, jour: date) -> list[tuple[Prestataire, Commune, float, list[int]]]:
@@ -167,7 +151,7 @@ def rechercher(
     db: Session, *, metier_id: int, commune_id: int, maintenant: datetime, filtres: Filtres | None = None,
     tri: str = "note", page: int = 1,
 ) -> Page:
-    """Ex. « Plombier » + Talence → les plombiers actifs dont le rayon couvre Talence, avec ou sans annonce."""
+    """Ex. « Plombier » + Talence → les plombiers actifs dont le rayon couvre Talence."""
     metier = db.get(Metier, metier_id)
     client = db.get(Commune, commune_id)
     if metier is None:
@@ -183,13 +167,8 @@ def rechercher(
     for prestataire, depart, distance, exerces in _dans_le_rayon(db, client, jour):
         if metier_id in exerces:
             resultats.append(Resultat(prestataire, depart, distance, _est_principal(prestataire, metier_id, jour), metier_id))
-    # Tant que les annonces existent : celles en ligne de ce métier donnent le prix et servent aux filtres
-    par_prestataire = {r.prestataire.id: r for r in resultats}
-    for annonce in db.scalars(select(Annonce).where(Annonce.metier_id == metier_id, Annonce.statut == "en_ligne")):
-        if annonce.prestataire_id in par_prestataire:
-            par_prestataire[annonce.prestataire_id].annonces.append(annonce)
     _noter(db, resultats)
-    resultats = [r for r in resultats if _garder(db, r, filtres, maintenant)]
+    resultats = [r for r in resultats if _garder(r, filtres)]
     resultats.sort(key=_cle_note if tri == "note" else _cle_distance)
 
     par_page = reglages.RECHERCHE_RESULTATS_PAR_PAGE
@@ -207,5 +186,5 @@ def rechercher(
 
 def page_publique_visible(prestataire: Prestataire) -> bool:
     """Page publique d'un prestataire : visible si son activité est active (en pause, bloquée ou arrêtée : cachée).
-    Un prestataire dont le seul métier est arrêté reste visible, avec « Aucune annonce » (RM-ANNONCES)."""
+    Un prestataire dont le seul métier est arrêté reste visible."""
     return prestataire.statut == "actif"

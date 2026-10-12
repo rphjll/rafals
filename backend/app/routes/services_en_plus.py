@@ -9,7 +9,6 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
-from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
 from app.modeles.prestataires import Prestataire
 from app.modeles.messagerie import Conversation
@@ -218,13 +217,12 @@ def declarer(donnees: DeclarationDemande, db: Base, compte: CompteConnecte) -> D
 
 
 class NouveauSignalement(BaseModel):
-    annonce_id: int | None = None
-    prestataire_id: int | None = None
+    prestataire_id: int
     motif: str
 
 
 class DecisionSignalement(BaseModel):
-    action: Literal["classer", "retirer_annonce", "bloquer_prestataire", "prevenir"]
+    action: Literal["classer", "bloquer_prestataire", "prevenir"]
     decision: str = ""
 
 
@@ -236,18 +234,15 @@ class SignalementAdministre(BaseModel):
     prestataire: str  # ou le nom du client visé
     prestataire_statut: str
     conversation_id: int | None = None  # conversation signalée : l'administrateur peut la lire (lot 8.1)
-    annonce_id: int | None
-    annonce: str | None  # son titre
-    annonce_statut: str | None
     motif: str
     deja_signale: int  # nombre d'autres signalements sur ce prestataire (traités ou non)
 
 
 @routeur.post("/signalements", status_code=201)
 def signaler(donnees: NouveauSignalement, db: Base, compte: CompteConnecte) -> dict[str, int]:
-    """Signaler une annonce (annonce_id) ou un prestataire (prestataire_id), avec un motif."""
-    signalement = signalements.signaler(db, compte, annonce_id=donnees.annonce_id, prestataire_id=donnees.prestataire_id,
-                                        motif=donnees.motif, maintenant=maintenant())
+    """Signaler un prestataire, avec un motif (une conversation se signale depuis les messages)."""
+    signalement = signalements.signaler(db, compte, prestataire_id=donnees.prestataire_id, motif=donnees.motif,
+                                        maintenant=maintenant())
     db.commit()
     return {"id": signalement.id}
 
@@ -258,13 +253,12 @@ def signalements_a_traiter(db: Base, _admin: Administrateur) -> list[Signalement
     for s in signalements.a_traiter(db):
         auteur = db.get_one(Compte, s.auteur_id)
         prestataire = db.get_one(Prestataire, s.prestataire_id) if s.prestataire_id else None
-        annonce = db.get(Annonce, s.annonce_id) if s.annonce_id else None
         if prestataire is None:  # conversation signalée par le prestataire : le client est visé
             client = db.get_one(Compte, db.get_one(Conversation, s.conversation_id).client_id)
             resultat.append(SignalementAdministre(
                 id=s.id, cree_le=s.cree_le, auteur=f"{auteur.prenom} {auteur.nom}", prestataire_id=None,
                 prestataire=f"{client.prenom} {client.nom} (client)", prestataire_statut="client",
-                conversation_id=s.conversation_id, annonce_id=None, annonce=None, annonce_statut=None, motif=s.motif,
+                conversation_id=s.conversation_id, motif=s.motif,
                 deja_signale=0,
             ))
             continue
@@ -273,8 +267,7 @@ def signalements_a_traiter(db: Base, _admin: Administrateur) -> list[Signalement
         resultat.append(SignalementAdministre(
             id=s.id, cree_le=s.cree_le, auteur=f"{auteur.prenom} {auteur.nom}", prestataire_id=prestataire.id,
             conversation_id=s.conversation_id,
-            prestataire=prestataire.nom_affiche, prestataire_statut=prestataire.statut, annonce_id=s.annonce_id,
-            annonce=annonce.titre if annonce else None, annonce_statut=annonce.statut if annonce else None, motif=s.motif,
+            prestataire=prestataire.nom_affiche, prestataire_statut=prestataire.statut, motif=s.motif,
             deja_signale=autres,
         ))
     return resultat

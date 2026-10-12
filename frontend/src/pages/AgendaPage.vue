@@ -1,18 +1,23 @@
 <script setup lang="ts">
 // Mon agenda (.doc/ihm/RM-AGENDA-IHM.md) : 3 onglets (Calendrier, Rendez-vous, Paiements), un fichier chacun dans
 // components/agenda/. Un calendrier par métier : avec plusieurs métiers, on choisit lequel au-dessus du calendrier.
+// Depuis le 07/10/2026 (demande de Raphael) : un client y voit le calendrier de ses rendez-vous (CalendrierClient) ;
+// un prestataire a en plus le choix « Mes rendez-vous de client » à côté de ses métiers (?calendrier=client).
 import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import OngletCalendrier from '../components/agenda/OngletCalendrier.vue'
 import OngletPaiements from '../components/agenda/OngletPaiements.vue'
 import OngletRendezVous from '../components/agenda/OngletRendezVous.vue'
 import GardePrestataire from '../components/prestataire/GardePrestataire.vue'
+import CalendrierClient from '../components/rendez-vous/CalendrierClient.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
+import AppBouton from '../components/ui/AppBouton.vue'
+import AppCarte from '../components/ui/AppCarte.vue'
 import AppOnglets from '../components/ui/AppOnglets.vue'
 import AppSegment from '../components/ui/AppSegment.vue'
 import { useCompte } from '../composables/useCompte'
 import type { AgendaVisible } from '../outils/agenda'
-import type { AnnonceVisible } from '../outils/annonces'
 import type { ProfilPrestataire } from '../outils/prestataires'
 import type { RendezVousVisible } from '../outils/rendez_vous'
 
@@ -22,13 +27,14 @@ const onglets = [
   { id: 'paiements', texte: 'Paiements' },
 ] as const
 
-const { compte } = useCompte()
+const { compte, chargementFait } = useCompte()
+const route = useRoute()
+const routeur = useRouter()
 const ongletActif = ref('calendrier')
 const agenda = ref<AgendaVisible | null>(null)
 const profil = ref<ProfilPrestataire | null>(null)
-const annonces = ref<AnnonceVisible[]>([])
 const rendezVous = ref<RendezVousVisible[]>([])
-// Compteur orange : les demandes qui attendent une réponse
+// Compteur orange : d'anciennes demandes de rendez-vous encore en attente (il n'y en a plus de nouvelles)
 const compteurs = computed(() => ({
   'rendez-vous': rendezVous.value.filter((r) => r.statut === 'en_attente' && new Date(r.fin) > new Date()).length,
 }))
@@ -38,13 +44,26 @@ const erreur = ref('')
 const metiers = computed(() => (profil.value ? [profil.value.metier_principal, ...profil.value.metiers_secondaires] : []))
 const metierId = ref<number | null>(null)
 const metier = computed(() => metiers.value.find((m) => m.id === metierId.value) ?? metiers.value[0])
-// Pour les cases « Coiffeuse | Maquilleuse » : toujours un métier choisi
-const metierChoisi = computed({ get: () => metier.value?.id ?? 0, set: (id) => (metierId.value = id) })
+// Le calendrier « client » d'un prestataire : ses propres rendez-vous pris chez d'autres ; le choix est dans l'adresse
+const CLIENT = -1
+const vueClient = computed(() => route.query.calendrier === 'client')
+// Pour les cases « Coiffeuse | Maquilleuse | Mes rendez-vous de client » : toujours une case choisie
+const metierChoisi = computed({
+  get: () => (vueClient.value ? CLIENT : (metier.value?.id ?? 0)),
+  set: (id) => {
+    routeur.replace({ query: id === CLIENT ? { calendrier: 'client' } : {} })
+    if (id !== CLIENT) metierId.value = id
+  },
+})
+const casesCalendrier = computed(() => [
+  ...metiers.value.map((m) => ({ valeur: m.id, texte: m.nom })),
+  { valeur: CLIENT, texte: 'Mes rendez-vous de client' },
+])
 
 // Dans le calendrier d'un métier : ses rendez-vous, et ceux des autres métiers s'ils bloquent aussi ce calendrier
 const rendezVousDuCalendrier = computed(() =>
   rendezVous.value.flatMap((r) => {
-    const sien = r.metier // porté par le rendez-vous lui-même (avant : lu dans son annonce)
+    const sien = r.metier // porté par le rendez-vous lui-même 
     if (sien.id === metier.value?.id) return [r]
     return agenda.value?.reglages.rendez_vous_bloque_autres_metiers ? [{ ...r, autreMetier: sien.nom }] : []
   }),
@@ -55,13 +74,11 @@ const lireAgenda = (id: number | undefined) => appelerServeur<AgendaVisible>(`/a
 async function charger() {
   if (!compte.value?.prestataire_id) return
   try {
-    const [p, liste, rdv] = await Promise.all([
+    const [p, rdv] = await Promise.all([
       appelerServeur<ProfilPrestataire>('/api/moi/prestataire'),
-      appelerServeur<AnnonceVisible[]>('/api/moi/annonces'),
       appelerServeur<RendezVousVisible[]>('/api/moi/prestataire/rendez-vous'),
     ])
     profil.value = p
-    annonces.value = liste
     rendezVous.value = rdv
     agenda.value = await lireAgenda(metier.value?.id)
     metierId.value = agenda.value.metier_id
@@ -82,7 +99,7 @@ async function apresChangement(a: AgendaVisible) {
   agenda.value = a
   rendezVous.value = await appelerServeur<RendezVousVisible[]>('/api/moi/prestataire/rendez-vous')
 }
-// Date d'arrêt posée ou retirée : des rendez-vous ont pu être annulés, des annonces mises en pause
+// Date d'arrêt posée ou retirée : des rendez-vous ont pu être annulés
 async function apresProfil(p: ProfilPrestataire) {
   profil.value = p
   await charger()
@@ -92,22 +109,33 @@ watch(compte, charger)
 </script>
 
 <template>
-  <GardePrestataire titre="Mon agenda" large>
+  <AppCarte v-if="chargementFait && !compte" titre="Mon agenda" intro="Connectez-vous pour voir vos rendez-vous.">
+    <AppBouton pleine-largeur @click="routeur.push({ path: '/connexion', query: { retour: '/mon-agenda' } })">Se connecter</AppBouton>
+  </AppCarte>
+
+  <!-- Un client (sans profil de prestataire) : le calendrier de ses rendez-vous -->
+  <div v-else-if="compte && !compte.prestataire_id" class="mx-auto flex w-full max-w-[720px] flex-col gap-4">
+    <h1 class="text-[clamp(28px,4.5vw,40px)] font-black">Mon agenda</h1>
+    <CalendrierClient />
+  </div>
+
+  <GardePrestataire v-else titre="Mon agenda" large>
     <h1 class="text-[28px] font-bold">Mon agenda</h1>
     <AppOnglets v-model="ongletActif" :onglets="onglets" :compteurs="compteurs" />
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <template v-if="agenda && profil && metier">
       <template v-if="ongletActif === 'calendrier'">
-        <div v-if="metiers.length > 1" class="flex flex-wrap items-center gap-2.5">
-          <b>Calendrier du métier :</b>
-          <AppSegment v-model="metierChoisi" etiquette="Métier" :options="metiers.map((m) => ({ valeur: m.id, texte: m.nom }))" />
+        <div class="flex flex-wrap items-center gap-2.5">
+          <b>Calendrier :</b>
+          <AppSegment v-model="metierChoisi" etiquette="Calendrier" :options="casesCalendrier" />
         </div>
+        <CalendrierClient v-if="vueClient" />
         <OngletCalendrier
+          v-else
           :agenda="agenda"
           :profil="profil"
           :metier="metier"
           :rendez-vous="rendezVousDuCalendrier"
-          :annonces="annonces.filter((a) => a.metier.id === metier?.id)"
           :plusieurs-metiers="metiers.length > 1"
           @maj="apresChangement"
           @maj-profil="apresProfil"

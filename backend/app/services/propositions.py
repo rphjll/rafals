@@ -15,7 +15,7 @@ from app.modeles.messagerie import Conversation
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import absences, annonces, clients, communes, droits, journal, messagerie, stripe_api
+from app.services import absences, clients, communes, droits, journal, locaux, messagerie, stripe_api
 from app.services import demandes as service_demandes
 from app.services import paiements as service_paiements
 from app.services import prestataires as service_prestataires
@@ -204,8 +204,8 @@ def proposer(db: Session, prestataire: Prestataire, conversation_id: int, saisie
         lieu = saisie.lieu or ""
         if lieu not in LIEUX:
             raise ErreurRegle("Indiquez où a lieu le service : chez le client, ou chez vous.")
-    if lieu == "chez_moi" and annonces.local_de(db, prestataire) is None:
-        raise ErreurRegle("Indiquez d'abord l'adresse de votre local dans « Ma fiche » : le client vient chez vous.")
+    if lieu == "chez_moi" and locaux.local_de(db, prestataire) is None:
+        raise ErreurRegle("Indiquez d'abord votre adresse dans « Mon profil » : le client vient chez vous.")
 
     if saisie.prix_centimes <= 0:
         raise ErreurRegle("Indiquez un prix (ex. 60 €).")
@@ -346,7 +346,7 @@ def repondre_au_prix(db: Session, prestataire: Prestataire, negociation_id: int,
 
 
 def modes_de_paiement(proposition: Proposition, prestataire: Prestataire) -> list[str]:
-    """Comme pour une annonce : la carte seulement si elle est toujours possible au moment d'accepter ; sinon espèces."""
+    """La carte seulement si elle est toujours possible au moment d'accepter ; sinon espèces."""
     carte = proposition.paiement_carte and _carte_possible(prestataire)
     especes = proposition.paiement_especes or (proposition.paiement_carte and not carte)
     return [mode for mode, oui in (("carte", carte), ("especes", especes)) if oui]
@@ -384,10 +384,10 @@ def accepter(db: Session, client: Compte, proposition_id: int, mode_paiement: st
         else:
             adresse = clients.adresse_de(db, client)
             if adresse is None:
-                raise ErreurRegle("Indiquez d'abord votre adresse dans « Mon compte » : le prestataire vient chez vous.")
+                raise ErreurRegle("Indiquez d'abord votre adresse dans « Mon profil » : le prestataire vient chez vous.")
             ligne, complement, commune_id, code_postal = adresse.ligne, adresse.complement, adresse.commune_id, adresse.code_postal
     else:
-        local = annonces.local_de(db, prestataire)
+        local = locaux.local_de(db, prestataire)
         if local is None:
             raise ErreurRegle("Ce prestataire n'a pas encore indiqué l'adresse de son local.")
         ligne, complement, commune_id, code_postal = local.ligne, local.complement, local.commune_id, local.code_postal

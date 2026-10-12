@@ -107,7 +107,7 @@ def creer(db: Session, client_id: int, prestataire: Prestataire, maintenant: dat
 
 
 def commencer_par_le_client(db: Session, client: Compte, prestataire_id: int, maintenant: datetime) -> Conversation:
-    """[Écrire à Karim] sur sa page publique ou ses annonces : avec n'importe quel prestataire visible."""
+    """[Écrire à Karim] sur sa page publique : avec n'importe quel prestataire visible."""
     prestataire = db.get(Prestataire, prestataire_id)
     if prestataire is None:
         raise ErreurRegle("Ce prestataire n'existe pas.", 404)

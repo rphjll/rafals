@@ -109,7 +109,7 @@ async function faire(chemin: string, reussite: string) {
           {{ dossier.demonstration ? '(faux numéro de démonstration, non ajouté au profil)' : aUnProfil ? 'Il est ajouté à votre profil.' : 'Gardez-le pour créer votre profil.' }}
         </AppAlerte>
         <div class="flex flex-wrap gap-2">
-          <AppBouton v-if="aUnProfil" @click="routeur.push('/mes-annonces')">Activer le paiement par carte</AppBouton>
+          <AppBouton v-if="aUnProfil" @click="routeur.push('/profil')">Activer le paiement par carte</AppBouton>
           <AppBouton v-else @click="routeur.push({ path: '/proposer', query: dossier.demonstration ? {} : { siret: dossier.siret_recu ?? '' } })">
             Proposer mes services
           </AppBouton>
@@ -117,7 +117,7 @@ async function faire(chemin: string, reussite: string) {
         </div>
       </template>
       <template v-else>
-        <AppAlerte etat="neutre">En attendant, vous pouvez déjà publier des annonces payées en espèces.</AppAlerte>
+        <AppAlerte etat="neutre">En attendant, vous pouvez déjà faire des propositions payées en espèces.</AppAlerte>
         <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
         <div><AppBouton variante="secondaire" :occupe="envoiEnCours" @click="faire('/actualiser', '')">Actualiser</AppBouton></div>
       </template>

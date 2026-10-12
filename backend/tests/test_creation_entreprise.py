@@ -13,7 +13,7 @@ from app.modeles.fichiers import Fichier
 from app.modeles.metiers import Metier
 from app.services import creation_entreprise as service
 from app.services import pdf_pieces
-from tests.test_annonces import fabrique_prestataire, metiers  # noqa: F401 (fixtures)
+from tests.test_prestataires import fabrique_prestataire, metiers  # noqa: F401 (fixtures)
 from tests.test_prestataires import id_commune
 
 PDF = b"%PDF-1.4 zztest papier d'essai"

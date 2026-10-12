@@ -29,7 +29,8 @@ def _annonce(base: Session, prestataire, plombier) -> Annonce:
 
 def _demande(base: Session, compte, prestataire, annonce, commune_id: int) -> DemandeDevis:
     demande = DemandeDevis(**valeurs(DemandeDevis, 1, {
-        "client_id": compte.id, "annonce_id": annonce.id, "prestataire_id": prestataire.id, "commune_id": commune_id,
+        "client_id": compte.id, "annonce_id": annonce.id, "prestataire_id": prestataire.id, "metier_id": annonce.metier_id,
+        "demande_id": None, "commune_id": commune_id,
         "code_postal": "33600", "texte": "Muret de 5 mètres au fond du jardin", "statut": "envoyee"}))
     base.add(demande)
     base.commit()
@@ -39,7 +40,8 @@ def _demande(base: Session, compte, prestataire, annonce, commune_id: int) -> De
 def test_fiche_demande_devis_et_photo(base: Session, decor) -> None:  # noqa: F811
     compte, prestataire, (plombier, _), (pessac, talence) = decor
     annonce = _annonce(base, prestataire, plombier)
-    liens = {"client_id": compte.id, "annonce_id": annonce.id, "prestataire_id": prestataire.id}
+    liens = {"client_id": compte.id, "annonce_id": annonce.id, "prestataire_id": prestataire.id, "metier_id": plombier.id,
+             "demande_id": None}
     # Valeurs imposées : liste des statuts, longueur du texte, adresse complète
     ajout = valeurs(DemandeDevis, 1, {**liens, "commune_id": pessac.id, "code_postal": "33600", "statut": "envoyee",
                                       "texte": "Muret de 5 mètres au fond du jardin"})

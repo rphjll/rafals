@@ -2,7 +2,7 @@
 
 > Validé et formalisé le 30/09/2026 (lot 4.0).
 
-## Sans annonces (décision de Raphael du 04/10/2026, pas encore construit)
+## Sans annonces (décision de Raphael du 04/10/2026 ; construit le 09/10/2026, lot 9.2)
 Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Après les lots 8.3 et 8.4, ce fichier se lira ainsi (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
 - **Un rendez-vous naît seulement d'une proposition acceptée** (`RM-DEMANDES.md`). Le client ne réserve plus lui-même un horaire libre.
   - Exemple 1 : Mme Dupont accepte « 35 € · samedi 10/10 à 10 h » de Tom → rendez-vous confirmé aussitôt.
@@ -10,6 +10,14 @@ Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Aprè
 - **Le titre, le prix, la durée et le métier** sont recopiés de la proposition (et non plus de l'annonce). Le métier dit dans quel calendrier tombe le rendez-vous.
 - **Ne servent plus** : « Confirmation : au choix du prestataire » et « Demande sans réponse : annulée après 24 h » (le rendez-vous est confirmé dès que le client accepte la proposition).
 - **Ne changent pas** : l'annulation et son délai, les absences et leur compteur, le déplacement, le rappel, les coordonnées montrées après le rendez-vous.
+
+**Précisions prises au lot 9.2 (09/10/2026, choix de Claude, Raphael ayant demandé de « terminer tout ce qui est en cours »)** :
+- **Le déplacement par le client disparaît** (contrairement à la ligne « ne changent pas » ci-dessus) : le client ne voit plus les horaires libres, il ne peut donc plus en choisir un autre. Il écrit au prestataire, qui annule et fait une nouvelle proposition.
+  - Exemple 1 : Mme Dupont ne peut plus mardi à 10 h → elle écrit à Léa « plutôt jeudi ? » ; Léa annule et propose « jeudi 16/10 à 14 h ».
+  - Exemple 2 : dans « Mon agenda », la ligne d'un rendez-vous à venir ne montre plus que [Annuler…].
+- Les états « en attente », « refusé », « expiré » et « déplacé » ne sont plus donnés à un nouveau rendez-vous ; les anciens rendez-vous qui les portent restent lisibles.
+- Le réglage « Annulation gratuite jusqu'à » reste. Le réglage « Quand un client réserve » n'a plus d'effet (voir la question posée à Raphael le 09/10/2026).
+- Le titre d'un rendez-vous sans demande publiée est le nom du métier (ex. « Coiffeur / Coiffeuse »).
 
 ## Objectif
 Réserver un horaire, le confirmer, l'annuler, et ce qui se passe si quelqu'un ne vient pas.

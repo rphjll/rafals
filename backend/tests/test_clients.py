@@ -193,3 +193,42 @@ def test_un_compte_actif_n_est_jamais_prevenu(fabrique_compte, base: Session, ma
     base.commit()
 
     assert not [m for m in mails_envoyes if m["a"] == actif.email and "sera fermé" in m["sujet"]]
+
+
+# ---------- Prestataire : « Mon adresse » est aussi l'adresse de son local (07/10/2026) ----------
+
+
+def test_adresse_du_prestataire_est_aussi_son_local(fabrique_compte, client) -> None:
+    from tests.test_prestataires import devenir, id_commune, id_metier
+
+    def local(compte) -> list[dict]:
+        return compte.client.get("/api/moi/donnees").json()["profil_prestataire"]["local"]
+
+    karim = fabrique_compte()
+    pessac = id_commune(client, "33600", "Pessac")
+    devenir(karim, {"nom_affiche": "ZZTEST Karim", "metier_principal_id": id_metier(client, "Plombier"),
+                    "commune_id": pessac, "distance_km": 15, "metiers_secondaires": []})
+    assert local(karim) == []
+
+    depot = karim.client.post("/api/moi/adresse", json={"ligne": "3 rue du Moulin", "commune_id": pessac, "code_postal": "33600"})
+
+    assert depot.status_code == 200, depot.text
+    assert local(karim)[0]["ligne"] == "3 rue du Moulin" and local(karim)[0]["code_postal"] == "33600"
+
+    karim.client.post("/api/moi/adresse", json={"ligne": "9 avenue Jean Jaurès", "commune_id": pessac, "code_postal": "33600"})
+    assert local(karim)[0]["ligne"] == "9 avenue Jean Jaurès"
+
+    karim.client.post("/api/moi/adresse/effacer")
+    assert karim.client.get("/api/moi/adresse").json() is None and local(karim) == []
+
+
+def test_adresse_d_un_client_ne_cree_aucun_local(fabrique_compte, client, base: Session) -> None:
+    from tests.test_prestataires import id_commune
+
+    julie = fabrique_compte()
+    avant = base.execute(text("SELECT count(*) FROM local")).scalar_one()
+
+    julie.client.post("/api/moi/adresse", json={"ligne": "8 allée des Pins", "commune_id": id_commune(client, "33400", "Talence"),
+                                                "code_postal": "33400"})
+
+    assert base.execute(text("SELECT count(*) FROM local")).scalar_one() == avant

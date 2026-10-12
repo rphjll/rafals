@@ -1,14 +1,14 @@
 """Profil prestataire. Règles : .doc/regles-metier/RM-PRESTATAIRES.md, RM-COMPTES.md (qui peut devenir prestataire),
-RM-ANNONCES.md (date de fin d'un métier au lieu d'un bouton « supprimer »)."""
+date de fin d'un métier au lieu d'un bouton « supprimer »."""
 
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 
-from sqlalchemy import exists, or_, select
+from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
 
 from app import reglages
-from app.modeles.annonces import Annonce
+from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, MetierSecondaire, PhotoPrestataire, Prestataire
@@ -29,10 +29,13 @@ class Profil:
     presentation: str | None = None
     siret: str | None = None
     metiers_secondaires: list[int] = field(default_factory=list)
+    lieu: str = "chez_client"  # chez_client, chez_moi ou les_deux (RM-PRESTATAIRES § « Sans annonces »)
 
 
 # ---------- SIRET ----------
 
+
+LIEUX = ("chez_client", "chez_moi", "les_deux")
 
 SIRET_NON_VALIDE = ("Ce SIRET n'est pas valide : il fait 14 chiffres, et le dernier sert de contrôle. "
                     "Recopiez-le depuis votre avis de situation INSEE ou vos factures.")
@@ -159,11 +162,7 @@ def metiers_exerces(db: Session, prestataire: Prestataire, jour: date) -> list[i
     return principal + metiers_secondaires(db, prestataire, jour)
 
 
-def _a_des_annonces(db: Session, prestataire: Prestataire, metier_id: int) -> bool:
-    return bool(db.scalar(select(exists().where(Annonce.prestataire_id == prestataire.id, Annonce.metier_id == metier_id))))
-
-
-def _verifier(db: Session, profil: Profil) -> Profil:
+def _verifier(db: Session, profil: Profil, compte: Compte) -> Profil:
     nom = " ".join(profil.nom_affiche.split())
     mini, maxi = reglages.PRESTATAIRE_NOM_LONGUEUR
     if not mini <= len(nom) <= maxi:
@@ -192,7 +191,11 @@ def _verifier(db: Session, profil: Profil) -> Profil:
     siret = normaliser_siret(profil.siret)
     if siret is not None and not siret_valide(siret):
         raise ErreurRegle(SIRET_NON_VALIDE)
-    return Profil(nom, profil.metier_principal_id, profil.commune_id, profil.distance_km, presentation, siret, secondaires)
+    if profil.lieu not in LIEUX:
+        raise ErreurRegle("Dites où ont lieu vos services : chez le client, chez vous, ou les deux.")
+    if profil.lieu != "chez_client" and db.scalar(select(exists().where(Adresse.compte_id == compte.id))) is not True:
+        raise ErreurRegle("Vos clients viennent chez vous : indiquez d'abord votre adresse dans « Mon adresse ».")
+    return Profil(nom, profil.metier_principal_id, profil.commune_id, profil.distance_km, presentation, siret, secondaires, profil.lieu)
 
 
 def _nom_metier(db: Session, metier_id: int) -> str:
@@ -202,22 +205,18 @@ def _nom_metier(db: Session, metier_id: int) -> str:
 def _mettre_a_jour_metiers(
     db: Session, prestataire: Prestataire, ancien_principal: int | None, voulus: list[int], jour: date
 ) -> None:
-    """Applique les métiers choisis dans le formulaire du profil (RM-ANNONCES : pas de bouton « supprimer ») :
+    """Applique les métiers choisis dans le formulaire du profil :
     - un métier arrêté (date de fin passée) remis dans la liste reprend (ex. Karim remet Chauffagiste en mars) ;
-    - un métier arrêté absent de la liste reste arrêté, ses annonces cachées mais gardées ;
-    - un métier exercé retiré de la liste n'est accepté que s'il n'a aucune annonce, sinon il faut une date de fin.
+    - un métier arrêté absent de la liste reste arrêté ;
+    - un métier exercé retiré de la liste quitte le profil (ses rendez-vous déjà pris restent).
     À appeler AVANT de changer prestataire.metier_principal_id."""
     nouveau_principal = prestataire.metier_principal_id
     lignes = {ligne.metier_id: ligne for ligne in lignes_secondaires(db, prestataire)} if prestataire.id else {}
     principal_change = ancien_principal is not None and ancien_principal != nouveau_principal
 
-    if principal_change and ancien_principal not in voulus and _a_des_annonces(db, prestataire, ancien_principal):
-        if en_cours(prestataire.metier_principal_fin_le, jour):
-            raise ErreurRegle(
-                f"Vous avez des annonces dans « {_nom_metier(db, ancien_principal)} » : gardez-le en métier "
-                "secondaire, ou mettez-lui une date de fin dans votre calendrier."
-            )
-        # Métier principal déjà arrêté (ex. Léa) : il reste dans le profil comme métier arrêté, ses annonces gardées
+    if (principal_change and ancien_principal not in voulus
+            and not en_cours(prestataire.metier_principal_fin_le, jour)):
+        # Métier principal déjà arrêté (ex. Léa) : il reste dans le profil comme métier arrêté
         db.add(MetierSecondaire(prestataire_id=prestataire.id, metier_id=ancien_principal, fin_le=prestataire.metier_principal_fin_le))
     if principal_change:
         prestataire.metier_principal_fin_le = None
@@ -230,12 +229,7 @@ def _mettre_a_jour_metiers(
             if not en_cours(ligne.fin_le, jour):
                 ligne.fin_le = None  # reprise d'un métier arrêté
         elif en_cours(ligne.fin_le, jour):
-            if _a_des_annonces(db, prestataire, metier_id):
-                raise ErreurRegle(
-                    f"Vous avez des annonces dans « {_nom_metier(db, metier_id)} » : pour arrêter ce métier, "
-                    "mettez-lui une date de fin dans votre calendrier."
-                )
-            db.delete(ligne)  # métier jamais utilisé (ex. ajouté par erreur)
+            db.delete(ligne)  # métier retiré du profil
     db.flush()
     for metier_id in voulus:
         if metier_id not in lignes:
@@ -252,6 +246,7 @@ def _etat(prestataire: Prestataire, secondaires: list[int]) -> dict:
         "metiers_secondaires": secondaires,
         "commune_id": prestataire.commune_id,
         "distance_km": prestataire.distance_km,
+        "lieu": prestataire.lieu,
         "siret": prestataire.siret,
         "statut": prestataire.statut,
     }
@@ -262,11 +257,11 @@ def devenir_prestataire(db: Session, compte: Compte, profil: Profil, maintenant:
     if compte.email_verifie_le is None:
         raise ErreurRegle("Vérifiez d'abord votre adresse mail (lien reçu par mail), puis revenez proposer vos services.", 403)
     if not droits.peut_reserver_ou_publier(db, compte, maintenant):
-        raise ErreurRegle("Il faut d'abord que l'accord de tes parents soit accepté (voir « Mon compte »).", 403)
+        raise ErreurRegle("Il faut d'abord que l'accord de tes parents soit accepté (voir « Mon profil »).", 403)
     if profil_de(db, compte) is not None:
         raise ErreurRegle("Vous proposez déjà vos services : modifiez votre profil de prestataire.", 409)
 
-    p = _verifier(db, profil)
+    p = _verifier(db, profil, compte)
     siret_statut, siret_verifie_le = _controler_siret(p.siret, compte, maintenant)
     prestataire = Prestataire(
         compte_id=compte.id,
@@ -275,6 +270,7 @@ def devenir_prestataire(db: Session, compte: Compte, profil: Profil, maintenant:
         nom_affiche=p.nom_affiche,
         presentation=p.presentation,
         distance_km=p.distance_km,
+        lieu=p.lieu,
         siret=p.siret,
         siret_statut=siret_statut,
         siret_verifie_le=siret_verifie_le,
@@ -297,10 +293,10 @@ def modifier_profil(db: Session, prestataire: Prestataire, profil: Profil, maint
         raise ErreurRegle("Votre activité est arrêtée : ce profil ne peut plus être modifié.")
     jour = aujourd_hui(maintenant)
     avant = _etat(prestataire, metiers_secondaires(db, prestataire, jour))
-    p = _verifier(db, profil)
+    compte = db.get_one(Compte, prestataire.compte_id)
+    p = _verifier(db, profil, compte)
     if p.siret != prestataire.siret:
         # Un SIRET nouveau ou changé est vérifié tout de suite auprès de l'État ; le retirer = « absent »
-        compte = db.get_one(Compte, prestataire.compte_id)
         prestataire.siret_statut, prestataire.siret_verifie_le = _controler_siret(p.siret, compte, maintenant)
         prestataire.siret = p.siret
     prestataire.nom_affiche = p.nom_affiche
@@ -310,6 +306,7 @@ def modifier_profil(db: Session, prestataire: Prestataire, profil: Profil, maint
     _mettre_a_jour_metiers(db, prestataire, ancien_principal, p.metiers_secondaires, jour)
     prestataire.commune_id = p.commune_id
     prestataire.distance_km = p.distance_km
+    prestataire.lieu = p.lieu
     journal.noter(
         db, auteur_id=prestataire.compte_id, action="modifier_profil_prestataire", table_cible="prestataire",
         ligne_id=prestataire.id, avant=avant, apres=_etat(prestataire, p.metiers_secondaires), maintenant=maintenant,
@@ -400,7 +397,7 @@ def fixer_fin_metier(
 ) -> Prestataire:
     """Met (ou enlève, fin_le vide) la date de fin d'un métier du profil.
     Métier principal : après sa date de fin, un métier secondaire devient principal tout seul ; s'il y en a plusieurs,
-    celui choisi (suivant_id), sinon le 1er ajouté. Sans métier secondaire : le profil reste affiché, sans annonce.
+    celui choisi (suivant_id), sinon le 1er ajouté. Sans métier secondaire : le profil reste affiché.
     Enlever la date de fin d'un métier arrêté = le reprendre. (Annulation des rendez-vous après la date : niveau 4.)"""
     if prestataire.statut == "arrete":
         raise ErreurRegle("Votre activité est arrêtée : ce profil ne peut plus être modifié.")
@@ -434,7 +431,7 @@ def fixer_fin_metier(
             prestataire.metier_principal_suivant_id = None
         apres = {"fin_le": fin_le}
     if fin_le is not None:
-        # RM-ANNONCES : les réservations de ce métier après la date de fin sont annulées
+        # Les rendez-vous de ce métier après la date de fin sont annulés
         lendemain = datetime.combine(fin_le + timedelta(days=1), datetime.min.time(), tzinfo=reglages.FUSEAU_AFFICHAGE)
         for rdv in communs.actifs_a_venir(db, prestataire, maintenant):
             if rdv.debut >= lendemain and rdv.metier_id == metier_id:
@@ -448,30 +445,11 @@ def fixer_fin_metier(
     return prestataire
 
 
-def _mettre_en_pause_annonces_arretees(db: Session, jour: date, maintenant: datetime) -> None:
-    """Annonces en ligne dans un métier arrêté → en pause (gardées ; le prestataire les republie s'il reprend le métier)."""
-    avec_fin_passee = select(Prestataire).where(Prestataire.statut != "arrete", or_(
-        Prestataire.metier_principal_fin_le < jour,
-        Prestataire.id.in_(select(MetierSecondaire.prestataire_id).where(MetierSecondaire.fin_le < jour)),
-    ))
-    for prestataire in db.scalars(avec_fin_passee).all():
-        exerces = metiers_exerces(db, prestataire, jour)
-        en_ligne = select(Annonce).where(Annonce.prestataire_id == prestataire.id, Annonce.statut == "en_ligne")
-        for annonce in db.scalars(en_ligne).all():
-            if annonce.metier_id not in exerces:
-                annonce.statut, annonce.statut_change_le = "en_pause", maintenant
-                journal.noter(
-                    db, auteur_id=None, action="annonce_pause_metier_arrete", table_cible="annonce", ligne_id=annonce.id,
-                    avant={"statut": "en_ligne"}, apres={"statut": "en_pause"}, maintenant=maintenant,
-                )
-
-
 def appliquer_fins_de_metier(db: Session, maintenant: datetime) -> int:
-    """Lancé toutes les heures. 1) Les annonces d'un métier arrêté passent en pause. 2) Métier principal dont la date
-    de fin est passée : un métier secondaire encore exercé devient principal (celui choisi, sinon le 1er ajouté) ;
-    l'ancien reste dans le profil comme métier arrêté. Renvoie le nombre de métiers principaux remplacés."""
+    """Lancé toutes les heures. Métier principal dont la date de fin est passée : un métier secondaire encore exercé
+    devient principal (celui choisi, sinon le 1er ajouté) ; l'ancien reste dans le profil comme métier arrêté.
+    Renvoie le nombre de métiers principaux remplacés."""
     jour = aujourd_hui(maintenant)
-    _mettre_en_pause_annonces_arretees(db, jour, maintenant)
     traites = 0
     requete = select(Prestataire).where(Prestataire.metier_principal_fin_le < jour, Prestataire.statut != "arrete")
     for prestataire in db.scalars(requete).all():
@@ -479,7 +457,7 @@ def appliquer_fins_de_metier(db: Session, maintenant: datetime) -> int:
         choix = next((ligne for ligne in actives if ligne.metier_id == prestataire.metier_principal_suivant_id), None)
         choix = choix or (actives[0] if actives else None)
         if choix is None:
-            continue  # seul métier arrêté (ex. Léa) : le profil reste affiché, sans annonce
+            continue  # seul métier arrêté (ex. Léa) : le profil reste affiché
         ancien, fin, nouveau = prestataire.metier_principal_id, prestataire.metier_principal_fin_le, choix.metier_id
         db.delete(choix)
         db.flush()

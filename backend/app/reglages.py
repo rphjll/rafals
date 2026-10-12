@@ -33,12 +33,6 @@ INACTIVITE_DUREE = timedelta(days=3 * 365)
 INACTIVITE_PREAVIS = timedelta(days=30)
 ADRESSE_LIGNE_LONGUEUR = (3, 120)
 
-# Annonces (RM-ANNONCES.md, validé le 29/09/2026 ; longueur du titre proposée par Claude dans le MLD du lot 3.1)
-ANNONCE_TITRE_LONGUEUR = (3, 80)
-ANNONCE_DESCRIPTION_MAX = 1000
-ANNONCE_PHOTOS_MAX = 5
-ANNONCES_EN_LIGNE_MAX = 20
-
 # Agenda (RM-AGENDA.md, validé le 29/09/2026). Valeurs au départ : aussi dans db/schema_v8.sql (DEFAULT)
 AGENDA_PAS_CHOIX = (15, 30, 60)
 AGENDA_PAS_DEFAUT = 15
@@ -107,8 +101,8 @@ DEVIS_RELANCES_SOLDE = (timedelta(days=3), timedelta(days=10))  # rappels au cli
 
 # Factures (RM-FACTURES.md, validé par Raphael le 02/10/2026 ; MLD 5.5 du 03/10/2026)
 FACTURE_MENTION_SANS_TVA = DEVIS_MENTION_SANS_TVA
-# ⚠️ À confirmer par un comptable : taux appliqué aux rendez-vous d'un prestataire qui facture la TVA (les annonces
-# n'ont pas de taux ; le prix affiché est toutes taxes comprises). Choix de Claude : le taux normal, 20 %.
+# ⚠️ À confirmer par un comptable : taux appliqué aux rendez-vous d'un prestataire qui facture la TVA (une proposition
+# n'a pas de taux ; son prix est toutes taxes comprises). Choix de Claude : le taux normal, 20 %.
 FACTURE_TVA_RENDEZ_VOUS_POUR_MILLE = 200
 FACTURE_MOYENS_DIRECTS = ("especes", "cheque", "virement")
 

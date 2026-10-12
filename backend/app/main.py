@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.db import moteur
 from app.routes import (
-    accords, activite, administration, agenda, annonces, avis, clients, comptes, creation_entreprise, demandes, devis, factures, messagerie, metiers,
+    accords, activite, administration, agenda, avis, clients, comptes, creation_entreprise, demandes, devis, factures, messagerie, metiers,
     paiements, propositions,
     prestataires, recherche, rendez_vous, services_en_plus,
 )
@@ -126,7 +126,6 @@ app.include_router(accords.routeur)
 app.include_router(administration.routeur)
 app.include_router(metiers.routeur)
 app.include_router(prestataires.routeur)
-app.include_router(annonces.routeur)
 app.include_router(agenda.routeur)
 app.include_router(recherche.routeur)
 app.include_router(rendez_vous.routeur)

@@ -85,6 +85,14 @@ Construit : qui peut répondre, répondre, propositions, négociation du prix, r
 - **Dans le fil**, rafals écrit une ligne à chaque étape (a répondu, propose, a refusé, prix proposé, garde son prix, a accepté, a retiré, a choisi un autre prestataire).
 - **Le rendez-vous porte son métier** (table `rendez_vous`, rubrique `metier_id`) : c'est lui qui dit dans quel calendrier il tombe ; avant, on le lisait dans l'annonce.
 
+## Prestataire sans SIRET : des limites pour répondre et proposer (validé par Raphael le 09/10/2026, pas encore construit)
+La règle complète est dans `RM-PRESTATAIRES.md` § « Limites d'un prestataire sans SIRET ». Ce qu'elle change ici :
+- **Répondre** : pas de bouton [Répondre] sur une demande d'un métier interdit sans SIRET ; avant sa première réponse, son adresse doit être remplie et la case « Mon activité est occasionnelle et je déclare mes revenus aux impôts » cochée.
+- **Proposer** : 100 € au plus ; espèces seulement (déjà en place).
+- **Accepter** : refusé si le prestataire a déjà 2 rendez-vous confirmés dans le mois du rendez-vous, ou s'il a atteint 1 000 € de rendez-vous qui ont eu lieu sur les 12 derniers mois (ses propositions en attente sont alors retirées et il est prévenu) ; le client lit l'avertissement « Pas de facture, pas de garantie, pas d'assurance professionnelle. » avant de confirmer.
+  - Exemple 1 : Emma, sans SIRET, propose 40 € pour une pelouse → acceptée par Mme Dupont après l'avertissement.
+  - Exemple 2 : Emma a déjà 2 rendez-vous en octobre → Mme Dupont ne peut pas accepter sa proposition pour le 28/10.
+
 ## Répondre : une conversation, puis une proposition
 - [Répondre] ouvre la conversation entre ce prestataire et ce client (`RM-MESSAGERIE.md`), avec la demande rappelée en haut.
 - Dans la conversation, le prestataire envoie une **proposition** : prix, jour, heure de début, durée, lieu, et les moyens de paiement qu'il accepte (espèces ; carte seulement s'il a un SIRET vérifié et le paiement par carte activé, `RM-PAIEMENTS.md`).

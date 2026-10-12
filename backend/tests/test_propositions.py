@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.services import messagerie, propositions
-from tests.test_annonces import carte_activee, fabrique_prestataire, metiers, siret_verifie  # noqa: F401 (fixtures)
+from tests.test_prestataires import carte_activee, fabrique_prestataire, metiers, siret_verifie  # noqa: F401 (fixtures)
 from tests.test_demandes import AUJOURD_HUI, pelouse, publier, sur_l_accueil
 from tests.test_messagerie import id_prestataire
 from tests.test_prestataires import id_commune
@@ -252,7 +252,7 @@ def test_accepter_cree_un_rendez_vous_confirme(fabrique_prestataire, fuite, clie
     rdv_id = acceptee.json()["rendez_vous_id"]
     assert acceptee.json()["proposition"]["rendez_vous_id"] == rdv_id
     rdv = next(r for r in fuite.client.get("/api/moi/rendez-vous").json() if r["id"] == rdv_id)
-    assert (rdv["statut"], rdv["titre"], rdv["prix_centimes"], rdv["annonce_id"]) == ("confirme", "Fuite sous l'évier", 6000, None)
+    assert (rdv["statut"], rdv["titre"], rdv["prix_centimes"]) == ("confirme", "Fuite sous l'évier", 6000)
     assert rdv["lieu"] == "chez_client" and rdv["mode_paiement"] == "especes" and rdv["debut"] == proposition["debut"]
     # L'adresse est celle écrite dans la demande, et Karim la voit maintenant ; le calendrier est celui du métier
     recu = next(r for r in karim.client.get("/api/moi/prestataire/rendez-vous").json() if r["id"] == rdv_id)
@@ -265,9 +265,9 @@ def test_accepter_cree_un_rendez_vous_confirme(fabrique_prestataire, fuite, clie
     assert any("rendez-vous confirmé" in m["sujet"] for m in mails_envoyes if m["a"] == fuite.email)
     assert any("rendez-vous confirmé" in m["sujet"] for m in mails_envoyes if m["a"] == karim.email)
     assert "Essai Z. a accepté : rendez-vous « Fuite sous l'évier »" in infos(karim, proposition["conversation_id"])[-1]
-    # Venu d'une proposition : il ne se déplace pas tout seul
+    # Un rendez-vous ne se déplace plus tout seul : le client écrit au prestataire, qui fait une nouvelle proposition
     deplace = fuite.client.post(f"/api/moi/rendez-vous/{rdv_id}/deplacer", json={"debut": (APRES_DEMAIN_10H + timedelta(hours=2)).isoformat()})
-    assert deplace.status_code == 400 and "vient d'une proposition" in deplace.json()["detail"]
+    assert deplace.status_code == 404
 
 
 def test_les_autres_prestataires_sont_prevenus(fabrique_prestataire, fuite) -> None:  # noqa: F811
@@ -348,7 +348,7 @@ def test_proposition_a_un_client_qui_a_ecrit_en_premier(fabrique_prestataire, fa
     proposition = proposer(karim, conversation, metier_id=metiers["Plombier"], lieu="chez_client")
 
     assert sans_metier.status_code == 400 and pas_son_metier.status_code == 400 and sans_lieu.status_code == 400
-    assert sans_local.status_code == 400 and "local" in sans_local.json()["detail"]
+    assert sans_local.status_code == 400 and "votre adresse" in sans_local.json()["detail"]
     assert proposition.status_code == 201 and proposition.json()["demande_id"] is None
     # Pas de demande, donc pas d'adresse : il faut celle du compte
     sans_adresse = accepter(petit, proposition.json()["id"])

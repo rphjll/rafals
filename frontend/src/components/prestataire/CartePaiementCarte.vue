@@ -79,7 +79,7 @@ async function allerChezStripe() {
     </template>
 
     <template v-else-if="etat.pret">
-      <p>Vos annonces qui acceptent la carte la proposent aux clients.</p>
+      <p>Vous pouvez accepter la carte dans vos propositions.</p>
       <p class="text-[13.5px] text-texte-doux">
         <template v-if="etat.mandat_facturation_le">Mandat de facturation accepté le {{ formaterDate(etat.mandat_facturation_le) }}. </template>
         Vos paiements : « Mon agenda › Paiements ».
@@ -88,7 +88,7 @@ async function allerChezStripe() {
 
     <template v-else-if="etat.compte_cree">
       <AppAlerte etat="attente">
-        Stripe vérifie vos informations : cela prend de quelques minutes à 2 jours. Vos annonces proposent les espèces en attendant.
+        Stripe vérifie vos informations : cela prend de quelques minutes à 2 jours. Vos propositions restent en espèces en attendant.
       </AppAlerte>
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
       <div class="flex flex-wrap gap-2">

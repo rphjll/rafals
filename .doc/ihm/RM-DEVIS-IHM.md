@@ -1,5 +1,7 @@
 # Devis — Interface
 
+> **Changé le 09/10/2026** (lot 9.3, retrait des annonces) : la fenêtre « Demander un devis à Paul » s'ouvre depuis la **page publique du prestataire** (plus depuis une annonce). Elle commence par « Pour quel métier ? * » (liste de ses métiers ; pas affichée s'il n'en a qu'un), puis « Votre besoin * », les photos et l'adresse comme avant. Partout, le titre d'une demande de devis est le nom du métier (ex. « Maçon ») au lieu du titre de l'annonce. Listes vides : « …vos clients vous en demandent depuis votre page, avec [Demander un devis]. » ; devis expiré : « …demandez-en un nouveau depuis la page du prestataire… ».
+
 > Fichiers : `frontend/src/pages/DevisPage.vue` (« Mes devis », onglets, retour de Stripe), `frontend/src/components/devis/` (`FenetreDemandeDevis`, `TableauDevis`, `FenetreEcrireDevis`, `FenetreAccepterDevis`, `OngletMesDemandes`, `OngletDevisRecus`), `frontend/src/outils/devis.ts` (types, états, quantités) ; fenêtre commune `FenetreTexte` (autre date, refuser, décliner, problème, annuler). Construit au lot 5.4 (03/10/2026). Règles : `RM-DEVIS.md`. Maquette : `maquette-lot-5.4-devis.html`.
 
 ## Demander un devis (page d'une annonce « sur devis », voir `RM-ANNONCE-IHM.md`)

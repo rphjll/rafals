@@ -24,7 +24,6 @@ import {
   morceauDuJour,
   periodeLisible,
 } from '../../outils/agenda'
-import type { AnnonceVisible } from '../../outils/annonces'
 import { aujourdhuiIso } from '../../outils/dates'
 import type { MetierExerce, ProfilPrestataire } from '../../outils/prestataires'
 import { type RendezVousVisible, aVenir, plage } from '../../outils/rendez_vous'
@@ -38,7 +37,6 @@ import FenetreArret from './FenetreArret.vue'
 import FenetrePeriode from './FenetrePeriode.vue'
 import FenetreReglages from './FenetreReglages.vue'
 import FenetreSemaine from './FenetreSemaine.vue'
-import HorairesClient from './HorairesClient.vue'
 
 const props = defineProps<{
   agenda: AgendaVisible
@@ -47,8 +45,6 @@ const props = defineProps<{
   metier: MetierExerce
   /** Rendez-vous montrés dans ce calendrier ; « autre » = pris dans un autre métier (il occupe quand même l'heure) */
   rendezVous: (RendezVousVisible & { autreMetier?: string })[]
-  /** Annonces de ce métier */
-  annonces: AnnonceVisible[]
   plusieursMetiers: boolean
 }>()
 const emit = defineEmits<{ maj: [agenda: AgendaVisible]; majProfil: [profil: ProfilPrestataire] }>()
@@ -533,7 +529,6 @@ const BOUTONS: { mode: Mode; texte: string; actif: string }[] = [
       <div v-if="!unSeulJour">
         <AppBouton variante="secondaire" @click="choisiAu = choisiDu">Revenir à un seul jour</AppBouton>
       </div>
-      <HorairesClient v-if="unSeulJour && choisiDu >= aujourdhui" :annonces="annonces" :jour="choisiDu" :agenda="agenda" />
     </AppSection>
   </div>
 

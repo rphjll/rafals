@@ -130,7 +130,7 @@ async function annulerDevis() {
         <template v-if="arrhesPayees(d.devis)">Vos arrhes vous sont rendues en entier.</template>
       </AppAlerte>
       <p v-else-if="d.devis.statut === 'expire'" class="text-[14px] text-texte-doux">
-        Ce devis a expiré : demandez-en un nouveau depuis l'annonce si vous êtes toujours intéressé.
+        Ce devis a expiré : demandez-en un nouveau depuis la page du prestataire si vous êtes toujours intéressé.
       </p>
 
       <AppAlerte v-if="d.devis.probleme" etat="attente">

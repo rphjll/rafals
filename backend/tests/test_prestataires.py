@@ -1,5 +1,7 @@
 """Profil prestataire (RM-PRESTATAIRES.md, RM-COMPTES.md ; lot 2.3)."""
 
+from datetime import datetime
+
 import pytest
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
@@ -38,6 +40,47 @@ def devenir(compte, profil: dict):
     return compte.client.post("/api/moi/prestataire", json=profil)
 
 
+# ---------- Outils repris par les autres fichiers de tests ----------
+
+AUJOURD_HUI = datetime.now(reglages.FUSEAU_AFFICHAGE).date()
+
+
+@pytest.fixture
+def metiers(client) -> dict[str, int]:
+    noms = {"Plombier": "Plombier", "Électricien": "Électricien", "Coiffeur": "Coiffeur / Coiffeuse", "Maçon": "Maçon"}
+    return {court: id_metier(client, nom) for court, nom in noms.items()}
+
+
+@pytest.fixture
+def fabrique_prestataire(fabrique_compte, client, metiers):
+    """Un prestataire d'essai : Karim, plombier (principal) et électricien (secondaire), Pessac, sans SIRET."""
+
+    def fabriquer(principal: str = "Plombier", secondaires: tuple[str, ...] = ("Électricien",)):
+        compte = fabrique_compte()
+        reponse = devenir(compte, {
+            "nom_affiche": "Karim Benali", "metier_principal_id": metiers[principal],
+            "commune_id": id_commune(client, "33600", "Pessac"), "distance_km": 15,
+            "metiers_secondaires": [metiers[m] for m in secondaires],
+        })
+        assert reponse.status_code == 201, reponse.text
+        return compte
+
+    return fabriquer
+
+
+def siret_verifie(base: Session, compte) -> None:
+    base.execute(text("UPDATE prestataire SET siret = '44306184100047', siret_statut = 'verifie' WHERE compte_id = :id"),
+                 {"id": compte.id})
+    base.commit()
+
+
+def carte_activee(base: Session, compte) -> None:
+    """Comme si Stripe avait vérifié son compte (lot 5.1) : ses propositions peuvent accepter la carte."""
+    base.execute(text("UPDATE prestataire SET stripe_compte = 'acct_zztest_' || id, stripe_pret = true WHERE compte_id = :id"),
+                 {"id": compte.id})
+    base.commit()
+
+
 # ---------- Communes et distances ----------
 
 
@@ -73,6 +116,67 @@ def test_karim_propose_ses_services(fabrique_compte, profil_karim) -> None:
     assert profil["commune"]["nom"] == "Pessac" and profil["distance_km"] == 15
     assert profil["siret_statut"] == "absent" and profil["statut"] == "actif"
     assert karim.client.get("/api/moi").json()["prestataire_id"] == profil["id"]
+
+
+# ---------- Lieu des services (RM-PRESTATAIRES § « Sans annonces », lot 9.1) ----------
+
+
+def _adresse(compte, commune_id: int):
+    return compte.client.post("/api/moi/adresse", json={"ligne": "3 rue du Moulin", "commune_id": commune_id, "code_postal": "33600"})
+
+
+def test_lieu_chez_le_client_au_depart(fabrique_compte, profil_karim) -> None:
+    profil = devenir(fabrique_compte(), profil_karim).json()
+
+    assert profil["lieu"] == "chez_client"
+
+
+def test_lieu_chez_moi_demande_une_adresse(fabrique_compte, profil_karim) -> None:
+    # Léa, coiffeuse, reçoit au salon : sans « Mon adresse », refusé ; avec, accepté
+    lea = fabrique_compte()
+
+    sans_adresse = devenir(lea, profil_karim | {"lieu": "chez_moi"})
+    _adresse(lea, profil_karim["commune_id"])
+    avec_adresse = devenir(lea, profil_karim | {"lieu": "chez_moi"})
+
+    assert sans_adresse.status_code == 400 and "Mon adresse" in sans_adresse.json()["detail"]
+    assert avec_adresse.status_code == 201 and avec_adresse.json()["lieu"] == "chez_moi"
+
+
+def test_lieu_modifiable_et_inconnu_refuse(fabrique_compte, profil_karim) -> None:
+    karim = fabrique_compte()
+    devenir(karim, profil_karim)
+    _adresse(karim, profil_karim["commune_id"])
+
+    les_deux = karim.client.post("/api/moi/prestataire/modifier", json=profil_karim | {"lieu": "les_deux"})
+    inconnu = karim.client.post("/api/moi/prestataire/modifier", json=profil_karim | {"lieu": "sur_la_lune"})
+
+    assert les_deux.json()["lieu"] == "les_deux"
+    assert inconnu.status_code == 400
+    assert karim.client.get("/api/moi/prestataire").json()["lieu"] == "les_deux"
+
+
+def test_adresse_gardee_tant_que_les_clients_viennent_chez_moi(fabrique_compte, profil_karim) -> None:
+    lea = fabrique_compte()
+    _adresse(lea, profil_karim["commune_id"])
+    devenir(lea, profil_karim | {"lieu": "chez_moi"})
+
+    refuse = lea.client.post("/api/moi/adresse/effacer")
+    lea.client.post("/api/moi/prestataire/modifier", json=profil_karim | {"lieu": "chez_client"})
+    accepte = lea.client.post("/api/moi/adresse/effacer")
+
+    assert refuse.status_code == 400 and "lieu de vos services" in refuse.json()["detail"]
+    assert accepte.status_code == 200 and lea.client.get("/api/moi/adresse").json() is None
+
+
+def test_page_publique_dit_le_lieu(fabrique_compte, profil_karim, client) -> None:
+    lea = fabrique_compte()
+    _adresse(lea, profil_karim["commune_id"])
+    profil = devenir(lea, profil_karim | {"lieu": "les_deux"}).json()
+
+    publique = client.get(f"/api/prestataires/{profil['id']}").json()
+
+    assert publique["lieu"] == "les_deux"
 
 
 def test_adresse_non_verifiee_refusee(fabrique_compte, profil_karim) -> None:

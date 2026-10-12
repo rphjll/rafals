@@ -12,7 +12,7 @@ from app.services import declarations_urssaf as service
 from app.services import demarches, urssaf
 from tests.test_absences import passe
 from tests.test_agenda import MARDI, lea  # noqa: F401 (fixtures)
-from tests.test_annonces import fabrique_prestataire, menage, metiers, publier, siret_verifie  # noqa: F401 (fixtures)
+from tests.test_prestataires import fabrique_prestataire, metiers, siret_verifie  # noqa: F401 (fixtures)
 from tests.test_rendez_vous import a, dupont, reserver  # noqa: F401 (fixtures)
 
 PARIS = reglages.FUSEAU_AFFICHAGE
@@ -42,7 +42,7 @@ def lea_prete(base: Session, lea, periodicite: str = "mois"):  # noqa: F811
 
 def encaisser_le_mois_dernier(base: Session, lea, dupont) -> date:  # noqa: F811
     """Un rendez-vous de 50,00 € payé en espèces, dont la facture est datée du 15 du mois dernier (la période à déclarer)."""
-    rdv = reserver(dupont, lea.annonce, a(MARDI, 10)).json()["id"]
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()["id"]
     passe(base, rdv)
     assert lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv}/paye", json={"moyen": "especes"}).status_code == 200
     debut, _, _ = demarches.periode_a_declarer("mois", datetime.now(PARIS).date())
