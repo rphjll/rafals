@@ -98,6 +98,7 @@ DEVIS_VALIDITE_DEFAUT = timedelta(days=30)  # « Valable jusqu'au » rempli d'av
 DEVIS_TAUX_TVA_POUR_MILLE = (55, 100, 200)  # 5,5 %, 10 %, 20 %
 DEVIS_MENTION_SANS_TVA = "TVA non applicable, art. 293 B du CGI"
 DEVIS_RELANCES_SOLDE = (timedelta(days=3), timedelta(days=10))  # rappels au client qui n'a pas payé le solde (choix de Claude)
+DEVIS_RELANCE_SANS_REPONSE = timedelta(days=3)  # un seul mail au client qui n'a pas répondu à un devis (lot 10.3)
 
 # Factures (RM-FACTURES.md, validé par Raphael le 02/10/2026 ; MLD 5.5 du 03/10/2026)
 FACTURE_MENTION_SANS_TVA = DEVIS_MENTION_SANS_TVA

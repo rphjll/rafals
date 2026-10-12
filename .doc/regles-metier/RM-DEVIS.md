@@ -94,3 +94,10 @@ Réponses de Raphael, mot pour mot : « dans le calendrié de reservation », pu
   - Exemple : travaux déclarés terminés le 20/10 → rappels les 23/10 et 30/10.
 - **Numéros** : D-2026-0001, D-2026-0002… par prestataire et par année ; le taux de TVA (ou la mention 293 B) est figé dans le devis à l'envoi.
 - Le client voit le téléphone du prestataire une fois le devis accepté.
+
+## Relance d'un devis sans réponse (lot 10.3 ; décidé par Raphael le 07/10/2026 : « Prévenir Julie tout seul » ; construit le 12/10/2026)
+Un devis envoyé auquel le client n'a pas répondu au bout de **3 jours** : rafals lui envoie **un seul mail**, tout seul. Le prestataire n'a rien à faire.
+- Exemple 1 : Karim envoie le devis D-2026-0003 (120 €) à Julie le lundi 12/10 à 9 h. Jeudi 15/10 vers 9 h, Julie reçoit « Karim Benali attend votre réponse au devis D-2026-0003 » : « … Il est valable jusqu'au 11/11/2026 : acceptez-le ou refusez-le dans « Devis ». »
+- Exemple 2 : Julie accepte le devis le mardi : aucun mail de relance.
+- Pas de relance pour un devis déjà accepté, refusé, expiré, ou dont la date « Valable jusqu'au » est passée. Jamais de 2e relance.
+- Précisé par Claude (à relire) : le délai est un réglage (`DEVIS_RELANCE_SANS_REPONSE`, 3 jours) ; **aucune rubrique n'a été ajoutée à la base** : la tâche de fond passe toutes les heures et n'envoie le mail que dans l'heure qui suit les 3 jours, comme pour le rappel du solde. Si le serveur est arrêté pendant cette heure-là, la relance ne part pas.

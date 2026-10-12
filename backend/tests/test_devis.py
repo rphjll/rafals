@@ -350,6 +350,23 @@ def test_rappel_du_solde_3_jours_apres(accepte_carte, paul_carte, dupont, base: 
     assert len([m for m in mails_envoyes if "rappel, solde" in m["sujet"] and m["a"] == dupont.email]) == avant + 1
 
 
+def test_relance_d_un_devis_sans_reponse_une_seule_fois(paul, dupont, envoye, base: Session, mails_envoyes) -> None:  # noqa: F811
+    """Karim envoie un devis à Julie ; elle ne répond pas : au bout de 3 jours, rafals la prévient, une seule fois."""
+    envoye_le = etat(base, envoye).envoye_le
+    relances = lambda: [m for m in mails_envoyes if "attend votre réponse au devis" in m["sujet"] and m["a"] == dupont.email]  # noqa: E731
+
+    service.traiter(base, envoye_le + timedelta(days=2))
+    trop_tot = len(relances())
+    service.traiter(base, envoye_le + timedelta(days=3, minutes=10))
+    au_bout_de_3_jours = len(relances())
+    service.traiter(base, envoye_le + timedelta(days=3, hours=2))
+    service.traiter(base, envoye_le + timedelta(days=5))
+    base.commit()
+
+    assert trop_tot == 0 and au_bout_de_3_jours == 1 and len(relances()) == 1
+    assert "acceptez-le ou refusez-le" in relances()[0]["texte"]
+
+
 def test_un_curieux_ne_voit_pas_le_devis(paul, dupont, envoye, fabrique_compte) -> None:  # noqa: F811
     curieux = fabrique_compte()
 

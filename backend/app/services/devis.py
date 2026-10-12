@@ -563,8 +563,8 @@ def annuler_par_prestataire(db: Session, prestataire: Prestataire, devis: Devis,
 
 def traiter(db: Session, maintenant: datetime) -> dict[str, int]:
     """Lancée toutes les heures : devis sans réponse après « Valable jusqu'au » → expirés ; client qui n'a pas payé le
-    solde 3 jours, puis 10 jours après les travaux → rappel."""
-    compte = {"expires": 0, "relances": 0}
+    solde 3 jours, puis 10 jours après les travaux → rappel ; devis resté sans réponse 3 jours → un seul mail au client."""
+    compte = {"expires": 0, "relances": 0, "relances_sans_reponse": 0}
     for devis in db.scalars(select(Devis).where(Devis.statut.in_(EN_COURS), Devis.valable_jusqu_au < aujourd_hui(maintenant))):
         devis.statut, devis.statut_change_le = "expire", maintenant
         _noter(db, None, "expirer_devis", "devis", devis.id, maintenant)
@@ -580,4 +580,15 @@ def traiter(db: Session, maintenant: datetime) -> dict[str, int]:
                       client=f"Rappel : le solde du devis {numero(devis)} ({euros(totaux_du_devis(db, devis).solde)}) "
                              "reste à payer sur rafals (« Mes devis »). En cas de souci, cliquez [Signaler un problème].")
             compte["relances"] += 1
+    # Devis envoyé, resté sans réponse : un seul mail au client au bout de 3 jours (lot 10.3)
+    delai = reglages.DEVIS_RELANCE_SANS_REPONSE
+    for devis in db.scalars(select(Devis).where(Devis.statut == "envoye", Devis.valable_jusqu_au >= aujourd_hui(maintenant))):
+        if delai <= maintenant - devis.envoye_le < delai + heure:
+            demande = demande_de(db, devis)
+            prestataire = db.get_one(Prestataire, demande.prestataire_id)
+            _prevenir(db, demande, objet=f"rafals : {prestataire.nom_affiche} attend votre réponse au devis {numero(devis)}",
+                      client=f"{prestataire.nom_affiche} vous a envoyé le devis {numero(devis)} "
+                             f"({euros(totaux_du_devis(db, devis).ttc)}) il y a {delai.days} jours. Il est valable jusqu'au "
+                             f"{jour(devis.valable_jusqu_au)} : acceptez-le ou refusez-le dans « Devis ».")
+            compte["relances_sans_reponse"] += 1
     return compte
