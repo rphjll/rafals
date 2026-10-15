@@ -79,3 +79,14 @@ export function badgeStatut(statut: string): { etat: Etat; texte: string } {
 export function siretLisible(siret: string | null): string {
   return siret ? siret.replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/, '$1 $2 $3 $4') : ''
 }
+
+// ---------- Les cadenas d'un prestataire sans SIRET (demande de Raphael du 15/10/2026) ----------
+// Ce qu'il ne peut pas faire reste visible, avec 🔒 et la raison, au lieu de disparaître.
+
+export const VERROU_SIRET = {
+  carte: 'Le paiement par carte demande un SIRET vérifié : créez votre auto-entreprise depuis « Mes démarches ».',
+  carteInactive: 'Activez d’abord le paiement par carte dans « Mon profil ».',
+  facture: 'Une facture demande un SIRET vérifié : créez votre auto-entreprise depuis « Mes démarches ».',
+  urssaf: 'Déclarer à l’URSSAF concerne les auto-entrepreneurs : il faut un SIRET vérifié.',
+  devisClient: 'Ce prestataire n’a pas de SIRET vérifié : il ne fait pas de devis. Écrivez-lui pour vous mettre d’accord.',
+} as const

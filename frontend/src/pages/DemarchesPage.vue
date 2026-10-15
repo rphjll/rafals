@@ -17,6 +17,7 @@ import { useCompte } from '../composables/useCompte'
 import { aParis, jourCourt } from '../outils/agenda'
 import { formaterDate } from '../outils/dates'
 import { montant } from '../outils/paiements'
+import { VERROU_SIRET } from '../outils/prestataires'
 
 interface Periode {
   rang: number
@@ -108,6 +109,10 @@ function ouvrirUrssaf() {
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <AppSection v-if="demarches && !demarches.siret_verifie" titre="Déclaration à l'URSSAF">
       <p class="text-texte-doux">Les démarches concernent les prestataires avec un SIRET vérifié : sans lui, rafals ne fait pas de facture.</p>
+      <div class="flex flex-wrap gap-2">
+        <AppBouton variante="verrouille" :raison-verrou="VERROU_SIRET.urssaf">Déclarer à l'URSSAF</AppBouton>
+        <AppBouton variante="verrouille" :raison-verrou="VERROU_SIRET.urssaf">Rappels par mail</AppBouton>
+      </div>
       <div><AppBouton @click="routeur.push('/creer-mon-auto-entreprise')">Créer mon auto-entreprise</AppBouton></div>
     </AppSection>
     <AppSection v-else-if="demarches" titre="Déclaration à l'URSSAF">

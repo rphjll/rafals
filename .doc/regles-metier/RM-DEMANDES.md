@@ -26,7 +26,9 @@ Il faut un compte (adresse mail vérifiée). Publier est gratuit. La demande con
 
 ## Qui voit une demande (choix de Claude)
 Seulement les prestataires **en activité** qui exercent ce métier (principal ou secondaire, pas arrêté) et dont le **rayon** couvre la ville de la demande (même calcul que la recherche). Pas besoin d'avoir une annonce en ligne : un débutant peut répondre. (Annonces retirées le 04/10/2026 : les demandes et [Écrire à Karim] deviennent les seuls chemins vers un rendez-vous, voir `RM-PRESTATAIRES.md` § « Sans annonces ».)
-- Exemple 1 : Karim, plombier à Pessac, rayon 15 km → voit la fuite de Talence (5 km).
+**Le rayon se mesure depuis l'adresse de son compte** (« Mon adresse » dans « Mon profil » ; décision de Raphael du 15/10/2026 : « ca doit etre pres de chez l'adresse qu'il a tapé dans mon compte »), pas depuis la ville de départ du profil. **Sans adresse, il ne voit aucune demande** : « Demandes près de chez moi » affiche « Vous n'avez pas encore d'adresse… » et un bouton **[Ajouter votre adresse]** (→ « Mon profil ») ; sur l'accueil, [Répondre] est verrouillé 🔒 : « Ajoutez votre adresse dans « Mon profil » : les demandes près de chez vous se calculent depuis elle. »
+- Exemple 0 : Karim, profil « part de Pessac », adresse 3 rue Gambetta à Libourne, rayon 15 km → ne voit pas la fuite de Pessac (40 km de Libourne).
+- Exemple 1 : Karim, plombier, adresse à Pessac, rayon 15 km → voit la fuite de Talence (5 km).
 - Exemple 2 : Sophie, plombière à Arcachon, rayon 20 km → ne la voit pas (55 km).
 Ils voient : le titre, la description, les photos, la ville, le « quand », le budget, et le client sous la forme « Marie D. » avec sa note de client (sujet 20). **Jamais** le nom complet, le téléphone, le mail ni la rue.
 **Pourquoi pas tout le monde :** une demande parle de la vie privée d'une personne (son jardin, sa fuite) ; seuls ceux qui peuvent y répondre la lisent (données personnelles, `RM-CLIENTS.md`).
@@ -146,7 +148,7 @@ Quand le client clique [Accepter 35 € · samedi à 10 h 00] :
 | Action | Qui | Condition |
 |---|---|---|
 | Publier, modifier, fermer, prolonger, rouvrir une demande | Le client | Compte vérifié ; 5 demandes ouvertes au plus |
-| Voir une demande | Prestataire en activité | Métier exercé, ville dans son rayon |
+| Voir une demande | Prestataire en activité | Métier exercé, adresse dans son compte, ville dans son rayon autour de cette adresse |
 | Répondre | Le même | Demande ouverte, moins de 10 réponses, pas la sienne |
 | Faire une proposition | Le prestataire, dans la conversation | Demande ouverte ; heure libre de rendez-vous |
 | Accepter, refuser une proposition, ou négocier son prix | Le client | Proposition en attente |

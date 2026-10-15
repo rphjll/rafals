@@ -148,8 +148,8 @@ def test_adresse_et_case_avant_la_premiere_reponse(fabrique_emma, fabrique_deman
 
     assert avant["particulier"] is True and avant["adresse_remplie"] is False and avant["case_cochee_le"] is None
     assert avant["etiquette"] == "Particulier, non professionnel" and "Pas de facture" in avant["avertissement"]
-    assert carte["peut_repondre"] is False and "indiquez votre adresse et cochez" in carte["raison_verrou"]
-    assert refus.status_code == 403 and "avant de répondre" in refus.json()["detail"]
+    assert carte["peut_repondre"] is False and "Ajoutez votre adresse" in carte["raison_verrou"]
+    assert refus.status_code == 403 and "Ajoutez votre adresse" in refus.json()["detail"]
     assert apres["adresse_remplie"] is True and apres["case_cochee_le"] is not None
     assert repondre(emma, chien.demande).status_code == 201
     # La date de la case est gardée : cocher une 2e fois ne la change pas
@@ -256,7 +256,7 @@ def test_un_rendez_vous_avec_absence_ne_compte_pas(fabrique_emma, fabrique_deman
 
 
 def test_avec_un_siret_verifie_aucune_limite(fabrique_emma, fabrique_demande, base: Session) -> None:
-    emma = fabrique_emma(prete=False)
+    emma = fabrique_emma()
     siret_verifie(base, emma)
     fuite = fabrique_demande("Plombier", "Fuite sous l'évier")
 

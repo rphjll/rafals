@@ -1,6 +1,6 @@
 # Page publique d'un prestataire — Interface
 
-> **Changé le 09/10/2026** (lot 9.3) : dans la carte « Besoin de Karim ? », sous [Écrire à Karim], un bouton secondaire **[Demander un devis]**, seulement si le prestataire a un SIRET vérifié. Pas connecté → page de connexion puis retour. Il ouvre la fenêtre « Demander un devis à Karim » (`RM-DEVIS-IHM.md`) ; après l'envoi : « Demande envoyée : Karim vous répond par un devis. » et la page « Mes devis ». La phrase du bas devient « Son téléphone et son adresse vous sont donnés après un rendez-vous. »
+> **Changé le 09/10/2026** (lot 9.3) : dans la carte « Besoin de Karim ? », sous [Écrire à Karim], un bouton secondaire **[Demander un devis]**, actif seulement si le prestataire a un SIRET vérifié ; sinon (15/10/2026) il reste visible, **verrouillé 🔒** : « Ce prestataire n'a pas de SIRET vérifié : il ne fait pas de devis. Écrivez-lui pour vous mettre d'accord. » Pas connecté → page de connexion puis retour. Il ouvre la fenêtre « Demander un devis à Karim » (`RM-DEVIS-IHM.md`) ; après l'envoi : « Demande envoyée : Karim vous répond par un devis. » et la page « Mes devis ». La phrase du bas devient « Son téléphone et son adresse vous sont donnés après un rendez-vous. »
 
 > Fichiers : `frontend/src/pages/PrestatairePage.vue`, `frontend/src/components/prestataire/AvatarPrestataire.vue`. Construit au lot 4.2 (30/09/2026). Règles : `RM-RECHERCHE.md` (précisions du lot 4.1). Maquette : `maquette-lot-4.2-recherche.html` (écran 3).
 

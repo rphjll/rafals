@@ -338,7 +338,7 @@ def test_rouvrir_sa_demande_apres_une_annulation(fabrique_prestataire, fuite, cl
 
 
 def test_proposition_a_un_client_qui_a_ecrit_en_premier(fabrique_prestataire, fabrique_compte, metiers, client) -> None:  # noqa: F811
-    karim, petit = fabrique_prestataire(), fabrique_compte()
+    karim, petit = fabrique_prestataire(adresse=False), fabrique_compte()
     conversation = petit.client.post("/api/conversations", json={"prestataire_id": id_prestataire(karim)}).json()["id"]
 
     sans_metier = proposer(karim, conversation, lieu="chez_client")
@@ -412,3 +412,21 @@ def test_signaler_une_demande_puis_l_administrateur_la_cache(fabrique_prestatair
     assert next(d for d in fuite.client.get("/api/moi/demandes").json() if d["id"] == fuite.demande)["cachee"] is True
     recu = [m for m in mails_envoyes if m["a"] == fuite.email and "votre demande a été cachée" in m["sujet"]]
     assert len(recu) == 1 and "Demande contraire à la loi." in recu[0]["texte"] and "Karim" not in recu[0]["texte"]
+
+
+def test_pres_de_chez_moi_depuis_l_adresse_du_compte(fabrique_prestataire, fuite, client) -> None:  # noqa: F811
+    """Décision de Raphael du 15/10/2026 : « près de chez moi » se mesure depuis l'adresse écrite dans son compte ;
+    sans adresse, il ne voit aucune demande et [Répondre] dit d'en ajouter une."""
+    sans_adresse = fabrique_prestataire(adresse=False)
+
+    carte = sur_l_accueil(sans_adresse.client, fuite.demande)
+    liste = sans_adresse.client.get("/api/moi/prestataire/demandes").json()
+    refus = repondre(sans_adresse, fuite.demande)
+    sans_adresse.client.post("/api/moi/adresse", json={"ligne": "3 rue Gambetta", "commune_id": id_commune(client, "33500", "Libourne"),
+                                                        "code_postal": "33500"})
+    a_libourne = sur_l_accueil(sans_adresse.client, fuite.demande)
+
+    assert carte["peut_repondre"] is False and "Ajoutez votre adresse" in carte["raison_verrou"]
+    assert liste == [] and refus.status_code == 403 and "Ajoutez votre adresse" in refus.json()["detail"]
+    # Son profil dit Pessac, mais son adresse est à Libourne (40 km) : la fuite de Pessac est trop loin de chez lui
+    assert a_libourne["peut_repondre"] is False and a_libourne["raison_verrou"] is None

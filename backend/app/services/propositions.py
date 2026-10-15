@@ -53,6 +53,16 @@ def demande_sur_l_accueil(demande: Demande, maintenant: datetime) -> bool:
     return demande.statut == "ouverte" and demande.cachee_le is None and demande.expire_le > maintenant
 
 
+SANS_ADRESSE = ("Ajoutez votre adresse dans « Mon profil » : les demandes près de chez vous se calculent depuis elle.")
+
+
+def commune_de_depart(db: Session, prestataire: Prestataire) -> Commune | None:
+    """La ville de l'adresse écrite dans son compte (décision de Raphael du 15/10/2026) : c'est d'elle que se mesure
+    « près de chez moi ». Sans adresse : None, il ne voit aucune demande et on lui demande d'en ajouter une."""
+    adresse = clients.adresse_de(db, db.get_one(Compte, prestataire.compte_id))
+    return db.get_one(Commune, adresse.commune_id) if adresse is not None else None
+
+
 def peut_repondre(db: Session, prestataire: Prestataire, demande: Demande, maintenant: datetime) -> bool:
     """Prestataire en activité, qui exerce le métier de la demande (principal ou secondaire, pas arrêté) et dont le rayon
     couvre la ville de la demande. Ex. Karim, plombier à Pessac, 15 km → oui pour une fuite à Talence (6 km) ;
@@ -62,8 +72,8 @@ def peut_repondre(db: Session, prestataire: Prestataire, demande: Demande, maint
     jour = maintenant.astimezone(PARIS).date()
     if demande.metier_id not in service_prestataires.metiers_exerces(db, prestataire, jour):
         return False
-    distance = communes.distance_km(db.get_one(Commune, prestataire.commune_id), db.get_one(Commune, demande.commune_id))
-    if distance > prestataire.distance_km:
+    depart = commune_de_depart(db, prestataire)
+    if depart is None or communes.distance_km(depart, db.get_one(Commune, demande.commune_id)) > prestataire.distance_km:
         return False
     # Sans SIRET vérifié : métier autorisé, plafond de l'année pas atteint, adresse et case remplies (RM-PRESTATAIRES)
     return particuliers.raison_de_ne_pas_repondre(db, prestataire, demande.metier_id, maintenant) is None
@@ -76,12 +86,17 @@ def concerne(db: Session, prestataire: Prestataire, demande: Demande, maintenant
         return False
     if demande.metier_id not in service_prestataires.metiers_exerces(db, prestataire, maintenant.astimezone(PARIS).date()):
         return False
-    distance = communes.distance_km(db.get_one(Commune, prestataire.commune_id), db.get_one(Commune, demande.commune_id))
-    return distance <= prestataire.distance_km
+    depart = commune_de_depart(db, prestataire)
+    return depart is not None and communes.distance_km(depart, db.get_one(Commune, demande.commune_id)) <= prestataire.distance_km
 
 
 def raison_verrou(db: Session, prestataire: Prestataire, demande: Demande, maintenant: datetime) -> str | None:
-    """Pour un prestataire sans SIRET que la demande concerne : pourquoi il ne peut pas répondre ; None sinon."""
+    """Pourquoi [Répondre] est verrouillé : pas d'adresse dans son compte (pour une demande de ses métiers), ou une
+    limite des prestataires sans SIRET ; None sinon."""
+    exerce = (prestataire.statut == "actif" and prestataire.compte_id != demande.client_id and demande.metier_id in
+              service_prestataires.metiers_exerces(db, prestataire, maintenant.astimezone(PARIS).date()))
+    if exerce and commune_de_depart(db, prestataire) is None:
+        return SANS_ADRESSE
     if not concerne(db, prestataire, demande, maintenant):
         return None
     return particuliers.raison_de_ne_pas_repondre(db, prestataire, demande.metier_id, maintenant)
@@ -119,6 +134,8 @@ def repondre(db: Session, prestataire: Prestataire, demande_id: int, maintenant:
         return db.get_one(Conversation, deja.conversation_id)
     if prestataire.compte_id == demande.client_id:
         raise ErreurRegle("Vous ne pouvez pas répondre à votre propre demande.")
+    if commune_de_depart(db, prestataire) is None:
+        raise ErreurRegle(SANS_ADRESSE, 403)
     if concerne(db, prestataire, demande, maintenant):
         particuliers.verifier_reponse(db, prestataire, demande.metier_id, maintenant)
     if not peut_repondre(db, prestataire, demande, maintenant):

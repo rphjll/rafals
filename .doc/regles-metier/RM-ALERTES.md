@@ -11,7 +11,7 @@ Prévenir tout de suite la bonne personne : un prestataire quand une demande de 
 Le prestataire règle ses catégories et son rayon, puis reçoit une notification à chaque demande publiée dans sa zone (page d'aide « Comment ça marche AlloVoisins ? », lue le 04/10/2026). rafals connaît déjà les métiers et le rayon du prestataire (`RM-PRESTATAIRES.md`) : rien de plus à remplir.
 
 ## Qui reçoit l'alerte d'une nouvelle demande
-Exactement ceux qui peuvent la voir (`RM-DEMANDES.md`) : prestataires en activité, métier exercé, ville dans leur rayon. Pas d'alerte pour un prestataire en pause, bloqué ou arrêté, ni pour l'auteur de la demande.
+Exactement ceux qui peuvent la voir (`RM-DEMANDES.md`) : prestataires en activité, métier exercé, adresse dans leur compte, ville dans leur rayon autour de cette adresse (depuis le 15/10/2026). Sans adresse : aucune alerte. Pas d'alerte pour un prestataire en pause, bloqué ou arrêté, ni pour l'auteur de la demande.
 
 ## Trois façons de prévenir (choix de Claude, corrigé par Raphael le 04/10/2026)
 Raphael, mot pour mot : « enleve l'onglet notification ». Il n'y a donc **pas de liste de notifications** sur le site.
@@ -55,7 +55,7 @@ Dans « Mon compte » : « Recevoir les notifications sur ce téléphone » oui 
 
 ## Précisions prises au lot 8.5 (choix de Claude le 12/10/2026, en mode « sans question » ; à relire par Raphael)
 Construit : le mail à chaque nouvelle demande, les réglages par métier, le résumé de 18 h, le plafond de 20, le compteur de « Demandes près de chez moi » (côté serveur), les mails des étapes d'une proposition. **Pas encore construit** : les notifications sur le téléphone (lot 8.7), la pastille rouge à l'écran, le réglage du client.
-- **Le mail d'une nouvelle demande** a pour objet « rafals : nouvelle demande, Fuite sous l'évier, Talence (5 km) » ; il ne contient ni nom, ni téléphone, ni adresse. La distance est celle entre les centres des deux villes, arrondie au kilomètre.
+- **Le mail d'une nouvelle demande** a pour objet « rafals : nouvelle demande, Fuite sous l'évier, Talence (5 km) » ; il ne contient ni nom, ni téléphone, ni adresse. La distance est celle entre le centre de la ville de son adresse et celui de la ville de la demande, arrondie au kilomètre.
 - **Un prestataire sans SIRET n'est pas prévenu** d'une demande d'un métier qui demande un SIRET : il ne pourrait pas y répondre (`RM-PRESTATAIRES.md`, limites sans SIRET).
 - **Le résumé de 18 h** part une fois par jour, à partir de 18 h (heure de Paris), seulement s'il y a au moins une demande. Il liste les demandes du jour encore ouvertes. Pour celui qui a choisi « un mail à chaque demande » et dépassé 20 mails, il ne liste que les demandes en trop.
   - Exemple 1 : Julie a choisi le résumé ; 15 demandes dans la journée → 1 mail à 18 h avec les 15.

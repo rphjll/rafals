@@ -54,6 +54,7 @@ Fichiers en plus : `frontend/src/outils/paiements.ts` (types, sommes « 46,50 �
 
 ## [Payé…] et facture (lot 5.6, 03/10/2026)
 Voir `RM-FACTURES-IHM.md` : bouton [Payé…] du prestataire sur un rendez-vous en espèces, ligne « Prix » « … · payé en espèces le 13/10/2026 · facture F-2026-0003 », bouton [Facture (PDF)].
+Sans SIRET vérifié (15/10/2026) : [Payé…] reste visible, **verrouillé 🔒** : « Une facture demande un SIRET vérifié : créez votre auto-entreprise depuis « Mes démarches ». »
 
 ## Rendez-vous venu d'une proposition (ajouté le 07/10/2026, lot 8.3)
 Un rendez-vous créé quand le client accepte une proposition (`RM-DEMANDES.md`) s'affiche comme les autres, avec le titre de la demande (ex. « Fuite sous l'évier »). Seule différence : le bouton **[Déplacer] est verrouillé 🔒**, « Ce rendez-vous vient d'une proposition : demandez un autre horaire à Karim Benali dans vos messages. » [Annuler…] ne change pas.

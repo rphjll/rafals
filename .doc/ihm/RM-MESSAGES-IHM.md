@@ -62,7 +62,7 @@ Bord vert tant qu'elle attend une réponse, grisée ensuite. De haut en bas :
 ## Fenêtre « Faire une proposition » (prestataire)
 1. « Pour quelle demande ? * » : les demandes encore ouvertes auxquelles il a répondu dans cette conversation. **S'il n'y en a pas** (le client a écrit en premier) : « Pour quel métier ? * » (ses métiers) et deux cases collées « Chez le client | Chez moi ».
 2. Sur deux colonnes : « Prix (€) * », « Durée * » (30 min, 45 min, 1 h, 1 h 30, 2 h, 3 h, 4 h), « Jour * », « Heure de début * ».
-3. « Paiement accepté * » : deux cases à cocher, « Espèces, le jour même » (cochée au départ) et « Carte sur rafals (SIRET vérifié et paiement par carte activé) ».
+3. « Paiement accepté * » : deux cases à cocher, « Espèces, le jour même » (cochée au départ) et « Carte sur rafals ». Depuis le 15/10/2026, cette case est **verrouillée 🔒** avec la raison dessous : sans SIRET vérifié « Le paiement par carte demande un SIRET vérifié : créez votre auto-entreprise depuis « Mes démarches ». », ou, avec SIRET mais paiement par carte pas encore activé, « Activez d'abord le paiement par carte dans « Mon profil ». »
 4. « Si Marie D. accepte, un rendez-vous confirmé est créé dans votre agenda, même hors de votre semaine type. Par carte : 5 % pour rafals, versement 48 h après. »
 5. [Fermer] · [Envoyer la proposition] → message « Proposition envoyée à Marie D. » ; refus de la règle en bandeau rouge dans la fenêtre.
 

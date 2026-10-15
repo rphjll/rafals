@@ -94,7 +94,7 @@ Ces limites valent pour tout prestataire dont le SIRET n'est pas « vérifié »
 - **« A eu lieu »** : rendez-vous confirmé, dont l'heure de fin est passée, sans absence signalée (ni du client ni du prestataire). Ex. Mme Dupont n'était pas là, Emma clique [Client absent] : ces 15 € ne comptent pas.
 - **Les 12 derniers mois** : 365 jours, comptés à partir de la fin de chaque rendez-vous.
 - **Au plafond de 1 000 €** : il ne peut plus répondre ni proposer, et aucun client ne peut plus accepter une proposition déjà envoyée ; une tâche de fond (toutes les 15 minutes) retire ses propositions en attente, écrit une ligne dans chaque conversation et lui envoie un seul mail.
-- **Bouton [Répondre] verrouillé 🔒 avec la raison**, au lieu d'un bouton absent, quand la demande est dans ses métiers et son rayon mais qu'une limite l'arrête : « « Plombier » demande un SIRET… », « Sans SIRET, avant de répondre : indiquez votre adresse et cochez… », « Vous avez atteint la limite des particuliers… ». Ex. Karim, sans SIRET, voit « Fuite sous l'évier » dans « Demandes près de chez moi » avec le bouton verrouillé.
+- **Bouton [Répondre] verrouillé 🔒 avec la raison**, au lieu d'un bouton absent, quand la demande est dans ses métiers et son rayon mais qu'une limite l'arrête : « « Plombier » demande un SIRET… », « Ajoutez votre adresse dans « Mon profil »… » (sans adresse, depuis le 15/10/2026, pour tous les prestataires), « Sans SIRET, avant de répondre : … cochez… », « Vous avez atteint la limite des particuliers… ». Ex. Karim, sans SIRET, voit « Fuite sous l'évier » dans « Demandes près de chez moi » avec le bouton verrouillé.
 - **La case se coche dans « Mon profil »**, carte « Sans SIRET : vos limites », qui montre aussi où il en est (« 1 sur 2 rendez-vous ce mois-ci », « 230,00 € sur 1 000,00 € »).
 - **L'étiquette** est écrite en entier sur la page publique et sur chaque proposition ; sur les petites cartes de « Trouver un prestataire », le coin dit seulement « Particulier » (la place manque).
 - **Les 4 plafonds sont des réglages** (`backend/app/reglages.py`) : 100 €, 2 par mois, 1 000 €, 365 jours.
@@ -121,7 +121,7 @@ Réponse de Raphael, mot pour mot : « oui mais plus loin que les plombiers il d
 Le détail du classement (prestataires sans avis, distance…) sera traité dans le sujet 07 « Recherche ».
 
 ## Zone d'intervention : une ville et une distance (décidé le 27/09/2026)
-Le prestataire indique sa ville de départ et la distance maximale, en kilomètres, jusqu'à laquelle il se déplace. Il apparaît dans les recherches des clients situés dans ce rayon.
+Le prestataire indique sa ville de départ et la distance maximale, en kilomètres, jusqu'à laquelle il se déplace. Il apparaît dans les recherches des clients situés dans ce rayon. **Pour les demandes des clients**, le même rayon se mesure depuis l'adresse de son compte (décision du 15/10/2026, `RM-DEMANDES.md`).
 - Exemple 1 : Karim, « Pessac, jusqu'à 15 km ». Mme Dupont à Talence (7,4 km) → elle le trouve.
 - Exemple 2 : M. Petit à Libourne (38 km) → il ne trouve pas Karim.
 **Cas limite tranché :** la distance est mesurée à vol d'oiseau, entre le centre des deux villes (plus simple et suffisant pour choisir un prestataire).
@@ -193,3 +193,19 @@ Le nom, l'adresse et le SIRET du prestataire sont recopiés sur chaque devis et 
 
 ## Références
 - `GLOSSAIRE-METIER.md`, `RM-COMPTES.md`
+
+## Sans SIRET : tout reste visible, avec un cadenas (décision de Raphael du 15/10/2026)
+
+Raphael : « c pareil qu'une auto entreprise sauf que les boutons qui ne peut pas utiliser y'a un cadenas dessus ». Un prestataire sans SIRET vérifié voit les mêmes écrans qu'un auto-entrepreneur ; ce qu'il ne peut pas faire reste à sa place, grisé avec 🔒, et un clic donne la raison. Il **peut** répondre aux demandes et faire des propositions pour les 50 métiers autorisés sans SIRET, dans ses limites (paragraphe « Limites d'un prestataire sans SIRET »).
+
+| Endroit | Ce qui est verrouillé 🔒 | Raison affichée |
+|---|---|---|
+| Accueil, Demandes près de chez moi | [Répondre] (métier qui demande un SIRET, case pas cochée, limite atteinte) | la raison de la limite |
+| Fenêtre « Faire une proposition » | case « Carte sur rafals » | « Le paiement par carte demande un SIRET vérifié… » |
+| Mon agenda › Rendez-vous passés | [Payé…] (qui fait la facture) | « Une facture demande un SIRET vérifié… » |
+| Mes démarches | [Déclarer à l'URSSAF], [Rappels par mail] | « Déclarer à l'URSSAF concerne les auto-entrepreneurs… » |
+| Mon profil › Paiement par carte | [Activer le paiement par carte] | (déjà en place) |
+| Sa page publique, vue par un client | [Demander un devis] | « Ce prestataire n'a pas de SIRET vérifié : il ne fait pas de devis… » |
+
+- Exemple 1 : Emma, 19 ans, promène des chiens sans SIRET → elle répond à « Promener mon chien » ; dans sa proposition, la case « 🔒 Carte sur rafals » est grisée, seule « Espèces » est possible.
+- Exemple 2 : Marie ouvre la page d'Emma → [🔒 Demander un devis] ; un clic : « Ce prestataire n'a pas de SIRET vérifié : il ne fait pas de devis. Écrivez-lui pour vous mettre d'accord. »

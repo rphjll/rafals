@@ -55,7 +55,7 @@ def metiers(client) -> dict[str, int]:
 def fabrique_prestataire(fabrique_compte, client, metiers):
     """Un prestataire d'essai : Karim, plombier (principal) et électricien (secondaire), Pessac, sans SIRET."""
 
-    def fabriquer(principal: str = "Plombier", secondaires: tuple[str, ...] = ("Électricien",)):
+    def fabriquer(principal: str = "Plombier", secondaires: tuple[str, ...] = ("Électricien",), adresse: bool = True):
         compte = fabrique_compte()
         reponse = devenir(compte, {
             "nom_affiche": "Karim Benali", "metier_principal_id": metiers[principal],
@@ -63,6 +63,10 @@ def fabrique_prestataire(fabrique_compte, client, metiers):
             "metiers_secondaires": [metiers[m] for m in secondaires],
         })
         assert reponse.status_code == 201, reponse.text
+        if adresse:  # « près de chez moi » se mesure depuis l'adresse du compte (décision du 15/10/2026)
+            ajout = compte.client.post("/api/moi/adresse", json={"ligne": "3 rue du Moulin", "commune_id": id_commune(client, "33600", "Pessac"),
+                                                                 "code_postal": "33600"})
+            assert ajout.status_code in (200, 201), ajout.text
         return compte
 
     return fabriquer

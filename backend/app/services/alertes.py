@@ -65,7 +65,8 @@ def _a_prevenir(db: Session, prestataire: Prestataire, demande: Demande, mainten
 def _texte(db: Session, prestataire: Prestataire, demande: Demande) -> str:
     """« Fuite sous l'évier, Talence (5 km) » : jamais le nom, le téléphone ni l'adresse."""
     ville = db.get_one(Commune, demande.commune_id)
-    km = round(communes.distance_km(db.get_one(Commune, prestataire.commune_id), ville))
+    depart = propositions.commune_de_depart(db, prestataire) or db.get_one(Commune, prestataire.commune_id)
+    km = round(communes.distance_km(depart, ville))
     return f"{demande.titre}, {ville.nom} ({km} km)"
 
 

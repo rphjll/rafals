@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import { type MoyenDirect, ouvrirPdf } from '../../outils/factures'
+import { VERROU_SIRET } from '../../outils/prestataires'
 import { type RendezVousVisible, absenceSignalable, aVenir, contestable, encaissable, plage } from '../../outils/rendez_vous'
 import FenetrePayeDirect from '../FenetrePayeDirect.vue'
 import FenetreTexte, { type DemandeTexte } from '../FenetreTexte.vue'
@@ -129,6 +130,7 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
             </AvisAffiche>
           </div>
           <AppBouton v-if="siretVerifie && encaissable(r)" @click="aEncaisser = r">Payé…</AppBouton>
+          <AppBouton v-else-if="encaissable(r)" variante="verrouille" :raison-verrou="VERROU_SIRET.facture">Payé…</AppBouton>
           <AppBouton v-if="r.facture_id" variante="secondaire" @click="ouvrirPdf(r.facture_id)">Facture (PDF)</AppBouton>
           <AppBouton v-if="absenceSignalable(r, 'prestataire')" variante="danger" @click="clientAbsent(r)">Client absent</AppBouton>
           <AppBouton

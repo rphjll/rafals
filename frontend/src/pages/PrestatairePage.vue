@@ -15,7 +15,7 @@ import BoutonSignaler from '../components/BoutonSignaler.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 import { type AvisPublic, etoiles } from '../outils/avis'
-import { lieuPourUnClient } from '../outils/prestataires'
+import { VERROU_SIRET, lieuPourUnClient } from '../outils/prestataires'
 import { type PrestatairePublic, adressePhotoTravail, noteLisible } from '../outils/recherche'
 
 const route = useRoute()
@@ -133,6 +133,7 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
           <AppBouton variante="accent" pleine-largeur @click="ecrire">Écrire à {{ prenom }}</AppBouton>
           <AppAlerte v-if="erreurEcrire">{{ erreurEcrire }}</AppAlerte>
           <AppBouton v-if="prestataire.siret_verifie" variante="secondaire" pleine-largeur @click="demanderDevis">Demander un devis</AppBouton>
+          <AppBouton v-else variante="verrouille" pleine-largeur :raison-verrou="VERROU_SIRET.devisClient">Demander un devis</AppBouton>
           <p class="text-[13.5px] text-sur-fonce-doux">Son téléphone et son adresse vous sont donnés après un rendez-vous.</p>
         </aside>
       </div>

@@ -7,7 +7,7 @@ import { useMessage } from '../../composables/useMessage'
 import { aujourdhuiIso } from '../../outils/dates'
 import type { DemandeVisible } from '../../outils/demandes'
 import { DUREES } from '../../outils/messagerie'
-import type { ProfilPrestataire } from '../../outils/prestataires'
+import { type ProfilPrestataire, VERROU_SIRET } from '../../outils/prestataires'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppCase from '../ui/AppCase.vue'
@@ -42,6 +42,13 @@ const optionsMetiers = computed(() =>
   profil.value ? [profil.value.metier_principal, ...profil.value.metiers_secondaires].map((m) => ({ valeur: m.id, texte: m.nom })) : [],
 )
 const sansDemande = computed(() => props.demandes.length === 0)
+// La case « Carte » : verrouillée sans SIRET vérifié, ou tant que le paiement par carte n'est pas activé
+const etatCarte = ref<{ siret_verifie: boolean; pret: boolean } | null>(null)
+const verrouCarte = computed(() => {
+  if (!etatCarte.value) return undefined
+  if (!etatCarte.value.siret_verifie) return VERROU_SIRET.carte
+  return etatCarte.value.pret ? undefined : VERROU_SIRET.carteInactive
+})
 
 watch(
   () => props.ouverte,
@@ -49,6 +56,8 @@ watch(
     if (!ouverte) return
     erreur.value = ''
     demandeId.value = props.demandes[0]?.id ?? null
+    etatCarte.value = await appelerServeur<{ siret_verifie: boolean; pret: boolean }>('/api/moi/prestataire/paiement-carte').catch(() => null)
+    if (verrouCarte.value) carte.value = false
     if (sansDemande.value && !profil.value) {
       profil.value = await appelerServeur<ProfilPrestataire>('/api/moi/prestataire').catch(() => null)
       metierId.value = profil.value?.metier_principal.id ?? null
@@ -102,7 +111,7 @@ async function envoyer() {
       <div class="flex flex-col">
         <span class="text-[13px] font-semibold">Paiement accepté <span class="text-erreur" aria-hidden="true">*</span></span>
         <AppCase v-model="especes" texte="Espèces, le jour même" />
-        <AppCase v-model="carte" texte="Carte sur rafals (SIRET vérifié et paiement par carte activé)" />
+        <AppCase v-model="carte" texte="Carte sur rafals" :raison-verrou="verrouCarte" />
       </div>
       <p class="text-[13px] text-texte-doux">
         Si {{ avec }} accepte, un rendez-vous confirmé est créé dans votre agenda, même hors de votre semaine type. Par carte :

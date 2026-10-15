@@ -5,7 +5,7 @@
 ## Page « Mes démarches » (`/demarches`, menu « Mes démarches », seulement pour un prestataire)
 Même gardien que « Mes annonces » (se connecter / proposer ses services). Contenu centré, 720 px au plus. Titre « Mes démarches ».
 
-**Sans SIRET vérifié** : carte « Déclaration à l'URSSAF » — « Les démarches concernent les prestataires avec un SIRET vérifié : sans lui, rafals ne fait pas de facture. » + [Créer mon auto-entreprise] → la création d'auto-entreprise par rafals (lot 7.2).
+**Sans SIRET vérifié** : carte « Déclaration à l'URSSAF » — « Les démarches concernent les prestataires avec un SIRET vérifié : sans lui, rafals ne fait pas de facture. » + deux boutons **verrouillés 🔒** [Déclarer à l'URSSAF] et [Rappels par mail] (15/10/2026 ; un clic : « Déclarer à l'URSSAF concerne les auto-entrepreneurs : il faut un SIRET vérifié. ») + [Créer mon auto-entreprise] → la création d'auto-entreprise par rafals (lot 7.2).
 
 **Avec un SIRET vérifié**, carte « Déclaration à l'URSSAF » :
 1. « Un auto-entrepreneur déclare à l'URSSAF ce qu'il a encaissé, chaque mois ou chaque trimestre, même 0 €. rafals prépare le chiffre d'après vos factures ; la déclaration se fait sur le site de l'URSSAF. »
