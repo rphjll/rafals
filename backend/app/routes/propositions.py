@@ -183,7 +183,8 @@ def _alertes(db: Base, prestataire: Prestataire) -> AlertesVisibles:
     exerces = service_prestataires.metiers_exerces(db, prestataire, maintenant().astimezone(alertes.PARIS).date())
     return AlertesVisibles(
         alerte_mail=prestataire.alerte_mail, distance_km=prestataire.distance_km,
-        ville=db.get_one(Commune, prestataire.commune_id).nom,
+        # La ville de son adresse : c'est d'elle que se mesure « près de chez vous » (15/10/2026)
+        ville=(service.commune_de_depart(db, prestataire) or db.get_one(Commune, prestataire.commune_id)).nom,
         metiers=[MetierAlerte(id=m, nom=db.get_one(Metier, m).nom, prevenu=m not in coupes) for m in exerces])
 
 

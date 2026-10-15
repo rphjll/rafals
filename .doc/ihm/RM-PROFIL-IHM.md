@@ -16,7 +16,7 @@ Demande de Raphael du 07/10/2026, mot pour mot : « on vas fusioner mon compte e
 **Prestataire** (ex. Karim Benali, plombier) :
 1. Titre « Mon profil ».
 2. Sa fiche de prestataire et ses cartes, comme avant (`RM-PROPOSER-IHM.md`) : fiche (photo, métier, zone, SIRET, présentation), « Photos de mon travail », « Paiement par carte », « TVA », « Mes métiers », « Visibilité » (la carte « Mon local » a disparu, voir plus bas). [Modifier mon profil] remplace la fiche par le formulaire.
-3. Les cartes du compte, comme avant (`RM-COMPTE-IHM.md`) : « Mes informations », « Accord de tes parents » (16-17 ans), « Mon adresse », les absences (s'il y en a), « Mes paiements par carte » (s'il y en a), « Mes données », « Fermer mon compte » tout en bas.
+3. Les cartes du compte, comme avant (`RM-COMPTE-IHM.md`) : « Mes informations », « Accord de tes parents » (16-17 ans), « Mon adresse », les absences (s'il y en a), **« Notifications sur cet appareil »** (lot 8.7 ; même carte que dans « Alertes », voir `RM-ALERTES-IHM.md` § « Sur ce téléphone » ; exemple « Une notification quand on vous écrit ou qu'on vous fait une proposition, ex. « Karim vous a écrit ». »), « Mes paiements par carte » (s'il y en a), « Mes données », « Fermer mon compte » tout en bas.
 
 **Client qui n'est pas prestataire** (ex. Julie Martin) :
 1. Titre « Mon profil ».

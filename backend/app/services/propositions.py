@@ -15,7 +15,7 @@ from app.modeles.messagerie import Conversation
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import absences, mails, clients, communes, droits, journal, locaux, messagerie, stripe_api
+from app.services import absences, mails, clients, communes, droits, journal, locaux, messagerie, notifications, stripe_api
 from app.services import demandes as service_demandes
 from app.services import particuliers
 from app.services import paiements as service_paiements
@@ -42,11 +42,13 @@ def _duree(debut: datetime, fin: datetime) -> str:
 # ---------- Qui peut répondre ----------
 
 
-def _prevenir(db: Session, compte_id: int, sujet: str, texte_mail: str) -> None:
-    """Un mail court, sans recopier de message ni de coordonnées (RM-ALERTES) ; rien pour un compte fermé."""
+def _prevenir(db: Session, compte_id: int, sujet: str, texte_mail: str, maintenant: datetime) -> None:
+    """Un mail court, sans recopier de message ni de coordonnées (RM-ALERTES), et la même phrase en notification sur
+    ses appareils (lot 8.7) ; rien pour un compte fermé."""
     compte = db.get_one(Compte, compte_id)
     if compte.ferme_le is None:
         mails.envoyer_mail(compte.email, f"rafals : {sujet}", f"{texte_mail} Pour répondre : rubrique « Messages ».")
+        notifications.prevenir(db, compte_id, "rafals", sujet, "/messages", maintenant)
 
 
 def demande_sur_l_accueil(demande: Demande, maintenant: datetime) -> bool:
@@ -150,7 +152,7 @@ def repondre(db: Session, prestataire: Prestataire, demande_id: int, maintenant:
     messagerie.informer(db, conversation, prestataire.compte_id,
                         f"{prestataire.nom_affiche} a répondu à la demande « {demande.titre} ».", maintenant)
     _prevenir(db, demande.client_id, f"{prestataire.nom_affiche} a répondu à votre demande",
-              f"{prestataire.nom_affiche} a répondu à votre demande « {demande.titre} ».")
+              f"{prestataire.nom_affiche} a répondu à votre demande « {demande.titre} ».", maintenant)
     journal.noter(db, auteur_id=prestataire.compte_id, action="repondre_demande", table_cible="demande", ligne_id=demande.id,
                   apres={"prestataire_id": prestataire.id}, maintenant=maintenant)
     db.flush()
@@ -289,7 +291,7 @@ def proposer(db: Session, prestataire: Prestataire, conversation_id: int, saisie
     messagerie.informer(db, conversation, prestataire.compte_id,
                         f"{prestataire.nom_affiche} propose : {texte(db, proposition)}.", maintenant)
     _prevenir(db, conversation.client_id, f"{prestataire.nom_affiche} vous fait une proposition",
-              f"{prestataire.nom_affiche} vous propose {_euros(proposition.prix_centimes)}, {communs.texte_moment(debut)}.")
+              f"{prestataire.nom_affiche} vous propose {_euros(proposition.prix_centimes)}, {communs.texte_moment(debut)}.", maintenant)
     journal.noter(db, auteur_id=prestataire.compte_id, action="proposer", table_cible="proposition", ligne_id=proposition.id,
                   apres={"prix_centimes": proposition.prix_centimes, "debut": debut.isoformat()}, maintenant=maintenant)
     return proposition
@@ -347,6 +349,9 @@ def refuser(db: Session, client: Compte, proposition_id: int, maintenant: dateti
     _clore_negociation(db, proposition, maintenant)
     messagerie.informer(db, conversation, client.id,
                         f"{messagerie.nom_du_client(client)} a refusé la proposition de {_euros(proposition.prix_centimes)}.", maintenant)
+    # Pas de mail pour un refus (RM-ALERTES), seulement la notification
+    notifications.prevenir(db, db.get_one(Prestataire, conversation.prestataire_id).compte_id, "rafals",
+                           f"{messagerie.nom_du_client(client)} a refusé votre proposition", f"/messages/{conversation.id}", maintenant)
     return proposition
 
 
@@ -367,7 +372,7 @@ def negocier(db: Session, client: Compte, proposition_id: int, prix_centimes: in
                         f"{_euros(proposition.prix_centimes)}.", maintenant)
     prestataire = db.get_one(Prestataire, conversation.prestataire_id)
     _prevenir(db, prestataire.compte_id, f"{messagerie.nom_du_client(client)} vous propose un autre prix",
-              f"{messagerie.nom_du_client(client)} propose {_euros(prix_centimes)} au lieu de {_euros(proposition.prix_centimes)}.")
+              f"{messagerie.nom_du_client(client)} propose {_euros(prix_centimes)} au lieu de {_euros(proposition.prix_centimes)}.", maintenant)
     return negociation
 
 
@@ -387,7 +392,7 @@ def repondre_au_prix(db: Session, prestataire: Prestataire, negociation_id: int,
         messagerie.informer(db, conversation, prestataire.compte_id,
                             f"{prestataire.nom_affiche} garde son prix de {_euros(proposition.prix_centimes)}.", maintenant)
         _prevenir(db, conversation.client_id, f"{prestataire.nom_affiche} garde son prix",
-                  f"{prestataire.nom_affiche} garde son prix de {_euros(proposition.prix_centimes)}.")
+                  f"{prestataire.nom_affiche} garde son prix de {_euros(proposition.prix_centimes)}.", maintenant)
         return proposition
     negociation.statut = "acceptee"
     _changer(proposition, "remplacee", maintenant)
@@ -402,7 +407,7 @@ def repondre_au_prix(db: Session, prestataire: Prestataire, negociation_id: int,
     messagerie.informer(db, conversation, prestataire.compte_id,
                         f"{prestataire.nom_affiche} accepte {_euros(nouvelle.prix_centimes)} : {texte(db, nouvelle)}.", maintenant)
     _prevenir(db, conversation.client_id, f"{prestataire.nom_affiche} accepte votre prix",
-              f"{prestataire.nom_affiche} accepte {_euros(nouvelle.prix_centimes)} : il ne vous reste qu'à confirmer.")
+              f"{prestataire.nom_affiche} accepte {_euros(nouvelle.prix_centimes)} : il ne vous reste qu'à confirmer.", maintenant)
     return nouvelle
 
 
@@ -469,6 +474,9 @@ def accepter(db: Session, client: Compte, proposition_id: int, mode_paiement: st
     messagerie.informer(db, conversation, client.id,
                         f"{nom_client} a accepté : rendez-vous « {titre} », {communs.texte_moment(rdv.debut)}, "
                         f"{_euros(proposition.prix_centimes)}.", maintenant)
+    notifications.prevenir(db, db.get_one(Prestataire, conversation.prestataire_id).compte_id, "rafals",
+                           f"{nom_client} a accepté votre proposition : rendez-vous {communs.texte_moment(rdv.debut)}",
+                           f"/messages/{conversation.id}", maintenant)
     if demande is not None:
         demande.statut, demande.statut_change_le = "pourvue", maintenant
         autres = db.scalars(select(Proposition).where(

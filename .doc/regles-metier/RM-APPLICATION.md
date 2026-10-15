@@ -32,6 +32,8 @@ Il existe deux façons d'avoir une « application » :
 - Chaque appareil donne son accord séparément ; on peut le retirer dans « Alertes » ou « Mon compte » (`RM-ALERTES.md`).
 - Se déconnecter sur un appareil coupe ses notifications.
 - Une notification ouvre directement le bon écran (la demande, la conversation, le rendez-vous).
+- **Construit le 15/10/2026** (lot 8.7) : table APPAREIL (`schema_v28.sql`), boutons dans « Alertes » et « Mon profil ». Précision de Claude : l'accord n'est pas demandé tout seul « au bon moment » ; c'est la personne qui clique [Activer les notifications sur cet appareil] (un navigateur refuse souvent une demande qui n'est pas lancée par un clic).
+- **Branchement technique** : deux clés dans `.env` (`VAPID_PUBLIQUE`, `VAPID_PRIVEE`, fabriquées une fois) et la bibliothèque `pywebpush` dans le serveur. Sans l'une ou l'autre, le bouton reste verrouillé 🔒 et les mails continuent.
 
 ## Qui peut faire quoi
 | Action | Qui | Condition |

@@ -48,3 +48,11 @@ Utilisés par `frontend/src/components/demandes/CartePublierDemande.vue`, direct
 - **Pourquoi pas Google Maps** (demandé par Raphael) : il faut un compte Google Cloud avec une carte bancaire et une clé à garder secrète ; l'adresse et l'adresse IP des visiteurs partent chez Google, ce qui demande un bandeau d'accord (RGPD), alors que le projet garde tout en France ou en Europe (polices installées chez nous, hébergement OVH). Si Raphael veut quand même Google Maps : créer la clé, la mettre dans `.env`, et changer la seule fonction `adressePlan` du composant.
 - **À savoir** : en affichant le plan, le navigateur du visiteur parle à OpenStreetMap (adresse IP et zone regardée). À mentionner dans la page « Données personnelles » avant la mise en ligne.
 - **À faire au lot 8.3** : décider si les propositions d'adresses passent par le serveur de rafals, comme la vérification du SIRET.
+
+## 4. Notifications sur le téléphone : « Web Push » (ajouté le 15/10/2026, lot 8.7)
+Utilisé par `backend/app/services/notifications.py` (envoi) et `frontend/public/sw.js` (affichage).
+- **Comment ça marche** : quand on clique « Autoriser », le navigateur donne une adresse d'envoi chez son fabricant (Google pour Chrome et Android, Mozilla pour Firefox, Apple pour Safari) et deux clés ; rafals les garde (table APPAREIL) et y envoie un petit texte chiffré. Gratuit, sans compte chez Google, Mozilla ou Apple.
+- **Clés de rafals** (`VAPID_PUBLIQUE`, `VAPID_PRIVEE` dans `.env`) : fabriquées une fois le 15/10/2026. Les changer coupe tous les appareils déjà activés (chacun devra recliquer [Activer]). À recopier telles quelles sur le serveur OVH à la mise en ligne.
+- **Bibliothèque** : `pywebpush` (dans `backend/requirements.txt`).
+- **Données personnelles** : le texte passe chiffré par le fabricant du navigateur, qui ne peut pas le lire ; il ne contient jamais de nom complet, d'adresse ni de message. À mentionner dans la page « Données personnelles ».
+- **iPhone** : seulement si rafals est installé sur l'écran d'accueil (iOS 16.4 ou plus récent).

@@ -4,6 +4,7 @@
 // mail le soir, aucun mail). Chaque clic est enregistré tout de suite.
 import { onMounted, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../api'
+import CarteNotifications from '../components/alertes/CarteNotifications.vue'
 import GardePrestataire from '../components/prestataire/GardePrestataire.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppChoix from '../components/ui/AppChoix.vue'
@@ -90,7 +91,11 @@ function choisirMail(mail: Alertes['alerte_mail']) {
         </div>
       </AppSection>
 
-      <AppSection titre="Comment voulez-vous être prévenu ?">
+      <CarteNotifications
+        titre="Sur ce téléphone"
+        exemple="Une notification à chaque nouvelle demande de vos métiers près de chez vous, ex. « Nouvelle demande : Fuite sous l'évier, Talence (5 km) »."
+      />
+      <AppSection titre="Comment voulez-vous être prévenu par mail ?">
         <div class="flex flex-col gap-3">
           <AppChoix :model-value="alertes.alerte_mail" etiquette="Par mail" :options="MAILS" @update:model-value="choisirMail" />
           <p class="text-[14px] text-texte-doux">

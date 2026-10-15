@@ -16,7 +16,7 @@ from app.modeles.comptes import Compte
 from app.modeles.demandes import Demande
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import AlerteCoupee, Commune, Prestataire
-from app.services import communes, journal, mails, particuliers
+from app.services import communes, journal, mails, notifications, particuliers
 from app.services import demandes as service_demandes
 from app.services import prestataires as service_prestataires
 from app.services import propositions
@@ -72,9 +72,15 @@ def _texte(db: Session, prestataire: Prestataire, demande: Demande) -> str:
 
 def prevenir_nouvelle_demande(db: Session, demande: Demande, maintenant: datetime) -> int:
     """À la publication : un mail aux prestataires concernés qui ont choisi « un mail à chaque demande », dans la limite
-    de 20 par jour (les suivants vont dans le résumé de 18 h). Rend le nombre de mails envoyés."""
+    de 20 par jour (les suivants vont dans le résumé de 18 h). Rend le nombre de mails envoyés.
+    En plus, une notification sur les appareils de chaque prestataire concerné, quel que soit son choix de mail
+    (lot 8.7) : « Nouvelle demande : Fuite sous l'évier, Talence (5 km) »."""
     jour = maintenant.astimezone(PARIS).date()
     envoyes = 0
+    for prestataire in db.scalars(select(Prestataire).where(Prestataire.statut == "actif")):
+        if _a_prevenir(db, prestataire, demande, maintenant):
+            notifications.prevenir(db, prestataire.compte_id, "Nouvelle demande", _texte(db, prestataire, demande),
+                                   "/demandes-pres-de-chez-moi", maintenant)
     for prestataire in db.scalars(select(Prestataire).where(Prestataire.statut == "actif", Prestataire.alerte_mail == "chaque_demande")):
         if not _a_prevenir(db, prestataire, demande, maintenant):
             continue

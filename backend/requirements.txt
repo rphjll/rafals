@@ -8,6 +8,8 @@ tzdata
 boto3>=1.35,<2
 # Réception des fichiers envoyés par les écrans
 python-multipart
+# Notifications sur le téléphone (Web Push, lot 8.7)
+pywebpush>=2,<3
 
 # Tests automatiques
 pytest>=8,<10

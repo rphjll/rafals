@@ -18,7 +18,7 @@ from app.modeles.messagerie import Conversation, Message, PhotoMessage
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
 from app.modeles.signalements import Signalement
-from app.services import avis, fichiers, journal, mails
+from app.services import avis, fichiers, journal, mails, notifications
 from app.services.erreurs import ErreurRegle
 
 # Un numéro de téléphone français (« 06 12 34 56 78 », « +33 6 12 34 56 78 », « 0612345678 ») ou une adresse mail
@@ -170,6 +170,11 @@ def envoyer(db: Session, compte: Compte, conversation: Conversation, texte: str,
         db.add(PhotoMessage(message_id=message.id, fichier_id=fichier.id, ordre=ordre))
     conversation.dernier_message_le = maintenant
     _marquer_lu(db, compte, conversation, maintenant)  # celui qui écrit a forcément lu ce qui précède
+    # Notification tout de suite à l'autre (lot 8.7), sans recopier le message : « Karim vous a écrit »
+    prestataire = db.get_one(Prestataire, conversation.prestataire_id)
+    destinataire = db.get_one(Compte, prestataire.compte_id if compte.id == conversation.client_id else conversation.client_id)
+    notifications.prevenir(db, destinataire.id, "rafals", f"{nom_de_l_autre(db, destinataire, conversation)} vous a écrit",
+                           f"/messages/{conversation.id}", maintenant)
     db.flush()
     return message
 

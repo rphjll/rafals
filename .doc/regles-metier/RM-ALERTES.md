@@ -54,7 +54,7 @@ Dans « Mon compte » : « Recevoir les notifications sur ce téléphone » oui 
 - Une notification de message ne recopie pas le message : « Karim vous a écrit ».
 
 ## Précisions prises au lot 8.5 (choix de Claude le 12/10/2026, en mode « sans question » ; à relire par Raphael)
-Construit : le mail à chaque nouvelle demande, les réglages par métier, le résumé de 18 h, le plafond de 20, le compteur de « Demandes près de chez moi » (côté serveur), les mails des étapes d'une proposition. **Pas encore construit** : les notifications sur le téléphone (lot 8.7), la pastille rouge à l'écran, le réglage du client.
+Construit : le mail à chaque nouvelle demande, les réglages par métier, le résumé de 18 h, le plafond de 20, le compteur de « Demandes près de chez moi » (côté serveur), les mails des étapes d'une proposition. Notifications sur le téléphone : construites le 15/10/2026 (lot 8.7, § « Précisions prises au lot 8.7 »). **Pas encore construit** : la pastille rouge à l'écran.
 - **Le mail d'une nouvelle demande** a pour objet « rafals : nouvelle demande, Fuite sous l'évier, Talence (5 km) » ; il ne contient ni nom, ni téléphone, ni adresse. La distance est celle entre le centre de la ville de son adresse et celui de la ville de la demande, arrondie au kilomètre.
 - **Un prestataire sans SIRET n'est pas prévenu** d'une demande d'un métier qui demande un SIRET : il ne pourrait pas y répondre (`RM-PRESTATAIRES.md`, limites sans SIRET).
 - **Le résumé de 18 h** part une fois par jour, à partir de 18 h (heure de Paris), seulement s'il y a au moins une demande. Il liste les demandes du jour encore ouvertes. Pour celui qui a choisi « un mail à chaque demande » et dépassé 20 mails, il ne liste que les demandes en trop.
@@ -63,6 +63,15 @@ Construit : le mail à chaque nouvelle demande, les réglages par métier, le r�
 - **Le résumé ne compte pas les demandes publiées avant l'inscription du prestataire.**
 - **Mails ajoutés aux étapes d'une proposition** (tableau « Ce qui déclenche une notification ») : « Karim Benali a répondu à votre demande », « Karim Benali vous fait une proposition », « Marie D. vous propose un autre prix », « Karim Benali accepte votre prix », « Karim Benali garde son prix ». Ils disent seulement ce qui s'est passé et renvoient à « Messages ». La proposition acceptée garde le mail « rendez-vous confirmé » qui existait.
 - **Le compteur rouge** compte les demandes de ses métiers et de son rayon arrivées depuis sa dernière visite de « Demandes près de chez moi », même pour un métier où il a choisi « Ne pas me prévenir ».
+
+## Précisions prises au lot 8.7 (choix de Claude le 15/10/2026 ; à relire par Raphael)
+- **La notification d'une nouvelle demande ne suit pas le réglage du mail** : « Aucun mail » ou « résumé de 18 h » ne coupe pas le téléphone ; seul « Ne pas me prévenir » pour un métier, ou [Couper les notifications], l'arrête. Pas de plafond de 20 pour le téléphone.
+  - Exemple : Julie a choisi « Un seul mail le soir » ; une demande de ménage arrive à 10 h → son téléphone sonne à 10 h, et la demande est aussi dans le mail de 18 h.
+- **Un message** : notification tout de suite (« Karim Benali vous a écrit »), le mail reste au bout de 15 minutes sans lecture. **Proposition acceptée ou refusée** : notification au prestataire (« Marie D. a accepté votre proposition : rendez-vous mardi 20/10 à 10 h »).
+- **Pour les étapes d'une proposition**, la notification reprend l'objet du mail (« Karim Benali vous fait une proposition »).
+- **À l'activation**, une notification d'essai « Les notifications sont activées sur cet appareil. » pour voir tout de suite que ça marche.
+- **Un appareil qui n'existe plus** (téléphone changé, rafals désinstallé) est effacé dès que le navigateur répond qu'il n'existe plus.
+- **Le client** règle ses notifications dans « Mon profil », carte « Notifications sur cet appareil ».
 
 ## Qui peut faire quoi
 | Action | Qui | Condition |

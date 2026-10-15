@@ -18,5 +18,12 @@
 ## Compteur rouge
 Dans « Mon activité », la tuile « Demandes près de chez moi » porte une pastille rouge avec le nombre de demandes arrivées depuis la dernière visite de cette page ; l'ouvrir la remet à zéro. (Pas de pastille dans le sous-menu.)
 
-## Pas encore fait
-- « Sur ce téléphone (une notification, même quand rafals est fermé) » [Oui] / [Non] : lot 8.7.
+## Sur ce téléphone
+Entre les deux cartes, exemple « Une notification à chaque nouvelle demande de vos métiers près de chez vous, ex. « Nouvelle demande : Fuite sous l'évier, Talence (5 km) ». » La carte du mail s'appelle maintenant « Comment voulez-vous être prévenu par mail ? ».
+« Sur ce téléphone » (lot 8.7, 15/10/2026, `CarteNotifications.vue`) : phrase d'exemple, puis « Le téléphone sonne même quand rafals est fermé. Jamais de nom complet, d'adresse ni le texte d'un message. » et, selon l'appareil :
+- pas encore activées : [Activer les notifications sur cet appareil] → le navigateur demande « Autoriser / Bloquer » → message vert « Notifications activées sur cet appareil. » et, tout de suite, une notification d'essai « Les notifications sont activées sur cet appareil. » ;
+- activées : badge vert « activées sur cet appareil » + [Couper les notifications] → « Notifications coupées sur cet appareil. » ;
+- « Bloquer » choisi dans le navigateur : « Ce navigateur a bloqué les notifications de rafals. Pour les autoriser : cliquez sur le cadenas à gauche de l'adresse du site, puis « Notifications » → « Autoriser ». » ;
+- navigateur qui ne sait pas (ex. iPhone sans rafals installé) : « … Sur iPhone : installez d'abord rafals (menu du compte → [Installer rafals]), puis ouvrez-le depuis son icône. » ;
+- rafals pas encore branché (clés absentes de `.env` ou bibliothèque pas installée dans le serveur) : bouton verrouillé 🔒 « Les notifications ne sont pas encore branchées sur rafals : vous recevez les mails en attendant. »
+Un clic sur une notification ouvre le bon écran : « Demandes près de chez moi », ou la conversation (`/messages/12`).

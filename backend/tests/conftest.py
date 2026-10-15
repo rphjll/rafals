@@ -179,6 +179,41 @@ def sans_limites_de_particulier(request: pytest.FixtureRequest, monkeypatch: pyt
     monkeypatch.setattr(particuliers, "est_particulier", lambda _prestataire: False)
 
 
+class FaussesNotifications:
+    """Remplace l'envoi réel des notifications (lot 8.7) : chacune est gardée dans `envoyees`
+    ({"compte_id", "titre", "texte", "lien"}). Une adresse mise dans `disparues` répond « n'existe plus »."""
+
+    def __init__(self) -> None:
+        self.envoyees: list[dict] = []
+        self.disparues: set[str] = set()
+
+    def pousser(self, appareil, donnees: str) -> None:
+        import json
+
+        from app.services import notifications
+
+        if appareil.adresse in self.disparues:
+            raise notifications.AppareilDisparu
+        self.envoyees.append({"compte_id": appareil.compte_id, **json.loads(donnees)})
+
+    def pour(self, compte_id: int) -> list[str]:
+        return [n["texte"] for n in self.envoyees if n["compte_id"] == compte_id]
+
+
+@pytest.fixture(autouse=True)
+def notifications_envoyees(monkeypatch: pytest.MonkeyPatch) -> FaussesNotifications:
+    """Partout : jamais d'envoi réel vers Google ou Mozilla, des clés d'essai à la place de celles de .env."""
+    from app import config
+    from app.services import notifications
+
+    fausses = FaussesNotifications()
+    monkeypatch.setattr(config, "VAPID_PUBLIQUE", "zztest-cle-publique")
+    monkeypatch.setattr(config, "VAPID_PRIVEE", "zztest-cle-privee")
+    monkeypatch.setattr(notifications, "BIBLIOTHEQUE", True)
+    monkeypatch.setattr(notifications, "_pousser", fausses.pousser)
+    return fausses
+
+
 @pytest.fixture
 def mails_envoyes(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     """Remplace l'envoi réel : les mails sont gardés dans une liste que le test peut lire."""

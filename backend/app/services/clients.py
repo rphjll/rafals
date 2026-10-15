@@ -19,7 +19,7 @@ from app.modeles.journal import JournalAction
 from app.modeles.metiers import Metier, PropositionMetier
 from app.modeles.prestataires import Commune, MetierSecondaire, Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import communes, journal, locaux, mails
+from app.services import communes, journal, locaux, mails, notifications
 from app.services.erreurs import ErreurRegle
 from app.services.securite import hacher_mot_de_passe, mot_de_passe_correct
 
@@ -237,6 +237,7 @@ def _effacer_donnees_personnelles(db: Session, compte: Compte, maintenant: datet
     compte.mot_de_passe_hache = hacher_mot_de_passe(secrets.token_urlsafe(32))  # plus personne ne peut s'y connecter
     compte.est_administrateur = False
     compte.ferme_le = maintenant
+    notifications.couper_tout(db, compte.id)
     db.execute(
         update(SessionConnexion)
         .where(SessionConnexion.compte_id == compte.id, SessionConnexion.fermee_le.is_(None))

@@ -1,6 +1,7 @@
 // La personne connectée, partagée par toutes les pages (null = personne n'est connecté).
 import { ref } from 'vue'
 import { appelerServeur } from '../api'
+import { couperAvantDeconnexion } from './useNotifications'
 
 export interface CompteVisible {
   id: number
@@ -35,6 +36,7 @@ export function useCompte() {
   }
 
   async function seDeconnecter() {
+    await couperAvantDeconnexion() // cet appareil ne reçoit plus rien pour ce compte (RM-APPLICATION.md)
     await appelerServeur('/api/deconnexion', {})
     compte.value = null
   }

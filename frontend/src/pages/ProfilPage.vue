@@ -6,6 +6,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur } from '../api'
 import CarteAdresse from '../components/CarteAdresse.vue'
+import CarteNotifications from '../components/alertes/CarteNotifications.vue'
 import CarteAbsences from '../components/compte/CarteAbsences.vue'
 import CarteAccordParental from '../components/compte/CarteAccordParental.vue'
 import CarteDonnees from '../components/compte/CarteDonnees.vue'
@@ -107,6 +108,10 @@ async function enregistre(nouveau: ProfilPrestataire) {
       texte-effacer="Effacer mon adresse"
     />
     <CarteAbsences />
+    <CarteNotifications
+      titre="Notifications sur cet appareil"
+      exemple="Une notification quand on vous écrit ou qu'on vous fait une proposition, ex. « Karim vous a écrit »."
+    />
     <CartePaiements />
     <CarteDonnees />
     <CarteFermeture />

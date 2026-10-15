@@ -17,6 +17,6 @@ Dans la liste du compte (sous le prénom), juste au-dessus de [Se déconnecter] 
 Quand une page ne peut pas être chargée, la page « Pas de connexion » s'affiche : logo « rafals. », titre « Pas de connexion : rafals a besoin d'Internet. », « Vérifiez le Wi-Fi ou les données mobiles de votre appareil, puis réessayez. », bouton [Réessayer] (recharge la page). Rien d'autre n'est gardé sur l'appareil.
 
 ## Pas encore fait
-- Les notifications sur l'appareil (accord par appareil, envoi à chaque événement de `RM-ALERTES.md`) : il faut une paire de clés à créer et une bibliothèque d'envoi à installer dans le serveur.
+- ~~Les notifications sur l'appareil~~ : faites le 15/10/2026 (bouton dans « Alertes » et « Mon profil », `RM-ALERTES-IHM.md` § « Sur ce téléphone »). La déconnexion coupe celles de l'appareil. Elles ne partent vraiment qu'une fois la bibliothèque `pywebpush` installée dans le serveur.
 - Les gestes en image pour l'iPhone (ils sont écrits en texte).
 - À vérifier par Raphael sur un vrai téléphone : l'installation ne marche que sur un site en « https » (ou sur `localhost`).

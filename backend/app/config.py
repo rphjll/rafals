@@ -56,6 +56,12 @@ URSSAF_ADRESSE_JETON = os.environ.get("URSSAF_ADRESSE_JETON", "https://api.urssa
 URSSAF_IDENTIFIANT = os.environ.get("URSSAF_IDENTIFIANT", "")
 URSSAF_SECRET = os.environ.get("URSSAF_SECRET", "")
 
+# Notifications sur le téléphone (Web Push, lot 8.7) : deux clés fabriquées une fois, gardées dans .env.
+# Vides : pas de notification, le bouton [Activer les notifications] est verrouillé (les mails continuent).
+VAPID_PUBLIQUE = os.environ.get("VAPID_PUBLIQUE", "")
+VAPID_PRIVEE = os.environ.get("VAPID_PRIVEE", "")
+VAPID_CONTACT = os.environ.get("VAPID_CONTACT", "mailto:contact@rafals.fr")
+
 # Adresse des écrans, pour fabriquer les liens envoyés par mail
 ADRESSE_SITE = os.environ.get("ADRESSE_SITE", "http://localhost:5174")
 
