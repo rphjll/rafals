@@ -52,14 +52,14 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
 <div class="page">
   <div>
     <h1>Suivi de rafals<i>.</i></h1>
-    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 15/10/2026. 67 lots, du niveau 0 au niveau 11, et 4 tâches hors lot.</p>
+    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 16/10/2026. 67 lots, du niveau 0 au niveau 11, et 4 tâches hors lot.</p>
   </div>
-  <div class="barre" role="img" aria-label="46 faits, 17 à vérifier, 3 en cours, 5 à faire">
-    <span class="fait" style="width:64.7887323943662%"></span><span class="verifier" style="width:23.943661971830984%"></span><span class="cours" style="width:4.225352112676056%"></span><span class="faire" style="width:7.042253521126761%"></span>
+  <div class="barre" role="img" aria-label="46 faits, 18 à vérifier, 2 en cours, 5 à faire">
+    <span class="fait" style="width:64.7887323943662%"></span><span class="verifier" style="width:25.352112676056336%"></span><span class="cours" style="width:2.8169014084507045%"></span><span class="faire" style="width:7.042253521126761%"></span>
   </div>
   <div class="filtres" role="group" aria-label="Montrer seulement un état">
     <button type="button" data-f="tout" aria-pressed="true">Tout <b>71</b></button>
-    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>5</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>3</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>17</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>46</b></button>
+    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>5</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>2</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>18</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>46</b></button>
   </div>
   <p class="doux" id="vide" hidden>Aucun lot dans cet état.</p>
   <section><header><h2><span>Hors lot</span>Travail en cours</h2></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="cours">
@@ -307,10 +307,10 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
   <td class="lot">8.6</td>
   <td><span class="titre">Onglet Alertes, avis reçus</span><span class="type">Écrans</span><p><b>Fait le 12/10/2026.</b> Page « Alertes » ; carte « Rendez-vous passé : noter » dans la conversation ; moyenne + « Voir les avis » à côté des noms ; page publique d'un client ; « Mes avis reçus ». Pastilles rouges dans « Mon activité » ; avis sur un client signalés dans Administration › Avis signalés</p></td>
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
-</tr><tr data-etat="cours">
+</tr><tr data-etat="verifier">
   <td class="lot">8.7</td>
-  <td><span class="titre">Site installable et notifications</span><span class="type">Serveur + Écrans</span><p><b>Première partie faite le 12/10/2026</b> : site installable ([Installer rafals] dans le menu du compte, icône, nom, page « Pas de connexion »). <b>Deuxième partie faite le 15/10/2026</b> : notifications sur l'appareil (table APPAREIL, <code>schema_v28.sql</code> ; bouton dans « Alertes » et « Mon profil » ; envoi à chaque nouvelle demande, message, étape d'une proposition). <b>Reste</b> : installer la bibliothèque <code>pywebpush</code> dans le conteneur du serveur (bloqué par l'antivirus Avast, accord de Raphael)</p></td>
-  <td class="etat"><span class="badge cours">En cours</span></td>
+  <td><span class="titre">Site installable et notifications</span><span class="type">Serveur + Écrans</span><p><b>Première partie faite le 12/10/2026</b> : site installable ([Installer rafals] dans le menu du compte, icône, nom, page « Pas de connexion »). <b>Deuxième partie faite le 15/10/2026</b> : notifications sur l'appareil (table APPAREIL, <code>schema_v28.sql</code> ; bouton dans « Alertes » et « Mon profil » ; envoi à chaque nouvelle demande, message, étape d'une proposition). Bibliothèque <code>pywebpush</code> installée le 16/10/2026. <b>À savoir</b> : sur le PC de Raphael, l'analyse HTTPS d'Avast empêche aussi le serveur de joindre Google pour envoyer (pas de souci en ligne chez OVH)</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr></tbody></table></div></section>
   <section><header><h2><span>Niveau 9</span>Retrait des annonces</h2><span class="avance">0 fait sur 4</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="verifier">
   <td class="lot">9.1</td>
