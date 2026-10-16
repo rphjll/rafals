@@ -29,7 +29,7 @@ docker compose exec -T garage /garage bucket create rafals-test 2> nul
 docker compose exec -T garage /garage bucket allow --read --write --owner rafals-test --key %CLE% 2> nul
 echo.
 echo Stockage pret.
-pause
+if not "%1"=="auto" pause
 exit /b 0
 
 :erreur
