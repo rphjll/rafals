@@ -24,6 +24,7 @@ const TITRES = {
 const HORS_LOT = [
   { lot: '—', titre: 'Simplifier « Mon agenda › Calendrier »', type: 'Écrans', desc: 'Maquette F retenue, en pause : à valider par Raphael avant de coder. Aucun fichier du site modifié.', etat: 'cours' },
   { lot: '—', titre: 'Nouvelle présentation du site (style chaleureux)', type: 'Écrans', desc: 'Demande du 04/10/2026. Plusieurs étapes faites, à vérifier à l\'écran par Raphael.', etat: 'verifier' },
+  { lot: '—', titre: 'Notifications de la barre de TVA', type: 'Serveur', desc: 'Demande du 17/10/2026 : une notification à 80 % du seuil de TVA, puis quand il est dépassé.', etat: 'verifier' },
   { lot: '—', titre: 'Adresse du compte et cadenas sans SIRET', type: 'Serveur + Écrans', desc: 'Demandes du 15/10/2026 : demandes près de l\'adresse du compte, bouton [Ajouter votre adresse], cadenas sur ce qu\'un prestataire sans SIRET ne peut pas faire.', etat: 'verifier' },
   { lot: '—', titre: 'Retrait des annonces', type: 'Serveur + Écrans', desc: 'Décision du 04/10/2026. Lots 9.1 à 9.3 faits (à vérifier) ; reste le lot 9.4 : supprimer les tables des annonces, avec l\'accord de Raphael.', etat: 'cours' },
 ]

@@ -16,7 +16,7 @@ from app.modeles.comptes import Compte
 from app.modeles.prestataires import Prestataire
 from app.modeles.signalements import RappelDeclaration
 from app.modeles.urssaf import DeclarationUrssaf
-from app.services import factures, journal, mails
+from app.services import factures, journal, mails, notifications, paiements
 from app.services.erreurs import ErreurRegle
 
 PARIS = reglages.FUSEAU_AFFICHAGE
@@ -142,3 +142,31 @@ def envoyer_rappels(db: Session, maintenant: datetime) -> dict[str, int]:
             "La déclaration se fait sur le site de l'URSSAF, même pour 0 €.")
         compte["rappels"] += 1
     return compte
+
+
+# ---------- La barre de la TVA : prévenir à 80 % et au-delà du seuil (demande de Raphael du 17/10/2026) ----------
+
+
+def prevenir_seuil_tva(db: Session, prestataire: Prestataire, facture: Facture, maintenant: datetime) -> None:
+    """Appelé à chaque nouvelle facture de vente : une notification si elle fait passer 80 % du seuil, ou le seuil
+    lui-même. Rien n'est enregistré : on compare le total de l'année avant et après cette facture.
+    Ex. 1 : seuil 37 500 € ; Karim passe de 29 800 € à 30 050 € → « Vous approchez du seuil de TVA ».
+    Ex. 2 : il passe de 37 400 € à 37 600 € → « Seuil de TVA dépassé ». Pas de barre pour qui facture déjà la TVA."""
+    if prestataire.facture_tva or facture.sorte != "vente":
+        return
+    annee = facture.emise_le.astimezone(PARIS).year
+    mois, _ = chiffre_d_affaires(db, prestataire, annee, maintenant)
+    apres = sum(m.encaisse_centimes for m in mois)
+    avant = apres - encaisse(db, facture)
+    seuil = reglages.SEUIL_TVA_SERVICES_CENTIMES
+    alerte = seuil * reglages.SEUIL_TVA_PREVENIR_POUR_CENT // 100
+    if avant < seuil <= apres:
+        notifications.prevenir(
+            db, prestataire.compte_id, "Seuil de TVA dépassé",
+            f"Vous avez encaissé {paiements.euros(apres)} en {annee}, plus que le seuil de TVA ({paiements.euros(seuil)}) : "
+            "parlez-en à votre comptable ou à votre service des impôts.", "/mon-activite", maintenant)
+    elif avant < alerte <= apres:
+        notifications.prevenir(
+            db, prestataire.compte_id, "Vous approchez du seuil de TVA",
+            f"Vous avez encaissé {paiements.euros(apres)} en {annee} : {reglages.SEUIL_TVA_PREVENIR_POUR_CENT} % du seuil de TVA "
+            f"({paiements.euros(seuil)}). Il vous reste {paiements.euros(seuil - apres)}.", "/mon-activite", maintenant)

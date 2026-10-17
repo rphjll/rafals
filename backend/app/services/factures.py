@@ -123,6 +123,10 @@ def _creer(db: Session, prestataire: Prestataire, *, sorte: str, objet: str, lig
     db.flush()
     journal.noter(db, auteur_id=None, action=f"emettre_facture_{sorte}", table_cible="facture", ligne_id=facture.id,
                   apres={"numero": numero(facture), "ttc_centimes": totaux(db, facture).ttc}, maintenant=maintenant)
+    if sorte == "vente":
+        from app.services import demarches  # demarches lit les factures : import ici pour ne pas tourner en rond
+
+        demarches.prevenir_seuil_tva(db, prestataire, facture, maintenant)
     return facture
 
 

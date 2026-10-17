@@ -111,6 +111,8 @@ FACTURE_MOYENS_DIRECTS = ("especes", "cheque", "virement")
 # ⚠️ À confirmer par un comptable avant la mise en ligne : seuil de chiffre d'affaires au-delà duquel un auto-entrepreneur
 # de services doit facturer la TVA (37 500 € en 2026 ; il change presque chaque année).
 SEUIL_TVA_SERVICES_CENTIMES = 37_500_00
+# Notification quand une facture fait passer ce pourcentage du seuil (demande de Raphael du 17/10/2026)
+SEUIL_TVA_PREVENIR_POUR_CENT = 80
 
 # Signalements et rappels URSSAF (RM-ADMINISTRATION.md, RM-DEMARCHES.md, validés par Raphael le 04/10/2026)
 SIGNALEMENT_MOTIF = (10, 1000)

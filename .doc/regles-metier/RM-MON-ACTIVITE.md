@@ -28,6 +28,10 @@ En haut de « Mon activité », quelques chiffres disent où on en est aujourd'h
 - Elle compare « Encaissé cette année » au **seuil de 37 500 €** au-delà duquel un auto-entrepreneur de services doit facturer la TVA.
   - Exemple : 5 320,00 € encaissés → « Il vous reste 32 180,00 € avant le seuil de TVA (37 500 €) », barre remplie à 14 %.
   - Exemple : 38 000,00 € encaissés → « Vous avez dépassé le seuil de TVA (37 500 €) : parlez-en à votre comptable ou à votre service des impôts. », barre pleine, en orange.
+- **Deux notifications sur le téléphone** (demande de Raphael du 17/10/2026 : « une notif de la barre de TVA qnd elle est a 80% et quand elle est dépassée ») : au moment où une facture fait passer le total de l'année à 80 % du seuil, puis au-delà du seuil. Un clic ouvre « Mon activité ». Rien n'est enregistré : rafals compare le total avant et après la facture, donc chaque palier ne sonne qu'une fois.
+  - Exemple 1 : Karim passe de 29 800 € à 30 050 € → « Vous approchez du seuil de TVA : Vous avez encaissé 30 050,00 € en 2026 : 80 % du seuil de TVA (37 500,00 €). Il vous reste 7 450,00 €. »
+  - Exemple 2 : il passe de 37 400 € à 37 600 € → « Seuil de TVA dépassé : Vous avez encaissé 37 600,00 € en 2026, plus que le seuil de TVA (37 500,00 €) : parlez-en à votre comptable ou à votre service des impôts. »
+  - Choix de Claude : une seule facture qui saute les deux paliers d'un coup donne seulement « Seuil de TVA dépassé » ; pas de mail (non demandé) ; un avoir qui fait redescendre puis une nouvelle facture qui fait repasser le palier font sonner de nouveau.
 - rafals **ne change rien tout seul** : il ne coche pas la case TVA à la place du prestataire.
 - ⚠️ **À confirmer par un comptable avant la mise en ligne** : (1) le montant du seuil (37 500 € pour les services en 2026, 41 250 € pour le seuil dit « majoré », d'après des sites spécialisés lus le 07/10/2026 ; il change presque chaque année) ; (2) la vente de marchandises a un autre seuil, que rafals ne gère pas ; (3) le seuil se juge sur tout le chiffre d'affaires, y compris hors rafals.
 

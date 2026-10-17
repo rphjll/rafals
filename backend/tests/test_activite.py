@@ -177,3 +177,26 @@ def test_profil_d_un_client_avec_devis(paul, dupont, envoye) -> None:  # noqa: F
     assert avec_devis["adresse"] is None and avec_devis["les_rendez_vous"] == []  # un devis seul ne montre pas l'adresse
     assert [(d["total_centimes"], d["statut"]) for d in avec_devis["les_devis"]] == [(119000, "envoye")]
     assert avec_devis["les_devis"][0]["numero"].startswith("D-")
+
+
+def test_notification_a_80_pour_cent_puis_au_dela_du_seuil(lea, dupont, base: Session, notifications_envoyees, monkeypatch) -> None:  # noqa: F811
+    """Demande de Raphael du 17/10/2026 : une notification quand la barre de la TVA passe 80 %, puis quand elle est
+    dépassée. Seuil d'essai de 120,00 € : 80 % = 96,00 € ; trois rendez-vous de 50,00 € payés en espèces."""
+    from tests.test_notifications import activer
+
+    monkeypatch.setattr(reglages, "SEUIL_TVA_SERVICES_CENTIMES", 12000)
+    siret_verifie(base, lea)
+    activer(lea)
+    rdv = [reserver(dupont, lea, a(MARDI, heure)).json()["id"] for heure in (10, 11, 14)]
+    for identifiant in rdv:
+        passe(base, identifiant)
+
+    def payer(rang: int) -> list[str]:
+        assert lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv[rang]}/paye", json={"moyen": "especes"}).status_code == 200
+        return [n["titre"] for n in notifications_envoyees.envoyees if n["compte_id"] == lea.id and "TVA" in n["titre"]]
+
+    assert payer(0) == []  # 50,00 € : 42 %
+    assert payer(1) == ["Vous approchez du seuil de TVA"]  # 100,00 € : 83 %
+    assert payer(2) == ["Vous approchez du seuil de TVA", "Seuil de TVA dépassé"]  # 150,00 €
+    approche = next(n for n in notifications_envoyees.envoyees if n["titre"] == "Vous approchez du seuil de TVA")
+    assert "80 % du seuil de TVA (120,00 €). Il vous reste 20,00 €." in approche["texte"] and approche["lien"] == "/mon-activite"
