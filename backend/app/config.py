@@ -17,6 +17,10 @@ DB_MOT_DE_PASSE = os.environ["RAFALS_APP_PASSWORD"]
 SMTP_HOTE = os.environ.get("SMTP_HOTE", "mailpit")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "1025"))
 MAIL_EXPEDITEUR = os.environ.get("MAIL_EXPEDITEUR", "rafals <ne-pas-repondre@rafals.fr>")
+# En ligne (Brevo, smtp-relay.brevo.com, port 587) : identifiant et mot de passe d'envoi. Vides : pas de connexion
+# (Mailpit n'en demande pas). Remplis : la liaison est chiffrée (STARTTLS) avant de donner le mot de passe.
+SMTP_UTILISATEUR = os.environ.get("SMTP_UTILISATEUR", "")
+SMTP_MOT_DE_PASSE = os.environ.get("SMTP_MOT_DE_PASSE", "")
 
 # IA de modération des avis (conteneur « moderation », lot 4.8)
 MODERATION_ADRESSE = os.environ.get("MODERATION_ADRESSE", "http://moderation:8000")

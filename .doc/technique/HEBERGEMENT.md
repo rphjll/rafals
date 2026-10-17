@@ -60,3 +60,12 @@ Service extérieur choisi par Raphael (Stripe Connect, « Stripe gère la tarifi
 - **À la mise en ligne** (à la charge de Raphael) : demander l'accès à l'URSSAF (portailapi.urssaf.fr, contact-api@urssaf.fr ; il faut très probablement que rafals soit une entreprise), obtenir la documentation technique, puis ajouter dans `.env` (jamais dans git) : `URSSAF_IDENTIFIANT`, `URSSAF_SECRET`, et si besoin `URSSAF_ADRESSE` et `URSSAF_ADRESSE_JETON`.
 - ⚠️ **Un fichier à adapter ce jour-là : `backend/app/services/urssaf.py`.** Les adresses et les noms de champs y sont provisoires (la documentation n'est pas publique). Le reste de rafals n'appelle que ses 4 fonctions : `enregistrer_mandat`, `annuler_mandat`, `estimer`, `declarer`.
 - `docker-compose.yml` et `.env` ne changent pas aujourd'hui.
+
+## Envoi des mails en ligne : Brevo (préparé le 17/10/2026)
+Sur le PC, les mails vont dans Mailpit (rien ne part). En ligne, rafals les enverra par **Brevo** (choix de Raphael du 17/10/2026, proposé par Claude) : entreprise française, serveurs en Europe, gratuit jusqu'à 300 mails par jour, même façon d'envoyer que Mailpit (SMTP).
+- Le code est prêt : deux réglages, `SMTP_UTILISATEUR` et `SMTP_MOT_DE_PASSE` (`backend/app/config.py`). Vides : envoi sans connexion, comme vers Mailpit. Remplis : liaison chiffrée (STARTTLS), puis connexion.
+- À la mise en ligne, dans le `.env` du serveur seulement : `SMTP_HOTE=smtp-relay.brevo.com`, `SMTP_PORT=587`, l'identifiant et la clé SMTP donnés par Brevo, `MAIL_EXPEDITEUR=rafals <ne-pas-repondre@rafals.fr>`.
+- Avant : acheter le nom de domaine, puis le faire vérifier par Brevo (ajouter les lignes SPF et DKIM qu'il donne chez OVH), sinon les mails tombent dans les spams.
+- Jamais sur un PC d'essai : de vrais mails partiraient, y compris vers les comptes de test.
+- Portabilité : changer de service (Mailjet, OVH…) = changer ces 4 réglages, sans toucher au code.
+
