@@ -148,8 +148,8 @@ def envoyer_rappels(db: Session, maintenant: datetime) -> dict[str, int]:
 
 
 def prevenir_seuil_tva(db: Session, prestataire: Prestataire, facture: Facture, maintenant: datetime) -> None:
-    """Appelé à chaque nouvelle facture de vente : une notification si elle fait passer 80 % du seuil, ou le seuil
-    lui-même. Rien n'est enregistré : on compare le total de l'année avant et après cette facture.
+    """Appelé à chaque nouvelle facture de vente : une notification et un mail (accord de Raphael du 17/10/2026) si elle
+    fait passer 80 % du seuil, ou le seuil lui-même. Rien n'est enregistré : on compare le total de l'année avant et après cette facture.
     Ex. 1 : seuil 37 500 € ; Karim passe de 29 800 € à 30 050 € → « Vous approchez du seuil de TVA ».
     Ex. 2 : il passe de 37 400 € à 37 600 € → « Seuil de TVA dépassé ». Pas de barre pour qui facture déjà la TVA."""
     if prestataire.facture_tva or facture.sorte != "vente":
@@ -161,12 +161,18 @@ def prevenir_seuil_tva(db: Session, prestataire: Prestataire, facture: Facture, 
     seuil = reglages.SEUIL_TVA_SERVICES_CENTIMES
     alerte = seuil * reglages.SEUIL_TVA_PREVENIR_POUR_CENT // 100
     if avant < seuil <= apres:
-        notifications.prevenir(
-            db, prestataire.compte_id, "Seuil de TVA dépassé",
-            f"Vous avez encaissé {paiements.euros(apres)} en {annee}, plus que le seuil de TVA ({paiements.euros(seuil)}) : "
-            "parlez-en à votre comptable ou à votre service des impôts.", "/mon-activite", maintenant)
+        titre = "Seuil de TVA dépassé"
+        texte = (f"Vous avez encaissé {paiements.euros(apres)} en {annee}, plus que le seuil de TVA ({paiements.euros(seuil)}) : "
+                 "parlez-en à votre comptable ou à votre service des impôts.")
     elif avant < alerte <= apres:
-        notifications.prevenir(
-            db, prestataire.compte_id, "Vous approchez du seuil de TVA",
-            f"Vous avez encaissé {paiements.euros(apres)} en {annee} : {reglages.SEUIL_TVA_PREVENIR_POUR_CENT} % du seuil de TVA "
-            f"({paiements.euros(seuil)}). Il vous reste {paiements.euros(seuil - apres)}.", "/mon-activite", maintenant)
+        titre = "Vous approchez du seuil de TVA"
+        texte = (f"Vous avez encaissé {paiements.euros(apres)} en {annee} : {reglages.SEUIL_TVA_PREVENIR_POUR_CENT} % du seuil de "
+                 f"TVA ({paiements.euros(seuil)}). Il vous reste {paiements.euros(seuil - apres)}.")
+    else:
+        return
+    notifications.prevenir(db, prestataire.compte_id, titre, texte, "/mon-activite", maintenant)
+    compte = db.get_one(Compte, prestataire.compte_id)
+    if compte.ferme_le is None:
+        mails.envoyer_mail(compte.email, f"rafals : {titre[0].lower()}{titre[1:]}",
+                           f"{texte}\n\nLe détail est dans « Mon activité », sous « Encaissé en {annee} ». "
+                           "rafals ne change rien tout seul : c'est vous qui cochez « Je facture la TVA » le moment venu.")

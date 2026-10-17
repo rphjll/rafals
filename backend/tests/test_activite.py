@@ -179,9 +179,11 @@ def test_profil_d_un_client_avec_devis(paul, dupont, envoye) -> None:  # noqa: F
     assert avec_devis["les_devis"][0]["numero"].startswith("D-")
 
 
-def test_notification_a_80_pour_cent_puis_au_dela_du_seuil(lea, dupont, base: Session, notifications_envoyees, monkeypatch) -> None:  # noqa: F811
+def test_notification_a_80_pour_cent_puis_au_dela_du_seuil(lea, dupont, base: Session, notifications_envoyees, mails_envoyes,  # noqa: F811
+                                                            monkeypatch) -> None:
     """Demande de Raphael du 17/10/2026 : une notification quand la barre de la TVA passe 80 %, puis quand elle est
-    dépassée. Seuil d'essai de 120,00 € : 80 % = 96,00 € ; trois rendez-vous de 50,00 € payés en espèces."""
+    dépassée, avec le même texte par mail (accord du 17/10/2026). Seuil d'essai de 120,00 € : 80 % = 96,00 € ;
+    trois rendez-vous de 50,00 € payés en espèces."""
     from tests.test_notifications import activer
 
     monkeypatch.setattr(reglages, "SEUIL_TVA_SERVICES_CENTIMES", 12000)
@@ -200,3 +202,5 @@ def test_notification_a_80_pour_cent_puis_au_dela_du_seuil(lea, dupont, base: Se
     assert payer(2) == ["Vous approchez du seuil de TVA", "Seuil de TVA dépassé"]  # 150,00 €
     approche = next(n for n in notifications_envoyees.envoyees if n["titre"] == "Vous approchez du seuil de TVA")
     assert "80 % du seuil de TVA (120,00 €). Il vous reste 20,00 €." in approche["texte"] and approche["lien"] == "/mon-activite"
+    sujets = [m["sujet"] for m in mails_envoyes if m["a"] == lea.email and "TVA" in m["sujet"]]
+    assert sujets == ["rafals : vous approchez du seuil de TVA", "rafals : seuil de TVA dépassé"]

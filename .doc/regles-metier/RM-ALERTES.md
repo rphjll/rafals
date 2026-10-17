@@ -34,7 +34,7 @@ Raphael, mot pour mot : « enleve l'onglet notification ». Il n'y a donc **pas 
 | Le prestataire accepte ou refuse ce prix | Client | oui | oui | oui |
 | La demande a été pourvue par un autre | Prestataires qui avaient répondu | oui | non | non |
 | Ma demande se ferme dans 3 jours | Client | oui | non | oui |
-| La barre de la TVA passe 80 %, puis le seuil (17/10/2026, `RM-MON-ACTIVITE.md`) | Prestataire qui ne facture pas la TVA | non | oui | non |
+| La barre de la TVA passe 80 %, puis le seuil (17/10/2026, `RM-MON-ACTIVITE.md`) | Prestataire qui ne facture pas la TVA | non | oui | oui |
 Les mails qui existent déjà (rendez-vous confirmé, annulé, rappel, avis…) ne changent pas.
 
 ## Réglages du prestataire : onglet « Alertes » (choix de Claude, réécrit le 04/10/2026)
