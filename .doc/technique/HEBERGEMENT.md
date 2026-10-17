@@ -68,4 +68,5 @@ Sur le PC, les mails vont dans Mailpit (rien ne part). En ligne, rafals les enve
 - Avant : acheter le nom de domaine, puis le faire vérifier par Brevo (ajouter les lignes SPF et DKIM qu'il donne chez OVH), sinon les mails tombent dans les spams.
 - Jamais sur un PC d'essai : de vrais mails partiraient, y compris vers les comptes de test.
 - Portabilité : changer de service (Mailjet, OVH…) = changer ces 4 réglages, sans toucher au code.
+- **Essai réussi le 17/10/2026** : un mail envoyé par Brevo (compte de Raphael, liaison chiffrée sur le port 587) de raphael.jallu@gmail.com vers la même adresse, bien reçu. L'identifiant et la clé SMTP sont rangés dans le `.env` du PC sous `BREVO_ESSAI_UTILISATEUR` et `BREVO_ESSAI_CLE` (lus par aucune partie du site) ; à la mise en ligne, les recopier dans `SMTP_UTILISATEUR` et `SMTP_MOT_DE_PASSE` du serveur. Tant que l'expéditeur est une adresse Gmail, les mails peuvent arriver en « Spam » : normal avant la vérification du domaine.
 
