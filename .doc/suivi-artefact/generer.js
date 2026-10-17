@@ -26,7 +26,7 @@ const HORS_LOT = [
   { lot: '—', titre: 'Nouvelle présentation du site (style chaleureux)', type: 'Écrans', desc: 'Demande du 04/10/2026. Plusieurs étapes faites, à vérifier à l\'écran par Raphael.', etat: 'verifier' },
   { lot: '—', titre: 'Notifications de la barre de TVA', type: 'Serveur', desc: 'Demande du 17/10/2026 : une notification et un mail à 80 % du seuil de TVA, puis quand il est dépassé.', etat: 'verifier' },
   { lot: '—', titre: 'Adresse du compte et cadenas sans SIRET', type: 'Serveur + Écrans', desc: 'Demandes du 15/10/2026 : demandes près de l\'adresse du compte, bouton [Ajouter votre adresse], cadenas sur ce qu\'un prestataire sans SIRET ne peut pas faire.', etat: 'verifier' },
-  { lot: '—', titre: 'Retrait des annonces', type: 'Serveur + Écrans', desc: 'Décision du 04/10/2026. Lots 9.1 à 9.3 faits (à vérifier) ; reste le lot 9.4 : supprimer les tables des annonces, avec l\'accord de Raphael.', etat: 'cours' },
+  { lot: '—', titre: 'Retrait des annonces', type: 'Serveur + Écrans', desc: 'Décision du 04/10/2026. Lots 9.1 à 9.4 faits le 17/10/2026 : tables des annonces supprimées. À vérifier par Raphael.', etat: 'verifier' },
 ]
 const ETATS = { faire: 'À faire', cours: 'En cours', verifier: 'À vérifier', fait: 'Fait' }
 

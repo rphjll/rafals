@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.modeles.appareils import Appareil
 from app.modeles.comptes import Compte
 from tests.fiches.outils import relire_et_comparer, valeurs
-from tests.fiches.test_fiche_annonce import _supprimer
+from tests.fiches.test_fiche_local import _supprimer
 
 
 def test_fiche_appareil(base: Session) -> None:

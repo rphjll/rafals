@@ -1,4 +1,4 @@
-"""Miroir exact de la table rendez_vous (db/schema_v9.sql, v10, v15, v23). Aucun calcul ici."""
+"""Miroir exact de la table rendez_vous (db/schema_v9.sql, v10, v15, v23, v29). Aucun calcul ici."""
 
 from datetime import datetime
 
@@ -14,8 +14,7 @@ class RendezVous(Base):
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     client_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("compte.id"))
     prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
-    annonce_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("annonce.id"))  # facultatif depuis schema_v23
-    proposition_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("proposition.id"))  # schema_v23
+    proposition_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("proposition.id"))  # obligatoire depuis schema_v29
     metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))  # schema_v23
     commune_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("commune.id"))
     remplace_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("rendez_vous.id"))

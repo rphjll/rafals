@@ -97,4 +97,4 @@ Cases à cocher au-dessus des résultats ; chacune cache ceux qui ne conviennent
 - (aucune)
 
 ## Références
-- `RM-PRESTATAIRES.md`, `RM-METIERS.md`, `RM-ANNONCES.md`, `RM-AVIS.md` (à écrire)
+- `RM-PRESTATAIRES.md`, `RM-METIERS.md`, `archives/RM-ANNONCES.md`, `RM-AVIS.md` (à écrire)

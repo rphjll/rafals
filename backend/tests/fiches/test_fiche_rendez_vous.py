@@ -1,4 +1,4 @@
-"""Test de fiche du lot 4.3 : rendez-vous (client, prestataire, annonce, commune), puis fiche liée : un rendez-vous
+"""Test de fiche du lot 4.3 : rendez-vous (client, prestataire, proposition, commune), puis fiche liée : un rendez-vous
 qui en remplace un autre (déplacement). Suppression du rendez-vous remplacé refusée tant que le lien existe."""
 
 from datetime import UTC, datetime, timedelta
@@ -8,27 +8,21 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.modeles.annonces import Annonce
 from app.modeles.comptes import Compte
 from app.modeles.prestataires import Commune
 from app.modeles.rendez_vous import RendezVous
 from tests.fiches.outils import relire_et_comparer, valeurs
-from tests.fiches.test_fiche_annonce import _supprimer, decor  # noqa: F401 (le décor est une fixture)
+from tests.fiches.test_fiche_local import _supprimer, decor, effacer_proposition_d_essai, proposition_d_essai  # noqa: F401 (le décor est une fixture)
 
 LE_14 = datetime(2027, 10, 14, 8, 0, tzinfo=UTC)
 
 
 def test_fiche_rendez_vous(base: Session, decor) -> None:  # noqa: F811
     compte, prestataire, (plombier, _), _ = decor
-    annonce = Annonce(**valeurs(Annonce, 1, {
-        "prestataire_id": prestataire.id, "metier_id": plombier.id, "forme_prix": "fixe", "prix_centimes": 5000,
-        "duree_minutes": 60, "heures_min": None, "heures_max": None, "lieu": "chez_client", "paiement_especes": True,
-        "statut": "en_ligne"}))
-    base.add(annonce)
-    base.commit()
+    proposition = proposition_d_essai(base, compte, prestataire, plombier)
     talence = base.scalar(select(Commune).where(Commune.code_insee == "33522"))
-    liens = {"client_id": compte.id, "prestataire_id": prestataire.id, "annonce_id": annonce.id, "metier_id": plombier.id,
-             "proposition_id": None, "remplace_id": None}
+    liens = {"client_id": compte.id, "prestataire_id": prestataire.id, "metier_id": plombier.id,
+             "proposition_id": proposition.id, "remplace_id": None}
     # Valeurs imposées par les contraintes : fin après début, listes de valeurs, adresse complète, attente limitée
     imposees = [
         {**liens, "commune_id": talence.id, "code_postal": "33400", "debut": LE_14, "fin": LE_14 + timedelta(hours=1),
@@ -54,7 +48,8 @@ def test_fiche_rendez_vous(base: Session, decor) -> None:  # noqa: F811
     relire_et_comparer(base, RendezVous, rdv.id, modification)
 
     # Fiche liée : le rendez-vous qui le remplace (déplacement)
-    nouveau = RendezVous(**valeurs(RendezVous, 2, {**imposees[1], "remplace_id": rdv.id}))
+    autre = proposition_d_essai(base, compte, prestataire, plombier, proposition.conversation_id)
+    nouveau = RendezVous(**valeurs(RendezVous, 2, {**imposees[1], "proposition_id": autre.id, "remplace_id": rdv.id}))
     base.add(nouveau)
     base.commit()
     base.delete(base.get_one(RendezVous, rdv.id))
@@ -62,6 +57,7 @@ def test_fiche_rendez_vous(base: Session, decor) -> None:  # noqa: F811
         base.commit()
     base.rollback()
 
-    for modele, identifiant in ((RendezVous, nouveau.id), (RendezVous, rdv.id), (Annonce, annonce.id)):
+    for modele, identifiant in ((RendezVous, nouveau.id), (RendezVous, rdv.id)):
         _supprimer(base, modele, identifiant)
+    effacer_proposition_d_essai(base, autre, proposition)
     assert base.get(Compte, compte.id) is not None

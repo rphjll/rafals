@@ -385,7 +385,7 @@ def retirer_photo_travail(db: Session, prestataire: Prestataire, ordre: int, mai
     )
 
 
-# ---------- Date de fin d'un métier (RM-ANNONCES) ----------
+# ---------- Date de fin d'un métier (RM-PRESTATAIRES § « Arrêter un métier ») ----------
 
 
 def _texte(etat: dict) -> dict:

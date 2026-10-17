@@ -12,7 +12,7 @@ Pour chaque point : respecté, ou pourquoi il ne s'applique pas.
 - [ ] Chaque route vérifie qui est connecté.
 - [ ] Chaque action sensible vérifie le rôle (client, prestataire, administrateur).
 - [ ] Chaque modification importante est inscrite au journal des actions (qui, quoi, quand, avant/après).
-- [ ] Un prestataire ne voit que ses propres annonces, rendez-vous, clients et factures ; un client ne voit que les siens.
+- [ ] Un prestataire ne voit que ses propres propositions, rendez-vous, clients et factures ; un client ne voit que les siens (annonces supprimées au lot 9.4).
 
 ## 3. Données
 - [ ] Les valeurs contractuelles (prix, commission, nom et SIRET du prestataire, nom et adresse du client) sont figées au moment où elles engagent.

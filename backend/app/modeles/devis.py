@@ -1,4 +1,4 @@
-"""Miroir exact des tables demande_devis, photo_demande, devis, ligne_devis (db/schema_v13.sql, v25). Aucun calcul ici."""
+"""Miroir exact des tables demande_devis, photo_demande, devis, ligne_devis (db/schema_v13.sql, v25, v29). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -13,7 +13,6 @@ class DemandeDevis(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     client_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("compte.id"))
-    annonce_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("annonce.id"))
     prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
     metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
     demande_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("demande.id"))

@@ -170,7 +170,7 @@ def demander(db: Session, client: Compte, prestataire_id: int, metier_id: int, t
     if prestataire.lieu == "chez_client" and adresse is None:
         raise ErreurRegle("Indiquez d'abord votre adresse : le prestataire vient chez vous.", 400)
     demande = DemandeDevis(
-        client_id=client.id, annonce_id=None, prestataire_id=prestataire.id, metier_id=metier_id, texte=texte,
+        client_id=client.id, prestataire_id=prestataire.id, metier_id=metier_id, texte=texte,
         statut="envoyee",
         commune_id=adresse.commune_id if adresse else None, adresse_ligne=adresse.ligne if adresse else None,
         adresse_complement=adresse.complement if adresse else None, code_postal=adresse.code_postal if adresse else None,

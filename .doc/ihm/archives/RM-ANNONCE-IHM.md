@@ -1,3 +1,5 @@
+> 🗄️ **Archivé le 17/10/2026 (lot 9.4)** : les tables des annonces sont supprimées (`db/schema_v29.sql`). Ce fichier n'est plus appliqué ; il est gardé pour l'historique des décisions.
+
 # Une annonce (vue par un client) — Interface
 
 > ⚠️ **Écran supprimé le 09/10/2026** (lot 9.3, retrait des annonces) : la page d'une annonce et la fenêtre de réservation n'existent plus. Le bouton [Demander un devis] est maintenant sur la page publique d'un prestataire (`RM-PRESTATAIRE-PUBLIC-IHM.md`). Document gardé pour mémoire jusqu'au lot 9.4.

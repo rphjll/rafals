@@ -135,7 +135,7 @@ Quand un prestataire écrit son SIRET, rafals le cherche aussitôt dans le répe
 **Cas limite tranché :** si le répertoire de l'État ne répond pas (panne), le SIRET est mis « en attente » et revérifié automatiquement plus tard ; en attendant, espèces seulement.
 
 ## Lieu du service : au choix, pour chaque annonce (décidé le 27/09/2026 ; remplacé le 04/10/2026 par un seul lieu dans le profil, voir « Sans annonces »)
-Pour chaque annonce, le prestataire indique où a lieu le service : « chez le client », « chez moi / dans mon local » (adresse du local écrite une fois dans le profil, voir `RM-ANNONCES.md`), ou « les deux ».
+Pour chaque annonce, le prestataire indique où a lieu le service : « chez le client », « chez moi / dans mon local » (adresse du local écrite une fois dans le profil, voir `archives/RM-ANNONCES.md`), ou « les deux ».
 - Exemple 1 : Karim, « Plomberie, dépannage fuite » → chez le client (la zone d'intervention s'applique).
 - Exemple 2 : Léa, coiffeuse à Mérignac : « Coupe femme — au salon, 12 rue des Lilas » et « Coupe à domicile — chez le client, +10 € ».
 **Cas limite tranché :** pour un service « chez moi », la zone d'intervention sert seulement à la recherche (les clients dans le rayon voient l'annonce) ; le client se déplace.
@@ -209,3 +209,18 @@ Raphael : « c pareil qu'une auto entreprise sauf que les boutons qui ne peut pa
 
 - Exemple 1 : Emma, 19 ans, promène des chiens sans SIRET → elle répond à « Promener mon chien » ; dans sa proposition, la case « 🔒 Carte sur rafals » est grisée, seule « Espèces » est possible.
 - Exemple 2 : Marie ouvre la page d'Emma → [🔒 Demander un devis] ; un clic : « Ce prestataire n'a pas de SIRET vérifié : il ne fait pas de devis. Écrivez-lui pour vous mettre d'accord. »
+
+## Repris de RM-ANNONCES.md, archivé au lot 9.4 (17/10/2026)
+Ces deux décisions restent valables sans les annonces ; le texte d'origine est dans `archives/RM-ANNONCES.md`.
+
+### La rue de l'adresse où il reçoit : seulement après un rendez-vous (décidé le 29/09/2026)
+- Tout le monde voit la ville (ex. « Mérignac ») ; le client voit la rue (« 12 rue des Lilas ») seulement après un rendez-vous, comme le téléphone du prestataire. Une seule adresse, celle du compte (§ « Une seule adresse »).
+- Exemple : Léa reçoit au salon. Avant un rendez-vous, Mme Dupont voit « Mérignac » ; après, « 12 rue des Lilas, 33700 Mérignac ».
+**Pourquoi :** protège un prestataire qui reçoit chez lui, et évite qu'on contourne rafals.
+
+### Arrêter un métier : une date de fin, pas un bouton « supprimer » (décidé le 29/09/2026)
+Réponse de Raphael, mot pour mot : « au lieux d'un bouton suprimer ce metier je veux que dans le calendrier il puisse choisir une date de cloturations donc si il dis demain par exemple toute les reservations apres seront annulés et il n'execrcera plus ce metier mais si il veut reprendre faut quand meme faire en sorte qu'il puisse ».
+- Le prestataire choisit une **date de fin** pour un de ses métiers ; les rendez-vous de ce métier **après** cette date sont annulés ; après cette date, le métier sort de son profil. Pour reprendre, il le remet dans ses métiers.
+- Exemple : le 01/11, Karim met la date de fin « 15/11 » sur Chauffagiste. Le rendez-vous « Entretien chaudière » de Mme Dupont le 10/11 reste ; celui de M. Petit le 20/11 est annulé.
+- **Métier principal arrêté : un métier secondaire devient principal automatiquement.** Ex. Karim (principal Plombier, secondaire Chauffagiste) met la date de fin « 15/11 » sur Plombier → « Après le 15/11, Chauffagiste deviendra votre métier principal » ; le 16/11, c'est fait. S'il a plusieurs métiers secondaires, il choisit lequel, le 1er ajouté étant proposé.
+- **Seul métier arrêté : le profil reste affiché**, ni en pause ni arrêté ; il n'apparaît plus dans les recherches de ce métier.

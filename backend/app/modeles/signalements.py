@@ -1,4 +1,4 @@
-"""Miroir exact des tables signalement et rappel_declaration (db/schema_v17.sql). Aucun calcul ici."""
+"""Miroir exact des tables signalement et rappel_declaration (db/schema_v17.sql, v29). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -14,7 +14,6 @@ class Signalement(Base):
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     auteur_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("compte.id"))
     prestataire_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("prestataire.id"))  # facultatif depuis schema_v21
-    annonce_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("annonce.id"))
     conversation_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("conversation.id"))  # schema_v21
     demande_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("demande.id"))  # schema_v27
     traite_par_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("compte.id"))

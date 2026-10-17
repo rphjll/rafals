@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.modeles.prestataires import Prestataire
 from app.modeles.urssaf import DeclarationUrssaf, MandatUrssaf
 from tests.fiches.outils import relire_et_comparer, valeurs
-from tests.fiches.test_fiche_annonce import _supprimer, decor  # noqa: F401 (le décor est une fixture)
+from tests.fiches.test_fiche_local import _supprimer, decor  # noqa: F401 (le décor est une fixture)
 
 
 def test_fiche_mandat_et_declaration_urssaf(base: Session, decor) -> None:  # noqa: F811

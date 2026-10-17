@@ -54,12 +54,12 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
     <h1>Suivi de rafals<i>.</i></h1>
     <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 17/10/2026. 67 lots, du niveau 0 au niveau 11, et 5 tâches hors lot.</p>
   </div>
-  <div class="barre" role="img" aria-label="46 faits, 19 à vérifier, 2 en cours, 5 à faire">
-    <span class="fait" style="width:63.888888888888886%"></span><span class="verifier" style="width:26.38888888888889%"></span><span class="cours" style="width:2.7777777777777777%"></span><span class="faire" style="width:6.944444444444445%"></span>
+  <div class="barre" role="img" aria-label="46 faits, 21 à vérifier, 1 en cours, 4 à faire">
+    <span class="fait" style="width:63.888888888888886%"></span><span class="verifier" style="width:29.166666666666668%"></span><span class="cours" style="width:1.3888888888888888%"></span><span class="faire" style="width:5.555555555555555%"></span>
   </div>
   <div class="filtres" role="group" aria-label="Montrer seulement un état">
     <button type="button" data-f="tout" aria-pressed="true">Tout <b>72</b></button>
-    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>5</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>2</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>19</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>46</b></button>
+    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>4</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>1</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>21</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>46</b></button>
   </div>
   <p class="doux" id="vide" hidden>Aucun lot dans cet état.</p>
   <section><header><h2><span>Hors lot</span>Travail en cours</h2></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="cours">
@@ -78,10 +78,10 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
   <td class="lot">—</td>
   <td><span class="titre">Adresse du compte et cadenas sans SIRET</span><span class="type">Serveur + Écrans</span><p>Demandes du 15/10/2026 : demandes près de l'adresse du compte, bouton [Ajouter votre adresse], cadenas sur ce qu'un prestataire sans SIRET ne peut pas faire.</p></td>
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
-</tr><tr data-etat="cours">
+</tr><tr data-etat="verifier">
   <td class="lot">—</td>
-  <td><span class="titre">Retrait des annonces</span><span class="type">Serveur + Écrans</span><p>Décision du 04/10/2026. Lots 9.1 à 9.3 faits (à vérifier) ; reste le lot 9.4 : supprimer les tables des annonces, avec l'accord de Raphael.</p></td>
-  <td class="etat"><span class="badge cours">En cours</span></td>
+  <td><span class="titre">Retrait des annonces</span><span class="type">Serveur + Écrans</span><p>Décision du 04/10/2026. Lots 9.1 à 9.4 faits le 17/10/2026 : tables des annonces supprimées. À vérifier par Raphael.</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr></tbody></table></div></section>
   <section><header><h2><span>Niveau 0</span>Amorçage</h2><span class="avance">4 faits sur 4</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
   <td class="lot">0.1</td>
@@ -328,10 +328,10 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
   <td class="lot">9.3</td>
   <td><span class="titre">Écrans sans annonces</span><span class="type">Écrans</span><p><b>Fait le 09/10/2026 par une autre conversation, qui s'est arrêtée sans le noter ni sauvegarder ; types vérifiés le 12/10/2026, pas regardé à l'écran.</b> « Mon activité » (photos, lieu) ; page publique ([Écrire à Karim], [Demander un devis]) ; carte de résultat ; retrait de « Mes annonces », du formulaire et de la page d'annonce, de la fenêtre de réservation ; fichiers <code>RM-*-IHM.md</code> ; l'écran « Mon agenda » ne change pas</p></td>
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
-</tr><tr data-etat="faire">
+</tr><tr data-etat="verifier">
   <td class="lot">9.4</td>
-  <td><span class="titre">Retrait des annonces : suppressions dans la base</span><span class="type">Serveur + Règles</span><p>2e fichier SQL, <b>suppressions</b> (tables ANNONCE et PHOTO_ANNONCE, <code>annonce_id</code> dans RENDEZ_VOUS, DEMANDE_DEVIS et SIGNALEMENT, <code>confirmation_automatique</code>), après comptage et accord de Raphael ; <code>RM-ANNONCES.md</code> rangé aux archives, ses deux parties encore valables recopiées</p></td>
-  <td class="etat"><span class="badge faire">À faire</span></td>
+  <td><span class="titre">Retrait des annonces : suppressions dans la base</span><span class="type">Serveur + Règles</span><p>2e fichier SQL, <b>suppressions</b> (tables ANNONCE et PHOTO_ANNONCE, <code>annonce_id</code> dans RENDEZ_VOUS, DEMANDE_DEVIS et SIGNALEMENT, <code>confirmation_automatique</code>), après comptage et accord de Raphael ; <code>RM-ANNONCES.md</code> rangé aux archives, ses deux parties encore valables recopiées. <b>Fait le 17/10/2026</b>, sauf <code>confirmation_automatique</code>, laissée : elle sert encore au réglage de « Mon agenda », qui ne se touche que sur demande de Raphael</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr></tbody></table></div></section>
   <section><header><h2><span>Niveau 10</span>Faire ce que fait AlloVoisins</h2><span class="avance">0 fait sur 5</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="verifier">
   <td class="lot">10.1</td>

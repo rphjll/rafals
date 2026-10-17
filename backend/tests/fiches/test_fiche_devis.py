@@ -8,28 +8,17 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.modeles.agenda import Blocage
-from app.modeles.annonces import Annonce
 from app.modeles.devis import DemandeDevis, Devis, LigneDevis, PhotoDemande
 from app.modeles.fichiers import Fichier
 from tests.fiches.outils import relire_et_comparer, valeurs
-from tests.fiches.test_fiche_annonce import _supprimer, decor  # noqa: F401 (le décor est une fixture)
+from tests.fiches.test_fiche_local import _supprimer, decor  # noqa: F401 (le décor est une fixture)
 
 LE_14 = date(2027, 10, 14)
 
 
-def _annonce(base: Session, prestataire, plombier) -> Annonce:
-    annonce = Annonce(**valeurs(Annonce, 1, {
-        "prestataire_id": prestataire.id, "metier_id": plombier.id, "forme_prix": "devis", "prix_centimes": None,
-        "duree_minutes": None, "heures_min": None, "heures_max": None, "lieu": "chez_client", "paiement_especes": True,
-        "statut": "en_ligne"}))
-    base.add(annonce)
-    base.commit()
-    return annonce
-
-
-def _demande(base: Session, compte, prestataire, annonce, commune_id: int) -> DemandeDevis:
+def _demande(base: Session, compte, prestataire, plombier, commune_id: int) -> DemandeDevis:
     demande = DemandeDevis(**valeurs(DemandeDevis, 1, {
-        "client_id": compte.id, "annonce_id": annonce.id, "prestataire_id": prestataire.id, "metier_id": annonce.metier_id,
+        "client_id": compte.id, "prestataire_id": prestataire.id, "metier_id": plombier.id,
         "demande_id": None, "commune_id": commune_id,
         "code_postal": "33600", "texte": "Muret de 5 mètres au fond du jardin", "statut": "envoyee"}))
     base.add(demande)
@@ -39,8 +28,7 @@ def _demande(base: Session, compte, prestataire, annonce, commune_id: int) -> De
 
 def test_fiche_demande_devis_et_photo(base: Session, decor) -> None:  # noqa: F811
     compte, prestataire, (plombier, _), (pessac, talence) = decor
-    annonce = _annonce(base, prestataire, plombier)
-    liens = {"client_id": compte.id, "annonce_id": annonce.id, "prestataire_id": prestataire.id, "metier_id": plombier.id,
+    liens = {"client_id": compte.id, "prestataire_id": prestataire.id, "metier_id": plombier.id,
              "demande_id": None}
     # Valeurs imposées : liste des statuts, longueur du texte, adresse complète
     ajout = valeurs(DemandeDevis, 1, {**liens, "commune_id": pessac.id, "code_postal": "33600", "statut": "envoyee",
@@ -80,14 +68,13 @@ def test_fiche_demande_devis_et_photo(base: Session, decor) -> None:  # noqa: F8
         base.commit()
     base.rollback()
     _supprimer(base, PhotoDemande, photo.id)
-    for modele, identifiant in ((DemandeDevis, demande.id), (Annonce, annonce.id), (Fichier, fichiers[0]), (Fichier, fichiers[1])):
+    for modele, identifiant in ((DemandeDevis, demande.id), (Fichier, fichiers[0]), (Fichier, fichiers[1])):
         _supprimer(base, modele, identifiant)
 
 
 def test_fiche_devis_et_ligne(base: Session, decor) -> None:  # noqa: F811
     compte, prestataire, (plombier, _), (pessac, _) = decor
-    annonce = _annonce(base, prestataire, plombier)
-    demande = _demande(base, compte, prestataire, annonce, pessac.id)
+    demande = _demande(base, compte, prestataire, plombier, pessac.id)
     blocage = Blocage(prestataire_id=prestataire.id, metier_id=plombier.id, debut=datetime(2027, 10, 14, tzinfo=UTC),
                       fin=datetime(2027, 10, 16, tzinfo=UTC), motif="Travaux D-2027-0001")
     base.add(blocage)
@@ -130,6 +117,5 @@ def test_fiche_devis_et_ligne(base: Session, decor) -> None:  # noqa: F811
     with pytest.raises(IntegrityError):
         base.commit()
     base.rollback()
-    for modele, identifiant in ((LigneDevis, ligne.id), (Devis, devis.id), (Blocage, blocage.id), (DemandeDevis, demande.id),
-                                (Annonce, annonce.id)):
+    for modele, identifiant in ((LigneDevis, ligne.id), (Devis, devis.id), (Blocage, blocage.id), (DemandeDevis, demande.id)):
         _supprimer(base, modele, identifiant)

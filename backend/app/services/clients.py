@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.agenda import Blocage, Ouverture, PlageHoraire
-from app.modeles.annonces import Local
+from app.modeles.locaux import Local
 from app.modeles.avis import Avis
 from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte, SessionConnexion

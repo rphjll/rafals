@@ -1,6 +1,6 @@
 # Devis — Règles métier (sujet 10)
 
-> Rédigé au lot 5.0, à partir des réponses de Raphael. En cours d'écriture. Point de départ : `RM-ANNONCES.md` § « Sur devis » (le client envoie une demande écrite, avec photos, et le prestataire répond par un devis).
+> Rédigé au lot 5.0, à partir des réponses de Raphael. En cours d'écriture. Point de départ : `archives/RM-ANNONCES.md` § « Sur devis » (le client envoie une demande écrite, avec photos, et le prestataire répond par un devis).
 
 ## Sans annonces (décision de Raphael du 04/10/2026 ; porte d'entrée « profil » construite le 09/10/2026, lot 9.2)
 Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Après les lots 8.3 et 8.4, seule la **porte d'entrée** du devis change (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
@@ -74,7 +74,7 @@ Réponses de Raphael, mot pour mot : « dans le calendrié de reservation », pu
   - Exemple sur le bouton : [Accepter et payer 360 € d'arrhes].
 
 ## Le parcours d'un devis (résumé des choix ci-dessus)
-1. Le client envoie une **demande écrite** depuis une annonce « sur devis » (texte, photos) — `RM-ANNONCES.md`.
+1. Le client envoie une **demande écrite** depuis une annonce « sur devis » (texte, photos) — `archives/RM-ANNONCES.md`.
 2. Le prestataire répond par un **devis** : lignes, TVA, arrhes en %, dates des travaux, « Valable jusqu'au ». Numéros par prestataire : D-2026-0001, D-2026-0002…
 3. Le client **accepte** (et paie les arrhes s'il paie par carte), **refuse**, ou **demande une autre date**.
 4. Le prestataire clique **[Travail terminé]** → le client paie le solde (ou le prestataire clique [Payé] s'il a été payé en direct).

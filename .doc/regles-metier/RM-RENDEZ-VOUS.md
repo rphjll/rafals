@@ -25,7 +25,7 @@ Réserver un horaire, le confirmer, l'annuler, et ce qui se passe si quelqu'un n
 ## Déjà décidé (sujets 03, 05, 06)
 - Réserver demande une **adresse mail vérifiée** (et l'accord des parents avant 18 ans) : `RM-COMPTES.md`.
 - On réserve une **annonce** à prix fixe ou à l'heure, sur un **horaire libre** de l'agenda (`RM-AGENDA.md`) ; « sur devis » = demande écrite, pas de rendez-vous.
-- Le **titre, le prix et la durée** sont recopiés sur le rendez-vous au moment de la réservation (`RM-ANNONCES.md`).
+- Le **titre, le prix et la durée** sont recopiés sur le rendez-vous au moment de la réservation (`archives/RM-ANNONCES.md`).
 - « Chez le client » : l'adresse est demandée à la réservation, puis gardée (`RM-CLIENTS.md`).
 - Après réservation, le client voit le **téléphone** du prestataire et la **rue du local** ; le prestataire voit ceux du client jusqu'à 3 mois après le dernier rendez-vous (`RM-CLIENTS.md`).
 - Toute annulation par le prestataire (blocage, changement d'horaires, date de fin d'un métier, blocage par l'administrateur) : client prévenu par mail et **remboursé** s'il a payé en ligne (`RM-AGENDA.md`, `RM-PRESTATAIRES.md`).
@@ -117,4 +117,4 @@ Le prestataire peut annuler un rendez-vous à tout moment, avec un **motif oblig
 - (aucune)
 
 ## Références
-- `RM-AGENDA.md`, `RM-ANNONCES.md`, `RM-CLIENTS.md`, `RM-COMPTES.md`, `RM-PRESTATAIRES.md`
+- `RM-AGENDA.md`, `archives/RM-ANNONCES.md`, `RM-CLIENTS.md`, `RM-COMPTES.md`, `RM-PRESTATAIRES.md`

@@ -25,8 +25,8 @@ Quand un prestataire travaille, et donc quels horaires un client peut réserver.
 - **Un calendrier par métier** (décidé par Raphael le 03/10/2026 ; remplace « un seul agenda par prestataire » du 29/09/2026). Réponse de Raphael, mot pour mot : « y'aura un agenda par metier […] si le prestataire a plusieurs métiers il a le nombre de calendriers correspondant au metiers ». Chaque métier a sa semaine type, ses fermetures, ses ouvertures et sa date d'arrêt ; les réglages (pas, pause, délais, confirmation) restent les mêmes pour tous les métiers.
   - Exemple 1 : Léa coiffe du mardi au samedi et maquille le samedi après-midi et le dimanche : 2 calendriers.
   - Exemple 2 : Karim (un seul métier, plombier) a un seul calendrier, sans choix à l'écran.
-- Chaque annonce à prix fixe ou à l'heure a une **durée** qui bloque l'agenda ; « sur devis » n'utilise pas l'agenda (`RM-ANNONCES.md`).
-- **Arrêter un métier** se fait par une **date d'arrêt** dans son calendrier (`RM-ANNONCES.md`) : bouton [Date d'arrêt], un seul jour (le dernier jour de travail) ; tous les jours d'après sont fermés dans ce calendrier (décidé le 03/10/2026 ; ce bouton n'est plus dans « Mon activité »).
+- Chaque annonce à prix fixe ou à l'heure a une **durée** qui bloque l'agenda ; « sur devis » n'utilise pas l'agenda (`archives/RM-ANNONCES.md`).
+- **Arrêter un métier** se fait par une **date d'arrêt** dans son calendrier (`archives/RM-ANNONCES.md`) : bouton [Date d'arrêt], un seul jour (le dernier jour de travail) ; tous les jours d'après sont fermés dans ce calendrier (décidé le 03/10/2026 ; ce bouton n'est plus dans « Mon activité »).
 
 ## Une semaine type (décidé le 29/09/2026)
 Le prestataire remplit une fois ses horaires pour chaque jour de la semaine, avec plusieurs plages possibles par jour ; ils se répètent chaque semaine.
@@ -81,7 +81,7 @@ Si des rendez-vous déjà pris tombent en dehors des nouveaux horaires, rafals l
 - Exemple : Léa ne travaille plus le samedi ; M. Petit a réservé samedi 18/10 à 10 h → « 1 rendez-vous en dehors de vos nouveaux horaires : M. Petit, samedi 18/10 à 10 h ».
 
 ## Toute annulation par le prestataire : client prévenu et remboursé
-Qu'elle vienne d'un blocage, d'un changement d'horaires ou de la date de fin d'un métier (`RM-ANNONCES.md`), chaque rendez-vous annulé par le prestataire est signalé au client par mail, et remboursé en entier s'il avait payé en ligne (détail avec les sujets 08 Rendez-vous et 12 Paiements).
+Qu'elle vienne d'un blocage, d'un changement d'horaires ou de la date de fin d'un métier (`archives/RM-ANNONCES.md`), chaque rendez-vous annulé par le prestataire est signalé au client par mail, et remboursé en entier s'il avait payé en ligne (détail avec les sujets 08 Rendez-vous et 12 Paiements).
 
 ## Ce que voit le client
 Seulement les horaires libres, jamais les autres rendez-vous ni le nom des autres clients, ni la raison d'un blocage (appliqué d'office : règle des données personnelles, `RM-CLIENTS.md`).
@@ -100,7 +100,7 @@ Seulement les horaires libres, jamais les autres rendez-vous ni le nom des autre
 - **Un métier hors du profil** : son calendrier n'existe pas (refus).
 - **Jours de travaux d'un devis accepté** : fermeture posée dans le calendrier du métier de l'annonce du devis.
 - **Semaine type et ouverture collées** (ex. 9 h-12 h puis ouverture 12 h-14 h) : une seule période, un service peut passer de l'une à l'autre.
-- **Date d'arrêt** : les rendez-vous de ce métier pris après la date sont annulés d'office, clients prévenus (règle de `RM-ANNONCES.md`, inchangée : pas de choix « garder »).
+- **Date d'arrêt** : les rendez-vous de ce métier pris après la date sont annulés d'office, clients prévenus (règle de `archives/RM-ANNONCES.md`, inchangée : pas de choix « garder »).
 
 ## Qui peut faire quoi
 | Action | Qui | Condition |
@@ -116,4 +116,4 @@ Pas entre deux heures de début : 15 min · pause entre deux rendez-vous : 0 min
 - (aucune)
 
 ## Références
-- `GLOSSAIRE-METIER.md`, `RM-ANNONCES.md`, `RM-PRESTATAIRES.md`
+- `GLOSSAIRE-METIER.md`, `archives/RM-ANNONCES.md`, `RM-PRESTATAIRES.md`

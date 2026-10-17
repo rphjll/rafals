@@ -2,8 +2,9 @@
 et les chiffres de « Mon activité » avec des données (demande de Raphael du 07/10/2026).
 
 Tout passe par les adresses du serveur, comme si quatre personnes utilisaient le site : les règles sont respectées.
-Tout est marqué : les quatre comptes ont une adresse en @example.com, le prestataire s'appelle « ZZTEST … » et ses
-annonces aussi. Mot de passe des quatre comptes : 123. nettoyer-donnees-test.bat efface le tout.
+Tout est marqué : les quatre comptes ont une adresse en @example.com, le prestataire s'appelle « ZZTEST … ».
+Depuis le lot 9.4 (17/10/2026, plus d'annonces), un rendez-vous naît d'une proposition acceptée, comme sur le site.
+Mot de passe des quatre comptes : 123. nettoyer-donnees-test.bat efface le tout.
 
 Les seules écritures directes dans la base portent sur les lignes créées ici : adresse mail marquée « vérifiée »,
 mot de passe « 123 » (le site en exige 10 caractères), SIRET d'essai marqué « vérifié », et deux rendez-vous reculés
@@ -80,14 +81,9 @@ def main() -> None:
                                                 "commune_id": pessac, "distance_km": 15, "metiers_secondaires": []}))
     sql("UPDATE prestataire SET siret = '44306184100047', siret_statut = 'verifie' WHERE compte_id = :id", id=karim_id)
     ok(karim.post("/api/moi/agenda/semaine", json={"plages": [{"jour_semaine": j, "debut": "08:00", "fin": "20:00"} for j in range(1, 8)]}))
-    prise = ok(karim.post("/api/moi/annonces", json={
-        "metier_id": metier, "titre": "ZZTEST Pose d'une prise", "forme_prix": "fixe", "prix_centimes": 5000,
-        "duree_minutes": 60, "lieu": "chez_client", "paiement_especes": True}))["id"]
-    tableau = ok(karim.post("/api/moi/annonces", json={
-        "metier_id": metier, "titre": "ZZTEST Tableau électrique", "forme_prix": "devis", "prix_centimes": None,
-        "duree_minutes": None, "lieu": "chez_client", "paiement_especes": True}))["id"]
+    karim_prestataire = ok(karim.get("/api/moi/prestataire"))["id"]
 
-    # --- Les trois clients, avec leur adresse à Pessac (les annonces ont lieu chez le client)
+    # --- Les trois clients, avec leur adresse à Pessac (les rendez-vous ont lieu chez le client)
     comptes = {}
     for cle, (prenom, nom, email, telephone) in CLIENTS.items():
         client, _ = creer_compte(prenom, nom, email, telephone)
@@ -95,15 +91,18 @@ def main() -> None:
         comptes[cle] = client
 
     jour = datetime.now(PARIS).date() + timedelta(days=8)
-    libres = ok(visiteur.get(f"/api/annonces/{prise}/horaires", params={"jour": jour.isoformat()}))
-    print("Horaires libres lus :", str(libres)[:200])
 
     def reserver(client: TestClient, heure: int) -> int:
-        debut = datetime.combine(jour, time(heure), tzinfo=PARIS).isoformat()
-        return ok(client.post("/api/rendez-vous", json={"annonce_id": prise, "debut": debut}))["id"]
+        """Le client écrit à Karim, Karim propose « ZZTEST Pose d'une prise » à 50 €, le client accepte en espèces."""
+        conversation = ok(client.post("/api/conversations", json={"prestataire_id": karim_prestataire}))["id"]
+        proposition = ok(karim.post(f"/api/conversations/{conversation}/propositions", json={
+            "prix_centimes": 5000, "debut": datetime.combine(jour, time(heure), tzinfo=PARIS).isoformat(),
+            "duree_minutes": 60, "paiement_especes": True, "metier_id": metier, "lieu": "chez_client"}))["id"]
+        return ok(client.post(f"/api/propositions/{proposition}/accepter", json={"mode_paiement": "especes"}))["rendez_vous_id"]
 
     def devis(client: TestClient, texte: str) -> None:
-        demande = ok(client.post("/api/devis/demandes", json={"annonce_id": tableau, "texte": texte}))["id"]
+        demande = ok(client.post("/api/devis/demandes", json={"prestataire_id": karim_prestataire, "metier_id": metier,
+                                                              "texte": texte}))["id"]
         ok(karim.post(f"/api/moi/prestataire/demandes-devis/{demande}/devis", json={
             "lignes": [{"libelle": "Tableau 2 rangées", "quantite_centiemes": 100, "prix_unitaire_centimes": 18000},
                        {"libelle": "Main-d'œuvre", "quantite_centiemes": 300, "prix_unitaire_centimes": 4500}],

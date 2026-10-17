@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from app.modeles.agenda import Blocage, Ouverture, PlageHoraire
 from app.modeles.prestataires import Prestataire
 from tests.fiches.outils import relire_et_comparer, valeurs
-from tests.fiches.test_fiche_annonce import _supprimer, decor  # noqa: F401 (le décor est une fixture)
+from tests.fiches.test_fiche_local import _supprimer, decor  # noqa: F401 (le décor est une fixture)
 
 
 # Valeurs imposées par les contraintes : jour de 1 à 7, fin après le début

@@ -461,7 +461,7 @@ def accepter(db: Session, client: Compte, proposition_id: int, mode_paiement: st
 
     titre = demande.titre if demande is not None else db.get_one(Metier, proposition.metier_id).nom
     rdv = RendezVous(
-        client_id=client.id, prestataire_id=prestataire.id, annonce_id=None, proposition_id=proposition.id,
+        client_id=client.id, prestataire_id=prestataire.id, proposition_id=proposition.id,
         metier_id=proposition.metier_id, commune_id=commune_id, debut=proposition.debut, fin=proposition.fin, titre=titre,
         prix_centimes=proposition.prix_centimes, heures=None, lieu=proposition.lieu, adresse_ligne=ligne,
         adresse_complement=complement, code_postal=code_postal, mode_paiement=mode_paiement, statut="confirme",

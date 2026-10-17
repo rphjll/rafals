@@ -1,0 +1,103 @@
+<title>MLD rafals lot 9.4</title>
+<style>
+  :root { color-scheme: light; }
+  body { background:#ffffff; color:#1d2620; font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1040px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:#58665c; }
+  .schema { border:1px solid #d8e1da; border-radius:10px; padding:16px; background:#ffffff; overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:16px; }
+  .carte { border:1px solid #d8e1da; border-radius:10px; padding:14px 16px; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:#2f6b4f; }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:#b26a00; background:#fcf0dc; border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; white-space:nowrap; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:#f3f6f2; padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid #2f6b4f; padding:8px 12px; background:#f3f6f2; border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:#58665c; }
+  .note + .note { margin-top:8px; }
+  .supprimee h3 { color:#a3261d; }
+  .efface { border-left:3px solid #a3261d; padding:8px 12px; background:#fbecea; border-radius:0 8px 8px 0; font-size:14px; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD — lot 9.4 : les tables des annonces disparaissent</h1>
+    <p class="sous">rafals · proposé le 17/10/2026 · reprend le plan validé le 04/10/2026 (<code>MLD-retrait-annonces.html</code>, partie « supprimées ») · 2 tables supprimées, 3 tables perdent leur rubrique <code>annonce_id</code>, 1 règle de RENDEZ_VOUS devient plus simple. Copie de sécurité faite : <code>db-sync/securite/avant_lot_9.4_20261017_143233.sql</code>.</p>
+  </header>
+
+  <section>
+    <h2>Schéma après le lot</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  PROPOSITION["<b>PROPOSITION</b><br/>id (PK)"]
+  RENDEZ_VOUS["<b>RENDEZ_VOUS</b><br/>id (PK)<br/>proposition_id (FK)"]
+  METIER["<b>METIER</b><br/>id (PK)"]
+  DEMANDE_DEVIS["<b>DEMANDE_DEVIS</b><br/>id (PK)<br/>metier_id (FK)"]
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  SIGNALEMENT["<b>SIGNALEMENT</b><br/>id (PK)<br/>prestataire_id (FK)"]
+  ANNONCE["<b>ANNONCE</b><br/>supprimée"]
+  PHOTO_ANNONCE["<b>PHOTO_ANNONCE</b><br/>supprimée"]
+  PROPOSITION -- "devient · (0,1) —— (1,1)" --- RENDEZ_VOUS
+  METIER -- "concerne · (0,n) —— (1,1)" --- DEMANDE_DEVIS
+  PRESTATAIRE -- "est signalé · (0,n) —— (0,1)" --- SIGNALEMENT
+  classDef supprimee fill:#ffffff,stroke:#a3261d,stroke-dasharray:6 4,color:#a3261d;
+  class ANNONCE,PHOTO_ANNONCE supprimee;
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>lecture</b><span>la 1re cardinalité est du côté de la table de gauche : une proposition donne au plus un rendez-vous ; un rendez-vous vient d'une et une seule proposition.</span>
+      <b>pointillés rouges</b><span>table supprimée.</span>
+      <b>autres liens</b><span>les autres liens de ces tables (client, prestataire, métier, conversation, demande…) ne changent pas et ne sont pas redessinés.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ce qui change</h2>
+    <div class="tables">
+      <div class="carte supprimee"><h3>ANNONCE <span class="nouveau">supprimée</span></h3><p class="note">Toute la table, avec ses rubriques (titre, prix, durée, lieu, statut…).</p></div>
+      <div class="carte supprimee"><h3>PHOTO_ANNONCE <span class="nouveau">supprimée</span></h3><p class="note">Vide (0 ligne).</p></div>
+      <div class="carte"><h3>RENDEZ_VOUS</h3><ul><li><code>annonce_id</code> enlevée</li><li><code>proposition_id</code> devient <b>obligatoire</b> (avant : « une annonce ou une proposition »)</li></ul></div>
+      <div class="carte"><h3>DEMANDE_DEVIS</h3><ul><li><code>annonce_id</code> enlevée ; le métier reste dans <code>metier_id</code> (rempli le 08/10/2026)</li><li>les 2 demandes de devis de démonstration <b>restent</b>, seul leur lien vers l'annonce disparaît</li></ul></div>
+      <div class="carte"><h3>SIGNALEMENT</h3><ul><li><code>annonce_id</code> enlevée (0 signalement d'annonce)</li></ul></div>
+      <div class="carte"><h3>LOCAL</h3><p class="note">Ne change pas : c'est l'adresse où le prestataire reçoit ses clients. Seul son fichier dans le code change de place.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les lignes effacées (ton accord du 17/10/2026 : « A tu peux tout supr »)</h2>
+    <div class="efface">Annonces n° 15 « ZZTEST Pose d'une prise » et n° 16 « ZZTEST Tableau électrique » (Karim) ; rendez-vous n° 6, 7 (Julie), 8 (Hugo) et 9 (raphael.jallu1), tous de l'annonce n° 15 ; les 2 factures et l'avis de ces rendez-vous. Rien d'autre.</div>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>RENDEZ_VOUS</code> n° 21 : proposition n° 4, pas d'annonce, métier = Jardinier, 5000, confirmé.
+      <p class="trad"><b>Traduction :</b> Mme Dupont a accepté la proposition de Karim à 50 € : c'est comme ça que naissent tous les rendez-vous maintenant. Avant le lot, la base acceptait aussi un rendez-vous « venu d'une annonce » ; après, plus jamais.</p>
+    </div>
+    <div class="exemple">
+      <code>DEMANDE_DEVIS</code> n° 5 : client = Julie, prestataire = Karim, métier = Électricien, « Remplacer mon vieux tableau électrique… », (annonce n° 16 enlevée).
+      <p class="trad"><b>Traduction :</b> la demande de devis de Julie reste dans « Devis » chez elle et chez Karim ; elle dit seulement « Électricien » au lieu de « depuis l'annonce Tableau électrique ».</p>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' })</script>

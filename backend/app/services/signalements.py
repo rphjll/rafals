@@ -35,7 +35,7 @@ def signaler(db: Session, auteur: Compte, *, prestataire_id: int | None, motif: 
         Signalement.conversation_id.is_(None), Signalement.statut == "a_traiter"))
     if deja is not None:
         raise ErreurRegle("Vous l'avez déjà signalé : l'administrateur va regarder.")
-    signalement = Signalement(auteur_id=auteur.id, prestataire_id=prestataire.id, annonce_id=None, motif=motif,
+    signalement = Signalement(auteur_id=auteur.id, prestataire_id=prestataire.id, motif=motif,
                               cree_le=maintenant, statut="a_traiter")
     db.add(signalement)
     db.flush()
@@ -59,7 +59,7 @@ def signaler_demande(db: Session, auteur: Compte, demande_id: int, motif: str, m
     if db.scalar(select(Signalement.id).where(Signalement.auteur_id == auteur.id, Signalement.demande_id == demande.id,
                                               Signalement.statut == "a_traiter")) is not None:
         raise ErreurRegle("Vous l'avez déjà signalée : l'administrateur va regarder.")
-    signalement = Signalement(auteur_id=auteur.id, prestataire_id=None, annonce_id=None, demande_id=demande.id, motif=motif,
+    signalement = Signalement(auteur_id=auteur.id, prestataire_id=None, demande_id=demande.id, motif=motif,
                               cree_le=maintenant, statut="a_traiter")
     db.add(signalement)
     db.flush()

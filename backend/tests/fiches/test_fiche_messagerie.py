@@ -9,7 +9,7 @@ from app.modeles.comptes import Compte
 from app.modeles.fichiers import Fichier
 from app.modeles.messagerie import Conversation, Message, PhotoMessage
 from tests.fiches.outils import relire_et_comparer, valeurs
-from tests.fiches.test_fiche_annonce import _supprimer, decor  # noqa: F401 (le décor est une fixture)
+from tests.fiches.test_fiche_local import _supprimer, decor  # noqa: F401 (le décor est une fixture)
 
 
 def test_fiche_conversation_message_photo(base: Session, decor) -> None:  # noqa: F811

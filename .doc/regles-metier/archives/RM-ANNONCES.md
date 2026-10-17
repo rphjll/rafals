@@ -1,3 +1,5 @@
+> 🗄️ **Archivé le 17/10/2026 (lot 9.4)** : les tables des annonces sont supprimées (`db/schema_v29.sql`). Ce fichier n'est plus appliqué ; il est gardé pour l'historique des décisions.
+
 # Règle métier — Annonces (sujet 05)
 
 > ⚠️ **Plus appliqué depuis le 09/10/2026** (lots 9.2 et 9.3) : le code des annonces est retiré du serveur et des écrans. Ce fichier sera rangé aux archives au lot 9.4. Restent valables et repris ailleurs : la date de fin d'un métier (`RM-PRESTATAIRES.md`) et l'adresse où le prestataire reçoit (`RM-PRESTATAIRES.md` § « Une seule adresse »).

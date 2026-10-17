@@ -7,7 +7,7 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.modeles.annonces import Local
+from app.modeles.locaux import Local
 from app.modeles.prestataires import Prestataire
 from app.services import communes, journal
 from app.services.erreurs import ErreurRegle

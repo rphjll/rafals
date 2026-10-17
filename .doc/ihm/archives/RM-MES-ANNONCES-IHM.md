@@ -1,3 +1,5 @@
+> 🗄️ **Archivé le 17/10/2026 (lot 9.4)** : les tables des annonces sont supprimées (`db/schema_v29.sql`). Ce fichier n'est plus appliqué ; il est gardé pour l'historique des décisions.
+
 # Mes annonces / Écrire une annonce — Interface
 
 > ⚠️ **Écran supprimé le 09/10/2026** (lot 9.3, retrait des annonces) : les pages « Mes annonces » et « Écrire une annonce » n'existent plus. Document gardé pour mémoire jusqu'au lot 9.4.

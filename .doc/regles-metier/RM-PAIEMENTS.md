@@ -56,7 +56,7 @@ Lors d'un remboursement, Stripe garde ses frais. **Celui qui annule les paie** ;
 - Absence contestée et donnée au client (« ne compte pas ») → comme une erreur du prestataire : remboursement entier, frais pour le prestataire.
 
 ## Prix à l'heure
-Le client choisit le nombre d'heures en réservant et voit le total (`RM-ANNONCES.md`) : ce total est payé à la réservation, comme un prix fixe.
+Le client choisit le nombre d'heures en réservant et voit le total (`archives/RM-ANNONCES.md`) : ce total est payé à la réservation, comme un prix fixe.
 - Exemple : Karim, 40 € de l'heure, Paul choisit 3 h → 120 € payés à la réservation ; rafals garde 6,00 €.
 - Exemple : même annonce, 2 h → 80 € ; rafals garde 4,00 €.
 

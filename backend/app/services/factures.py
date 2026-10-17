@@ -11,7 +11,7 @@ from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from app import config, reglages
-from app.modeles.annonces import Local
+from app.modeles.locaux import Local
 from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte
 from app.modeles.devis import DemandeDevis, Devis
