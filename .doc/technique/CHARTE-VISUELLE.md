@@ -88,4 +88,5 @@ Installées avec l'application (paquets `@fontsource-variable`), jamais chargée
 Hauteur minimale 42 px (confortable au doigt).
 
 ## Mode sombre
-rafals suit le réglage clair / sombre de l'appareil. Chaque couleur a sa valeur sombre (tableau ci-dessus).
+Chaque couleur a sa valeur sombre (tableau ci-dessus), écrite une seule fois dans `style.css`, sous `:root.sombre`.
+Depuis le 17/10/2026, chacun choisit dans « Paramètres » (`RM-PARAMETRES-IHM.md`) : **Automatique** (comme l'appareil, choix de départ), **Clair** ou **Sombre**. Le choix est gardé dans l'appareil ; la classe `sombre` est posée sur la page par `index.html` au chargement puis par `composables/useTheme.ts`. Un écran n'écrit jamais `dark:` ni `prefers-color-scheme` : il utilise les noms de couleurs, qui changent tout seuls.

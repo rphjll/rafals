@@ -22,6 +22,7 @@ const TITRES = {
 }
 // Tâches hors lot de la rubrique « Travail en cours » (résumées à la main)
 const HORS_LOT = [
+  { lot: '—', titre: 'Thème sombre au choix (Paramètres)', type: 'Écrans', desc: 'Demande du 17/10/2026 : choisir Automatique, Clair ou Sombre dans une nouvelle page Paramètres, sous le prénom en haut à droite. Construit le 17/10/2026, à vérifier à l\'écran par Raphael.', etat: 'verifier' },
   { lot: '—', titre: 'Simplifier « Mon agenda › Calendrier »', type: 'Écrans', desc: 'Maquette F retenue, en pause : à valider par Raphael avant de coder. Aucun fichier du site modifié.', etat: 'cours' },
   { lot: '—', titre: 'Nouvelle présentation du site (style chaleureux)', type: 'Écrans', desc: 'Demande du 04/10/2026. Plusieurs étapes faites, à vérifier à l\'écran par Raphael.', etat: 'verifier' },
   { lot: '—', titre: 'Notifications de la barre de TVA', type: 'Serveur', desc: 'Demande du 17/10/2026 : une notification et un mail à 80 % du seuil de TVA, puis quand il est dépassé.', etat: 'verifier' },

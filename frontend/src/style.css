@@ -78,50 +78,60 @@
   color-scheme: light;
 }
 
-/* Mode sombre : suit le réglage de l'appareil */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fond: #121713;
-    --surface: #1a211c;
-    --texte: #e7ecf2;
-    --texte-doux: #a3aebd;
-    --bord: #2c3730;
-    --primaire: #79c49c;
-    --primaire-texte: #0f1a13;
-    --primaire-doux: #1c3024;
-    --accent: #f0955a;
-    --ok: #6cc592;
-    --ok-doux: #17301f;
-    --attente: #f0b35a;
-    --attente-doux: #33260f;
-    --erreur: #f08a82;
-    --erreur-doux: #3a1a18;
-    --neutre: #6d7888;
-    --neutre-doux: #262e39;
-    --sur-etat: #0f1a13;
-    --ouvert: #1f8a4a;
-    --ouvert-texte: #f2fff6;
-    --fonce: #1c3024;
-    --sur-fonce: #e7ecf2;
-    --sur-fonce-doux: #a3aebd;
-    --fonce-vif: #79c49c;
-    --accent-vif: #f0955a;
-    --accent-vif-texte: #1d2620;
-    --teinte-orange: #3a2616;
-    --teinte-orange-texte: #f4b48a;
-    --teinte-vert: #1c3024;
-    --teinte-vert-texte: #8fd5ae;
-    --teinte-jaune: #33290f;
-    --teinte-jaune-texte: #efcb73;
-    --teinte-bleu: #17293a;
-    --teinte-bleu-texte: #93c2ec;
-    --teinte-rose: #3a1b24;
-    --teinte-rose-texte: #f0a3b4;
-    --teinte-violet: #271f3d;
-    --teinte-violet-texte: #c2adf0;
-    --ombre-carte: 0 8px 28px rgb(0 0 0 / 0.35);
-    color-scheme: dark;
-  }
+/* Mode sombre : la classe « sombre » est posée sur la page par index.html (au chargement) et
+   composables/useTheme.ts (choix de « Paramètres » : Automatique = comme l'appareil, Clair, Sombre). */
+:root.sombre {
+  --fond: #121713;
+  --surface: #1a211c;
+  --texte: #e7ecf2;
+  --texte-doux: #a3aebd;
+  --bord: #2c3730;
+  --primaire: #79c49c;
+  --primaire-texte: #0f1a13;
+  --primaire-doux: #1c3024;
+  --accent: #f0955a;
+  --ok: #6cc592;
+  --ok-doux: #17301f;
+  --attente: #f0b35a;
+  --attente-doux: #33260f;
+  --erreur: #f08a82;
+  --erreur-doux: #3a1a18;
+  --neutre: #6d7888;
+  --neutre-doux: #262e39;
+  --sur-etat: #0f1a13;
+  --ouvert: #1f8a4a;
+  --ouvert-texte: #f2fff6;
+  --fonce: #1c3024;
+  --sur-fonce: #e7ecf2;
+  --sur-fonce-doux: #a3aebd;
+  --fonce-vif: #79c49c;
+  --accent-vif: #f0955a;
+  --accent-vif-texte: #1d2620;
+  --teinte-orange: #3a2616;
+  --teinte-orange-texte: #f4b48a;
+  --teinte-vert: #1c3024;
+  --teinte-vert-texte: #8fd5ae;
+  --teinte-jaune: #33290f;
+  --teinte-jaune-texte: #efcb73;
+  --teinte-bleu: #17293a;
+  --teinte-bleu-texte: #93c2ec;
+  --teinte-rose: #3a1b24;
+  --teinte-rose-texte: #f0a3b4;
+  --teinte-violet: #271f3d;
+  --teinte-violet-texte: #c2adf0;
+  --ombre-carte: 0 8px 28px rgb(0 0 0 / 0.35);
+  color-scheme: dark;
+}
+
+/* Petits aperçus des cases de « Paramètres › Thème » : toujours les couleurs du thème montré, quel que soit le thème
+   affiché (texte = couleur du trait vert de l'aperçu) */
+@utility apercu-clair {
+  background-color: #f3f6f2;
+  color: #2f6b4f;
+}
+@utility apercu-sombre {
+  background-color: #121713;
+  color: #79c49c;
 }
 
 /* « Mon agenda » garde les formes d'avant le 07/10/2026 (Raphael : « l'agenda ne dois pas changer ») :

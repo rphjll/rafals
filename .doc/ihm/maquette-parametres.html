@@ -1,0 +1,160 @@
+<title>rafals Paramètres</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&family=Bricolage+Grotesque:wght@700&display=swap">
+<style>
+/* Maquette « Paramètres » : mêmes couleurs que frontend/src/style.css (charte rafals), style chaleureux.
+   Mise en page : en-tête du site, puis la page Paramètres centrée, puis une note « Ce qui change » pour Raphael. */
+:root {
+  --fond: #f3f6f2; --surface: #ffffff; --texte: #1d2620; --texte-doux: #58665c; --bord: #d8e1da;
+  --primaire: #2f6b4f; --primaire-texte: #ffffff; --primaire-doux: #e2eee7; --accent: #d9793a;
+  --neutre-doux: #e8ecf1; --ombre-carte: 0 8px 28px rgb(31 77 56 / 0.1); --note: #fcf0dc; --note-texte: #6e4300;
+  --police: 'Nunito', 'Segoe UI', system-ui, sans-serif; --marque: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --fond: #121713; --surface: #1a211c; --texte: #e7ecf2; --texte-doux: #a3aebd; --bord: #2c3730;
+  --primaire: #79c49c; --primaire-texte: #0f1a13; --primaire-doux: #1c3024; --accent: #f0955a;
+  --neutre-doux: #262e39; --ombre-carte: 0 8px 28px rgb(0 0 0 / 0.35); --note: #33260f; --note-texte: #efcb73;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --fond: #121713; --surface: #1a211c; --texte: #e7ecf2; --texte-doux: #a3aebd; --bord: #2c3730;
+  --primaire: #79c49c; --primaire-texte: #0f1a13; --primaire-doux: #1c3024; --accent: #f0955a;
+  --neutre-doux: #262e39; --ombre-carte: 0 8px 28px rgb(0 0 0 / 0.35); --note: #33260f; --note-texte: #efcb73;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--fond); color: var(--texte); font-family: var(--police); font-weight: 500; font-size: 15px; transition: background .2s, color .2s; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--primaire); outline-offset: 2px; }
+
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--bord); padding-inline: 16px; }
+.barre { max-width: 1080px; margin: 0 auto; height: 60px; display: flex; align-items: center; gap: 4px; }
+.logo { font-family: var(--marque); font-weight: 700; font-size: 24px; color: var(--primaire); margin-right: auto; }
+.logo span { color: var(--accent); }
+.entree { padding: 8px 12px; border-radius: 999px; font-weight: 700; color: var(--texte); }
+@media (max-width: 767px) { .entree { display: none; } }
+.zone-compte { position: relative; margin-left: 8px; }
+.pastille { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 4px 12px 4px 4px; border-radius: 999px; border: 1px solid var(--bord); background: var(--surface); color: var(--texte); font-weight: 600; }
+.pastille[aria-expanded="true"] { border-color: var(--primaire); color: var(--primaire); }
+.initiales { width: 32px; height: 32px; border-radius: 50%; background: var(--primaire-doux); color: var(--primaire); display: grid; place-items: center; font-size: 13px; font-weight: 800; }
+.liste { position: absolute; right: 0; top: calc(100% + 8px); width: 224px; background: var(--surface); border: 1px solid var(--bord); border-radius: 16px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: var(--ombre-carte); }
+.ligne { text-align: left; padding: 10px 12px; border-radius: 16px; border: 0; background: transparent; color: var(--texte); font-weight: 600; }
+.ligne:hover, .ligne.ici { background: var(--primaire-doux); color: var(--primaire); }
+.ligne.nouveau::after { content: "nouveau"; margin-left: 8px; font-size: 11px; font-weight: 800; color: var(--accent); }
+.bouton-sec { min-height: 42px; border-radius: 999px; border: 0; background: var(--primaire-doux); color: var(--primaire); font-weight: 700; }
+
+main { padding: 28px 16px 64px; }
+.page { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1 { font-size: 30px; font-weight: 800; margin: 0; text-wrap: balance; }
+.intro { color: var(--texte-doux); margin: 4px 0 0; }
+.carte { background: var(--surface); border-radius: 26px; box-shadow: var(--ombre-carte); padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.carte h2 { font-size: 18px; font-weight: 800; margin: 0; }
+.etiquette { font-size: 13px; font-weight: 700; }
+.choix { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 560px) { .choix { grid-template-columns: 1fr; } }
+.case { min-height: 42px; text-align: left; padding: 12px; border-radius: 16px; border: 1px solid var(--bord); background: var(--fond); color: var(--texte); display: flex; flex-direction: column; gap: 8px; }
+.case[aria-checked="true"] { border-color: var(--primaire); background: var(--primaire-doux); color: var(--primaire); font-weight: 700; }
+.case small { font-size: 12.5px; font-weight: 500; color: var(--texte-doux); }
+.apercu { height: 46px; border-radius: 10px; border: 1px solid var(--bord); display: flex; overflow: hidden; }
+.apercu i { flex: 1; display: block; }
+.apercu .c { background: #f3f6f2; } .apercu .c b, .apercu .s b { display: block; margin: 9px; height: 8px; border-radius: 4px; }
+.apercu .c b { background: #2f6b4f; } .apercu .s { background: #121713; } .apercu .s b { background: #79c49c; }
+.aide { font-size: 13px; color: var(--texte-doux); margin: 0; }
+
+.note { background: var(--note); color: var(--note-texte); border-radius: 16px; padding: 16px 18px; font-size: 14px; }
+.note h3 { margin: 0 0 6px; font-size: 14px; font-weight: 800; }
+.note ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+
+.message { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--primaire); color: var(--primaire-texte); padding: 12px 18px; border-radius: 16px; font-weight: 700; box-shadow: var(--ombre-carte); }
+.vide { text-align: center; color: var(--texte-doux); padding: 40px 0; }
+@media (prefers-reduced-motion: reduce) { body { transition: none; } }
+</style>
+
+<header>
+  <div class="barre">
+    <span class="logo">rafals<span>.</span></span>
+    <span class="entree">Accueil</span>
+    <span class="entree">Trouver un prestataire</span>
+    <span class="entree">Messages</span>
+    <span class="entree">Mon activité</span>
+    <div class="zone-compte">
+      <button id="pastille" class="pastille" aria-expanded="false" aria-controls="liste">
+        <span class="initiales">KB</span>Karim <span aria-hidden="true">▾</span>
+      </button>
+      <div id="liste" class="liste" hidden>
+        <button class="ligne" data-vers="profil">Mon profil</button>
+        <button class="ligne nouveau" data-vers="parametres">Paramètres</button>
+        <button class="bouton-sec">Se déconnecter</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page">
+    <section id="page-profil" class="vide" hidden>Ici, la page « Mon profil » (inchangée). Ouvrez la liste sous « Karim » puis cliquez sur « Paramètres ».</section>
+
+    <section id="page-parametres" class="page" style="gap:20px">
+      <div>
+        <h1>Paramètres</h1>
+        <p class="intro">Réglez rafals comme vous le préférez.</p>
+      </div>
+      <div class="carte">
+        <h2>Apparence</h2>
+        <span class="etiquette" id="titre-theme">Thème</span>
+        <div class="choix" role="radiogroup" aria-labelledby="titre-theme">
+          <button id="theme-auto" class="case" role="radio" aria-checked="true" data-theme-choix="auto">
+            <span class="apercu"><i class="c"><b></b></i><i class="s"><b></b></i></span>
+            Automatique<small>Comme votre téléphone ou votre ordinateur</small>
+          </button>
+          <button id="theme-clair" class="case" role="radio" aria-checked="false" data-theme-choix="light">
+            <span class="apercu"><i class="c"><b></b></i></span>
+            Clair<small>Fond blanc, toujours</small>
+          </button>
+          <button id="theme-sombre" class="case" role="radio" aria-checked="false" data-theme-choix="dark">
+            <span class="apercu"><i class="s"><b></b></i></span>
+            Sombre<small>Fond noir, plus doux le soir</small>
+          </button>
+        </div>
+        <p class="aide">Le choix est gardé sur cet appareil. Sur un autre téléphone ou ordinateur, vous le refaites une fois.</p>
+      </div>
+    </section>
+
+    <aside class="note">
+      <h3>Ce qui change (note pour Raphael, pas dans le site)</h3>
+      <ul>
+        <li>Nouvelle ligne « Paramètres » dans la liste sous ton prénom, entre « Mon profil » et « Se déconnecter » (aussi dans le menu ☰ du téléphone).</li>
+        <li>Nouvelle page /parametres avec une carte « Apparence » : 3 cases. Un clic change les couleurs tout de suite, sans bouton « Enregistrer ».</li>
+        <li>Par défaut : « Automatique » (c'est le fonctionnement d'aujourd'hui).</li>
+        <li>« Mon agenda » passe aussi en sombre : il a déjà ses couleurs sombres, seules ses formes restent comme avant.</li>
+        <li>Aucune base de données touchée.</li>
+      </ul>
+    </aside>
+  </div>
+</main>
+<div id="message" class="message" role="status" hidden></div>
+
+<script>
+const pastille = document.getElementById('pastille'), liste = document.getElementById('liste')
+pastille.addEventListener('click', () => { const o = liste.hidden; liste.hidden = !o; pastille.setAttribute('aria-expanded', o) })
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { liste.hidden = true; pastille.setAttribute('aria-expanded', false) } })
+liste.querySelectorAll('[data-vers]').forEach((b) => b.addEventListener('click', () => {
+  const vers = b.dataset.vers
+  document.getElementById('page-profil').hidden = vers !== 'profil'
+  document.getElementById('page-parametres').hidden = vers !== 'parametres'
+  liste.querySelectorAll('[data-vers]').forEach((x) => x.classList.toggle('ici', x === b))
+  liste.hidden = true; pastille.setAttribute('aria-expanded', false)
+}))
+liste.querySelector('[data-vers="parametres"]').classList.add('ici')
+
+const textes = { auto: 'Thème automatique : comme votre appareil.', light: 'Thème clair activé.', dark: 'Thème sombre activé.' }
+let minuteur
+document.querySelectorAll('[data-theme-choix]').forEach((b) => b.addEventListener('click', () => {
+  const v = b.dataset.themeChoix
+  document.querySelectorAll('[data-theme-choix]').forEach((x) => x.setAttribute('aria-checked', x === b))
+  if (v === 'auto') delete document.documentElement.dataset.theme
+  else document.documentElement.dataset.theme = v
+  const m = document.getElementById('message'); m.textContent = textes[v]; m.hidden = false
+  clearTimeout(minuteur); minuteur = setTimeout(() => (m.hidden = true), 3000)
+}))
+</script>

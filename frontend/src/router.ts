@@ -22,6 +22,7 @@ import MessagesPage from './pages/MessagesPage.vue'
 import MonActivitePage from './pages/MonActivitePage.vue'
 import MotDePasseOubliePage from './pages/MotDePasseOubliePage.vue'
 import NouveauMotDePassePage from './pages/NouveauMotDePassePage.vue'
+import ParametresPage from './pages/ParametresPage.vue'
 import PrestatairePage from './pages/PrestatairePage.vue'
 import ProfilPage from './pages/ProfilPage.vue'
 import TrouverPage from './pages/TrouverPage.vue'
@@ -59,6 +60,8 @@ export const routeur = createRouter({
     // « Mon profil » réunit les anciennes pages « Mon profil » (/proposer) et « Mon compte » (/compte) depuis le 07/10/2026.
     // Les anciens liens y arrivent avec leurs réglages (ex. /proposer?siret=91234567800017, retour de Stripe).
     { path: '/profil', name: 'profil', component: ProfilPage },
+    // Thème clair ou sombre (17/10/2026), ouverte depuis la liste sous le prénom
+    { path: '/parametres', name: 'parametres', component: ParametresPage },
     { path: '/proposer', redirect: (vers) => ({ path: '/profil', query: { ...vers.query, proposer: '1' } }) },
     { path: '/compte', redirect: (vers) => ({ path: '/profil', query: vers.query }) },
     { path: '/mon-agenda', name: 'mon-agenda', component: AgendaPage },

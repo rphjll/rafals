@@ -50,6 +50,10 @@ Bandeau blanc avec une ligne d'onglets ; la page affichée est soulignée en ver
 - **Rond des initiales** (☰ sur téléphone) : « Mon profil » (→ `/profil`) à la place de « Mon compte », puis « Administration » (administrateurs), puis « Se déconnecter ».
 - La barre du bas sur téléphone lit la même liste : 4 boutons pour un prestataire, 5 pour un client.
 
+## « Paramètres » dans la liste du compte (17/10/2026, demande de Raphael, détail : `RM-PARAMETRES-IHM.md`)
+- Rond des initiales (☰ sur téléphone) : « Mon profil », **« Paramètres »** (→ `/parametres`, choix du thème clair ou sombre), « Administration » (administrateurs), [Installer rafals], [Se déconnecter].
+- Sur « Paramètres », le contour de la pastille passe au vert, comme sur « Mon profil ».
+
 ## Barre du bas sur téléphone (ajoutée le 07/10/2026, `frontend/src/components/AppBarreBas.vue`)
 Sous 768 px, les entrées principales quittent le menu ☰ et vont dans une barre blanche arrondie fixée en bas de l'écran, sur toutes les pages : un pictogramme et un mot court par entrée — « Accueil », « Trouver », « Réservations », « Messages » (seulement connecté, avec la pastille rouge des non lus), « Proposer » (ou « Activité » pour un prestataire). L'entrée de la page affichée est en vert sur fond vert clair. L'en-tête et la barre lisent la même liste (`useMenu`, `entrees`). Le menu ☰ ne garde que le compte : « Mon compte », « Administration », [Se déconnecter], ou [Se connecter]. Le message court de 3 secondes s'affiche au-dessus de la barre. **Ce paragraphe remplace la 2ᵉ ligne ci-dessous** (« les 4 entrées, puis un trait… »).
 

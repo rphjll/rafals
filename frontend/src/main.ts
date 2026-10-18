@@ -4,6 +4,8 @@ import '@fontsource-variable/figtree'
 import './style.css'
 import App from './App.vue'
 import { routeur } from './router'
+// Thème clair ou sombre de « Paramètres » : suit l'appareil en « Automatique », sur toutes les pages
+import './composables/useTheme'
 
 createApp(App).use(routeur).mount('#app')
 

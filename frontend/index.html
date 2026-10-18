@@ -11,6 +11,16 @@
     <link rel="apple-touch-icon" href="/icone-apple-180.png" />
     <meta name="apple-mobile-web-app-title" content="rafals" />
     <title>rafals</title>
+    <script>
+      // Thème choisi dans « Paramètres » (composables/useTheme.ts), posé avant l'affichage pour éviter un éclair blanc.
+      // Même clé et même règle que useTheme.ts : rien de gardé = comme l'appareil.
+      var choix = null
+      try {
+        choix = localStorage.getItem('rafals-theme') // peut être refusé (navigation privée) : on suit alors l'appareil
+      } catch (e) {}
+      var sombre = choix === 'sombre' || (choix !== 'clair' && matchMedia('(prefers-color-scheme: dark)').matches)
+      document.documentElement.classList.toggle('sombre', sombre)
+    </script>
   </head>
   <body>
     <div id="app"></div>

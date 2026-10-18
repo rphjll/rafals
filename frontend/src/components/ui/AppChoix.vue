@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="V extends string">
 // Choix d'une seule réponse parmi quelques-unes, en cases côte à côte (ex. « Prix fixe · À l'heure · Sur devis »).
 // Une case verrouillée reste visible avec 🔒 ; un clic affiche la raison dessous (CONVENTIONS-IHM).
+// Le slot « avant » ajoute un petit dessin au-dessus du texte de chaque case.
 import { ref, useId } from 'vue'
 
 defineProps<{
@@ -41,6 +42,8 @@ function choisir(option: { valeur: V; raisonVerrou?: string }) {
         "
         @click="choisir(option)"
       >
+        <!-- Slot facultatif « avant » : un petit dessin au-dessus du texte (ex. aperçu d'un thème dans « Paramètres ») -->
+        <slot name="avant" :option="option" />
         <span v-if="option.raisonVerrou" aria-hidden="true">🔒 </span>{{ option.texte }}
         <small v-if="option.detail" class="block text-[12.5px] font-normal text-texte-doux">{{ option.detail }}</small>
       </button>
