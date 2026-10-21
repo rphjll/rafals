@@ -200,3 +200,9 @@ AVIS_CLIENT_TEXTE = (10, 500)
 # Alertes des nouvelles demandes (RM-ALERTES.md, validé le 04/10/2026)
 ALERTE_MAILS_PAR_JOUR = 20  # au-delà, les demandes suivantes vont dans le résumé du soir
 ALERTE_RESUME_HEURE = 18  # heure de Paris
+
+# Abonnements à un prestataire (demande de Raphael du 21/10/2026, MLD validé le 21/10/2026)
+ABONNEMENT_CRENEAU_ECART = timedelta(hours=6)  # au plus une notification « créneau libre » par prestataire en 6 h
+ABONNEMENT_ABSENCE_MIN = timedelta(days=2)  # une fermeture de 2 jours ou plus compte comme une absence
+ABONNEMENT_RETOUR_HEURE = 8  # heure de Paris : « Karim est de retour » part à 8 h le jour de la reprise
+ABONNEMENT_RETOUR_RATTRAPAGE = timedelta(days=2)  # serveur arrêté : on rattrape les retours des 2 derniers jours

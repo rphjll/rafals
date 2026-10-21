@@ -1,5 +1,7 @@
 # Trouver un prestataire — Interface
 
+> **Changé le 21/10/2026** (abonnements, `RM-ABONNEMENTS-IHM.md`) : chaque petite carte montre « 12 abonnés » sous la ville et un bouton [S'abonner] / [Abonné ✓] en bas à droite (absent sur sa propre carte). Le lien du nom couvre toute la carte : un clic ailleurs que sur le bouton ouvre toujours la fiche.
+
 > **Changé le 09/10/2026** (lot 9.3, retrait des annonces) : dans les résultats d'une recherche par métier, les filtres sont réduits à deux pastilles, « Vient chez moi » et « Paiement par carte ». La pastille « Libre dans les 7 jours » et le champ « Prix maximum » sont retirés.
 
 > Fichiers : `frontend/src/pages/TrouverPage.vue`, `frontend/src/components/recherche/CarteResultat.vue`, `frontend/src/components/prestataire/AvatarPrestataire.vue`, `frontend/src/outils/recherche.ts`. Construit au lot 2.2 (choix du métier), complété au lot 4.2 (30/09/2026). Règles : `RM-RECHERCHE.md`. Maquette : `maquette-lot-4.2-recherche.html`.

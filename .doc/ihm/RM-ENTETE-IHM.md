@@ -65,3 +65,6 @@ Sous 768 px, les entrées principales quittent le menu ☰ et vont dans une barr
 ## Particularités
 - La liste des groupes est écrite une seule fois, dans `useMenu.ts` ; l'en-tête et le sous-menu la lisent tous les deux.
 - Pas encore fait (prévu dans la maquette) : la barre de 5 boutons en bas de l'écran sur téléphone, et le tableau de bord de « Mon activité ».
+
+## « Mes abonnements » dans la liste du compte (21/10/2026, détail : `RM-ABONNEMENTS-IHM.md`)
+- Liste sous le prénom : « Mon profil », **« Mes abonnements »** (→ `/mes-abonnements`), « Paramètres », « Administration » (administrateurs), [Installer rafals], [Se déconnecter].

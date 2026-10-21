@@ -15,7 +15,7 @@ from app import reglages
 from app.modeles.agenda import Blocage, Ouverture, PlageHoraire
 from app.modeles.prestataires import Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import journal
+from app.services import abonnements, journal
 from app.services import rendez_vous_communs as communs
 from app.services.locaux import verifier_modifiable
 from app.services.erreurs import ErreurRegle
@@ -213,6 +213,8 @@ def debloquer(db: Session, prestataire: Prestataire, blocage_id: int, maintenant
         maintenant=maintenant,
     )
     db.delete(blocage)
+    if blocage.fin > maintenant:  # des heures redeviennent libres : les abonnés qui l'ont choisi sont prévenus
+        abonnements.creneau_libre(db, prestataire, max(blocage.debut, maintenant), maintenant)
     return blocage.metier_id
 
 
@@ -271,6 +273,7 @@ def ouvrir(
             apres={"metier_id": metier_id, "debut": ouverture.debut.isoformat(), "fin": ouverture.fin.isoformat()},
             maintenant=maintenant,
         )
+    abonnements.creneau_libre(db, prestataire, creees[0].debut, maintenant)
     return creees
 
 

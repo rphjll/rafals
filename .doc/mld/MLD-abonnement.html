@@ -1,0 +1,105 @@
+<title>MLD abonnements</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Fond blanc uni imposé par les règles du projet (format du MLD) : un seul thème, couleurs fixées */
+  :root { color-scheme: light; --fond:#ffffff; --texte:#1d2620; --doux:#58665c; --trait:#d8e1da; --vert:#2f6b4f; --pale:#f3f6f2; --orange:#b26a00; --orange-pale:#fcf0dc; }
+  body { background:var(--fond); color:var(--texte); font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:24px 48px; }
+  .page { max-width:1040px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:var(--doux); }
+  .schema { border:1px solid var(--trait); border-radius:10px; padding:16px; background:var(--fond); overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:16px; }
+  .carte { border:1px solid var(--trait); border-radius:10px; padding:14px 16px; min-width:0; display:flex; flex-direction:column; gap:8px; }
+  .carte h3 { margin:0; font-size:16px; font-family:Consolas, monospace; color:var(--vert); }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:var(--orange); background:var(--orange-pale); border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; white-space:nowrap; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:var(--pale); padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid var(--vert); padding:8px 12px; background:var(--pale); border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:var(--doux); }
+  ol { margin:0; padding-left:20px; font-size:14.5px; display:flex; flex-direction:column; gap:4px; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD : s'abonner à un prestataire</h1>
+    <p class="sous">rafals · proposé le 21/10/2026 · 1 table nouvelle, aucune table supprimée, aucune rubrique changée ailleurs.</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  ABONNEMENT["<b>ABONNEMENT</b><br/>id (PK)<br/>compte_id (FK)<br/>prestataire_id (FK)"]
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  COMPTE -- "s'abonne · (0,n) —— (1,1)" --- ABONNEMENT
+  ABONNEMENT -- "(1,1) —— (0,n) · est suivi" --- PRESTATAIRE
+  classDef nouvelle fill:#fcf0dc,stroke:#b26a00,color:#1d2620;
+  class ABONNEMENT nouvelle;
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>lecture</b><span>un compte a zéro, un ou plusieurs abonnements ; un prestataire est suivi par zéro, un ou plusieurs abonnements ; chaque abonnement relie un et un seul compte à un et un seul prestataire.</span>
+      <b>orange</b><span>table nouvelle.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les rubriques</h2>
+    <div class="tables">
+      <div class="carte"><h3>ABONNEMENT <span class="nouveau">nouvelle</span></h3>
+        <ul>
+          <li><code>notif_creneau</code> : oui / non, prévenir quand un créneau se libère</li>
+          <li><code>notif_nouveaute</code> : oui / non, prévenir d'un nouveau métier ou service</li>
+          <li><code>notif_retour</code> : oui / non, prévenir du retour après une absence</li>
+          <li><code>cree_le</code> : le moment où le compte s'est abonné</li>
+        </ul>
+        <p class="note">Un même compte ne peut suivre qu'une fois le même prestataire (le couple <code>compte_id</code> + <code>prestataire_id</code> est unique). Se désabonner supprime la ligne.</p>
+        <p class="note">Les 3 cases sont <b>cochées</b> au moment de l'abonnement ; Julie les décoche avec la cloche.</p>
+      </div>
+      <div class="carte"><h3>COMPTE · PRESTATAIRE</h3>
+        <p class="note">Ne changent pas. Le nombre « 12 abonnés » n'est rangé nulle part : rafals compte les lignes d'<code>ABONNEMENT</code> du prestataire à chaque affichage, il est donc toujours juste.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ce que fera rafals avec cette table</h2>
+    <ol>
+      <li>Bouton [S'abonner] / [Abonné ✓] sur chaque prestataire de « Trouver un prestataire » et sur sa fiche (il faut être connecté).</li>
+      <li>Nouvelle page « Mes abonnements » dans la liste du compte : les petites cartes des prestataires suivis, avec une cloche pour les 3 cases.</li>
+      <li>« 12 abonnés » visible par tous sur la carte et la fiche du prestataire ; personne ne voit qui ils sont.</li>
+      <li>Notification envoyée seulement aux abonnés qui ont coché la case correspondante.</li>
+      <li>Un prestataire ne peut pas s'abonner à lui-même.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>ABONNEMENT</code> n° 1 : compte = Julie, prestataire = Karim, créneau = oui, nouveauté = non, retour = oui, 21/10/2026 10:42.
+      <p class="trad"><b>Traduction :</b> Julie suit Karim, plombier à Lyon. Si un rendez-vous de Karim est annulé jeudi 23/10 à 14 h, Julie reçoit « Karim est libre jeudi 23/10 à 14 h ». Si Karim ajoute le métier chauffagiste, Julie n'est pas prévenue.</p>
+    </div>
+    <div class="exemple">
+      <code>ABONNEMENT</code> n° 2 : compte = Julie, prestataire = Sonia, créneau = non, nouveauté = non, retour = non, 19/10/2026 18:05.
+      <p class="trad"><b>Traduction :</b> Julie suit aussi Sonia, coiffeuse, seulement pour la retrouver vite dans « Mes abonnements ». Elle ne reçoit aucune notification à son sujet, mais elle compte dans les abonnés de Sonia.</p>
+    </div>
+  </section>
+</div>

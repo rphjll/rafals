@@ -31,6 +31,7 @@ watch(
 // Les entrées principales (« liens ») viennent de useMenu : la barre du bas, sur téléphone, montre les mêmes
 const liensCompte = computed(() => [
   { vers: '/profil', texte: 'Mon profil' },
+  { vers: '/mes-abonnements', texte: 'Mes abonnements' }, // prestataires suivis (21/10/2026)
   { vers: '/parametres', texte: 'Paramètres' }, // thème clair ou sombre (17/10/2026)
   // Visible seulement des administrateurs (lot 1.4)
   ...(compte.value?.est_administrateur ? [{ vers: '/administration', texte: 'Administration' }] : []),

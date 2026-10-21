@@ -1,0 +1,342 @@
+<title>rafals Abonnements</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=Bricolage+Grotesque:wght@700&display=swap">
+<style>
+/* Maquette « S'abonner à un prestataire » : mêmes couleurs que frontend/src/style.css (charte rafals), style chaleureux.
+   Mise en page : en-tête du site, 3 vues à choisir en haut (Trouver, Fiche de Karim, Mes abonnements), puis une note
+   « Ce qui change » pour Raphael. */
+:root {
+  --fond: #f3f6f2; --surface: #ffffff; --texte: #1d2620; --texte-doux: #58665c; --bord: #d8e1da;
+  --primaire: #2f6b4f; --primaire-texte: #ffffff; --primaire-doux: #e2eee7; --accent: #d9793a;
+  --ok: #2e7d4f; --ok-doux: #e3f2e8; --attente: #b26a00; --attente-doux: #fcf0dc; --neutre: #8a94a3; --neutre-doux: #e8ecf1;
+  --fonce: #1f4d38; --sur-fonce: #ffffff; --sur-fonce-doux: #d5e6dc; --accent-vif: #e8863f; --accent-vif-texte: #1d2620;
+  --ombre-carte: 0 8px 28px rgb(31 77 56 / 0.1); --note: #fcf0dc; --note-texte: #6e4300;
+  --police: 'Nunito', 'Segoe UI', system-ui, sans-serif; --marque: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --fond: #121713; --surface: #1a211c; --texte: #e7ecf2; --texte-doux: #a3aebd; --bord: #2c3730;
+  --primaire: #79c49c; --primaire-texte: #0f1a13; --primaire-doux: #1c3024; --accent: #f0955a;
+  --ok: #6cc592; --ok-doux: #17301f; --attente: #f0b35a; --attente-doux: #33260f; --neutre: #6d7888; --neutre-doux: #262e39;
+  --fonce: #1c3024; --sur-fonce: #e7ecf2; --sur-fonce-doux: #a3aebd; --accent-vif: #f0955a; --accent-vif-texte: #1d2620;
+  --ombre-carte: 0 8px 28px rgb(0 0 0 / 0.35); --note: #33260f; --note-texte: #efcb73;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --fond: #121713; --surface: #1a211c; --texte: #e7ecf2; --texte-doux: #a3aebd; --bord: #2c3730;
+  --primaire: #79c49c; --primaire-texte: #0f1a13; --primaire-doux: #1c3024; --accent: #f0955a;
+  --ok: #6cc592; --ok-doux: #17301f; --attente: #f0b35a; --attente-doux: #33260f; --neutre: #6d7888; --neutre-doux: #262e39;
+  --fonce: #1c3024; --sur-fonce: #e7ecf2; --sur-fonce-doux: #a3aebd; --accent-vif: #f0955a; --accent-vif-texte: #1d2620;
+  --ombre-carte: 0 8px 28px rgb(0 0 0 / 0.35); --note: #33260f; --note-texte: #efcb73;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--fond); color: var(--texte); font-family: var(--police); font-weight: 500; font-size: 15px; line-height: 1.45; margin: 0; }
+button { font: inherit; cursor: pointer; color: inherit; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+h1, h2 { text-wrap: balance; }
+
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--bord);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.barre { max-width: 1080px; margin: 0 auto; height: 60px; display: flex; align-items: center; gap: 4px; }
+.logo { font-family: var(--marque); font-weight: 700; font-size: 24px; color: var(--primaire); margin-right: auto; }
+.logo span { color: var(--accent); }
+.entree { padding: 8px 12px; border-radius: 999px; font-weight: 700; }
+.entree.ici { background: var(--primaire-doux); color: var(--primaire); }
+@media (max-width: 767px) { .entree { display: none; } }
+.zone-compte { position: relative; margin-left: 8px; }
+.pastille { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 4px 12px 4px 4px; border-radius: 999px; border: 1px solid var(--bord); background: var(--surface); font-weight: 700; }
+.pastille[aria-expanded="true"] { border-color: var(--primaire); color: var(--primaire); }
+.initiales { width: 32px; height: 32px; border-radius: 50%; background: var(--primaire-doux); color: var(--primaire); display: grid; place-items: center; font-size: 13px; font-weight: 800; flex: none; }
+.liste { position: absolute; right: 0; top: calc(100% + 8px); width: 230px; background: var(--surface); border: 1px solid var(--bord); border-radius: 16px; padding: 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: var(--ombre-carte); }
+.ligne { text-align: left; padding: 10px 12px; border-radius: 16px; border: 0; background: transparent; font-weight: 700; }
+.ligne:hover, .ligne.ici { background: var(--primaire-doux); color: var(--primaire); }
+.ligne.nouveau::after { content: "nouveau"; margin-left: 8px; font-size: 11px; font-weight: 800; color: var(--accent); }
+
+.vues { max-width: 1080px; margin: 18px auto 0; display: flex; flex-wrap: wrap; gap: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.vues button { min-height: 42px; padding: 6px 16px; border-radius: 999px; border: 2px solid transparent; background: var(--surface); font-weight: 800; box-shadow: var(--ombre-carte); }
+.vues button[aria-pressed="true"] { border-color: var(--primaire); background: var(--primaire-doux); color: var(--primaire); }
+.vues small { display: block; width: 100%; color: var(--texte-doux); font-size: 13px; }
+
+main { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 22px 72px; }
+.page { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1 { font-size: clamp(26px, 4vw, 32px); font-weight: 900; line-height: 1.15; }
+.intro { color: var(--texte-doux); margin-top: 4px; }
+
+/* Petites cartes de « Trouver un prestataire » (CarteResultat) */
+.grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+.carte { background: var(--surface); border-radius: 26px; box-shadow: var(--ombre-carte); }
+.resultat { position: relative; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.coin { position: absolute; top: 0; right: 0; border-bottom-left-radius: 14px; padding: 4px 12px; font-size: 12.5px; font-weight: 800; }
+.coin.ok { background: var(--ok-doux); color: var(--ok); } .coin.part { background: var(--fond); color: var(--texte-doux); }
+.tete { display: flex; align-items: center; gap: 12px; padding: 32px 16px 12px; }
+.avatar { width: 64px; height: 64px; border-radius: 50%; flex: none; display: grid; place-items: center; font-weight: 900; font-size: 20px; }
+.avatar.grand { width: 120px; height: 120px; font-size: 36px; }
+.qui { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.qui b { font-size: 17px; font-weight: 900; }
+.qui .metier { font-size: 13.5px; font-weight: 800; }
+.doux { color: var(--texte-doux); font-size: 13.5px; }
+.photos { height: 96px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.photos i { display: block; }
+.sans-photo { background: var(--fond); padding: 10px 16px; text-align: center; font-size: 12.5px; font-weight: 700; color: var(--texte-doux); }
+.pied { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 12px 12px 16px; }
+.note-etoile { font-variant-numeric: tabular-nums; }
+.note-etoile b { color: var(--accent); }
+.badge { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12.5px; font-weight: 800; }
+.badge.attente { background: var(--attente-doux); color: var(--attente); } .badge.ok { background: var(--ok-doux); color: var(--ok); }
+.abonnes { font-size: 13px; font-weight: 700; color: var(--texte-doux); font-variant-numeric: tabular-nums; }
+
+/* Le bouton [S'abonner] / [Abonné ✓] : un seul dessin, petit sur les cartes, normal sur la fiche */
+.suivre { min-height: 36px; padding: 6px 14px; border-radius: 999px; border: 0; font-weight: 800; font-size: 13.5px; white-space: nowrap; background: var(--primaire); color: var(--primaire-texte); }
+.suivre[aria-pressed="true"] { background: var(--primaire-doux); color: var(--primaire); }
+.suivre.normal { min-height: 42px; padding: 8px 18px; font-size: 15px; }
+
+/* Fiche publique de Karim */
+.fiche { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+@media (max-width: 860px) { .fiche { grid-template-columns: 1fr; } }
+.profil { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.profil-haut { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+.profil-haut h1 { font-size: clamp(28px, 4.5vw, 40px); }
+.ligne-suivre { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.besoin { background: var(--fonce); color: var(--sur-fonce); border-radius: 26px; padding: 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--ombre-carte); }
+.besoin p { color: var(--sur-fonce-doux); font-size: 13.5px; }
+.orange { min-height: 46px; border: 0; border-radius: 999px; background: var(--accent-vif); color: var(--accent-vif-texte); font-weight: 900; }
+
+/* Mes abonnements */
+.suivi { padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.suivi .tete { padding: 0; }
+.suivi-pied { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.cloche { min-height: 42px; padding: 6px 14px; border-radius: 999px; border: 0; background: var(--primaire-doux); color: var(--primaire); font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
+.cloche[aria-expanded="true"] { background: var(--primaire); color: var(--primaire-texte); }
+.cloche svg { width: 18px; height: 18px; }
+.cases { border-top: 1px solid var(--bord); padding-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+.case { display: flex; align-items: flex-start; gap: 10px; min-height: 42px; padding: 8px 10px; border-radius: 16px; border: 0; background: transparent; text-align: left; }
+.case:hover { background: var(--fond); }
+.boite { width: 22px; height: 22px; flex: none; border-radius: 7px; border: 2px solid var(--bord); display: grid; place-items: center; margin-top: 1px; }
+.case[aria-checked="true"] .boite { background: var(--primaire); border-color: var(--primaire); color: var(--primaire-texte); }
+.case[aria-checked="true"] .boite::after { content: "✓"; font-size: 14px; font-weight: 900; }
+.case b { display: block; font-weight: 800; }
+.case small { display: block; font-size: 12.5px; color: var(--texte-doux); }
+.retirer { min-height: 42px; padding: 6px 14px; border-radius: 999px; border: 0; background: transparent; color: var(--texte-doux); font-weight: 700; }
+.retirer:hover { background: var(--neutre-doux); }
+.en-pause { opacity: .7; }
+.vide { text-align: center; color: var(--texte-doux); padding: 48px 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.principal { min-height: 42px; padding: 8px 18px; border-radius: 999px; border: 0; background: var(--primaire); color: var(--primaire-texte); font-weight: 800; }
+
+.note { background: var(--note); color: var(--note-texte); border-radius: 16px; padding: 16px 18px; font-size: 14px; }
+.note h3 { margin: 0 0 6px; font-size: 14px; font-weight: 900; }
+.note ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+
+.message { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--primaire); color: var(--primaire-texte); padding: 12px 18px; border-radius: 16px; font-weight: 800; box-shadow: var(--ombre-carte); max-width: calc(100% - 32px); }
+</style>
+
+<header>
+  <div class="barre">
+    <span class="logo">rafals<span>.</span></span>
+    <span class="entree">Accueil</span>
+    <span class="entree" id="entree-trouver">Trouver un prestataire</span>
+    <span class="entree">Messages</span>
+    <span class="entree">Mon activité</span>
+    <div class="zone-compte">
+      <button type="button" class="pastille" id="pastille" aria-expanded="false" aria-haspopup="true"><span class="initiales">JM</span>Julie</button>
+      <div class="liste" id="liste" hidden>
+        <button type="button" class="ligne">Mon profil</button>
+        <button type="button" class="ligne nouveau" data-aller="mes">Mes abonnements</button>
+        <button type="button" class="ligne">Paramètres</button>
+        <button type="button" class="ligne">Se déconnecter</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="vues" role="group" aria-label="Écran de la maquette">
+  <small>Maquette cliquable : choisissez un écran. Les boutons marchent (les chiffres changent).</small>
+  <button type="button" data-vue="trouver" aria-pressed="true">1. Trouver un prestataire</button>
+  <button type="button" data-vue="fiche" aria-pressed="false">2. Fiche de Karim</button>
+  <button type="button" data-vue="mes" aria-pressed="false">3. Mes abonnements</button>
+</div>
+
+<main>
+  <!-- 1. Trouver un prestataire -->
+  <section class="page" id="vue-trouver">
+    <div>
+      <h1>Plombier à Pessac</h1>
+      <p class="intro">4 prestataires · les mieux notés d'abord</p>
+    </div>
+    <div class="grille" id="grille"></div>
+    <div class="note">
+      <h3>Ce qui change sur cet écran</h3>
+      <ul>
+        <li>Sous la ville : « 12 abonnés » (rien tant qu'il n'y en a aucun). Tout le monde le voit, même sans compte.</li>
+        <li>En bas à droite de chaque carte : [S'abonner] (vert). Un clic → [Abonné ✓] (vert clair) et un message « Vous suivez Karim Benali ». Un 2e clic se désabonne.</li>
+        <li>Pas connecté : [S'abonner] ouvre la page de connexion, puis revient ici.</li>
+        <li>Sur sa propre carte, un prestataire ne voit pas le bouton.</li>
+        <li>Un clic ailleurs sur la carte ouvre toujours la fiche, comme aujourd'hui.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2. Fiche de Karim -->
+  <section class="page" id="vue-fiche" hidden>
+    <div class="fiche">
+      <article class="carte profil">
+        <div class="profil-haut">
+          <span class="avatar grand" style="background:var(--primaire-doux);color:var(--primaire)">KB</span>
+          <div class="qui" style="gap:6px">
+            <h1>Karim Benali</h1>
+            <span class="note-etoile"><b>★ 4,8</b> <span class="doux">· 23 avis</span> <span class="badge ok">SIRET vérifié</span></span>
+            <div class="ligne-suivre">
+              <button type="button" class="suivre normal" data-suivre="1"></button>
+              <span class="abonnes" data-nombre="1"></span>
+            </div>
+          </div>
+        </div>
+        <p><b>Plombier</b> · aussi Électricien</p>
+        <p class="doux">Part de Pessac, se déplace jusqu'à 15 km</p>
+        <p>Plombier depuis 12 ans : fuites, chauffe-eau, débouchage. Devis gratuit, je passe en général sous 48 h.</p>
+      </article>
+      <aside class="besoin">
+        <h2 style="font-size:20px;font-weight:900">Besoin de Karim ?</h2>
+        <button type="button" class="orange">Écrire à Karim</button>
+        <p>Son téléphone et son adresse vous sont donnés après un rendez-vous.</p>
+      </aside>
+    </div>
+    <div class="note">
+      <h3>Ce qui change sur cet écran</h3>
+      <ul>
+        <li>Sous la note : [S'abonner] et « 12 abonnés », le même bouton que sur la carte.</li>
+        <li>Le reste de la fiche ne change pas.</li>
+        <li>Sur sa propre fiche, Karim voit seulement « 12 abonnés », sans bouton.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. Mes abonnements -->
+  <section class="page" id="vue-mes" hidden>
+    <div>
+      <h1>Mes abonnements</h1>
+      <p class="intro">Les prestataires que vous suivez. La cloche choisit ce qui vous est envoyé sur votre téléphone.</p>
+    </div>
+    <div class="grille" id="mes"></div>
+    <div class="carte vide" id="vide" hidden>
+      <p>Vous ne suivez encore personne. Sur la carte d'un prestataire, appuyez sur [S'abonner].</p>
+      <button type="button" class="principal" data-aller="trouver">Trouver un prestataire</button>
+    </div>
+    <div class="note">
+      <h3>Ce qui change sur cet écran (page nouvelle)</h3>
+      <ul>
+        <li>On y arrive par la liste sous le prénom, en haut à droite : « Mes abonnements », entre « Mon profil » et « Paramètres ».</li>
+        <li>Les petites cartes des prestataires suivis, le plus récent d'abord. Un clic sur le nom ou la photo ouvre la fiche.</li>
+        <li>[Notifications] ouvre les 3 cases de ce prestataire seulement. Elles sont cochées au départ. Chaque clic est enregistré tout de suite.</li>
+        <li>[Se désabonner] retire la carte, avec le message « Vous ne suivez plus Karim Benali ».</li>
+        <li>Un prestataire en pause reste dans la liste, en gris, avec « Profil en pause » et sans lien.</li>
+        <li>Les notifications arrivent seulement sur un appareil où « Activer les notifications » est allumé (comme pour les messages).</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<div class="message" id="message" role="status" hidden></div>
+
+<script>
+const prestataires = [
+  { id: 1, nom: 'Karim Benali', init: 'KB', metier: 'Plombier', ville: 'Pessac', km: 0, note: '4,8', avis: 23, siret: true, abonnes: 12, suivi: true, photos: true, teinte: ['var(--primaire-doux)', 'var(--primaire)'],
+    notifs: { creneau: true, nouveaute: false, retour: true } },
+  { id: 2, nom: 'Sonia Martin', init: 'SM', metier: 'Plombière', ville: 'Talence', km: 4, note: '4,6', avis: 9, siret: true, abonnes: 3, suivi: false, photos: true, teinte: ['#fbe7d8', '#7a3a0e'],
+    notifs: { creneau: true, nouveaute: true, retour: true } },
+  { id: 3, nom: 'Hugo Lefèvre', init: 'HL', metier: 'Plombier', ville: 'Gradignan', km: 6, note: null, avis: 0, siret: false, abonnes: 0, suivi: false, photos: false, teinte: ['#dcEAF7', '#1d4a72'],
+    notifs: { creneau: true, nouveaute: true, retour: true } },
+  { id: 4, nom: 'Léa Dubois', init: 'LD', metier: 'Coiffeuse', ville: 'Pessac', km: 1, note: '4,9', avis: 41, siret: true, abonnes: 27, suivi: true, photos: true, teinte: ['#f8dfe4', '#7f2238'], pause: true,
+    notifs: { creneau: false, nouveaute: false, retour: true } },
+]
+const CASES = [
+  ['creneau', 'Créneau libre', '« Karim Benali est libre jeudi 23/10/2026 à 14 h 00 »'],
+  ['nouveaute', 'Nouveau métier', '« Karim Benali propose maintenant : Chauffagiste »'],
+  ['retour', 'Retour après une absence', '« Karim Benali reprend son activité ce lundi 03/11/2026 »'],
+]
+const ech = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+const nombre = (n) => (n === 0 ? '' : n === 1 ? '1 abonné' : `${n} abonnés`)
+const texteBouton = (p) => (p.suivi ? 'Abonné ✓' : "S'abonner")
+let minuterie
+function dire(texte) {
+  const m = document.getElementById('message')
+  m.textContent = texte
+  m.hidden = false
+  clearTimeout(minuterie)
+  minuterie = setTimeout(() => (m.hidden = true), 3000)
+}
+function basculer(id) {
+  const p = prestataires.find((x) => x.id === id)
+  p.suivi = !p.suivi
+  p.abonnes += p.suivi ? 1 : -1
+  dire(p.suivi ? `Vous suivez ${p.nom}` : `Vous ne suivez plus ${p.nom}`)
+  dessiner()
+}
+function carteResultat(p) {
+  return `<article class="carte resultat">
+    <span class="coin ${p.siret ? 'ok' : 'part'}">${p.siret ? 'SIRET vérifié' : 'Particulier'}</span>
+    <span class="tete"><span class="avatar" style="background:${p.teinte[0]};color:${p.teinte[1]}">${p.init}</span>
+      <span class="qui"><b>${ech(p.nom)}</b><span class="metier">${p.metier}</span><span class="doux">${p.ville} · à ${p.km} km</span>
+      <span class="abonnes">${nombre(p.abonnes)}</span></span></span>
+    ${p.photos ? `<span class="photos"><i style="background:${p.teinte[0]}"></i><i style="background:${p.teinte[1]};opacity:.35"></i></span>` : '<span class="sans-photo">Pas encore de photos</span>'}
+    <span class="pied">${p.note ? `<span class="note-etoile"><b>★ ${p.note}/5</b> <span class="doux">(${p.avis} avis)</span></span>` : '<span class="badge attente">Nouveau sur rafals</span>'}
+      <button type="button" class="suivre" aria-pressed="${p.suivi}" data-suivre="${p.id}">${texteBouton(p)}</button></span>
+  </article>`
+}
+function carteSuivi(p) {
+  const ouverte = p.ouverte ? 'true' : 'false'
+  return `<article class="carte suivi ${p.pause ? 'en-pause' : ''}">
+    <span class="tete"><span class="avatar" style="background:${p.teinte[0]};color:${p.teinte[1]}">${p.init}</span>
+      <span class="qui"><b>${ech(p.nom)}</b><span class="metier">${p.metier}</span><span class="doux">${p.ville}${p.note ? ` · <span class="note-etoile"><b>★ ${p.note}</b></span>` : ''}</span>
+      ${p.pause ? '<span class="badge attente" style="align-self:flex-start;margin-top:4px">Profil en pause</span>' : `<span class="abonnes">${nombre(p.abonnes)}</span>`}</span></span>
+    <div class="suivi-pied">
+      <button type="button" class="cloche" aria-expanded="${ouverte}" data-cloche="${p.id}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+        Notifications · ${Object.values(p.notifs).filter(Boolean).length}/3</button>
+      <button type="button" class="retirer" data-suivre="${p.id}">Se désabonner</button>
+    </div>
+    ${p.ouverte ? `<div class="cases">${CASES.map(([cle, titre, ex]) => `<button type="button" class="case" role="checkbox" aria-checked="${p.notifs[cle]}" data-case="${p.id}:${cle}"><span class="boite"></span><span><b>${titre}</b><small>${ex.replaceAll('Karim Benali', p.nom)}</small></span></button>`).join('')}</div>` : ''}
+  </article>`
+}
+function dessiner() {
+  document.getElementById('grille').innerHTML = prestataires.filter((p) => !p.pause).map(carteResultat).join('')
+  const suivis = prestataires.filter((p) => p.suivi)
+  document.getElementById('mes').innerHTML = suivis.map(carteSuivi).join('')
+  document.getElementById('vide').hidden = suivis.length > 0
+  const karim = prestataires[0]
+  document.querySelectorAll('#vue-fiche [data-suivre]').forEach((b) => { b.textContent = texteBouton(karim); b.setAttribute('aria-pressed', karim.suivi) })
+  document.querySelector('#vue-fiche [data-nombre]').textContent = nombre(karim.abonnes) || 'Aucun abonné pour l’instant'
+}
+function montrer(vue) {
+  for (const v of ['trouver', 'fiche', 'mes']) document.getElementById(`vue-${v}`).hidden = v !== vue
+  document.querySelectorAll('.vues button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.vue === vue))
+  document.getElementById('entree-trouver').classList.toggle('ici', vue !== 'mes')
+  document.querySelectorAll('.ligne[data-aller="mes"]').forEach((l) => l.classList.toggle('ici', vue === 'mes'))
+  document.getElementById('liste').hidden = true
+  document.getElementById('pastille').setAttribute('aria-expanded', 'false')
+}
+document.addEventListener('click', (e) => {
+  const cible = e.target.closest('button')
+  if (!cible) return
+  if (cible.dataset.vue) montrer(cible.dataset.vue)
+  else if (cible.dataset.aller) montrer(cible.dataset.aller)
+  else if (cible.dataset.suivre) basculer(Number(cible.dataset.suivre))
+  else if (cible.dataset.cloche) { const p = prestataires.find((x) => x.id === Number(cible.dataset.cloche)); p.ouverte = !p.ouverte; dessiner() }
+  else if (cible.dataset.case) {
+    const [id, cle] = cible.dataset.case.split(':')
+    const p = prestataires.find((x) => x.id === Number(id))
+    p.notifs[cle] = !p.notifs[cle]
+    dire('Enregistré')
+    dessiner()
+  } else if (cible.id === 'pastille') {
+    const liste = document.getElementById('liste')
+    liste.hidden = !liste.hidden
+    cible.setAttribute('aria-expanded', String(!liste.hidden))
+  }
+})
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { document.getElementById('liste').hidden = true; document.getElementById('pastille').setAttribute('aria-expanded', 'false') } })
+prestataires[0].ouverte = true
+dessiner()
+montrer('trouver')
+</script>

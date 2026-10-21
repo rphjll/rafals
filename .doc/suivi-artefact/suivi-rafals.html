@@ -52,14 +52,14 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
 <div class="page">
   <div>
     <h1>Suivi de rafals<i>.</i></h1>
-    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 21/10/2026. 67 lots, du niveau 0 au niveau 11, et 7 tâches hors lot.</p>
+    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 21/10/2026. 67 lots, du niveau 0 au niveau 11, et 9 tâches hors lot.</p>
   </div>
-  <div class="barre" role="img" aria-label="47 faits, 22 à vérifier, 1 en cours, 4 à faire">
-    <span class="fait" style="width:63.51351351351351%"></span><span class="verifier" style="width:29.72972972972973%"></span><span class="cours" style="width:1.3513513513513513%"></span><span class="faire" style="width:5.405405405405405%"></span>
+  <div class="barre" role="img" aria-label="47 faits, 25 à vérifier, 0 en cours, 4 à faire">
+    <span class="fait" style="width:61.8421052631579%"></span><span class="verifier" style="width:32.89473684210527%"></span><span class="cours" style="width:0%"></span><span class="faire" style="width:5.263157894736842%"></span>
   </div>
   <div class="filtres" role="group" aria-label="Montrer seulement un état">
-    <button type="button" data-f="tout" aria-pressed="true">Tout <b>74</b></button>
-    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>4</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>1</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>22</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>47</b></button>
+    <button type="button" data-f="tout" aria-pressed="true">Tout <b>76</b></button>
+    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>4</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>0</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>25</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>47</b></button>
   </div>
   <p class="doux" id="vide" hidden>Aucun lot dans cet état.</p>
   <section><header><h2><span>Hors lot</span>Travail en cours</h2></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
@@ -68,12 +68,20 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
   <td class="etat"><span class="badge fait">Fait</span></td>
 </tr><tr data-etat="verifier">
   <td class="lot">—</td>
+  <td><span class="titre">S'abonner à un prestataire</span><span class="type">Base + Serveur + Écrans</span><p>Demande du 21/10/2026 : [S'abonner] sur chaque prestataire, page « Mes abonnements », notifications choisies par prestataire (créneau libéré, nouveau métier ou service, retour d'absence), nombre d'abonnés visible par tous. Construit le 21/10/2026 (schema_v31.sql, 456 tests). À vérifier à l’écran par Raphael.</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">—</td>
+  <td><span class="titre">TVA activée par la barre</span><span class="type">Base + Serveur + Écrans</span><p>Demande du 17/10/2026 : la case TVA quitte Mon profil ; ajouter dans Mon activité l'argent encaissé ailleurs ; barre pleine (37 500 €) = TVA activée toute seule. Fait le 18/10/2026 (schema_v30.sql, 444 tests). À vérifier à l'écran par Raphael.</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">—</td>
   <td><span class="titre">Thème sombre au choix (Paramètres)</span><span class="type">Écrans</span><p>Demande du 17/10/2026 : choisir Automatique, Clair ou Sombre dans une nouvelle page Paramètres, sous le prénom en haut à droite. Construit le 17/10/2026, à vérifier à l'écran par Raphael.</p></td>
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
-</tr><tr data-etat="cours">
+</tr><tr data-etat="verifier">
   <td class="lot">—</td>
-  <td><span class="titre">Simplifier « Mon agenda › Calendrier »</span><span class="type">Écrans</span><p>Maquette F retenue, en pause : à valider par Raphael avant de coder. Aucun fichier du site modifié.</p></td>
-  <td class="etat"><span class="badge cours">En cours</span></td>
+  <td><span class="titre">Simplifier « Mon agenda › Calendrier »</span><span class="type">Serveur + Écrans</span><p>Maquette validée le 17/10/2026 et construite le même jour : fermer ou ouvrir des jours en un clic, clic droit pour les horaires d'un jour, date d'arrêt dans Mon profil. À vérifier à l'écran par Raphael.</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr><tr data-etat="verifier">
   <td class="lot">—</td>
   <td><span class="titre">Nouvelle présentation du site (style chaleureux)</span><span class="type">Écrans</span><p>Demande du 04/10/2026. Plusieurs étapes faites, à vérifier à l'écran par Raphael.</p></td>

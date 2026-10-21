@@ -9,6 +9,7 @@ from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
 from app.routes.dependances import Base, CompteOuPersonne, maintenant
 from app.routes.prestataires import CommuneVisible, MetierCourt, commune_visible
+from app.services import abonnements as service_abonnements
 from app.services import absences
 from app.services import avis as service_avis
 from app.services import prestataires as service_prestataires
@@ -36,6 +37,8 @@ class CarteResultat(BaseModel):
     nouveau: bool
     vient_chez_vous: bool
     carte_possible: bool
+    abonnes: int  # « 12 abonnés », visible par tous
+    abonne: bool  # la personne connectée le suit : bouton [Abonné ✓]
 
 
 class PageResultats(BaseModel):
@@ -79,9 +82,18 @@ class PrestatairePublic(BaseModel):
     nombre_avis: int
     absences: int  # « 1 absence sans prévenir » en 6 mois (RM-RENDEZ-VOUS)
     photos: list[int]  # rangs des photos de son travail (10 au plus)
+    abonnes: int
+    abonne: bool
 
 
-def carte(db: Base, r: service.Resultat) -> CarteResultat:
+def cartes(db: Base, resultats: list[service.Resultat], compte: Compte | None) -> list[CarteResultat]:
+    """Les cartes d'une page, avec le nombre d'abonnés compté en une seule fois pour toute la page."""
+    ids = [r.prestataire.id for r in resultats]
+    nombres, suivis = service_abonnements.nombres(db, ids), service_abonnements.suivis(db, compte, ids)
+    return [carte(db, r, nombres.get(r.prestataire.id, 0), r.prestataire.id in suivis) for r in resultats]
+
+
+def carte(db: Base, r: service.Resultat, abonnes: int, abonne: bool) -> CarteResultat:
     photos = service_prestataires.photos_de(db, r.prestataire.id)[: reglages.RECHERCHE_PHOTOS_SUR_CARTE]
     return CarteResultat(
         prestataire_id=r.prestataire.id, nom_affiche=r.prestataire.nom_affiche, a_une_photo=r.prestataire.photo_id is not None,
@@ -89,14 +101,14 @@ def carte(db: Base, r: service.Resultat) -> CarteResultat:
         principal=r.principal, siret_verifie=r.prestataire.siret_statut == "verifie", photos=[p.ordre for p in photos],
         note=r.note, nombre_avis=r.nombre_avis,
         nouveau=r.nouveau, vient_chez_vous=service.vient_chez_le_client(r),
-        carte_possible=service.carte_acceptee(r.prestataire),
+        carte_possible=service.carte_acceptee(r.prestataire), abonnes=abonnes, abonne=abonne,
     )
 
 
 @routeur.get("/recherche")
 def rechercher(
-    metier_id: int, commune_id: int, db: Base, tri: str = "note", page: int = 1, vient_chez_moi: bool = False,
-    carte_bancaire: bool = False,
+    metier_id: int, commune_id: int, db: Base, compte: CompteOuPersonne, tri: str = "note", page: int = 1,
+    vient_chez_moi: bool = False, carte_bancaire: bool = False,
 ) -> PageResultats:
     """Ex. /api/recherche?metier_id=3&commune_id=33522&carte_bancaire=true. Ouvert à tous."""
     filtres = service.Filtres(vient_chez_moi=vient_chez_moi, carte=carte_bancaire)
@@ -107,37 +119,37 @@ def rechercher(
     return PageResultats(
         metier=MetierCourt(id=metier.id, nom=metier.nom), ville=commune_visible(db.get_one(Commune, commune_id)),
         total=resultat.total,
-        page=resultat.page, pages=resultat.pages, resultats=[carte(db, r) for r in resultat.resultats],
+        page=resultat.page, pages=resultat.pages, resultats=cartes(db, resultat.resultats, compte),
         metiers_voisins=[MetierCourt(id=m.id, nom=m.nom) for m in resultat.metiers_voisins],
     )
 
 
-def _rubrique(db: Base, rubrique: service.Rubrique, *, par_page: int, page: int = 1) -> RubriqueVisible:
+def _rubrique(db: Base, rubrique: service.Rubrique, compte: Compte | None, *, par_page: int, page: int = 1) -> RubriqueVisible:
     pages = max(1, -(-len(rubrique.resultats) // par_page))
     page = min(max(1, page), pages)
     return RubriqueVisible(
         dossier_id=rubrique.dossier.id, code=rubrique.dossier.code, nom=rubrique.dossier.nom, total=len(rubrique.resultats),
-        page=page, pages=pages, resultats=[carte(db, r) for r in rubrique.resultats[(page - 1) * par_page: page * par_page]],
+        page=page, pages=pages, resultats=cartes(db, rubrique.resultats[(page - 1) * par_page: page * par_page], compte),
     )
 
 
 @routeur.get("/recherche/rubriques")
-def rubriques(commune_id: int, db: Base) -> PageRubriques:
+def rubriques(commune_id: int, db: Base, compte: CompteOuPersonne) -> PageRubriques:
     """Ex. /api/recherche/rubriques?commune_id=33318 → « Bricolage » (14, les 10 premiers), « Jardinage » (9)… Ouvert à tous."""
     trouvees = service.par_dossier(db, commune_id=commune_id, maintenant=maintenant())
     return PageRubriques(
         ville=commune_visible(db.get_one(Commune, commune_id)),
-        rubriques=[_rubrique(db, r, par_page=reglages.RECHERCHE_CARTES_PAR_RUBRIQUE) for r in trouvees],
+        rubriques=[_rubrique(db, r, compte, par_page=reglages.RECHERCHE_CARTES_PAR_RUBRIQUE) for r in trouvees],
     )
 
 
 @routeur.get("/recherche/rubriques/{dossier_id}")
-def rubrique_entiere(dossier_id: int, commune_id: int, db: Base, page: int = 1) -> PageRubriques:
+def rubrique_entiere(dossier_id: int, commune_id: int, db: Base, compte: CompteOuPersonne, page: int = 1) -> PageRubriques:
     """[Voir tout] : tous les prestataires d'un dossier pour une ville, 30 par page. Dossier vide : aucune rubrique."""
     trouvees = service.par_dossier(db, commune_id=commune_id, maintenant=maintenant())
     return PageRubriques(
         ville=commune_visible(db.get_one(Commune, commune_id)),
-        rubriques=[_rubrique(db, r, par_page=reglages.RECHERCHE_RESULTATS_PAR_PAGE, page=page)
+        rubriques=[_rubrique(db, r, compte, par_page=reglages.RECHERCHE_RESULTATS_PAR_PAGE, page=page)
                    for r in trouvees if r.dossier.id == dossier_id],
     )
 
@@ -166,4 +178,6 @@ def page_publique(prestataire_id: int, db: Base, compte: CompteOuPersonne) -> Pr
         siret_verifie=prestataire.siret_statut == "verifie", note=note, nombre_avis=nombre,
         absences=len(absences.absences_du_prestataire(db, prestataire.id, maintenant_)),
         photos=[p.ordre for p in service_prestataires.photos_de(db, prestataire.id)],
+        abonnes=service_abonnements.nombres(db, [prestataire.id]).get(prestataire.id, 0),
+        abonne=prestataire.id in service_abonnements.suivis(db, compte, [prestataire.id]),
     )

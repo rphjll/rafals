@@ -75,5 +75,6 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AppChoixMetier` (dans `components/`) — choix d'un métier par recherche ou par dossier, avec « Proposer un métier » (lot 2.2).
 - Écrans d'administration : un fichier par onglet dans `components/admin/`.
 - Thème clair ou sombre : toujours par `frontend/src/composables/useTheme.ts` (page « Paramètres », 17/10/2026) ; `AppChoix` a un slot facultatif « avant » pour un petit dessin au-dessus du texte de chaque case (aperçus du thème).
+- `BoutonAbonnement` (dans `components/prestataire/`) — [S'abonner] / [Abonné ✓], le même sur les cartes de résultat (petit) et la page publique ; types, textes (« 12 abonnés ») et les 3 cases de la cloche : `frontend/src/outils/abonnements.ts` (21/10/2026).
 - Dates : toujours par `frontend/src/outils/dates.ts` (« 28/09/2026 à 18 h 40 », heure de Paris ; âge).
 - Appels au serveur : toujours par `frontend/src/api.ts` (messages d'erreur du serveur montrés tels quels).

@@ -7,6 +7,7 @@ import { appelerServeur, messageErreur } from '../api'
 import AvisAffiche from '../components/avis/AvisAffiche.vue'
 import FenetreDemandeDevis from '../components/devis/FenetreDemandeDevis.vue'
 import AvatarPrestataire from '../components/prestataire/AvatarPrestataire.vue'
+import BoutonAbonnement from '../components/prestataire/BoutonAbonnement.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
@@ -14,6 +15,7 @@ import AppSection from '../components/ui/AppSection.vue'
 import BoutonSignaler from '../components/BoutonSignaler.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
+import { texteAbonnes } from '../outils/abonnements'
 import { type AvisPublic, etoiles } from '../outils/avis'
 import { VERROU_SIRET, lieuPourUnClient } from '../outils/prestataires'
 import { type PrestatairePublic, adressePhotoTravail, noteLisible } from '../outils/recherche'
@@ -110,6 +112,19 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
                 <AppBadge v-if="prestataire.siret_verifie" etat="ok">SIRET vérifié</AppBadge>
               <!-- Sans SIRET vérifié : l'étiquette que la règle impose (RM-PRESTATAIRES, limites sans SIRET) -->
               <AppBadge v-else etat="attente">Particulier, non professionnel</AppBadge>
+              </div>
+              <!-- [S'abonner] et « 12 abonnés » (21/10/2026) ; sur sa propre page, seulement le nombre -->
+              <div class="flex flex-wrap items-center gap-x-3.5 gap-y-2">
+                <BoutonAbonnement
+                  v-if="!monProfil"
+                  :prestataire-id="prestataire.id"
+                  :nom="prestataire.nom_affiche"
+                  :abonne="prestataire.abonne"
+                  @change="Object.assign(prestataire, $event)"
+                />
+                <span class="text-[13.5px] font-bold text-texte-doux tabular-nums">
+                  {{ texteAbonnes(prestataire.abonnes) || "Aucun abonné pour l'instant" }}
+                </span>
               </div>
             </div>
           </div>

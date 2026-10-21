@@ -23,6 +23,7 @@ const TITRES = {
 // Tâches hors lot de la rubrique « Travail en cours » (résumées à la main)
 const HORS_LOT = [
   { lot: '—', titre: 'Mon profil façon Instagram', type: 'Écrans', desc: 'Demande du 21/10/2026 : « Mon profil » façon Instagram (photo et 4 chiffres en haut, métiers en bulles, onglets Photos · Mon activité · Mon compte, grille de photos). Validé par Raphael le 21/10/2026.', etat: 'fait' },
+  { lot: '—', titre: "S'abonner à un prestataire", type: 'Base + Serveur + Écrans', desc: 'Demande du 21/10/2026 : [S\'abonner] sur chaque prestataire, page « Mes abonnements », notifications choisies par prestataire (créneau libéré, nouveau métier ou service, retour d\'absence), nombre d\'abonnés visible par tous. Construit le 21/10/2026 (schema_v31.sql, 456 tests). À vérifier à l’écran par Raphael.', etat: 'verifier' },
   { lot: '—', titre: 'Thème sombre au choix (Paramètres)', type: 'Écrans', desc: 'Demande du 17/10/2026 : choisir Automatique, Clair ou Sombre dans une nouvelle page Paramètres, sous le prénom en haut à droite. Construit le 17/10/2026, à vérifier à l\'écran par Raphael.', etat: 'verifier' },
   { lot: '—', titre: 'Simplifier « Mon agenda › Calendrier »', type: 'Écrans', desc: 'Maquette F retenue, en pause : à valider par Raphael avant de coder. Aucun fichier du site modifié.', etat: 'cours' },
   { lot: '—', titre: 'Nouvelle présentation du site (style chaleureux)', type: 'Écrans', desc: 'Demande du 04/10/2026. Plusieurs étapes faites, à vérifier à l\'écran par Raphael.', etat: 'verifier' },

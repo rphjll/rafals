@@ -14,10 +14,11 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.db import moteur
 from app.routes import (
-    accords, activite, administration, agenda, avis, clients, comptes, creation_entreprise, demandes, devis, factures, messagerie, metiers,
+    abonnements, accords, activite, administration, agenda, avis, clients, comptes, creation_entreprise, demandes, devis, factures, messagerie, metiers,
     notifications, paiements, propositions,
     prestataires, recherche, rendez_vous, services_en_plus, avis_clients,
 )
+from app.services import abonnements as service_abonnements
 from app.services import alertes as service_alertes
 from app.services import avis as service_avis
 from app.services import clients as service_clients
@@ -119,6 +120,10 @@ async def cycle_de_vie(_app: FastAPI) -> AsyncIterator[None]:
         asyncio.create_task(_tache_periodique(
             "rappels d'avis", 60 * 60, _dans_une_session(service_avis.envoyer_rappels),
         )),
+        # Abonnements : « Léa reprend son activité » à 8 h le jour où son absence se termine (demande du 21/10/2026)
+        asyncio.create_task(_tache_periodique(
+            "retours d'absence pour les abonnés", 60 * 60, _dans_une_session(service_abonnements.traiter),
+        )),
     ]
     yield
     for tache in taches:
@@ -147,6 +152,7 @@ app.include_router(demandes.routeur)
 app.include_router(propositions.routeur)
 app.include_router(activite.routeur)
 app.include_router(notifications.routeur)
+app.include_router(abonnements.routeur)
 
 
 @app.exception_handler(ErreurRegle)

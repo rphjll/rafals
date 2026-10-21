@@ -12,7 +12,7 @@ from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, MetierSecondaire, PhotoPrestataire, Prestataire
-from app.services import droits, fichiers, journal
+from app.services import abonnements, droits, fichiers, journal
 from app.services import rendez_vous_communs as communs
 from app.services import siret as service_siret
 from app.services.erreurs import ErreurRegle
@@ -293,6 +293,7 @@ def modifier_profil(db: Session, prestataire: Prestataire, profil: Profil, maint
         raise ErreurRegle("Votre activité est arrêtée : ce profil ne peut plus être modifié.")
     jour = aujourd_hui(maintenant)
     avant = _etat(prestataire, metiers_secondaires(db, prestataire, jour))
+    exerces_avant = metiers_exerces(db, prestataire, jour)
     compte = db.get_one(Compte, prestataire.compte_id)
     p = _verifier(db, profil, compte)
     if p.siret != prestataire.siret:
@@ -311,6 +312,9 @@ def modifier_profil(db: Session, prestataire: Prestataire, profil: Profil, maint
         db, auteur_id=prestataire.compte_id, action="modifier_profil_prestataire", table_cible="prestataire",
         ligne_id=prestataire.id, avant=avant, apres=_etat(prestataire, p.metiers_secondaires), maintenant=maintenant,
     )
+    # Ex. Karim ajoute Chauffagiste : ses abonnés qui l'ont choisi sont prévenus
+    abonnements.nouveaux_metiers(db, prestataire, [m for m in metiers_exerces(db, prestataire, jour) if m not in exerces_avant],
+                                 maintenant)
     return prestataire
 
 
@@ -510,6 +514,8 @@ def changer_statut(db: Session, prestataire: Prestataire, action: str, maintenan
         messages = {"pause": "Votre profil est déjà en pause.", "reprendre": "Votre profil est déjà actif."}
         raise ErreurRegle(messages.get(action, "Ce changement n'est pas possible."))
     _changer_statut(db, prestataire, arrivee, prestataire.compte_id, f"prestataire_{action}", maintenant)
+    if action == "reprendre":  # fin d'une pause : les abonnés qui l'ont choisi sont prévenus
+        abonnements.retour(db, prestataire, maintenant, maintenant)
     return prestataire
 
 

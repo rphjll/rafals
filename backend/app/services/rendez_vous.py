@@ -13,7 +13,7 @@ from app.modeles.comptes import Compte
 from app.modeles.paiements import Paiement
 from app.modeles.prestataires import Commune, Prestataire
 from app.modeles.rendez_vous import RendezVous
-from app.services import journal, locaux
+from app.services import abonnements, journal, locaux
 from app.services import rendez_vous_communs as communs
 from app.services.erreurs import ErreurRegle
 
@@ -88,6 +88,7 @@ def annuler_par_client(db: Session, client: Compte, rdv: RendezVous, maintenant:
         return rdv
     _prevenir(db, rdv, sujet="rafals : rendez-vous annulé par le client",
               prestataire=f"Le client a annulé « {rdv.titre} », {_texte_moment(rdv.debut)}. L'horaire est de nouveau libre.")
+    abonnements.creneau_libre(db, db.get_one(Prestataire, rdv.prestataire_id), rdv.debut, maintenant)
     return rdv
 
 

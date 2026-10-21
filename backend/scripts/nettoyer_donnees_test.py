@@ -63,6 +63,8 @@ RATTACHEES: dict[str, list[str]] = {
         "DELETE FROM alerte_coupee WHERE prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         # Appareils qui reçoivent les notifications (lot 8.7)
         "DELETE FROM appareil WHERE compte_id = :id",
+        # Abonnements à un prestataire (schema_v31), comme abonné ou comme prestataire suivi
+        "DELETE FROM abonnement WHERE compte_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)",
         "DELETE FROM mot_interdit WHERE ajoute_par_id = :id",
         # Signalements et rappels URSSAF d'essai (lot 6.3)
         "DELETE FROM signalement WHERE auteur_id = :id OR traite_par_id = :id OR prestataire_id IN (SELECT id FROM prestataire WHERE compte_id = :id)"

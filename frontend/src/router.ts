@@ -15,6 +15,7 @@ import DevisPage from './pages/DevisPage.vue'
 import FacturesPage from './pages/FacturesPage.vue'
 import ConnexionPage from './pages/ConnexionPage.vue'
 import InscriptionPage from './pages/InscriptionPage.vue'
+import MesAbonnementsPage from './pages/MesAbonnementsPage.vue'
 import MesClientsPage from './pages/MesClientsPage.vue'
 import MesAvisRecusPage from './pages/MesAvisRecusPage.vue'
 import MesDemandesPage from './pages/MesDemandesPage.vue'
@@ -51,6 +52,7 @@ export const routeur = createRouter({
     { path: '/messages/:id(\\d+)', name: 'conversation', component: MessagesPage },
     { path: '/mon-activite', name: 'mon-activite', component: MonActivitePage },
     { path: '/mes-clients', name: 'mes-clients', component: MesClientsPage },
+    { path: '/mes-abonnements', name: 'mes-abonnements', component: MesAbonnementsPage },
     { path: '/clients/:id(\\d+)/avis', name: 'avis-client', component: AvisClientPage },
     { path: '/alertes', name: 'alertes', component: AlertesPage },
     { path: '/mes-avis-recus', name: 'mes-avis-recus', component: MesAvisRecusPage },

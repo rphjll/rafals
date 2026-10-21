@@ -19,6 +19,10 @@ export interface CarteResultat {
   nouveau: boolean
   vient_chez_vous: boolean
   carte_possible: boolean
+  /** « 12 abonnés », visible par tous (abonnements, 21/10/2026) */
+  abonnes: number
+  /** La personne connectée le suit : bouton [Abonné ✓] */
+  abonne: boolean
 }
 
 export interface PageResultats {
@@ -62,6 +66,8 @@ export interface PrestatairePublic {
   absences: number
   /** Rangs des photos de son travail (10 au plus) */
   photos: number[]
+  abonnes: number
+  abonne: boolean
 }
 
 /** 4.5 → « 4,5 » */
