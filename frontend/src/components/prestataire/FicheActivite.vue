@@ -1,14 +1,21 @@
 <script setup lang="ts">
-// Fiche « Mon activité » du prestataire (.doc/ihm/RM-PROPOSER-IHM.md) : profil, photo, métiers (dates de fin),
-// pause / reprise, arrêt. (L'adresse du local est la carte « Mon adresse » de la page, depuis le 07/10/2026.)
-import { computed, ref } from 'vue'
+// « Mon profil » du prestataire, façon Instagram (.doc/ihm/RM-PROFIL-IHM.md, 21/10/2026) : photo et chiffres en haut,
+// métiers en bulles, puis 3 onglets : Photos (grille), Mon activité (cartes en lignes qui se déplient), Mon compte
+// (slot « compte », rempli par ProfilPage). Pause / reprise, arrêt. (L'adresse du local est dans « Mon adresse ».)
+import { computed, nextTick, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
+import { teinte } from '../../outils/pictos'
 import { type ProfilPrestataire, badgeSiret, badgeStatut, siretLisible } from '../../outils/prestataires'
+import { chiffre, chiffreNote, chiffreOuTiret, compterAbonnements } from '../../outils/profil'
+import EnteteProfil from '../profil/EnteteProfil.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
+import AppListeLignes from '../ui/AppListeLignes.vue'
+import AppOnglets from '../ui/AppOnglets.vue'
 import AppSection from '../ui/AppSection.vue'
 import AvatarPrestataire from './AvatarPrestataire.vue'
 import CarteMetiers from './CarteMetiers.vue'
@@ -16,10 +23,12 @@ import CarteParticulier from './CarteParticulier.vue'
 import CartePaiementCarte from './CartePaiementCarte.vue'
 import CartePhotosTravail from './CartePhotosTravail.vue'
 import CarteTva from './CarteTva.vue'
+import FenetreAjoutMetier from './FenetreAjoutMetier.vue'
 
 const props = defineProps<{ profil: ProfilPrestataire }>()
 const emit = defineEmits<{ maj: [profil: ProfilPrestataire]; modifier: [] }>()
 const { afficherMessage } = useMessage()
+const routeur = useRouter()
 
 const bloque = computed(() => props.profil.statut === 'bloque')
 const raisonBlocage = "Votre profil est bloqué par l'administrateur de rafals : contactez-le."
@@ -59,6 +68,63 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
     afficherMessage(messageErreur(e), 'erreur')
   }
 }
+
+// ---------- Chiffres du haut : photos, note, abonnés, abonnements ----------
+const publics = ref<{ note: number | null; nombre_avis: number; abonnes: number } | null>(null)
+const abonnements = ref<number | null>(null)
+onMounted(async () => {
+  abonnements.value = await compterAbonnements()
+  try {
+    publics.value = await appelerServeur(`/api/prestataires/${props.profil.id}`)
+  } catch {
+    publics.value = null // profil en pause ou arrêté : sa page publique n'est pas lisible, les chiffres restent « — »
+  }
+})
+const chiffres = computed(() => [
+  chiffre(props.profil.photos.length, 'photo'),
+  publics.value ? chiffreNote(publics.value.note, publics.value.nombre_avis) : { valeur: '—', texte: 'avis' },
+  chiffreOuTiret(publics.value?.abonnes ?? null, 'abonné'),
+  chiffreOuTiret(abonnements.value, 'abonnement'),
+])
+
+// ---------- Onglets et bulles des métiers ----------
+const ICONES = {
+  photos: 'M4 4h6.5v6.5H4zM13.5 4H20v6.5h-6.5zM4 13.5h6.5V20H4zM13.5 13.5H20V20h-6.5z',
+  activite: 'M14.7 6.3a4 4 0 00-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 005.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z',
+  compte: 'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c1.5-4 4.5-6 8-6s6.5 2 8 6',
+}
+const onglets = computed(() =>
+  props.profil.statut === 'arrete'
+    ? [{ id: 'compte', texte: 'Mon compte', icone: ICONES.compte }]
+    : [
+        { id: 'photos', texte: 'Photos', icone: ICONES.photos },
+        { id: 'activite', texte: 'Mon activité', icone: ICONES.activite },
+        { id: 'compte', texte: 'Mon compte', icone: ICONES.compte },
+      ],
+)
+const onglet = ref('photos')
+const metiers = computed(() => [
+  { ...props.profil.metier_principal, principal: true },
+  ...props.profil.metiers_secondaires.map((m) => ({ ...m, principal: false })),
+])
+const lignesActivite = ref<InstanceType<typeof AppListeLignes> | null>(null)
+const fenetreAjout = ref(false) // la bulle « + Ajouter » ouvre la fenêtre « Ajouter un métier »
+/** Une bulle de métier ouvre la ligne « Mes métiers » de l'onglet « Mon activité » */
+async function ouvrirMetiers() {
+  await routeur.replace({ query: { onglet: 'activite' } })
+  await nextTick()
+  lignesActivite.value?.ouvrir('Mes métiers')
+}
+const resumes = computed(() => ({
+  'Sans SIRET : vos limites': 'Petits services payés en espèces, 100 € au plus par proposition',
+  'Mes métiers': [`${props.profil.metier_principal.nom} (principal)`, ...props.profil.metiers_secondaires.map((m) => m.nom)].join(' · '),
+  Visibilité:
+    props.profil.statut === 'en_pause'
+      ? "En pause : vous n'apparaissez plus dans les recherches"
+      : props.profil.statut === 'bloque'
+        ? "Bloqué par l'administrateur"
+        : 'Actif : vous apparaissez dans les recherches',
+}))
 </script>
 
 <template>
@@ -71,75 +137,98 @@ async function statut(action: 'pause' | 'reprendre' | 'arreter') {
       Votre activité est arrêtée : ce profil n'est plus visible ni modifiable.
     </AppAlerte>
 
-    <section class="grid items-start gap-4 carte p-5 sm:grid-cols-[96px_1fr]">
-      <AvatarPrestataire
-        :id="profil.id"
-        :nom="profil.nom_affiche"
-        :a-une-photo="profil.a_une_photo"
-        taille="grande"
-        :version="versionPhoto"
-      />
-
-      <div class="flex flex-col gap-2.5">
-        <div class="flex flex-wrap items-center gap-2">
-          <h2 class="text-xl font-bold">{{ profil.nom_affiche }}</h2>
+    <section class="carte overflow-hidden">
+      <EnteteProfil :nom="profil.nom_affiche" :chiffres="chiffres">
+        <template #photo>
+          <AvatarPrestataire
+            :id="profil.id"
+            :nom="profil.nom_affiche"
+            :a-une-photo="profil.a_une_photo"
+            taille="grande"
+            :version="versionPhoto"
+          />
+        </template>
+        <template #badges>
           <AppBadge :etat="badgeStatut(profil.statut).etat">{{ badgeStatut(profil.statut).texte }}</AppBadge>
-        </div>
-        <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-[14.5px]">
-          <dt class="text-texte-doux">Métier</dt>
-          <dd class="font-medium">
-            {{ profil.metier_principal.nom }}
-            <template v-if="profil.metiers_secondaires.length">
-              · aussi {{ profil.metiers_secondaires.map((m) => m.nom).join(', ') }}
-            </template>
-          </dd>
-          <dt class="text-texte-doux">Zone</dt>
-          <dd class="font-medium">
-            {{ profil.commune.nom }} ({{ profil.commune.codes_postaux[0] }}), jusqu'à {{ profil.distance_km }} km
-          </dd>
-          <dt class="text-texte-doux">SIRET</dt>
-          <dd class="flex flex-wrap items-center gap-2 font-medium">
-            <AppBadge :etat="badgeSiret(profil.siret_statut).etat">{{ badgeSiret(profil.siret_statut).texte }}</AppBadge>
-            {{ siretLisible(profil.siret) }}
-            <span v-if="profil.siret_statut !== 'verifie'" class="text-[13px] font-normal text-texte-doux">
-              espèces seulement<template v-if="profil.siret_statut === 'a_verifier'"> (nouvel essai automatique auprès de l'État)</template>
-            </span>
-          </dd>
-          <template v-if="profil.presentation">
-            <dt class="text-texte-doux">Présentation</dt>
-            <dd class="font-medium whitespace-pre-line">{{ profil.presentation }}</dd>
+          <AppBadge :etat="badgeSiret(profil.siret_statut).etat">{{ badgeSiret(profil.siret_statut).texte }}</AppBadge>
+        </template>
+        <p>
+          <span class="font-extrabold text-primaire">{{ profil.metier_principal.nom }}</span>
+          <span v-if="profil.metiers_secondaires.length" class="text-texte-doux">
+            · aussi {{ profil.metiers_secondaires.map((m) => m.nom).join(', ') }}
+          </span>
+        </p>
+        <p v-if="profil.presentation" class="whitespace-pre-line">{{ profil.presentation }}</p>
+        <p class="text-[14px] text-texte-doux">
+          📍 {{ profil.commune.nom }} ({{ profil.commune.codes_postaux[0] }}) · jusqu'à {{ profil.distance_km }} km
+        </p>
+        <p class="text-[13px] text-texte-doux">
+          SIRET {{ siretLisible(profil.siret) }}
+          <template v-if="profil.siret_statut !== 'verifie'">
+            · espèces seulement<template v-if="profil.siret_statut === 'a_verifier'"> (nouvel essai automatique auprès de l'État)</template>
           </template>
-        </dl>
-        <div v-if="profil.statut !== 'arrete'" class="flex flex-wrap gap-2">
-          <AppBouton variante="secondaire" @click="emit('modifier')">Modifier mon profil</AppBouton>
+        </p>
+        <template v-if="profil.statut !== 'arrete'" #boutons>
+          <AppBouton @click="emit('modifier')">Modifier mon profil</AppBouton>
           <AppBouton variante="secondaire" @click="champPhoto?.click()">Changer ma photo</AppBouton>
-          <input ref="champPhoto" type="file" accept="image/jpeg,image/png" class="sr-only" @change="envoyerPhoto" />
-        </div>
+          <AppBouton variante="secondaire" @click="routeur.push('/mon-activite')">Mon activité</AppBouton>
+        </template>
+      </EnteteProfil>
+      <input ref="champPhoto" type="file" accept="image/jpeg,image/png" class="sr-only" @change="envoyerPhoto" />
+
+      <!-- Les métiers en bulles rondes, comme les « stories à la une » -->
+      <div v-if="profil.statut !== 'arrete'" class="flex gap-4 overflow-x-auto px-5 pt-4 pb-5 max-sm:px-4">
+        <button
+          v-for="(m, rang) in metiers"
+          :key="m.id"
+          type="button"
+          class="flex w-[76px] shrink-0 flex-col items-center gap-1.5"
+          @click="ouvrirMetiers"
+        >
+          <span class="grid size-[66px] place-items-center rounded-full border-2 p-[3px]" :class="m.principal ? 'border-primaire' : 'border-bord'">
+            <span class="grid size-full place-items-center rounded-full text-2xl font-black" :class="teinte(rang + 3)">{{ m.nom[0] }}</span>
+          </span>
+          <span class="text-center text-[12px] leading-tight font-bold">
+            {{ m.nom }}
+            <span v-if="m.principal" class="block text-[11px] font-semibold text-texte-doux">principal</span>
+          </span>
+        </button>
+        <button type="button" class="flex w-[76px] shrink-0 flex-col items-center gap-1.5" @click="fenetreAjout = true">
+          <span class="grid size-[66px] place-items-center rounded-full border-2 border-dashed border-bord text-[26px] text-texte-doux">+</span>
+          <span class="text-[12px] font-bold">Ajouter</span>
+        </button>
+      </div>
+
+      <AppOnglets v-model="onglet" :onglets="onglets" egaux />
+
+      <div v-if="profil.statut !== 'arrete'" v-show="onglet === 'photos'">
+        <CartePhotosTravail :profil="profil" @maj="(p) => emit('maj', p)" />
+      </div>
+      <AppListeLignes v-if="profil.statut !== 'arrete'" v-show="onglet === 'activite'" ref="lignesActivite" :resumes="resumes">
+        <!-- Sans SIRET vérifié : ses limites et la case à cocher (la ligne se cache toute seule avec un SIRET) -->
+        <CarteParticulier :key="profil.siret_statut" />
+        <CartePaiementCarte />
+        <CarteMetiers :profil="profil" @maj="(p) => emit('maj', p)" />
+        <CarteTva :facture-tva="profil.facture_tva" @maj="(v) => emit('maj', { ...profil, facture_tva: v })" />
+        <AppSection titre="Visibilité">
+          <p class="text-[14.5px] text-texte-doux">
+            Vous apparaissez dans les recherches tant que votre activité est active.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <AppBouton v-if="bloque" variante="verrouille" :raison-verrou="raisonBlocage">Mettre en pause</AppBouton>
+            <AppBouton v-else-if="profil.statut === 'en_pause'" @click="statut('reprendre')">Reprendre mon activité</AppBouton>
+            <AppBouton v-else variante="secondaire" @click="statut('pause')">Mettre en pause</AppBouton>
+            <AppBouton v-if="bloque" variante="verrouille" :raison-verrou="raisonBlocage">Arrêter mon activité…</AppBouton>
+            <AppBouton v-else variante="danger" @click="fenetreArret = true">Arrêter mon activité…</AppBouton>
+          </div>
+        </AppSection>
+      </AppListeLignes>
+      <div v-show="onglet === 'compte'">
+        <slot name="compte" />
       </div>
     </section>
 
-    <template v-if="profil.statut !== 'arrete'">
-      <!-- Sans SIRET vérifié : ses limites et la case à cocher (la carte se cache toute seule avec un SIRET) -->
-      <CarteParticulier :key="profil.siret_statut" />
-      <CartePhotosTravail :profil="profil" @maj="(p) => emit('maj', p)" />
-      <CartePaiementCarte />
-      <CarteTva :facture-tva="profil.facture_tva" @maj="(v) => emit('maj', { ...profil, facture_tva: v })" />
-      <CarteMetiers :profil="profil" @maj="(p) => emit('maj', p)" />
-    </template>
-
-    <AppSection v-if="profil.statut !== 'arrete'" titre="Visibilité">
-      <p class="text-[14.5px] text-texte-doux">
-        Vous apparaissez dans les recherches tant que votre activité est active.
-      </p>
-      <div class="flex flex-wrap gap-2 pt-8 sm:pt-0">
-        <AppBouton v-if="bloque" variante="verrouille" :raison-verrou="raisonBlocage">Mettre en pause</AppBouton>
-        <AppBouton v-else-if="profil.statut === 'en_pause'" @click="statut('reprendre')">Reprendre mon activité</AppBouton>
-        <AppBouton v-else variante="secondaire" @click="statut('pause')">Mettre en pause</AppBouton>
-        <AppBouton v-if="bloque" variante="verrouille" :raison-verrou="raisonBlocage">Arrêter mon activité…</AppBouton>
-        <AppBouton v-else variante="danger" @click="fenetreArret = true">Arrêter mon activité…</AppBouton>
-      </div>
-    </AppSection>
-
+    <FenetreAjoutMetier :ouverte="fenetreAjout" :profil="profil" @maj="(p) => emit('maj', p)" @fermer="fenetreAjout = false" />
     <AppFenetre :ouverte="fenetreArret" titre="Arrêter votre activité ?" @fermer="fenetreArret = false">
       C'est définitif : votre profil ne sera plus visible ni modifiable. Vos factures restent consultables. Pour une
       absence, choisissez plutôt « Mettre en pause ».

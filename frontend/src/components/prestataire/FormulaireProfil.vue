@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
 import type { MetierVisible } from '../../composables/useMetiers'
 import { useMetiers } from '../../composables/useMetiers'
-import { type CommuneVisible, LIEUX_SERVICE, type LieuService, type ProfilPrestataire, siretLisible } from '../../outils/prestataires'
+import { type CommuneVisible, LIEUX_SERVICE, type LieuService, type ProfilPrestataire, SECONDAIRES_MAX, siretLisible } from '../../outils/prestataires'
 import AppChoixCommune from '../AppChoixCommune.vue'
 import AppChoixMetier from '../AppChoixMetier.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
@@ -17,12 +17,11 @@ import AppRecherche from '../ui/AppRecherche.vue'
 import AppZoneTexte from '../ui/AppZoneTexte.vue'
 import AppSection from '../ui/AppSection.vue'
 
-const SECONDAIRES_MAX = 5
 const PRESENTATION_MAX = 1000
 
 const props = defineProps<{ existant?: ProfilPrestataire | null }>()
 const emit = defineEmits<{ enregistre: [profil: ProfilPrestataire]; annuler: [] }>()
-const { rechercher } = useMetiers()
+const { rechercherSauf } = useMetiers()
 const route = useRoute()
 
 // Préremplissage à partir du profil existant (modification)
@@ -41,10 +40,8 @@ const erreur = ref('')
 const envoiEnCours = ref(false)
 
 // Les métiers déjà choisis ne sont plus proposés
-const chercherSecondaire = async (texte: string) => {
-  const exclus = new Set([principal.value?.id, ...secondaires.value.map((m) => m.id)])
-  return (await rechercher(texte)).filter((m) => !exclus.has(m.id))
-}
+const chercherSecondaire = (texte: string) =>
+  rechercherSauf(texte, [principal.value?.id, ...secondaires.value.map((m) => m.id)])
 const plein = computed(() => secondaires.value.length >= SECONDAIRES_MAX)
 
 async function enregistrer() {

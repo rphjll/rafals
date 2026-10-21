@@ -1,0 +1,214 @@
+<title>Mon profil rafals</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=Bricolage+Grotesque:wght@700&display=swap">
+<style>
+/* Mise en page : une colonne de 600 px comme un profil Instagram — en-tête (photo + 3 chiffres), bulles des métiers, onglets à pictos, grille de photos. */
+:root{
+  --fond:#F3F6F2; --surface:#FFFFFF; --texte:#1D2620; --doux:#58665C; --bord:#D8E1DA;
+  --primaire:#2F6B4F; --primaire-texte:#FFFFFF; --primaire-doux:#E2EEE7; --accent:#D9793A;
+  --ok:#2E7D4F; --ok-doux:#E3F2E8; --attente:#B26A00; --attente-doux:#FCF0DC; --erreur:#B3261E; --erreur-doux:#FBE4E2;
+  --t-orange:#FBE7D8; --t-vert:#D8ECDF; --t-jaune:#FBEBC6; --t-bleu:#DCEAF7; --t-rose:#F8DFE4; --t-violet:#E8E1F6;
+  --ombre:0 8px 28px rgba(31,77,56,.10);
+  --police:"Nunito",system-ui,sans-serif; --marque:"Bricolage Grotesque","Nunito",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#121713; --surface:#1A211C; --texte:#E7ECF2; --doux:#A3AEBD; --bord:#2C3730;
+  --primaire:#79C49C; --primaire-texte:#0F1A13; --primaire-doux:#1C3024; --accent:#F0955A;
+  --ok:#6CC592; --ok-doux:#17301F; --attente:#F0B35A; --attente-doux:#33260F; --erreur:#F08A82; --erreur-doux:#3A1A18;
+  --t-orange:#3A2616; --t-vert:#1C3024; --t-jaune:#33290F; --t-bleu:#17293A; --t-rose:#3A1B24; --t-violet:#271F3D;
+  --ombre:0 8px 28px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --fond:#121713; --surface:#1A211C; --texte:#E7ECF2; --doux:#A3AEBD; --bord:#2C3730;
+  --primaire:#79C49C; --primaire-texte:#0F1A13; --primaire-doux:#1C3024; --accent:#F0955A;
+  --ok:#6CC592; --ok-doux:#17301F; --attente:#F0B35A; --attente-doux:#33260F; --erreur:#F08A82; --erreur-doux:#3A1A18;
+  --t-orange:#3A2616; --t-vert:#1C3024; --t-jaune:#33290F; --t-bleu:#17293A; --t-rose:#3A1B24; --t-violet:#271F3D;
+  --ombre:0 8px 28px rgba(0,0,0,.35); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:var(--police);font-weight:500;font-size:15px;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.barre-maquette{max-width:600px;margin:0 auto 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--doux)}
+.seg{display:inline-flex;background:var(--surface);border-radius:999px;padding:3px;box-shadow:var(--ombre)}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:999px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--primaire);color:var(--primaire-texte)}
+.page{max-width:600px;margin:0 auto;background:var(--surface);border-radius:26px;box-shadow:var(--ombre);overflow:hidden}
+.haut{padding:24px 22px 8px;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.anneau{width:96px;height:96px}
+.avatar{width:100%;height:100%;border-radius:50%;background:var(--primaire-doux);color:var(--primaire);
+  display:grid;place-items:center;font-weight:900;font-size:32px;position:relative}
+.avatar .plus{position:absolute;right:-2px;bottom:-2px;width:30px;height:30px;border-radius:50%;background:var(--primaire);color:var(--primaire-texte);
+  border:3px solid var(--surface);display:grid;place-items:center;font-size:18px;line-height:1}
+.chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));text-align:center;gap:4px}
+.chiffres b{display:block;font-size:20px;font-weight:900;font-variant-numeric:tabular-nums}
+.chiffres span{font-size:13px;color:var(--doux)}
+.bientot{display:inline-block;font-size:10.5px;font-weight:800;color:var(--attente);background:var(--attente-doux);border-radius:999px;padding:1px 7px;margin-top:3px}
+.bio{padding:6px 22px 0;display:flex;flex-direction:column;gap:4px}
+.nom{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nom h1{font-size:19px;font-weight:900;margin:0}
+.badge{font-size:12px;font-weight:800;border-radius:999px;padding:2px 9px}
+.badge.ok{color:var(--ok);background:var(--ok-doux)} .badge.attente{color:var(--attente);background:var(--attente-doux)}
+.metier{color:var(--primaire);font-weight:800}
+.bio p{margin:0;line-height:1.45}
+.lieu{color:var(--doux);font-size:14px}
+.boutons{padding:14px 22px 4px;display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
+.btn{border:0;border-radius:999px;min-height:42px;padding:0 16px;font-weight:800;background:var(--primaire-doux);color:var(--primaire)}
+.btn.plein{background:var(--primaire);color:var(--primaire-texte)}
+.btn.danger{background:var(--erreur-doux);color:var(--erreur)}
+.bulles{display:flex;gap:16px;overflow-x:auto;padding:16px 22px 18px;scrollbar-width:none}
+.bulle{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:70px;padding:0}
+.bulle .rond{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--bord);padding:3px}
+.bulle .rond i{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:24px}
+.bulle.principal .rond{border-color:var(--primaire)}
+.bulle .rond.ajout i{border:2px dashed var(--bord);color:var(--doux);font-size:26px}
+.bulle small{font-size:12px;font-weight:700;max-width:76px;text-align:center;line-height:1.2}
+.bulle small em{display:block;font-style:normal;color:var(--doux);font-weight:600;font-size:11px}
+.onglets{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--bord)}
+.onglets button{border:0;background:none;min-height:48px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:800;font-size:13.5px;
+  color:var(--doux);border-top:2px solid transparent;margin-top:-1px}
+.onglets button[aria-selected="true"]{color:var(--texte);border-top-color:var(--texte)}
+.onglets svg{width:18px;height:18px}
+.grille{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.photo{aspect-ratio:1;max-width:100%;border:0;padding:0;position:relative;display:grid;place-items:center;overflow:hidden}
+.photo span{font-size:34px}
+.photo .leg{position:absolute;inset:auto 0 0 0;padding:16px 8px 6px;font-size:11.5px;font-weight:700;color:#fff;text-align:left;
+  background:linear-gradient(transparent,rgba(0,0,0,.55));opacity:0;transition:opacity .2s}
+.photo:hover .leg,.photo:focus-visible .leg{opacity:1}
+.photo .une{position:absolute;top:6px;left:6px;font-size:10.5px;font-weight:800;background:rgba(255,255,255,.9);color:#1D2620;border-radius:999px;padding:1px 7px}
+.photo.ajouter{background:var(--fond);color:var(--doux);flex-direction:column;gap:4px;display:flex;align-items:center;justify-content:center}
+.photo.ajouter span{font-size:30px}
+.photo.ajouter small{font-weight:800;font-size:12px}
+.note-photos{padding:10px 22px 18px;font-size:13px;color:var(--doux)}
+.liste{display:flex;flex-direction:column;padding:6px 0 10px}
+.ligne{border:0;background:none;display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:12px 22px;text-align:left;min-height:62px}
+.ligne:hover{background:var(--fond)}
+.ligne .pic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:19px}
+.ligne b{display:block;font-weight:800}
+.ligne small{display:block;color:var(--doux);font-size:13px;margin-top:1px}
+.ligne .chev{color:var(--doux);font-size:20px;transition:transform .2s}
+.ligne[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.detail{margin:0 22px 8px 76px;padding:12px 14px;background:var(--fond);border-radius:16px;font-size:14px;color:var(--doux);line-height:1.45}
+.detail .btn{margin-top:10px;min-height:38px;font-size:13.5px}
+.titre-groupe{padding:14px 22px 2px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--doux)}
+.ligne.rouge b{color:var(--erreur)}
+.proposer{margin:6px 22px 16px;border-radius:22px;padding:18px;background:linear-gradient(135deg,var(--t-orange),var(--t-vert));display:flex;flex-direction:column;gap:10px}
+.proposer b{font-size:17px;font-weight:900}
+.proposer p{margin:0;color:var(--texte);line-height:1.4}
+.proposer .btn{align-self:flex-start}
+.change{max-width:600px;margin:18px auto 0;background:var(--surface);border-radius:26px;box-shadow:var(--ombre);padding:18px 22px}
+.change h2{font-size:16px;font-weight:900;margin:0 0 8px}
+.change ul{margin:0;padding-left:18px;line-height:1.55;color:var(--doux)}
+.change li b{color:var(--texte)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--texte);color:var(--surface);
+  padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px}
+@media (max-width:480px){
+  .haut{gap:14px;padding:18px 16px 6px}.anneau{width:84px;height:84px}.avatar{font-size:26px}
+  .chiffres b{font-size:17px}.chiffres span{font-size:12px}
+  .bio,.boutons,.bulles{padding-left:16px;padding-right:16px}.ligne{padding-left:16px;padding-right:16px}
+  .boutons{grid-template-columns:1fr 1fr}.boutons .btn:last-child{grid-column:1/-1}
+  .detail{margin-left:16px;margin-right:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="barre-maquette">
+  <span>Maquette — vue :</span>
+  <div class="seg" role="group" aria-label="Qui regarde">
+    <button id="v-presta" aria-pressed="true">Karim, prestataire</button>
+    <button id="v-client" aria-pressed="false">Julie, cliente</button>
+  </div>
+</div>
+
+<main class="page" id="page"></main>
+
+<section class="change">
+  <h2>Ce qui change par rapport à la page d'aujourd'hui</h2>
+  <ul>
+    <li><b>En haut, comme Instagram</b> : la photo (ou les initiales) dans un simple rond, les chiffres à côté, puis le nom, le métier, la ville et la présentation.</li>
+    <li><b>Prestataire : 4 chiffres</b> : photos, note et avis, abonnés (ceux qui le suivent), abonnements (les prestataires qu'il suit lui-même). Cliente : rendez-vous, avis donnés, abonnements.</li>
+    <li><b>Les métiers en bulles rondes</b> (comme les « stories à la une ») : un clic ouvre le métier (horaires, arrêter ce métier…).</li>
+    <li><b>3 onglets à pictos</b> au lieu d'une longue colonne de cartes : Photos · Mon activité · Mon compte.</li>
+    <li><b>Les photos de mon travail en grille carrée</b> de 3 colonnes ; les 2 premières portent « Sur ma carte ».</li>
+    <li><b>Les autres cartes deviennent des lignes</b> avec un picto et un résumé ; un clic les déplie sur place, avec les mêmes boutons qu'aujourd'hui.</li>
+    <li>Rien ne disparaît : toutes les cartes d'aujourd'hui sont rangées dans un onglet. Aucune donnée ni règle ne change.</li>
+    <li>« Abonnés » et « Abonnements » arriveront avec les abonnements (en cours de construction) : marqués « bientôt » sur la maquette.</li>
+  </ul>
+</section>
+
+<script>
+const P = {
+  presta:{initiales:'KB',nom:'Karim Benali',badge:['ok','SIRET vérifié'],metier:'Plombier',aussi:' · aussi Chauffagiste',
+    bio:'Plombier depuis 12 ans. Fuites, chauffe-eau, salles de bain complètes. Devis gratuit, intervention sous 48 h.',
+    lieu:'📍 Pessac (33600) · jusqu\'à 20 km',
+    chiffres:[['8','photos'],['4,8 ★','23 avis'],['12','abonnés',true],['4','abonnements',true]]},
+  client:{initiales:'JM',nom:'Julie Martin',badge:null,metier:'',aussi:'',bio:'Membre depuis septembre 2026',
+    lieu:'📍 Talence (33400)',chiffres:[['5','rendez-vous'],['3','avis donnés'],['4','abonnements',true]]}
+};
+const photos=[['🚿','Douche à l\'italienne, Pessac','t-bleu'],['🔥','Chaudière remplacée, Mérignac','t-orange'],['🛁','Salle de bain complète','t-vert'],
+  ['🔧','Fuite sous évier réparée','t-jaune'],['🚰','Robinetterie cuisine','t-violet'],['🧱','Carrelage mural','t-rose'],['💧','Chauffe-eau 200 L','t-bleu'],['🪠','Débouchage','t-vert']];
+const activite=[
+  ['💳','t-bleu','Paiement par carte','Activé · reçu sous 2 jours','Vos clients peuvent payer par carte. L\'argent arrive sur votre compte sous 2 jours.',['Voir mon compte Stripe']],
+  ['🛠️','t-vert','Mes métiers','Plombier (principal) · Chauffagiste','Plombier : métier principal. Chauffagiste : métier secondaire.',['Ajouter un métier','Arrêter ce métier…']],
+  ['👁️','t-jaune','Visibilité','Actif : vous apparaissez dans les recherches','Vous apparaissez dans les recherches tant que votre activité est active.',['Mettre en pause','Arrêter mon activité…']],
+];
+const compte=[
+  ['👤','t-vert','Mes informations','karim@example.com · 06 12 34 56 78','Prénom, nom, téléphone. L\'adresse mail est vérifiée.',['Modifier mes informations']],
+  ['🏠','t-orange','Mon adresse','12 rue des Lilas, Pessac','C\'est aussi l\'adresse de votre local. Les clients voient seulement la ville ; la rue, après avoir réservé.',['Modifier mon adresse','Effacer mon adresse']],
+  ['🔔','t-violet','Notifications sur cet appareil','Activées','Une notification quand on vous écrit ou qu\'on vous fait une proposition, ex. « Karim vous a écrit ».',['Couper les notifications']],
+  ['🧾','t-bleu','Mes paiements par carte','2 paiements','Mardi 14/10/2026 · 46,50 € · Karim Benali',['Voir mes paiements']],
+  ['📦','t-jaune','Mes données','Télécharger tout ce que rafals sait de moi','Un fichier avec votre compte, vos rendez-vous, vos messages et vos avis.',['Télécharger mes données']],
+  ['🚪','t-rose','Fermer mon compte','Définitif','Vos factures restent gardées 10 ans, comme la loi le demande.',['Fermer mon compte…'],true],
+];
+const pic={
+  grille:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+  outil:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>',
+  perso:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'
+};
+let vue='presta', onglet='photos', ouvert=null;
+
+function lignes(tab,cle){return tab.map((l,i)=>{const id=cle+i,o=ouvert===id;
+  return `<button class="ligne${l[6]?' rouge':''}" aria-expanded="${o}" data-ouvrir="${id}"><span class="pic" style="background:var(--${l[1]})">${l[0]}</span><span><b>${l[2]}</b><small>${l[3]}</small></span><span class="chev">›</span></button>`+
+  (o?`<div class="detail">${l[4]}<div style="display:flex;flex-wrap:wrap;gap:8px">${l[5].map((b,j)=>`<button class="btn${(l[6]||/Arrêter|Effacer/.test(b))?' danger':''}" data-toast="Maquette : « ${b} » fait la même chose qu'aujourd'hui">${b}</button>`).join('')}</div></div>`:'');}).join('');}
+
+function dessiner(){
+  const p=P[vue], presta=vue==='presta';
+  if(!presta) onglet='compte';
+  let h=`<div class="haut"><div class="anneau"><div class="avatar">${p.initiales}</div></div>
+    <div class="chiffres">${p.chiffres.map(c=>`<div><b>${c[0]}</b><span>${c[1]}</span>${c[2]?'<br><span class="bientot">bientôt</span>':''}</div>`).join('')}</div></div>
+    <div class="bio"><div class="nom"><h1>${p.nom}</h1>${p.badge?`<span class="badge ${p.badge[0]}">${p.badge[1]}</span>`:''}</div>
+    ${presta?`<div><span class="metier">${p.metier}</span><span class="lieu">${p.aussi}</span></div>`:''}
+    <p>${p.bio}</p><div class="lieu">${p.lieu}</div></div>
+    <div class="boutons">${presta?`<button class="btn plein" data-toast="Maquette : ouvre le formulaire « Modifier mon profil »">Modifier mon profil</button><button class="btn" data-toast="Maquette : choisir une photo">Changer ma photo</button><button class="btn" data-toast="Maquette : ouvre « Mon activité »">Mon activité</button>`
+      :`<button class="btn plein" data-toast="Maquette : ouvre « Mes informations »">Modifier mon profil</button><button class="btn" data-toast="Maquette : choisir une photo">Changer ma photo</button>`}</div>`;
+  if(presta){
+    h+=`<div class="bulles">
+      <button class="bulle principal" data-toast="Maquette : ouvre le métier Plombier"><span class="rond"><i style="background:var(--t-bleu)">🔧</i></span><small>Plombier<em>principal</em></small></button>
+      <button class="bulle" data-toast="Maquette : ouvre le métier Chauffagiste"><span class="rond"><i style="background:var(--t-orange)">🔥</i></span><small>Chauffagiste</small></button>
+      <button class="bulle" data-toast="Maquette : « Ajouter un métier »"><span class="rond ajout"><i>+</i></span><small>Ajouter</small></button></div>
+      <div class="onglets" role="tablist">
+        <button role="tab" aria-selected="${onglet==='photos'}" data-onglet="photos">${pic.grille} Photos</button>
+        <button role="tab" aria-selected="${onglet==='activite'}" data-onglet="activite">${pic.outil} Mon activité</button>
+        <button role="tab" aria-selected="${onglet==='compte'}" data-onglet="compte">${pic.perso} Mon compte</button></div>`;
+    if(onglet==='photos') h+=`<div class="grille">${photos.map((f,i)=>`<button class="photo" style="background:var(--${f[2]})" data-toast="Maquette : la photo s'ouvre en grand, avec [Retirer]"><span>${f[0]}</span>${i<2?'<em class="une">Sur ma carte</em>':''}<span class="leg">${f[1]}</span></button>`).join('')}
+      <button class="photo ajouter" data-toast="Maquette : choisir une photo (JPG ou PNG, 5 Mo)"><span>+</span><small>Ajouter</small></button></div>
+      <div class="note-photos">8 photos sur 10. Les 2 premières sont sur votre carte dans « Trouver un prestataire ».</div>`;
+    if(onglet==='activite') h+=`<div class="liste">${lignes(activite,'a')}</div>`;
+    if(onglet==='compte') h+=`<div class="liste">${lignes(compte,'c')}</div>`;
+  } else {
+    h+=`<div style="height:12px"></div><div class="proposer"><b>Proposer mes services</b><p>Vous faites du ménage, du jardinage, de la plomberie… ? Créez votre profil de prestataire.</p><button class="btn plein" data-toast="Maquette : le formulaire se déplie sur place">Proposer mes services</button></div>
+      <div class="titre-groupe">Mon compte</div><div class="liste">${lignes(compte.map(l=>l[2]==='Mes informations'?[l[0],l[1],l[2],'julie@example.com · 06 98 76 54 32',l[4],l[5]]:l[2]==='Mon adresse'?[l[0],l[1],l[2],'4 allée des Pins, Talence','Elle vous sera demandée quand vous réserverez un service à domicile.',l[5]]:l),'c')}</div>`;
+  }
+  document.getElementById('page').innerHTML=h;
+}
+let minuteur;
+function toast(t){let e=document.querySelector('.toast');if(!e){e=document.createElement('div');e.className='toast';document.body.appendChild(e)}
+  e.textContent=t;e.hidden=false;clearTimeout(minuteur);minuteur=setTimeout(()=>e.hidden=true,3000)}
+document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+  if(b.id==='v-presta'||b.id==='v-client'){vue=b.id==='v-presta'?'presta':'client';onglet=vue==='presta'?'photos':'compte';ouvert=null;
+    document.getElementById('v-presta').setAttribute('aria-pressed',vue==='presta');document.getElementById('v-client').setAttribute('aria-pressed',vue==='client');dessiner();return}
+  if(b.dataset.onglet){onglet=b.dataset.onglet;ouvert=null;dessiner();return}
+  if(b.dataset.ouvrir){ouvert=ouvert===b.dataset.ouvrir?null:b.dataset.ouvrir;dessiner();return}
+  if(b.dataset.toast) toast(b.dataset.toast);
+});
+dessiner();
+</script>

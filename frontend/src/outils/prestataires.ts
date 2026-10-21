@@ -1,6 +1,9 @@
 // Libellés et couleurs des états du prestataire : un seul endroit pour « Mon activité » et l'Administration.
 
 export type BadgeEtat = 'ok' | 'attente' | 'erreur' | 'neutre'
+
+/** 5 métiers secondaires au plus (RM-PRESTATAIRES.md) */
+export const SECONDAIRES_MAX = 5
 type Etat = BadgeEtat
 
 export interface CommuneVisible {

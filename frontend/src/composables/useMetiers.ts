@@ -33,5 +33,11 @@ export function useMetiers() {
     return appelerServeur<MetierVisible[]>(`/api/metiers/recherche?q=${encodeURIComponent(texte)}`)
   }
 
-  return { dossiers, chargerDossiers, rechercher }
+  /** La même recherche, sans les métiers déjà choisis (ex. le principal et les secondaires du profil) */
+  async function rechercherSauf(texte: string, exclus: (number | undefined)[]): Promise<MetierVisible[]> {
+    const deja = new Set(exclus)
+    return (await rechercher(texte)).filter((m) => !deja.has(m.id))
+  }
+
+  return { dossiers, chargerDossiers, rechercher, rechercherSauf }
 }

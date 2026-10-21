@@ -1,13 +1,14 @@
 <script setup lang="ts">
-// Carte « Photos de mon travail » de « Mon profil » (.doc/ihm/RM-PROPOSER-IHM.md ; RM-PRESTATAIRES § « Sans annonces ») :
-// 10 photos au plus ; les 2 premières sont montrées sur la carte du prestataire dans « Trouver un prestataire ».
+// Onglet « Photos » de « Mon profil » (.doc/ihm/RM-PROFIL-IHM.md ; RM-PRESTATAIRES § « Sans annonces ») : grille carrée
+// de 3 colonnes, façon Instagram (21/10/2026). 10 photos au plus ; les 2 premières sont sur la carte du prestataire
+// dans « Trouver un prestataire ». Un clic sur une photo l'ouvre en grand, avec [Retirer cette photo].
 import { ref } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import type { ProfilPrestataire } from '../../outils/prestataires'
 import { adressePhotoTravail } from '../../outils/recherche'
 import AppBouton from '../ui/AppBouton.vue'
-import AppSection from '../ui/AppSection.vue'
+import AppFenetre from '../ui/AppFenetre.vue'
 
 const PHOTOS_MAX = 10
 
@@ -37,7 +38,10 @@ async function ajouter(evenement: Event) {
   }
 }
 
+const enGrand = ref<number | null>(null) // rang de la photo ouverte en grand
+
 async function retirer(rang: number) {
+  enGrand.value = null
   try {
     emit('maj', await appelerServeur<ProfilPrestataire>(`/api/moi/prestataire/photos/${rang}/retirer`, {}))
     version.value = Date.now()
@@ -49,28 +53,46 @@ async function retirer(rang: number) {
 </script>
 
 <template>
-  <AppSection titre="Photos de mon travail">
-    <p class="text-[14.5px] text-texte-doux">
-      Montrez ce que vous savez faire : une cuisine posée, une haie taillée… {{ PHOTOS_MAX }} photos au plus (JPG ou PNG, 5 Mo
-      chacune). Les 2 premières sont sur votre carte dans « Trouver un prestataire ».
-    </p>
-    <ul v-if="props.profil.photos.length" class="grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-3">
-      <li v-for="rang in props.profil.photos" :key="rang" class="flex flex-col gap-1.5">
-        <img
-          :src="adressePhotoTravail(props.profil.id, rang, version)"
-          :alt="`Photo n° ${rang} de mon travail`"
-          class="aspect-[4/3] w-full rounded-rafals object-cover"
-        />
-        <AppBouton variante="danger" @click="retirer(rang)">Retirer</AppBouton>
+  <div class="flex flex-col">
+    <ul class="grid grid-cols-3 gap-[3px]">
+      <li v-for="(rang, i) in props.profil.photos" :key="rang">
+        <button type="button" class="relative block aspect-square w-full overflow-hidden" @click="enGrand = rang">
+          <img
+            :src="adressePhotoTravail(props.profil.id, rang, version)"
+            :alt="`Photo n° ${rang} de mon travail`"
+            class="size-full object-cover"
+          />
+          <span v-if="i < 2" class="absolute top-1.5 left-1.5 rounded-full bg-surface/90 px-2 py-px text-[11px] font-extrabold">
+            Sur ma carte
+          </span>
+        </button>
+      </li>
+      <li v-if="props.profil.photos.length < PHOTOS_MAX">
+        <button
+          type="button"
+          class="flex aspect-square w-full flex-col items-center justify-center gap-1 bg-fond text-texte-doux"
+          :disabled="envoi"
+          @click="champ?.click()"
+        >
+          <span class="text-3xl leading-none" aria-hidden="true">+</span>
+          <span class="text-[12px] font-extrabold">{{ envoi ? 'Envoi…' : 'Ajouter une photo' }}</span>
+        </button>
       </li>
     </ul>
-    <p v-else class="font-semibold">Aucune photo pour l'instant.</p>
-    <div>
-      <AppBouton v-if="props.profil.photos.length < PHOTOS_MAX" variante="secondaire" :occupe="envoi" @click="champ?.click()">
-        {{ envoi ? 'Envoi…' : 'Ajouter une photo' }}
-      </AppBouton>
-      <p v-else class="text-[13.5px] text-texte-doux">{{ PHOTOS_MAX }} photos : retirez-en une pour en ajouter une autre.</p>
-      <input ref="champ" type="file" accept="image/jpeg,image/png" class="sr-only" @change="ajouter" />
-    </div>
-  </AppSection>
+    <p class="px-5 py-3 text-[13px] text-texte-doux max-sm:px-4">
+      <template v-if="!props.profil.photos.length">Aucune photo pour l'instant. Montrez ce que vous savez faire : une cuisine posée, une haie taillée… </template>
+      {{ props.profil.photos.length }} photo{{ props.profil.photos.length > 1 ? 's' : '' }} sur {{ PHOTOS_MAX }} (JPG ou PNG, 5 Mo
+      chacune). Les 2 premières sont sur votre carte dans « Trouver un prestataire ».
+      <template v-if="props.profil.photos.length >= PHOTOS_MAX">Retirez-en une pour en ajouter une autre.</template>
+    </p>
+    <input ref="champ" type="file" accept="image/jpeg,image/png" class="sr-only" @change="ajouter" />
+
+    <AppFenetre :ouverte="enGrand !== null" :titre="`Photo n° ${enGrand}`" @fermer="enGrand = null">
+      <img v-if="enGrand !== null" :src="adressePhotoTravail(props.profil.id, enGrand, version)" alt="" class="w-full rounded-rafals" />
+      <template #pied>
+        <AppBouton variante="danger" @click="retirer(enGrand!)">Retirer cette photo</AppBouton>
+        <AppBouton variante="secondaire" @click="enGrand = null">Fermer</AppBouton>
+      </template>
+    </AppFenetre>
+  </div>
 </template>

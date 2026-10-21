@@ -70,7 +70,7 @@ async function reprendre(metier: MetierExerce) {
       </div>
     </div>
     <p class="text-[13px] text-texte-doux">
-      Ajouter un métier : [Modifier mon profil]. Arrêter un métier : dans
+      Ajouter un métier : la bulle « + Ajouter » en haut du profil. Arrêter un métier : dans
       <RouterLink to="/mon-agenda" class="font-semibold text-primaire">Mon agenda › Calendrier</RouterLink>, bouton
       « Date d'arrêt ». Après cette date, vous n'apparaissez plus dans les recherches de ce métier, et les rendez-vous de ce
       métier pris après cette date sont annulés (clients prévenus).

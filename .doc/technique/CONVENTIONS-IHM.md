@@ -49,11 +49,12 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - `AppSelection` — liste déroulante (lot 2.2).
 - `AppRecherche` — champ de recherche avec propositions (un seul pour toutes les recherches), `AppElementChoisi` — élément choisi, `AppZoneTexte` — texte long avec compteur (lot 2.5).
 - `AppChoixCommune` (dans `components/`) — choix d'une commune (lot 2.5).
-- `AppSection` — bloc d'une page avec titre et bouton facultatif à droite ; `danger` = bord rouge (lot 2.7).
+- `AppSection` — bloc d'une page avec titre et bouton facultatif à droite ; `danger` = bord rouge (lot 2.7). Posée dans une `AppListeLignes`, elle devient une ligne « picto, titre, résumé, › » qui se déplie sur place ; picto et couleur de chaque titre : `frontend/src/outils/profil.ts` (« Mon profil », 21/10/2026).
 - `ChampsAdresse` (dans `components/`) — les 3 champs d'une adresse (rue, ville, code postal seulement si la ville en a plusieurs) ; utilisé par `CarteAdresse` et par le dossier de création d'auto-entreprise (lot 7.2).
 - `CarteAdresse` (dans `components/`) — carte d'une adresse unique (ajouter, modifier, effacer) : adresse du client, local du prestataire (lot 3.2).
 - `AppChoix` — une réponse parmi quelques-unes, en cases côte à côte, case verrouillée 🔒 possible ; `AppCase` — case à cocher, verrouillable (lot 3.2).
-- `AppOnglets` — onglets d'une page, l'onglet choisi est dans l'adresse (`?onglet=…`) : Administration, Mon agenda (lot 3.4).
+- `AppOnglets` — onglets d'une page, l'onglet choisi est dans l'adresse (`?onglet=…`) : Administration, Mon agenda (lot 3.4). Variante `egaux` (onglets de même largeur, trait en haut, petit dessin `icone`) : Mon profil (21/10/2026).
+- « Mon profil » façon Instagram (21/10/2026) : `EnteteProfil` (photo, chiffres, nom, boutons) et `LignesCompte` (les cartes du compte en lignes), dans `components/profil/`.
 - `AppSegment` — cases collées pour basculer entre deux ou trois vues, effet immédiat (« 1 mois | 2 mois », « Plombier | Électricien ») ; `AppFenetre` a une variante `large` (640 px) et `GardePrestataire` une variante `large` (1080 px) (refonte du calendrier, 03/10/2026). Les 3 boutons à deux états du calendrier (« Fermeture exceptionnelle »…) sont propres à `OngletCalendrier`.
 - `AppPages` — numéros de page sous une longue liste : [‹ Précédente] [1] [2] [Suivante ›], la page en cours en bouton principal ; rien s'il n'y a qu'une page (résultats de recherche, [Voir tout] d'une rubrique ; 07/10/2026).
 - Heures, jours et périodes de l'agenda : toujours par `frontend/src/outils/agenda.ts` (« 9 h 00 », « Du 20/10/2026 au 24/10/2026 ») (lot 3.4).
