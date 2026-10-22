@@ -92,6 +92,7 @@ def test_la_note_et_le_carre_vers_la_page_publique(lea, dupont, rdv_tenu, base: 
     assert carre.status_code == 200
     assert carre.headers["content-type"] == "image/svg+xml"
     assert carre.content.startswith(b"<svg")
+    assert b'xmlns="http://www.w3.org/2000/svg"' in carre.content  # sinon le navigateur n'affiche pas l'image
 
 
 def test_textes() -> None:

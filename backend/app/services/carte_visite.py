@@ -4,6 +4,7 @@
 Le carré à scanner (QR code) est calculé par la bibliothèque `segno` (choix de Raphael du 22/10/2026), puis dessiné
 en petits carrés noirs dans le PDF écrit à la main (comme les factures, services/pdf_facture.py)."""
 
+import io
 import unicodedata
 from dataclasses import dataclass
 from datetime import datetime
@@ -93,8 +94,11 @@ def contenu(db: Session, prestataire: Prestataire, compte: Compte, *, avec_telep
 
 
 def carre_svg(adresse: str) -> bytes:
-    """Le carré à scanner en image, pour l'aperçu de la page « Ma carte de visite »."""
-    return segno.make(adresse, error="m").svg_inline(scale=4, border=0, dark="#1D2620").encode()
+    """Le carré à scanner en image, pour l'aperçu de la page « Ma carte de visite ». Fichier SVG complet (avec son
+    « xmlns ») : sans lui, le navigateur n'affiche pas l'image (svg_inline ne sert qu'au milieu d'une page HTML)."""
+    sortie = io.BytesIO()
+    segno.make(adresse, error="m").save(sortie, kind="svg", scale=4, border=0, dark="#1D2620", xmldecl=False)
+    return sortie.getvalue()
 
 
 def nom_de_fichier(nom: str, planche: bool) -> str:
