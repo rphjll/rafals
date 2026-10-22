@@ -1,0 +1,176 @@
+<title>Ma carte de visite rafals</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap">
+<style>
+/* Une colonne de 720 px comme les pages de « Mon activité » : aperçu de la carte en grand, case du téléphone, 2 boutons ; dessous, l'aperçu de la planche A4. */
+:root{
+  --fond:#F3F6F2; --surface:#FFFFFF; --texte:#1D2620; --doux:#58665C; --bord:#D8E1DA;
+  --primaire:#2F6B4F; --primaire-texte:#FFFFFF; --primaire-doux:#E2EEE7; --accent:#D9793A;
+  --attente:#B26A00; --attente-doux:#FCF0DC; --neutre:#8A94A3; --neutre-doux:#E8ECF1; --ok:#2E7D4F; --ok-doux:#E3F2E8;
+  --papier:#FFFFFF; --encre:#1D2620; --encre-douce:#58665C;
+  --ombre:0 8px 28px rgba(31,77,56,.10);
+  --police:"Nunito",system-ui,sans-serif; --carte:Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#121713; --surface:#1A211C; --texte:#E7ECF2; --doux:#A3AEBD; --bord:#2C3730;
+  --primaire:#79C49C; --primaire-texte:#0F1A13; --primaire-doux:#1C3024; --accent:#F0955A;
+  --attente:#F0B35A; --attente-doux:#33260F; --neutre:#6D7888; --neutre-doux:#262E39; --ok:#6CC592; --ok-doux:#17301F;
+  --ombre:0 8px 28px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --fond:#121713; --surface:#1A211C; --texte:#E7ECF2; --doux:#A3AEBD; --bord:#2C3730;
+  --primaire:#79C49C; --primaire-texte:#0F1A13; --primaire-doux:#1C3024; --accent:#F0955A;
+  --attente:#F0B35A; --attente-doux:#33260F; --neutre:#6D7888; --neutre-doux:#262E39; --ok:#6CC592; --ok-doux:#17301F;
+  --ombre:0 8px 28px rgba(0,0,0,.35); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font:500 15px/1.5 var(--police);margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.page{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.barre-maquette{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--doux)}
+.seg{display:inline-flex;flex-wrap:wrap;background:var(--surface);border-radius:999px;padding:3px;box-shadow:var(--ombre)}
+.seg button{border:0;background:none;padding:6px 12px;border-radius:999px;font-weight:700;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--primaire);color:var(--primaire-texte)}
+.fil{font-size:13.5px;color:var(--doux)}
+h1{font-size:28px;font-weight:900;margin:0}
+.carte-ui{background:var(--surface);border-radius:26px;box-shadow:var(--ombre);padding:22px;display:flex;flex-direction:column;gap:16px}
+.carte-ui h2{margin:0;font-size:20px;font-weight:800}
+.doux{color:var(--doux);margin:0}
+/* La carte de visite elle-même : papier blanc dans les deux thèmes, comme une vraie carte */
+.cv{width:100%;max-width:425px;aspect-ratio:85/55;background:var(--papier);color:var(--encre);border-radius:8px;box-shadow:0 2px 14px rgba(0,0,0,.18);
+  display:grid;grid-template-columns:1fr 31%;gap:5%;padding:6.5% 6%;font-family:var(--carte);position:relative;margin-inline:auto}
+.cv .gauche{display:flex;flex-direction:column;min-width:0}
+.cv .nom{font-weight:700;font-size:clamp(15px,4.4vw,21px);line-height:1.1}
+.cv .metier{font-size:clamp(11px,3vw,14px);margin-top:3%;color:var(--encre)}
+.cv .ville{font-size:clamp(10px,2.7vw,12.5px);color:var(--encre-douce)}
+.cv .note{font-size:clamp(10px,2.7vw,12.5px);margin-top:auto}
+.cv .tel{font-size:clamp(11px,3vw,14px);font-weight:700;margin-top:2%}
+.cv .marque{position:absolute;left:6%;bottom:5%;font-size:clamp(8px,2vw,10px);color:var(--encre-douce)}
+.cv .droite{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4%}
+.cv canvas{width:100%;aspect-ratio:1;image-rendering:pixelated}
+.cv .sous-qr{font-size:clamp(7px,1.9vw,9.5px);color:var(--encre-douce);text-align:center;line-height:1.15}
+.case{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:var(--fond)}
+.case input{width:20px;height:20px;margin-top:2px;accent-color:var(--primaire)}
+.case.verrou{color:var(--neutre)}
+.case small{display:block;color:var(--doux);font-size:13px}
+.boutons{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:0;border-radius:999px;min-height:42px;padding:0 18px;font-weight:800;background:var(--primaire);color:var(--primaire-texte)}
+.btn.sec{background:var(--primaire-doux);color:var(--primaire)}
+.btn.verrou{background:var(--neutre-doux);color:var(--neutre)}
+.bulle{font-size:13.5px;padding:10px 14px;border-radius:16px;background:var(--neutre-doux);color:var(--texte)}
+.alerte{padding:12px 14px;border-radius:16px;background:var(--attente-doux);color:var(--attente);font-weight:700;font-size:14px}
+.planche{background:var(--papier);border-radius:6px;box-shadow:0 2px 14px rgba(0,0,0,.18);aspect-ratio:210/297;width:100%;max-width:300px;margin-inline:auto;
+  padding:9% 9.5%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,1fr);gap:0;position:relative}
+.planche .mini{border:.5px dashed #c9d2cc;display:grid;grid-template-columns:1fr 31%;gap:4%;padding:7% 6%;font-family:var(--carte);color:#1D2620;min-width:0;overflow:hidden}
+.planche .mini b{font-size:7px;display:block;line-height:1.1}
+.planche .mini span{font-size:5px;display:block;color:#58665C}
+.planche .mini i{display:block;background:repeating-conic-gradient(#1D2620 0 25%,#fff 0 50%) 0 0/4px 4px;aspect-ratio:1;align-self:center}
+.legende{font-size:13px;color:var(--doux);text-align:center;margin:0}
+.change{background:var(--surface);border-radius:26px;box-shadow:var(--ombre);padding:18px 22px}
+.change h2{font-size:16px;font-weight:900;margin:0 0 8px}
+.change ul{margin:0;padding-left:18px;line-height:1.55;color:var(--doux)}
+.change b{color:var(--texte)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--texte);color:var(--surface);
+  padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px;max-width:calc(100% - 32px)}
+</style>
+
+<div class="page">
+  <div class="barre-maquette">
+    <span>Maquette — qui regarde :</span>
+    <div class="seg" role="group" aria-label="Qui regarde">
+      <button data-vue="karim" aria-pressed="true">Karim, SIRET vérifié</button>
+      <button data-vue="sanstel" aria-pressed="false">Karim sans téléphone</button>
+      <button data-vue="pause" aria-pressed="false">Karim en pause</button>
+      <button data-vue="julie" aria-pressed="false">Julie, sans SIRET</button>
+    </div>
+  </div>
+
+  <div class="fil">Mon activité › Ma carte de visite</div>
+  <h1>Ma carte de visite</h1>
+  <div id="contenu"></div>
+
+  <section class="change">
+    <h2>Ce que fait cette page</h2>
+    <ul>
+      <li><b>Ouverte par la tuile « Ma carte de visite »</b> de « Mon activité » (aujourd'hui marquée « bientôt »).</li>
+      <li><b>L'aperçu montre la vraie carte</b>, à jour avec le profil : nom, métier, ville, note, téléphone si la case est cochée, carré à scanner.</li>
+      <li><b>2 boutons</b> : la planche A4 de 10 cartes à découper, ou une carte au format exact pour un imprimeur. Rien n'est enregistré.</li>
+      <li><b>Verrouillé 🔒</b> sans SIRET vérifié, ou si le profil n'est pas actif (le carré mènerait à une page fermée).</li>
+      <li>Le carré dessiné ici est un exemple : le vrai carré, fabriqué par <code>segno</code>, mène à la page publique.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const VUES = {
+  karim:{nom:'Karim Benali',metier:'Plombier · Chauffagiste',ville:'Pessac',note:'4,8/5 · 23 avis sur rafals',tel:'06 12 34 56 78',siret:true,actif:true},
+  sanstel:{nom:'Karim Benali',metier:'Plombier · Chauffagiste',ville:'Pessac',note:'4,8/5 · 23 avis sur rafals',tel:null,siret:true,actif:true},
+  pause:{nom:'Karim Benali',metier:'Plombier · Chauffagiste',ville:'Pessac',note:'4,8/5 · 23 avis sur rafals',tel:'06 12 34 56 78',siret:true,actif:false},
+  julie:{nom:'Julie Martin',metier:'Promeneuse de chiens',ville:'Talence',note:'Nouveau sur rafals',tel:'06 98 76 54 32',siret:false,actif:true},
+};
+let vue='karim', avecTel=false, bulle='';
+
+function dessinerQR(cv){
+  // Un carré d'exemple : 3 repères dans les coins et des points au hasard (fixes), comme un vrai QR de 25 × 25
+  const n=25, c=cv.getContext('2d'); cv.width=n; cv.height=n;
+  c.fillStyle='#fff'; c.fillRect(0,0,n,n); c.fillStyle='#1D2620';
+  let g=7; const hasard=()=>{g=(g*9301+49297)%233280;return g/233280};
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){ if(hasard()<.48) c.fillRect(x,y,1,1); }
+  for(const [x,y] of [[0,0],[n-7,0],[0,n-7]]){ c.fillStyle='#fff'; c.fillRect(x-1<0?0:x-1,y-1<0?0:y-1,8,8);
+    c.fillStyle='#1D2620'; c.fillRect(x,y,7,7); c.fillStyle='#fff'; c.fillRect(x+1,y+1,5,5); c.fillStyle='#1D2620'; c.fillRect(x+2,y+2,3,3); }
+}
+
+function rendre(){
+  const v=VUES[vue], permis=v.siret&&v.actif;
+  if(!v.tel) avecTel=false;
+  const raison=!v.siret?'Les cartes de visite sont réservées aux prestataires avec un SIRET vérifié.'
+    :!v.actif?'Votre profil est en pause : sa page publique est fermée, le carré à scanner ne mènerait nulle part. Reprenez votre activité d\'abord.':'';
+  let h=`<section class="carte-ui">
+    <p class="doux">Donnez-la à vos clients : en scannant le carré, ils arrivent sur votre page rafals, avec vos avis et vos photos.</p>`;
+  if(!v.siret) h+=`<div class="alerte">${raison}</div>`;
+  else if(!v.actif) h+=`<div class="alerte">${raison}</div>`;
+  h+=`<div class="cv" aria-label="Aperçu de la carte de visite">
+      <div class="gauche">
+        <div class="nom">${v.nom}</div>
+        <div class="metier">${v.metier}</div>
+        <div class="ville">${v.ville}</div>
+        <div class="note">${v.note}</div>
+        ${avecTel?`<div class="tel">${v.tel}</div>`:''}
+      </div>
+      <div class="droite"><canvas id="qr" aria-label="Carré à scanner (exemple)"></canvas><div class="sous-qr">Mes avis<br>et mes photos</div></div>
+      <div class="marque">rafals.</div>
+    </div>
+    <label class="case${v.tel&&permis?'':' verrou'}">
+      <input type="checkbox" id="tel" ${avecTel?'checked':''} ${v.tel&&permis?'':'disabled'}>
+      <span>${v.tel&&permis?'':'🔒 '}Mettre mon téléphone sur la carte
+        <small>${v.tel?`Le numéro de votre compte : ${v.tel}.`:'Ajoutez d\'abord votre téléphone dans Mon profil › Mon compte › Mes informations.'}</small></span>
+    </label>
+    <div class="boutons">
+      ${permis?`<button class="btn" data-toast="Téléchargé : carte-de-visite-karim-benali-planche.pdf (10 cartes)">Télécharger la planche à découper</button>
+        <button class="btn sec" data-toast="Téléchargé : carte-de-visite-karim-benali.pdf (8,5 × 5,5 cm)">Télécharger pour un imprimeur</button>`
+      :`<button class="btn verrou" data-bulle="1">🔒 Télécharger la planche à découper</button>
+        <button class="btn verrou" data-bulle="1">🔒 Télécharger pour un imprimeur</button>`}
+    </div>
+    ${bulle?`<div class="bulle">${raison}${!v.siret?' <button class="btn sec" style="margin-top:8px" data-toast="Maquette : ouvre « Créer mon auto-entreprise »">Créer mon auto-entreprise</button>':''}</div>`:''}
+  </section>`;
+  if(permis){
+    h+=`<section class="carte-ui"><h2>La planche à découper</h2>
+      <p class="doux">Une page A4 avec 10 cartes. Imprimez-la sur du papier épais (250 g), puis coupez le long des repères.</p>
+      <div class="planche">${Array.from({length:10},()=>`<div class="mini"><div><b>${v.nom}</b><span>${v.metier}</span><span>${v.ville}</span><span>${v.note}</span>${avecTel?`<span><b style="font-size:5px">${v.tel}</b></span>`:''}</div><i></i></div>`).join('')}</div>
+      <p class="legende">Aperçu réduit de la page A4</p></section>`;
+  }
+  document.getElementById('contenu').innerHTML=h;
+  dessinerQR(document.getElementById('qr'));
+}
+let minuteur;
+function toast(t){let e=document.querySelector('.toast');if(!e){e=document.createElement('div');e.className='toast';document.body.appendChild(e)}
+  e.textContent=t;e.hidden=false;clearTimeout(minuteur);minuteur=setTimeout(()=>e.hidden=true,3000)}
+document.addEventListener('click',ev=>{
+  const b=ev.target.closest('button'); if(!b) return;
+  if(b.dataset.vue){vue=b.dataset.vue;bulle='';document.querySelectorAll('[data-vue]').forEach(x=>x.setAttribute('aria-pressed',x===b));rendre();return}
+  if(b.dataset.bulle){bulle=!bulle;rendre();return}
+  if(b.dataset.toast) toast(b.dataset.toast);
+});
+document.addEventListener('change',ev=>{if(ev.target.id==='tel'){avecTel=ev.target.checked;rendre()}});
+rendre();
+</script>

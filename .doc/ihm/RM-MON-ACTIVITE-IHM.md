@@ -33,7 +33,7 @@ De haut en bas :
 | | Mes clients | Les personnes pour qui j'ai déjà travaillé | `/mes-clients` (lot 10.2, 07/10/2026) | prestataire |
 | | Mes avis | À donner après un rendez-vous passé | `/mon-agenda` | client |
 | Me faire connaître | Mes avis | Ce que mes clients disent de moi | sa page publique `/prestataires/12` | prestataire |
-| | Ma carte de visite | À imprimer, avec un carré à scanner | *bientôt* (à construire) | prestataire |
+| | Ma carte de visite | À imprimer, avec un carré à scanner | `/ma-carte-de-visite` (lot 10.4, 22/10/2026 ; `RM-CARTE-VISITE-IHM.md`) | prestataire |
 | | Mon site | Une page à mon nom, visible sur Google | *bientôt* (lots 6.5 et 6.6) | prestataire |
 | Mes démarches | Déclarer à l'URSSAF | Mes déclarations et leurs rappels | `/demarches` | prestataire |
 | | Mon auto-entreprise | La créer et suivre mon dossier | `/creer-mon-auto-entreprise` | prestataire |

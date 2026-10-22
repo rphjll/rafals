@@ -43,15 +43,21 @@ class Page:
         self.descendre()
 
 
-def assembler(page: Page, titre: str) -> bytes:
-    """Le fichier PDF : la page, ses 3 polices de base, et la table qui dit où trouver chaque morceau."""
+def _nombre(valeur: float) -> bytes:
+    """595 → « 595 » (les factures restent identiques), 240.94 → « 240.94 »."""
+    return (b"%.2f" % valeur).rstrip(b"0").rstrip(b".")
+
+
+def assembler(page: Page, titre: str, *, largeur: float = LARGEUR, hauteur: float = HAUTEUR) -> bytes:
+    """Le fichier PDF : la page, ses 3 polices de base, et la table qui dit où trouver chaque morceau.
+    `largeur` / `hauteur` : une autre taille que l'A4, ex. une carte de visite (services/carte_visite.py)."""
     flux = b"0.5 w\n" + b"\n".join(page.contenu)
     police = b"<< /Type /Font /Subtype /Type1 /BaseFont /%s /Encoding /WinAnsiEncoding >>"
     objets = [
         b"<< /Type /Catalog /Pages 2 0 R >>",
         b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 %d %d] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R /F3 7 0 R >> >> >>"
-        % (LARGEUR, HAUTEUR),
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 %s %s] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R /F3 7 0 R >> >> >>"
+        % (_nombre(largeur), _nombre(hauteur)),
         b"<< /Length %d >>\nstream\n%s\nendstream" % (len(flux), flux),
         police % b"Helvetica", police % b"Helvetica-Bold", police % b"Courier",
         b"<< /Title (%s) /Producer (rafals) >>" % _texte(titre),

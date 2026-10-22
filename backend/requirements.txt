@@ -10,6 +10,8 @@ boto3>=1.35,<2
 python-multipart
 # Notifications sur le téléphone (Web Push, lot 8.7)
 pywebpush>=2,<3
+# Carré à scanner des cartes de visite (QR code, lot 10.4)
+segno>=1.6,<2
 
 # Tests automatiques
 pytest>=8,<10

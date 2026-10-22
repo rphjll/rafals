@@ -46,7 +46,7 @@ export const FONCTIONS_ACTIVITE: FonctionActivite[] = [
   { cle: 'avis-client', groupe: 'gerer', texte: 'Mes avis', detail: 'À donner après un rendez-vous passé', picto: 'evenements', pour: 'client', vers: '/mon-agenda' },
 
   { cle: 'avis-prestataire', groupe: 'connaitre', texte: 'Mes avis', detail: 'Ce que mes clients disent de moi', picto: 'evenements', pour: 'prestataire', vers: (id) => `/prestataires/${id}` },
-  { cle: 'carte-visite', groupe: 'connaitre', texte: 'Ma carte de visite', detail: 'À imprimer, avec un carré à scanner', picto: 'carte-bancaire', pour: 'prestataire' },
+  { cle: 'carte-visite', groupe: 'connaitre', texte: 'Ma carte de visite', detail: 'À imprimer, avec un carré à scanner', picto: 'carte-bancaire', pour: 'prestataire', vers: '/ma-carte-de-visite', sousMenu: true },
   { cle: 'site', groupe: 'connaitre', texte: 'Mon site', detail: 'Une page à mon nom, visible sur Google', picto: 'numerique-bureau', pour: 'prestataire' },
 
   { cle: 'urssaf', groupe: 'demarches', texte: 'Déclarer à l’URSSAF', detail: 'Mes déclarations et leurs rappels', picto: 'banque', pour: 'prestataire', vers: '/demarches', sousMenu: true },

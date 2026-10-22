@@ -55,6 +55,11 @@ Le vert sauge et l'orange restent les deux couleurs de rafals ; ils sont seuleme
 | `teinte-rose` (+ `-texte`) | `#F8DFE4` / `#7F2238` | `#3A1B24` / `#F0A3B4` | idem |
 | `teinte-violet` (+ `-texte`) | `#E8E1F6` / `#49317F` | `#271F3D` / `#C2ADF0` | idem |
 
+## Couleurs de la carte de visite (ajoutées le 22/10/2026, lot 10.4)
+| Nom technique | Mode clair | Mode sombre | Sert à |
+|---|---|---|---|
+| `papier` / `encre` / `encre-douce` | `#FFFFFF` / `#1D2620` / `#58665C` | les mêmes | Aperçu de « Ma carte de visite » : une carte imprimée reste blanche, même en mode sombre |
+
 Toutes les couleurs sont écrites à un seul endroit : `frontend/src/style.css`.
 
 ## Polices (gratuites, installées dans rafals)

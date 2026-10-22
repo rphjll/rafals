@@ -42,6 +42,10 @@
   --sur-etat: #ffffff; /* texte posé sur une couleur d'état pleine (message court) */
   --ouvert: #5fd38a; /* calendrier : jour ouvert, vert vif (refonte du 03/10/2026) */
   --ouvert-texte: #0f2a1a;
+  /* Aperçu d'une carte de visite : le papier reste blanc, même en mode sombre (lot 10.4) */
+  --papier: #ffffff;
+  --encre: #1d2620;
+  --encre-douce: #58665c;
   --voile: rgb(10 14 20 / 0.55); /* fond assombri derrière une fenêtre */
   /* Nouvelle présentation (04/10/2026) : bandeau foncé de l'accueil, bouton orange, tuiles de couleur */
   --fonce: #1f4d38;
@@ -172,6 +176,9 @@
   --color-sur-etat: var(--sur-etat);
   --color-ouvert: var(--ouvert);
   --color-ouvert-texte: var(--ouvert-texte);
+  --color-papier: var(--papier);
+  --color-encre: var(--encre);
+  --color-encre-douce: var(--encre-douce);
   --color-voile: var(--voile);
   --color-fonce: var(--fonce);
   --color-sur-fonce: var(--sur-fonce);

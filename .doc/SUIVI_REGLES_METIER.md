@@ -37,6 +37,7 @@
 | 21 | 8 — Comme AlloVoisins | Application à installer | rafals sur l'écran d'accueil du téléphone, avec les notifications | validé et formalisé (04/10/2026) | `regles-metier/RM-APPLICATION.md` |
 | 22 | 10 — Faire ce que fait AlloVoisins | Mon activité | Les chiffres du haut de la page (demandes, rendez-vous, devis, argent encaissé), la barre de la TVA, et « Mes clients » (qui y figure, ce qu'on montre, coordonnées 3 mois) | rédigé le 07/10/2026, **à valider par Raphael** | `regles-metier/RM-MON-ACTIVITE.md` |
 | 23 | Hors lot | Abonnements | S'abonner à un prestataire, nombre d'abonnés visible par tous, 3 notifications choisies par prestataire | demandé et choisi par Raphael le 21/10/2026 ; décisions de Claude **à confirmer** | `regles-metier/RM-ABONNEMENTS.md` |
+| 24 | 10 — Faire ce que fait AlloVoisins | Ma carte de visite | Contenu de la carte, planche à découper et format imprimeur, téléphone au choix, réservée au SIRET vérifié, carré à scanner | questions posées à Raphael le 22/10/2026 (4 réponses) ; décisions de Claude à confirmer | `regles-metier/RM-CARTE-VISITE.md` |
 
 ## Décisions en attente
 - ⚠️ Seuil de TVA de 37 500 € montré dans « Mon activité » : à confirmer par un comptable avant la mise en ligne (sujet 22).
