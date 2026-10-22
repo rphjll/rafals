@@ -1,16 +1,19 @@
 <script setup lang="ts">
 // « Ma carte de visite » (lot 10.4, .doc/ihm/RM-CARTE-VISITE-IHM.md ; règles : RM-CARTE-VISITE.md). Ouverte par la tuile
 // de « Mon activité ». L'aperçu montre la vraie carte (le carré à scanner vient du serveur) ; deux PDF à télécharger.
-// Depuis le 22/10/2026 : 6 couleurs toutes prêtes et une petite phrase, gardées par [Enregistrer ma carte] (schema_v33).
+// Depuis le 22/10/2026 : 6 couleurs toutes prêtes et une petite phrase, gardées par [Enregistrer ma carte] (schema_v33),
+// et 2 onglets : « Chez un imprimeur » (une carte) et « Chez moi » (la planche A4 de 10 cartes), chacun avec son bouton.
 // Verrouillé sans SIRET vérifié ou si le profil n'est pas actif (raison donnée par le serveur).
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
+import ApercuCarteVisite from '../components/prestataire/ApercuCarteVisite.vue'
 import GardePrestataire from '../components/prestataire/GardePrestataire.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppCase from '../components/ui/AppCase.vue'
 import AppChamp from '../components/ui/AppChamp.vue'
+import AppOnglets from '../components/ui/AppOnglets.vue'
 import AppSection from '../components/ui/AppSection.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
@@ -51,6 +54,9 @@ const avecTelephone = ref(false)
 const couleur = ref('vert')
 const phrase = ref('')
 const envoi = ref(false)
+// « Chez un imprimeur » d'abord (Raphael, 22/10/2026 : « un apparcu de la carte a imprimer chez le pro et un a imprimer chez soi »)
+const ONGLETS = [{ id: 'imprimeur', texte: 'Chez un imprimeur' }, { id: 'chez-moi', texte: 'Chez moi' }] as const
+const onglet = ref('imprimeur')
 
 function prendre(a: Apercu) {
   apercu.value = a
@@ -67,6 +73,7 @@ onMounted(async () => {
 })
 
 const teinte = computed(() => apercu.value?.couleurs.find((c) => c.code === couleur.value)?.teinte ?? '')
+const telephoneMontre = computed(() => (avecTelephone.value ? (apercu.value?.telephone ?? null) : null))
 const carre = computed(() => `${CHEMIN}/carre.svg?couleur=${couleur.value}`) // le même carré que sur le PDF
 const modifie = computed(() => !!apercu.value && (couleur.value !== apercu.value.couleur || phrase.value.trim() !== (apercu.value.phrase ?? '')))
 
@@ -100,94 +107,92 @@ function telecharger(forme: 'planche' | 'carte') {
           Donnez-la à vos clients : en scannant le carré, ils arrivent sur votre page rafals, avec vos avis et vos photos.
         </p>
         <AppAlerte v-if="apercu.raison" etat="attente">{{ apercu.raison }}</AppAlerte>
+        <AppOnglets v-model="onglet" :onglets="ONGLETS" />
 
-        <!-- L'aperçu : 8,5 × 5,5 cm, papier blanc même en mode sombre ; la bande et le nom prennent la couleur choisie -->
-        <div
-          class="relative mx-auto grid aspect-[85/55] w-full max-w-[425px] grid-cols-[1fr_31%] gap-[5%] overflow-hidden rounded-lg bg-papier py-[6.5%] pr-[6%] pl-[11%] font-[Helvetica,Arial,sans-serif] text-encre shadow-[0_2px_14px_rgb(0_0_0/0.18)]"
-          aria-label="Aperçu de la carte de visite"
-        >
-          <span class="absolute inset-y-0 left-0 w-[3.5%]" :style="{ background: teinte }" aria-hidden="true" />
-          <div class="flex min-w-0 flex-col">
-            <b class="text-[clamp(15px,4.4vw,21px)] leading-tight" :style="{ color: teinte }">{{ apercu.nom }}</b>
-            <span class="mt-[3%] text-[clamp(11px,3vw,14px)]">{{ apercu.metier }}</span>
-            <span class="text-[clamp(10px,2.7vw,12.5px)] text-encre-douce">{{ apercu.ville }}</span>
-            <span v-if="phrase.trim()" class="mt-[2%] text-[clamp(9px,2.5vw,11.5px)]">{{ phrase.trim() }}</span>
-            <span class="mt-auto text-[clamp(10px,2.7vw,12.5px)]">{{ apercu.note }}</span>
-            <b v-if="avecTelephone && apercu.telephone" class="text-[clamp(11px,3vw,14px)]">{{ apercu.telephone }}</b>
-            <span class="mt-[3%] text-[clamp(8px,2vw,10px)] text-encre-douce">rafals.</span>
+        <!-- Chez un imprimeur : une carte au format exact -->
+        <template v-if="onglet === 'imprimeur'">
+          <div class="mx-auto w-full max-w-[425px]">
+            <ApercuCarteVisite :nom="apercu.nom" :metier="apercu.metier" :ville="apercu.ville" :note="apercu.note" :phrase="phrase" :telephone="telephoneMontre" :teinte="teinte" :carre="carre" />
           </div>
-          <div class="flex flex-col items-center justify-center gap-1">
-            <img :src="carre" alt="Carré à scanner vers votre page publique" class="w-full" />
-            <span class="text-center text-[clamp(7px,1.9vw,9.5px)] leading-tight text-encre-douce">Mes avis et mes photos</span>
-          </div>
-        </div>
-
-        <template v-if="!apercu.raison">
-          <div class="flex flex-col gap-1.5">
-            <span class="text-[13px] font-semibold">Couleur de la carte</span>
-            <div class="flex flex-wrap gap-2.5" role="group" aria-label="Couleur de la carte">
-              <button
-                v-for="c in apercu.couleurs"
-                :key="c.code"
-                type="button"
-                class="flex min-w-16 flex-col items-center gap-1 text-[12px] font-bold"
-                :aria-pressed="couleur === c.code"
-                @click="couleur = c.code"
-              >
-                <i
-                  class="block size-[38px] rounded-full outline-3 outline-offset-3"
-                  :class="couleur === c.code ? 'outline-primaire' : 'outline-transparent'"
-                  :style="{ background: c.teinte }"
-                />
-                {{ c.nom }}
-              </button>
-            </div>
-          </div>
-          <AppChamp
-            v-model="phrase"
-            etiquette="Petite phrase (facultative)"
-            :maxlength="PHRASE_MAX"
-            placeholder="Ex. Devis gratuit, intervention sous 48 h"
-            :aide="`Elle s'imprime sous la ville. ${phrase.length}/${PHRASE_MAX}`"
-          />
+          <p class="text-[14.5px] text-texte-doux">
+            Une seule carte au format exact (8,5 × 5,5 cm). Envoyez ce PDF à un imprimeur, en ligne ou en boutique : il en imprime
+            autant que vous voulez.
+          </p>
           <div>
-            <AppBouton variante="secondaire" :occupe="envoi" @click="enregistrer">
-              {{ modifie ? 'Enregistrer ma carte' : 'Carte enregistrée ✓' }}
-            </AppBouton>
+            <AppBouton v-if="apercu.raison" variante="verrouille" :raison-verrou="apercu.raison">Télécharger pour un imprimeur</AppBouton>
+            <AppBouton v-else @click="telecharger('carte')">Télécharger pour un imprimeur</AppBouton>
           </div>
-
-          <AppCase
-            v-model="avecTelephone"
-            texte="Mettre mon téléphone sur la carte"
-            :raison-verrou="apercu.telephone ? undefined : SANS_TELEPHONE"
-          />
-          <p v-if="apercu.telephone" class="-mt-2 text-[13px] text-texte-doux">Le numéro de votre compte : {{ apercu.telephone }}.</p>
         </template>
 
-        <div class="flex flex-wrap gap-2">
-          <template v-if="apercu.raison">
-            <AppBouton variante="verrouille" :raison-verrou="apercu.raison">Télécharger la planche à découper</AppBouton>
-            <AppBouton variante="verrouille" :raison-verrou="apercu.raison">Télécharger pour un imprimeur</AppBouton>
-          </template>
-          <template v-else>
-            <AppBouton @click="telecharger('planche')">Télécharger la planche à découper</AppBouton>
-            <AppBouton variante="secondaire" @click="telecharger('carte')">Télécharger pour un imprimeur</AppBouton>
-          </template>
-        </div>
+        <!-- Chez moi : la page A4 avec 10 cartes (marges de 20 mm à gauche et à droite, 11 mm en haut et en bas) -->
+        <template v-else>
+          <div class="mx-auto grid aspect-[210/297] w-full max-w-[340px] grid-cols-2 content-center bg-papier px-[9.5%] shadow-[0_2px_14px_rgb(0_0_0/0.18)]">
+            <ApercuCarteVisite
+              v-for="n in 10"
+              :key="n"
+              :nom="apercu.nom" :metier="apercu.metier" :ville="apercu.ville" :note="apercu.note"
+              :phrase="phrase"
+              :telephone="telephoneMontre"
+              :teinte="teinte"
+              :carre="carre"
+              petite
+            />
+          </div>
+          <p class="text-[14.5px] text-texte-doux">
+            Une page A4 avec 10 cartes. Imprimez-la sur du papier épais (250 g), puis coupez le long des petits traits gris dans
+            les marges.
+          </p>
+          <div>
+            <AppBouton v-if="apercu.raison" variante="verrouille" :raison-verrou="apercu.raison">Télécharger la planche à découper</AppBouton>
+            <AppBouton v-else @click="telecharger('planche')">Télécharger la planche à découper</AppBouton>
+          </div>
+        </template>
+
         <div v-if="apercu.raison?.includes('SIRET')">
           <AppBouton variante="secondaire" @click="routeur.push('/creer-mon-auto-entreprise')">Créer mon auto-entreprise</AppBouton>
         </div>
       </AppSection>
 
-      <AppSection v-if="!apercu.raison" titre="Comment l'imprimer">
-        <p class="text-[14.5px] text-texte-doux">
-          <b class="text-texte">La planche à découper</b> : une page A4 avec 10 cartes. Imprimez-la sur du papier épais (250 g),
-          puis coupez le long des petits traits gris dans les marges.
-        </p>
-        <p class="text-[14.5px] text-texte-doux">
-          <b class="text-texte">Pour un imprimeur</b> : une seule carte au format exact (8,5 × 5,5 cm), à envoyer à un imprimeur
-          en ligne ou en boutique, qui en imprime autant que vous voulez.
-        </p>
+      <!-- Ce qui est choisi ici vaut pour les deux onglets -->
+      <AppSection v-if="!apercu.raison" titre="Personnaliser ma carte">
+        <div class="flex flex-col gap-1.5">
+          <span class="text-[13px] font-semibold">Couleur de la carte</span>
+          <div class="flex flex-wrap gap-2.5" role="group" aria-label="Couleur de la carte">
+            <button
+              v-for="c in apercu.couleurs"
+              :key="c.code"
+              type="button"
+              class="flex min-w-16 flex-col items-center gap-1 text-[12px] font-bold"
+              :aria-pressed="couleur === c.code"
+              @click="couleur = c.code"
+            >
+              <i
+                class="block size-[38px] rounded-full outline-3 outline-offset-3"
+                :class="couleur === c.code ? 'outline-primaire' : 'outline-transparent'"
+                :style="{ background: c.teinte }"
+              />
+              {{ c.nom }}
+            </button>
+          </div>
+        </div>
+        <AppChamp
+          v-model="phrase"
+          etiquette="Petite phrase (facultative)"
+          :maxlength="PHRASE_MAX"
+          placeholder="Ex. Devis gratuit, intervention sous 48 h"
+          :aide="`Elle s'imprime sous la ville. ${phrase.length}/${PHRASE_MAX}`"
+        />
+        <AppCase
+          v-model="avecTelephone"
+          texte="Mettre mon téléphone sur la carte"
+          :raison-verrou="apercu.telephone ? undefined : SANS_TELEPHONE"
+        />
+        <p v-if="apercu.telephone" class="-mt-2 text-[13px] text-texte-doux">Le numéro de votre compte : {{ apercu.telephone }}.</p>
+        <div>
+          <AppBouton variante="secondaire" :occupe="envoi" @click="enregistrer">
+            {{ modifie ? 'Enregistrer ma carte' : 'Carte enregistrée ✓' }}
+          </AppBouton>
+        </div>
       </AppSection>
     </template>
   </GardePrestataire>
