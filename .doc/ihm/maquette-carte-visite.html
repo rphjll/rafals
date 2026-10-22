@@ -40,6 +40,16 @@ h1{font-size:28px;font-weight:900;margin:0}
 .cv{width:100%;max-width:425px;aspect-ratio:85/55;background:var(--papier);color:var(--encre);border-radius:8px;box-shadow:0 2px 14px rgba(0,0,0,.18);
   display:grid;grid-template-columns:1fr 31%;gap:5%;padding:6.5% 6%;font-family:var(--carte);position:relative;margin-inline:auto}
 .cv .gauche{display:flex;flex-direction:column;min-width:0}
+.cv .bande{position:absolute;left:0;top:0;bottom:0;width:3.5%;border-radius:8px 0 0 8px}
+.cv .phrase{font-size:clamp(9px,2.5vw,11.5px);font-style:italic;margin-top:2%;color:var(--encre)}
+.pastilles{display:flex;flex-wrap:wrap;gap:10px}
+.pastille{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;font-size:12px;font-weight:700;min-width:64px}
+.pastille i{width:38px;height:38px;border-radius:50%;display:block;outline:3px solid transparent;outline-offset:3px}
+.pastille[aria-pressed="true"] i{outline-color:var(--primaire)}
+.champ{display:flex;flex-direction:column;gap:6px}
+.champ label{font-weight:700;font-size:14.5px}
+.champ input{font:inherit;min-height:42px;border-radius:16px;border:1px solid var(--bord);background:var(--fond);color:var(--texte);padding:8px 12px}
+.champ small{color:var(--doux);font-size:13px;display:flex;justify-content:space-between;gap:8px}
 .cv .nom{font-weight:700;font-size:clamp(15px,4.4vw,21px);line-height:1.1}
 .cv .metier{font-size:clamp(11px,3vw,14px);margin-top:3%;color:var(--encre)}
 .cv .ville{font-size:clamp(10px,2.7vw,12.5px);color:var(--encre-douce)}
@@ -93,6 +103,7 @@ h1{font-size:28px;font-weight:900;margin:0}
     <h2>Ce que fait cette page</h2>
     <ul>
       <li><b>Ouverte par la tuile « Ma carte de visite »</b> de « Mon activité » (aujourd'hui marquée « bientôt »).</li>
+      <li><b>Nouveau (22/10/2026)</b> : 6 pastilles de couleur (nom, bande sur le côté, carré à scanner) et une petite phrase de 40 caractères au plus sous la ville, gardées avec [Enregistrer ma carte]. L'aperçu change dès qu'on clique ou qu'on tape.</li>
       <li><b>L'aperçu montre la vraie carte</b>, à jour avec le profil : nom, métier, ville, note, téléphone si la case est cochée, carré à scanner.</li>
       <li><b>2 boutons</b> : la planche A4 de 10 cartes à découper, ou une carte au format exact pour un imprimeur. Rien n'est enregistré.</li>
       <li><b>Verrouillé 🔒</b> sans SIRET vérifié, ou si le profil n'est pas actif (le carré mènerait à une page fermée).</li>
@@ -108,16 +119,18 @@ const VUES = {
   pause:{nom:'Karim Benali',metier:'Plombier · Chauffagiste',ville:'Pessac',note:'4,8/5 · 23 avis sur rafals',tel:'06 12 34 56 78',siret:true,actif:false},
   julie:{nom:'Julie Martin',metier:'Promeneuse de chiens',ville:'Talence',note:'Nouveau sur rafals',tel:'06 98 76 54 32',siret:false,actif:true},
 };
-let vue='karim', avecTel=false, bulle='';
+let vue='karim', avecTel=false, bulle='', couleur='bleu-nuit', phrase='Devis gratuit, intervention sous 48 h';
+const COULEURS=[['vert','Vert rafals','#2f6b4f'],['bleu-nuit','Bleu nuit','#1d3a5f'],['orange','Orange','#c4561b'],['bordeaux','Bordeaux','#7a1f2b'],['violet','Violet','#4b2e83'],['noir','Noir','#1d2620']];
+const teinte=()=>COULEURS.find(c=>c[0]===couleur)[2];
 
 function dessinerQR(cv){
   // Un carré d'exemple : 3 repères dans les coins et des points au hasard (fixes), comme un vrai QR de 25 × 25
   const n=25, c=cv.getContext('2d'); cv.width=n; cv.height=n;
-  c.fillStyle='#fff'; c.fillRect(0,0,n,n); c.fillStyle='#1D2620';
+  c.fillStyle='#fff'; c.fillRect(0,0,n,n); const t=teinte(); c.fillStyle=t;
   let g=7; const hasard=()=>{g=(g*9301+49297)%233280;return g/233280};
   for(let y=0;y<n;y++)for(let x=0;x<n;x++){ if(hasard()<.48) c.fillRect(x,y,1,1); }
   for(const [x,y] of [[0,0],[n-7,0],[0,n-7]]){ c.fillStyle='#fff'; c.fillRect(x-1<0?0:x-1,y-1<0?0:y-1,8,8);
-    c.fillStyle='#1D2620'; c.fillRect(x,y,7,7); c.fillStyle='#fff'; c.fillRect(x+1,y+1,5,5); c.fillStyle='#1D2620'; c.fillRect(x+2,y+2,3,3); }
+    c.fillStyle=t; c.fillRect(x,y,7,7); c.fillStyle='#fff'; c.fillRect(x+1,y+1,5,5); c.fillStyle=t; c.fillRect(x+2,y+2,3,3); }
 }
 
 function rendre(){
@@ -131,15 +144,20 @@ function rendre(){
   else if(!v.actif) h+=`<div class="alerte">${raison}</div>`;
   h+=`<div class="cv" aria-label="Aperçu de la carte de visite">
       <div class="gauche">
-        <div class="nom">${v.nom}</div>
+        <div class="nom" style="color:${teinte()}">${v.nom}</div>
         <div class="metier">${v.metier}</div>
         <div class="ville">${v.ville}</div>
+        ${phrase.trim()?`<div class="phrase">${phrase.trim().replace(/</g,'&lt;')}</div>`:''}
         <div class="note">${v.note}</div>
         ${avecTel?`<div class="tel">${v.tel}</div>`:''}
       </div>
       <div class="droite"><canvas id="qr" aria-label="Carré à scanner (exemple)"></canvas><div class="sous-qr">Mes avis<br>et mes photos</div></div>
       <div class="marque">rafals.</div>
+      <span class="bande" style="background:${teinte()}"></span>
     </div>
+    ${permis?`<div class="champ"><label>Couleur de la carte</label><div class="pastilles">${COULEURS.map(c=>`<button class="pastille" data-couleur="${c[0]}" aria-pressed="${couleur===c[0]}"><i style="background:${c[2]}"></i>${c[1]}</button>`).join('')}</div></div>
+    <div class="champ"><label for="phrase">Petite phrase (facultative)</label><input id="phrase" maxlength="40" value="${phrase.replace(/"/g,'&quot;')}" placeholder="Ex. Devis gratuit, intervention sous 48 h"><small><span>Elle s'imprime sous la ville.</span><span id="compte">${phrase.length}/40</span></small></div>
+    <div><button class="btn sec" data-toast="Carte enregistrée : vous la retrouverez à votre prochaine visite.">Enregistrer ma carte</button></div>`:''}
     <label class="case${v.tel&&permis?'':' verrou'}">
       <input type="checkbox" id="tel" ${avecTel?'checked':''} ${v.tel&&permis?'':'disabled'}>
       <span>${v.tel&&permis?'':'🔒 '}Mettre mon téléphone sur la carte
@@ -156,7 +174,7 @@ function rendre(){
   if(permis){
     h+=`<section class="carte-ui"><h2>La planche à découper</h2>
       <p class="doux">Une page A4 avec 10 cartes. Imprimez-la sur du papier épais (250 g), puis coupez le long des repères.</p>
-      <div class="planche">${Array.from({length:10},()=>`<div class="mini"><div><b>${v.nom}</b><span>${v.metier}</span><span>${v.ville}</span><span>${v.note}</span>${avecTel?`<span><b style="font-size:5px">${v.tel}</b></span>`:''}</div><i></i></div>`).join('')}</div>
+      <div class="planche">${Array.from({length:10},()=>`<div class="mini"><div><b style="color:${teinte()}">${v.nom}</b><span>${v.metier}</span><span>${v.ville}</span><span>${v.note}</span>${avecTel?`<span><b style="font-size:5px">${v.tel}</b></span>`:''}</div><i></i></div>`).join('')}</div>
       <p class="legende">Aperçu réduit de la page A4</p></section>`;
   }
   document.getElementById('contenu').innerHTML=h;
@@ -169,8 +187,10 @@ document.addEventListener('click',ev=>{
   const b=ev.target.closest('button'); if(!b) return;
   if(b.dataset.vue){vue=b.dataset.vue;bulle='';document.querySelectorAll('[data-vue]').forEach(x=>x.setAttribute('aria-pressed',x===b));rendre();return}
   if(b.dataset.bulle){bulle=!bulle;rendre();return}
+  if(b.dataset.couleur){couleur=b.dataset.couleur;rendre();return}
   if(b.dataset.toast) toast(b.dataset.toast);
 });
 document.addEventListener('change',ev=>{if(ev.target.id==='tel'){avecTel=ev.target.checked;rendre()}});
+document.addEventListener('input',ev=>{if(ev.target.id==='phrase'){phrase=ev.target.value;const pos=ev.target.selectionStart;rendre();const champ=document.getElementById('phrase');champ.focus();champ.setSelectionRange(pos,pos)}});
 rendre();
 </script>

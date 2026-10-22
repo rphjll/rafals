@@ -1,17 +1,26 @@
 <script setup lang="ts">
 // « Ma carte de visite » (lot 10.4, .doc/ihm/RM-CARTE-VISITE-IHM.md ; règles : RM-CARTE-VISITE.md). Ouverte par la tuile
 // de « Mon activité ». L'aperçu montre la vraie carte (le carré à scanner vient du serveur) ; deux PDF à télécharger.
+// Depuis le 22/10/2026 : 6 couleurs toutes prêtes et une petite phrase, gardées par [Enregistrer ma carte] (schema_v33).
 // Verrouillé sans SIRET vérifié ou si le profil n'est pas actif (raison donnée par le serveur).
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import GardePrestataire from '../components/prestataire/GardePrestataire.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppCase from '../components/ui/AppCase.vue'
+import AppChamp from '../components/ui/AppChamp.vue'
 import AppSection from '../components/ui/AppSection.vue'
 import { useCompte } from '../composables/useCompte'
+import { useMessage } from '../composables/useMessage'
 
+interface Couleur {
+  code: string
+  nom: string
+  /** Ex. « #1D3A5F » (bleu nuit) : la teinte vient du serveur, la même que sur le PDF */
+  teinte: string
+}
 interface Apercu {
   nom: string
   metier: string
@@ -20,30 +29,63 @@ interface Apercu {
   /** Le numéro du compte, ex. « 06 12 34 56 78 » ; vide : la case du téléphone est verrouillée */
   telephone: string | null
   adresse: string
+  /** Couleur et phrase enregistrées (« vert » et vide au départ) */
+  couleur: string
+  phrase: string | null
+  couleurs: Couleur[]
   /** Pourquoi les boutons sont verrouillés (sans SIRET vérifié, profil en pause…), sinon vide */
   raison: string | null
 }
 
+const PHRASE_MAX = 40
+const CHEMIN = '/api/moi/prestataire/carte-de-visite'
+const SANS_TELEPHONE = "Ajoutez d'abord votre téléphone dans Mon profil › Mon compte › Mes informations."
+
 const routeur = useRouter()
 const { compte } = useCompte()
+const { afficherMessage } = useMessage()
 const apercu = ref<Apercu | null>(null)
 const erreur = ref('')
 const avecTelephone = ref(false)
-const CARRE = '/api/moi/prestataire/carte-de-visite/carre.svg' // le même carré que sur le PDF
-const SANS_TELEPHONE = "Ajoutez d'abord votre téléphone dans Mon profil › Mon compte › Mes informations."
+// Ce qui est affiché (l'aperçu change tout de suite) ; [Enregistrer ma carte] le garde
+const couleur = ref('vert')
+const phrase = ref('')
+const envoi = ref(false)
 
+function prendre(a: Apercu) {
+  apercu.value = a
+  couleur.value = a.couleur
+  phrase.value = a.phrase ?? ''
+}
 onMounted(async () => {
   if (!compte.value?.prestataire_id) return
   try {
-    apercu.value = await appelerServeur<Apercu>('/api/moi/prestataire/carte-de-visite')
+    prendre(await appelerServeur<Apercu>(CHEMIN))
   } catch (e) {
     erreur.value = messageErreur(e)
   }
 })
 
-/** Le PDF s'ouvre dans un nouvel onglet (enregistrer ou imprimer), comme une facture */
+const teinte = computed(() => apercu.value?.couleurs.find((c) => c.code === couleur.value)?.teinte ?? '')
+const carre = computed(() => `${CHEMIN}/carre.svg?couleur=${couleur.value}`) // le même carré que sur le PDF
+const modifie = computed(() => !!apercu.value && (couleur.value !== apercu.value.couleur || phrase.value.trim() !== (apercu.value.phrase ?? '')))
+
+async function enregistrer() {
+  envoi.value = true
+  try {
+    prendre(await appelerServeur<Apercu>(CHEMIN, { couleur: couleur.value, phrase: phrase.value }))
+    afficherMessage('Carte enregistrée : vous la retrouverez à votre prochaine visite.')
+  } catch (e) {
+    afficherMessage(messageErreur(e), 'erreur')
+  } finally {
+    envoi.value = false
+  }
+}
+
+/** Le PDF s'ouvre dans un nouvel onglet (enregistrer ou imprimer), comme une facture, avec ce qui est affiché */
 function telecharger(forme: 'planche' | 'carte') {
-  window.open(`/api/moi/prestataire/carte-de-visite/pdf?forme=${forme}&telephone=${avecTelephone.value}`, '_blank', 'noopener')
+  const reglages = new URLSearchParams({ forme, telephone: String(avecTelephone.value), couleur: couleur.value, phrase: phrase.value })
+  window.open(`${CHEMIN}/pdf?${reglages}`, '_blank', 'noopener')
 }
 </script>
 
@@ -59,26 +101,61 @@ function telecharger(forme: 'planche' | 'carte') {
         </p>
         <AppAlerte v-if="apercu.raison" etat="attente">{{ apercu.raison }}</AppAlerte>
 
-        <!-- L'aperçu : 8,5 × 5,5 cm, papier blanc même en mode sombre -->
+        <!-- L'aperçu : 8,5 × 5,5 cm, papier blanc même en mode sombre ; la bande et le nom prennent la couleur choisie -->
         <div
-          class="mx-auto grid aspect-[85/55] w-full max-w-[425px] grid-cols-[1fr_31%] gap-[5%] rounded-lg bg-papier px-[6%] py-[6.5%] font-[Helvetica,Arial,sans-serif] text-encre shadow-[0_2px_14px_rgb(0_0_0/0.18)]"
+          class="relative mx-auto grid aspect-[85/55] w-full max-w-[425px] grid-cols-[1fr_31%] gap-[5%] overflow-hidden rounded-lg bg-papier py-[6.5%] pr-[6%] pl-[11%] font-[Helvetica,Arial,sans-serif] text-encre shadow-[0_2px_14px_rgb(0_0_0/0.18)]"
           aria-label="Aperçu de la carte de visite"
         >
+          <span class="absolute inset-y-0 left-0 w-[3.5%]" :style="{ background: teinte }" aria-hidden="true" />
           <div class="flex min-w-0 flex-col">
-            <b class="text-[clamp(15px,4.4vw,21px)] leading-tight">{{ apercu.nom }}</b>
+            <b class="text-[clamp(15px,4.4vw,21px)] leading-tight" :style="{ color: teinte }">{{ apercu.nom }}</b>
             <span class="mt-[3%] text-[clamp(11px,3vw,14px)]">{{ apercu.metier }}</span>
             <span class="text-[clamp(10px,2.7vw,12.5px)] text-encre-douce">{{ apercu.ville }}</span>
+            <span v-if="phrase.trim()" class="mt-[2%] text-[clamp(9px,2.5vw,11.5px)]">{{ phrase.trim() }}</span>
             <span class="mt-auto text-[clamp(10px,2.7vw,12.5px)]">{{ apercu.note }}</span>
             <b v-if="avecTelephone && apercu.telephone" class="text-[clamp(11px,3vw,14px)]">{{ apercu.telephone }}</b>
             <span class="mt-[3%] text-[clamp(8px,2vw,10px)] text-encre-douce">rafals.</span>
           </div>
           <div class="flex flex-col items-center justify-center gap-1">
-            <img :src="CARRE" alt="Carré à scanner vers votre page publique" class="w-full" />
+            <img :src="carre" alt="Carré à scanner vers votre page publique" class="w-full" />
             <span class="text-center text-[clamp(7px,1.9vw,9.5px)] leading-tight text-encre-douce">Mes avis et mes photos</span>
           </div>
         </div>
 
         <template v-if="!apercu.raison">
+          <div class="flex flex-col gap-1.5">
+            <span class="text-[13px] font-semibold">Couleur de la carte</span>
+            <div class="flex flex-wrap gap-2.5" role="group" aria-label="Couleur de la carte">
+              <button
+                v-for="c in apercu.couleurs"
+                :key="c.code"
+                type="button"
+                class="flex min-w-16 flex-col items-center gap-1 text-[12px] font-bold"
+                :aria-pressed="couleur === c.code"
+                @click="couleur = c.code"
+              >
+                <i
+                  class="block size-[38px] rounded-full outline-3 outline-offset-3"
+                  :class="couleur === c.code ? 'outline-primaire' : 'outline-transparent'"
+                  :style="{ background: c.teinte }"
+                />
+                {{ c.nom }}
+              </button>
+            </div>
+          </div>
+          <AppChamp
+            v-model="phrase"
+            etiquette="Petite phrase (facultative)"
+            :maxlength="PHRASE_MAX"
+            placeholder="Ex. Devis gratuit, intervention sous 48 h"
+            :aide="`Elle s'imprime sous la ville. ${phrase.length}/${PHRASE_MAX}`"
+          />
+          <div>
+            <AppBouton variante="secondaire" :occupe="envoi" @click="enregistrer">
+              {{ modifie ? 'Enregistrer ma carte' : 'Carte enregistrée ✓' }}
+            </AppBouton>
+          </div>
+
           <AppCase
             v-model="avecTelephone"
             texte="Mettre mon téléphone sur la carte"

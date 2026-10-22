@@ -14,7 +14,14 @@ Karim, plombier à Pessac, donne sa carte à un client sur un chantier ou la lai
 6. Le carré à scanner (un *QR code*) vers sa page publique, ex. `https://rafals.fr/prestataires/12`, avec dessous « Mes avis et mes photos ».
 7. En petit, en bas : « rafals. ».
 
-Rien n'est enregistré : la carte est fabriquée au moment du téléchargement avec ce qui est dans son profil ce jour-là (comme le PDF d'une facture). Aucune table ni rubrique nouvelle.
+Le PDF n'est jamais enregistré : la carte est fabriquée au moment du téléchargement avec ce qui est dans son profil ce jour-là (comme le PDF d'une facture). Seules la couleur et la petite phrase sont gardées (voir plus bas).
+
+## Couleur et petite phrase (ajoutées le 22/10/2026)
+Demande de Raphael, mot pour mot : « ok mtn faut pouvoir choisir les couleurs et la modif un peu ». Réponses : « toute pretes », « ajouter un ptite phrase », gardées d'une visite à l'autre (« oui »). MLD validé : `.doc/mld/MLD-carte-visite.html` ; `db/schema_v33.sql` (rubriques `prestataire.carte_couleur` et `prestataire.carte_phrase`).
+- **6 couleurs toutes prêtes** : Vert rafals `#2F6B4F` (au départ), Bleu nuit `#1D3A5F`, Orange `#C4561B`, Bordeaux `#7A1F2B`, Violet `#4B2E83`, Noir `#1D2620`. La couleur va sur le nom, sur une bande de 3 mm sur le côté gauche de la carte et sur le carré à scanner. Toutes assez foncées pour rester lisibles et se scanner. Une autre couleur est refusée : « Choisissez une des 6 couleurs proposées. »
+- **Une petite phrase** facultative, 40 caractères au plus, imprimée sous la ville, ex. « Devis gratuit, intervention sous 48 h ». Même filtre que les avis et les messages (mots interdits, IA de modération). Trop longue : « La petite phrase doit faire entre 1 et 40 caractères. » Vide (ou seulement des espaces) : pas de phrase.
+- [Enregistrer ma carte] garde la couleur et la phrase. Les PDF téléchargés prennent **ce qui est affiché** sur la page, même pas encore enregistré ; télécharger n'enregistre rien.
+- Enregistrer est refusé dans les mêmes cas que télécharger (sans SIRET vérifié, profil pas actif).
 
 ## Deux PDF (réponse de Raphael du 22/10/2026 : « les 2 »)
 - **[Télécharger la planche à découper]** : une page A4 avec **10 cartes identiques** (2 colonnes × 5 lignes), avec de petits repères de coupe dans les marges. Pour imprimer chez soi sur du papier épais.

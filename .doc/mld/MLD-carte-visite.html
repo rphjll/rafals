@@ -1,0 +1,104 @@
+<title>MLD carte de visite</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Fond blanc uni imposé par les règles du projet (format du MLD) : un seul thème, couleurs fixées */
+  :root { color-scheme: light; --fond:#ffffff; --texte:#1d2620; --doux:#58665c; --trait:#d8e1da; --vert:#2f6b4f; --pale:#f3f6f2; --orange:#b26a00; --orange-pale:#fcf0dc; }
+  body { background:var(--fond); color:var(--texte); font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:24px 48px; }
+  .page { max-width:1040px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:var(--doux); }
+  .schema { border:1px solid var(--trait); border-radius:10px; padding:16px; background:var(--fond); overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:16px; }
+  .carte { border:1px solid var(--trait); border-radius:10px; padding:14px 16px; min-width:0; display:flex; flex-direction:column; gap:8px; }
+  .carte h3 { margin:0; font-size:16px; font-family:Consolas, monospace; color:var(--vert); }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:var(--orange); background:var(--orange-pale); border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; white-space:nowrap; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:var(--pale); padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid var(--vert); padding:8px 12px; background:var(--pale); border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:var(--doux); }
+  .pastilles { display:flex; flex-wrap:wrap; gap:10px; font-size:13.5px; }
+  .pastilles span { display:inline-flex; align-items:center; gap:6px; }
+  .pastilles i { width:16px; height:16px; border-radius:50%; display:inline-block; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD : personnaliser la carte de visite</h1>
+    <p class="sous">rafals · proposé le 22/10/2026 · aucune table nouvelle, 2 rubriques ajoutées à <code>PRESTATAIRE</code>, rien de supprimé ni de changé ailleurs.</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)<br/>compte_id (FK)<br/>metier_principal_id (FK)<br/>commune_id (FK)"]
+  METIER["<b>METIER</b><br/>id (PK)"]
+  COMMUNE["<b>COMMUNE</b><br/>id (PK)"]
+  COMPTE -- "a · (0,1) —— (1,1)" --- PRESTATAIRE
+  PRESTATAIRE -- "(1,1) —— (0,n) · exerce en principal" --- METIER
+  PRESTATAIRE -- "(1,1) —— (0,n) · part de" --- COMMUNE
+  classDef changee fill:#fcf0dc,stroke:#b26a00,color:#1d2620;
+  class PRESTATAIRE changee;
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>(0,1)</b><span>zéro ou un.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>lecture</b><span>un compte a zéro ou un profil de prestataire ; chaque prestataire a un et un seul compte, un et un seul métier principal, une et une seule ville de départ.</span>
+      <b>orange</b><span>table qui reçoit des rubriques nouvelles.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les rubriques</h2>
+    <div class="tables">
+      <div class="carte"><h3>PRESTATAIRE <span class="nouveau">2 rubriques en plus</span></h3>
+        <ul>
+          <li><code>carte_couleur</code> <span class="nouveau">nouvelle</span> : la couleur choisie pour la carte, une des 6 toutes prêtes. Obligatoire ; <code>vert</code> au départ (la carte d'aujourd'hui).</li>
+          <li><code>carte_phrase</code> <span class="nouveau">nouvelle</span> : la petite phrase sous la ville, 40 caractères au plus. Facultative : vide = pas de phrase.</li>
+        </ul>
+        <div class="pastilles">
+          <span><i style="background:#2f6b4f"></i><code>vert</code> vert rafals</span>
+          <span><i style="background:#1d3a5f"></i><code>bleu-nuit</code></span>
+          <span><i style="background:#c4561b"></i><code>orange</code></span>
+          <span><i style="background:#7a1f2b"></i><code>bordeaux</code></span>
+          <span><i style="background:#4b2e83"></i><code>violet</code></span>
+          <span><i style="background:#1d2620"></i><code>noir</code></span>
+        </div>
+        <p class="note">Les autres rubriques de <code>PRESTATAIRE</code> (nom affiché, présentation, SIRET, statut, agenda…) ne changent pas. La base refuse une autre couleur que ces 6.</p>
+      </div>
+      <div class="carte"><h3>COMPTE · METIER · COMMUNE</h3>
+        <p class="note">Ne changent pas. Le téléphone reste dans <code>COMPTE</code> ; la case « Mettre mon téléphone sur la carte » n'est pas gardée (décochée à chaque visite).</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>PRESTATAIRE</code> n° 12 : nom affiché = Karim Benali, carte_couleur = bleu-nuit, carte_phrase = « Devis gratuit, intervention sous 48 h ».
+      <p class="trad"><b>Traduction :</b> la carte de Karim a son nom et une bande sur le côté en bleu nuit, et sous « Pessac » on lit « Devis gratuit, intervention sous 48 h ». Quand il revient sur la page une semaine plus tard, il retrouve le bleu nuit et sa phrase.</p>
+    </div>
+    <div class="exemple">
+      <code>PRESTATAIRE</code> n° 15 : nom affiché = Léa Coiffure, carte_couleur = vert, carte_phrase = vide.
+      <p class="trad"><b>Traduction :</b> Léa n'a jamais rien changé : sa carte est en vert rafals, sans phrase, exactement comme celle d'aujourd'hui.</p>
+    </div>
+  </section>
+</div>

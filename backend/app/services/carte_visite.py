@@ -1,4 +1,5 @@
-"""Ma carte de visite (lot 10.4, regles-metier/RM-CARTE-VISITE.md) : deux PDF fabriqués à la demande, rien n'est stocké.
+"""Ma carte de visite (lot 10.4, regles-metier/RM-CARTE-VISITE.md) : deux PDF fabriqués à la demande. Seules la couleur
+et la petite phrase sont gardées (schema_v33, dans PRESTATAIRE) ; le PDF, lui, n'est jamais stocké.
 - la planche : une page A4 avec 10 cartes identiques (2 × 5) et des repères de coupe, à imprimer chez soi ;
 - la carte seule : une page de 8,5 × 5,5 cm, pour un imprimeur.
 Le carré à scanner (QR code) est calculé par la bibliothèque `segno` (choix de Raphael du 22/10/2026), puis dessiné
@@ -36,6 +37,20 @@ PAS_ACTIF = {
 }
 SANS_TELEPHONE = "Ajoutez d'abord votre téléphone dans Mon profil › Mon compte › Mes informations."
 
+# Les 6 couleurs toutes prêtes (Raphael, 22/10/2026 : « toute pretes ») : code rangé dans la base → nom et teinte.
+# Toutes assez foncées pour que le nom reste lisible et que le carré se scanne bien. La liste de la base
+# (contrainte prestataire_carte_couleur_connue, schema_v33.sql) doit rester la même.
+COULEURS = {
+    "vert": ("Vert rafals", "#2F6B4F"),
+    "bleu-nuit": ("Bleu nuit", "#1D3A5F"),
+    "orange": ("Orange", "#C4561B"),
+    "bordeaux": ("Bordeaux", "#7A1F2B"),
+    "violet": ("Violet", "#4B2E83"),
+    "noir": ("Noir", "#1D2620"),
+}
+PHRASE_MAX = 40
+COULEUR_INCONNUE = "Choisissez une des 6 couleurs proposées."
+
 
 @dataclass
 class Contenu:
@@ -47,6 +62,8 @@ class Contenu:
     note: str
     telephone: str | None  # seulement si le prestataire l'a demandé
     adresse: str  # la page publique, ex. « https://rafals.fr/prestataires/12 »
+    couleur: str = "vert"  # un code de COULEURS, ex. « bleu-nuit »
+    phrase: str | None = None  # ex. « Devis gratuit, intervention sous 48 h »
 
 
 def raison_du_refus(prestataire: Prestataire) -> str | None:
@@ -76,8 +93,28 @@ def verifier(prestataire: Prestataire, compte: Compte, *, avec_telephone: bool) 
         raise ErreurRegle(SANS_TELEPHONE)
 
 
-def contenu(db: Session, prestataire: Prestataire, compte: Compte, *, avec_telephone: bool, maintenant: datetime) -> Contenu:
-    """Le contenu de la carte, tel qu'il est dans le profil aujourd'hui (aussi pour l'aperçu, même verrouillé)."""
+def verifier_reglages(db: Session, couleur: str, phrase: str | None) -> tuple[str, str | None]:
+    """La couleur doit être une des 6 ; la phrase passe le filtre commun (40 caractères, mots interdits, IA).
+    Rend (couleur, phrase nettoyée ou None si vide)."""
+    if couleur not in COULEURS:
+        raise ErreurRegle(COULEUR_INCONNUE)
+    if not (phrase or "").strip():
+        return couleur, None
+    return couleur, service_avis.verifier_texte(db, phrase or "", 1, "La petite phrase", PHRASE_MAX)
+
+
+def enregistrer(db: Session, prestataire: Prestataire, couleur: str, phrase: str | None) -> Prestataire:
+    """[Enregistrer ma carte] : la couleur et la phrase sont gardées pour les prochaines visites."""
+    if (raison := raison_du_refus(prestataire)) is not None:
+        raise ErreurRegle(raison, 403)
+    prestataire.carte_couleur, prestataire.carte_phrase = verifier_reglages(db, couleur, phrase)
+    return prestataire
+
+
+def contenu(db: Session, prestataire: Prestataire, compte: Compte, *, avec_telephone: bool, maintenant: datetime,
+            couleur: str | None = None, phrase: str | None = None) -> Contenu:
+    """Le contenu de la carte, tel qu'il est dans le profil aujourd'hui (aussi pour l'aperçu, même verrouillé).
+    `couleur` / `phrase` : celles affichées sur la page, pas encore enregistrées (sinon celles du profil)."""
     jour = aujourd_hui(maintenant)
     # Le métier principal, et un métier secondaire s'il tient sur la ligne
     noms = [db.get_one(Metier, prestataire.metier_principal_id).nom] if en_cours(prestataire.metier_principal_fin_le, jour) else []
@@ -90,14 +127,16 @@ def contenu(db: Session, prestataire: Prestataire, compte: Compte, *, avec_telep
         nom=prestataire.nom_affiche, metier=metier, ville=db.get_one(Commune, prestataire.commune_id).nom,
         note=texte_note(somme, nombre), telephone=compte.telephone if avec_telephone and compte.telephone else None,
         adresse=adresse_publique(prestataire),
+        couleur=couleur if couleur is not None else prestataire.carte_couleur,
+        phrase=phrase if couleur is not None else prestataire.carte_phrase,
     )
 
 
-def carre_svg(adresse: str) -> bytes:
+def carre_svg(adresse: str, couleur: str = "vert") -> bytes:
     """Le carré à scanner en image, pour l'aperçu de la page « Ma carte de visite ». Fichier SVG complet (avec son
     « xmlns ») : sans lui, le navigateur n'affiche pas l'image (svg_inline ne sert qu'au milieu d'une page HTML)."""
     sortie = io.BytesIO()
-    segno.make(adresse, error="m").save(sortie, kind="svg", scale=4, border=0, dark="#1D2620", xmldecl=False)
+    segno.make(adresse, error="m").save(sortie, kind="svg", scale=4, border=0, dark=COULEURS.get(couleur, COULEURS["vert"])[1], xmldecl=False)
     return sortie.getvalue()
 
 
@@ -108,6 +147,12 @@ def nom_de_fichier(nom: str, planche: bool) -> str:
     return f"carte-de-visite-{morceaux}{'-planche' if planche else ''}.pdf"
 
 
+def _rgb(couleur: str) -> bytes:
+    """« bleu-nuit » → « 0.114 0.227 0.373 » : la teinte en langage PDF."""
+    teinte = COULEURS.get(couleur, COULEURS["vert"])[1]
+    return b"%.3f %.3f %.3f" % tuple(int(teinte[i:i + 2], 16) / 255 for i in (1, 3, 5))
+
+
 def _taille(texte: str, taille: float, largeur: float) -> float:
     """Réduit la police si le texte dépasse : Helvetica fait environ 0,55 × la taille par caractère."""
     return min(taille, largeur / max(1, len(texte) * 0.55))
@@ -116,21 +161,29 @@ def _taille(texte: str, taille: float, largeur: float) -> float:
 def _dessiner_carte(page: Page, c: Contenu, x: float, y: float) -> None:
     """Une carte dont le coin en bas à gauche est en (x, y), en points."""
     marge = 5 * MM
+    bande = 3 * MM  # la bande de couleur, sur le côté gauche
+    gauche = bande + 4 * MM  # le texte commence après la bande
     cote_qr = 25 * MM
-    texte_l = CARTE_L - 2 * marge - cote_qr - 3 * MM  # la colonne de texte, à gauche du carré
+    texte_l = CARTE_L - gauche - marge - cote_qr - 3 * MM  # la colonne de texte, à gauche du carré
+    teinte = _rgb(c.couleur)
 
     def ecrire(texte: str, hauteur: float, taille: float, police: str = "normal") -> None:
         page.y = y + hauteur
-        page.ecrire(texte, x=x + marge, taille=_taille(texte, taille, texte_l), police=police)  # type: ignore[arg-type]
+        page.ecrire(texte, x=x + gauche, taille=_taille(texte, taille, texte_l), police=police)  # type: ignore[arg-type]
 
+    page.contenu.append(b"%s rg %.2f %.2f %.2f %.2f re f 0 g" % (teinte, x, y, bande, CARTE_H))
+    page.contenu.append(teinte + b" rg")  # le nom en couleur
     ecrire(c.nom, CARTE_H - marge - 12, 13, "gras")
+    page.contenu.append(b"0 g")
     ecrire(c.metier, CARTE_H - marge - 27, 9.5)
     ecrire(c.ville, CARTE_H - marge - 39, 8.5)
+    if c.phrase:
+        ecrire(c.phrase, CARTE_H - marge - 52, 8)
     ecrire(c.note, 4 * MM + 26, 8)
     if c.telephone:
         ecrire(c.telephone, 4 * MM + 13, 9.5, "gras")
     page.y = y + 4 * MM - 1
-    page.ecrire("rafals.", x=x + marge, taille=6.5)
+    page.ecrire("rafals.", x=x + gauche, taille=6.5)
 
     # Le carré à scanner, à droite, et sa légende dessous
     qr = segno.make(c.adresse, error="m")
@@ -141,7 +194,7 @@ def _dessiner_carte(page: Page, c: Contenu, x: float, y: float) -> None:
         b"%.2f %.2f %.2f %.2f re" % (qx + col * module, qy + cote_qr - (rang + 1) * module, module + 0.05, module + 0.05)
         for rang, ligne in enumerate(lignes) for col, noir in enumerate(ligne) if noir
     ]
-    page.contenu.append(b"0 g\n" + b"\n".join(carres) + b"\nf")
+    page.contenu.append(teinte + b" rg\n" + b"\n".join(carres) + b"\nf 0 g")
     page.y = qy - 9
     page.ecrire("Mes avis et mes photos", x=qx + (cote_qr - 22 * 6 * 0.5) / 2, taille=6)
 

@@ -1,5 +1,6 @@
 """Ma carte de visite (lot 10.4, regles-metier/RM-CARTE-VISITE.md) : aperçu, planche de 10 cartes, carte seule, verrous."""
 
+import pytest
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -100,3 +101,60 @@ def test_textes() -> None:
     assert carte_visite.texte_note(110, 23) == "4,8/5 · 23 avis sur rafals"
     assert carte_visite.nom_de_fichier("Élodie D'Arc", planche=False) == "carte-de-visite-elodie-d-arc.pdf"
     assert carte_visite.nom_de_fichier("ZZTEST Net & Clair", planche=True) == "carte-de-visite-zztest-net-clair-planche.pdf"
+
+
+# ---------- Couleur et petite phrase (schema_v33, 22/10/2026) ----------
+
+
+def enregistrer(compte, couleur: str, phrase: str | None):
+    return compte.client.post(CHEMIN, json={"couleur": couleur, "phrase": phrase})
+
+
+def test_couleur_et_phrase_gardees_d_une_visite_a_l_autre(fabrique_prestataire, base: Session) -> None:  # noqa: F811
+    karim = fabrique_prestataire()
+    siret_verifie(base, karim)
+    depart = apercu(karim)
+    assert (depart["couleur"], depart["phrase"]) == ("vert", None)  # la carte d'avant
+    assert [c["code"] for c in depart["couleurs"]] == ["vert", "bleu-nuit", "orange", "bordeaux", "violet", "noir"]
+
+    reponse = enregistrer(karim, "bleu-nuit", "  Devis gratuit, intervention sous 48 h ")
+    assert reponse.status_code == 200, reponse.text
+    assert (reponse.json()["couleur"], reponse.json()["phrase"]) == ("bleu-nuit", "Devis gratuit, intervention sous 48 h")
+    assert (apercu(karim)["couleur"], apercu(karim)["phrase"]) == ("bleu-nuit", "Devis gratuit, intervention sous 48 h")
+
+    carte = pdf(karim, "carte")
+    assert b"(Devis gratuit, intervention sous 48 h)" in carte.content
+    assert b"0.114 0.227 0.373 rg" in carte.content  # le bleu nuit (#1D3A5F)
+    assert b'stroke="#1d3a5f"' in karim.client.get(f"{CHEMIN}/carre.svg", params={"couleur": "bleu-nuit"}).content
+
+    # Une phrase vide efface la phrase
+    assert enregistrer(karim, "noir", "   ").json()["phrase"] is None
+
+
+def test_le_pdf_prend_ce_qui_est_affiche_sans_l_enregistrer(fabrique_prestataire, base: Session) -> None:  # noqa: F811
+    karim = fabrique_prestataire()
+    siret_verifie(base, karim)
+    carte = karim.client.get(f"{CHEMIN}/pdf", params={"forme": "carte", "couleur": "bordeaux", "phrase": "Depuis 1998"})
+    assert carte.status_code == 200
+    assert b"(Depuis 1998)" in carte.content
+    assert apercu(karim)["couleur"] == "vert"  # rien n'est enregistré par un téléchargement
+
+
+@pytest.mark.parametrize(("couleur", "phrase", "message"), [
+    ("rose-bonbon", None, carte_visite.COULEUR_INCONNUE),
+    ("vert", "x" * 41, "La petite phrase doit faire entre 1 et 40 caractères."),
+])
+def test_couleur_inconnue_ou_phrase_trop_longue(fabrique_prestataire, base: Session, couleur, phrase, message) -> None:  # noqa: F811
+    karim = fabrique_prestataire()
+    siret_verifie(base, karim)
+    refus = enregistrer(karim, couleur, phrase)
+    assert refus.status_code == 400
+    assert refus.json()["detail"] == message
+    assert apercu(karim)["couleur"] == "vert"
+
+
+def test_pas_de_reglage_sans_siret(fabrique_prestataire) -> None:  # noqa: F811
+    karim = fabrique_prestataire()
+    refus = enregistrer(karim, "orange", "Bonjour")
+    assert refus.status_code == 403
+    assert refus.json()["detail"] == carte_visite.PAS_DE_SIRET

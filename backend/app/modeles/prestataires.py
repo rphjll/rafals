@@ -61,6 +61,9 @@ class Prestataire(Base):
     alertes_mail_nombre: Mapped[int] = mapped_column(Integer, server_default="0")
     resume_envoye_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     lieu: Mapped[str] = mapped_column(Text, server_default="chez_client")
+    # Ma carte de visite (schema_v33) : couleur parmi 6 toutes prêtes, petite phrase de 40 caractères au plus
+    carte_couleur: Mapped[str] = mapped_column(Text, server_default="vert")
+    carte_phrase: Mapped[str | None] = mapped_column(Text)
 
 
 class MetierSecondaire(Base):

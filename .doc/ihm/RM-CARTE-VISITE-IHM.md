@@ -2,6 +2,8 @@
 
 > Lot 10.4, construit le 22/10/2026. Maquette validée par Raphael (« oui ») : https://claude.ai/artifact/GonnHbitA34ASGJ1kj2TCB (`.doc/ihm/maquette-carte-visite.html`). Règles : `regles-metier/RM-CARTE-VISITE.md`. Fichier : `frontend/src/pages/MaCarteVisitePage.vue`, adresse `/ma-carte-de-visite`.
 
+> **Changé le 22/10/2026 : couleur et petite phrase** (« ok mtn faut pouvoir choisir les couleurs et la modif un peu » ; maquette mise à jour validée, « oui »). Sous l'aperçu, seulement si rien n'est verrouillé : « Couleur de la carte », 6 pastilles rondes de 38 px avec leur nom dessous (Vert rafals, Bleu nuit, Orange, Bordeaux, Violet, Noir ; la choisie entourée de vert) ; le champ « Petite phrase (facultative) », 40 caractères au plus, exemple « Ex. Devis gratuit, intervention sous 48 h », aide « Elle s'imprime sous la ville. 37/40 » ; le bouton secondaire [Enregistrer ma carte] (« Carte enregistrée ✓ » tant que rien n'a changé) → message « Carte enregistrée : vous la retrouverez à votre prochaine visite. ». L'aperçu change à chaque clic ou lettre tapée : bande de couleur sur le côté gauche, nom et carré à scanner dans la couleur, phrase sous la ville. Les 2 téléchargements prennent ce qui est affiché. Les 6 teintes viennent du serveur (`services/carte_visite.py`, `COULEURS`), écrites une seule fois.
+
 ## D'où on vient
 La tuile « Ma carte de visite » de « Mon activité » (groupe « Me faire connaître » ; avant : « bientôt »). Elle est aussi dans le sous-menu des pages de ce groupe. Réservée aux prestataires (`GardePrestataire`).
 
