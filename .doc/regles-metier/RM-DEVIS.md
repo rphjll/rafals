@@ -38,7 +38,7 @@ Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Aprè
   - Exemple : « Déplacement — 1 × 30,00 € = 30,00 € ».
 
 ## TVA (choix de Raphael le 02/10/2026, vaut aussi pour les factures)
-- Le prestataire coche ou non **« Je facture la TVA »** dans son profil.
+- ~~Le prestataire coche ou non « Je facture la TVA » dans son profil.~~ **Depuis le 17/10/2026** (demande de Raphael) : la TVA est désactivée au départ et s'active toute seule quand la barre de « Mon activité » est pleine (`RM-MON-ACTIVITE.md` § « La barre de la TVA »). « Non coché » = TVA désactivée, « Coché » = TVA activée.
 - Non coché : une seule somme, avec la mention « TVA non applicable, art. 293 B du CGI ».
   - Exemple : Léa, coiffeuse auto-entrepreneuse → « Coupe et brushing — 50,00 € » + la mention.
 - Coché : un taux par ligne (5,5 %, 10 % ou 20 %), et rafals affiche le total hors taxe (HT), la TVA et le total toutes taxes comprises (TTC).

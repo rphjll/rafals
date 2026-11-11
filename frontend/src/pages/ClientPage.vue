@@ -13,7 +13,7 @@ import AppSection from '../components/ui/AppSection.vue'
 import { useEcrireAuClient } from '../composables/useEcrireAuClient'
 import { MOIS } from '../outils/agenda'
 import type { FicheClient } from '../outils/activite'
-import { initialesDe } from '../outils/noms'
+import AppInitiales from '../components/ui/AppInitiales.vue'
 
 const route = useRoute()
 const routeur = useRouter()
@@ -56,9 +56,7 @@ const depuis = computed(() => {
       <div class="grid items-start gap-8" :class="fiche.peut_ecrire ? 'md:grid-cols-[1fr_340px]' : ''">
         <div class="flex min-w-0 flex-col gap-6">
           <div class="grid items-center gap-5 sm:grid-cols-[auto_1fr]">
-            <span class="grid size-24 shrink-0 place-items-center rounded-full bg-primaire-doux text-3xl font-bold text-primaire" aria-hidden="true">
-              {{ initialesDe(fiche.nom) }}
-            </span>
+            <AppInitiales :nom="fiche.nom" taille="size-24 text-3xl" />
             <div class="flex min-w-0 flex-col gap-1.5">
               <h1 class="text-[clamp(28px,4.5vw,40px)] leading-tight font-black">{{ fiche.nom }}</h1>
               <p class="text-texte-doux">Client · sur rafals depuis {{ depuis }}</p>

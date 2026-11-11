@@ -1,22 +1,12 @@
 <script setup lang="ts">
-// Bandeau d'information posé là où l'utilisateur regarde (ex. l'erreur du serveur juste au-dessus du bouton).
-// « neutre » : une simple explication (ex. ce qui se passe si l'on paie par carte, lot 5.2).
+// Bandeau d'information posé là où l'utilisateur regarde (ex. l'erreur du serveur juste au-dessus du bouton) :
+// le « bandeau » de la grande maquette. « neutre » : une simple explication (ex. paiement par carte, lot 5.2).
 withDefaults(defineProps<{ etat?: 'ok' | 'attente' | 'erreur' | 'neutre' }>(), { etat: 'erreur' })
-
-const classesEtat: Record<string, string> = {
-  ok: 'bg-ok-doux text-ok',
-  attente: 'bg-attente-doux text-attente',
-  erreur: 'bg-erreur-doux text-erreur',
-  neutre: 'bg-neutre-doux text-texte',
-}
+const classesEtat: Record<string, string> = { ok: 'b-ok', attente: 'b-att', erreur: 'b-err', neutre: 'b-neutre' }
 </script>
 
 <template>
-  <div
-    :role="etat === 'erreur' ? 'alert' : 'status'"
-    class="flex flex-wrap items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium"
-    :class="classesEtat[etat]"
-  >
+  <div :role="etat === 'erreur' ? 'alert' : 'status'" class="bandeau flex-row! flex flex-wrap items-center gap-3" :class="classesEtat[etat]">
     <slot />
   </div>
 </template>

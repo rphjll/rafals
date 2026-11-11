@@ -30,6 +30,7 @@ class ChiffresPrestataire:
     encaisse_mois_centimes: int
     encaisse_annee_centimes: int
     annee: int
+    ailleurs_annee_centimes: int  # encaissé hors de rafals cette année : s'ajoute dans la barre de la TVA
     # La barre de la TVA : None pour un prestataire qui facture déjà la TVA
     seuil_tva_centimes: int | None
     reste_avant_seuil_centimes: int | None
@@ -51,7 +52,7 @@ def fin_de_semaine(maintenant: datetime) -> datetime:
 
 def du_prestataire(db: Session, prestataire: Prestataire, maintenant: datetime) -> ChiffresPrestataire:
     """Ex. Karim, mercredi : 3 demandes près de chez lui, 2 rendez-vous d'ici dimanche, 1 devis sans réponse,
-    640,00 € encaissés en octobre, 5 320,00 € en 2026, donc 32 180,00 € avant le seuil de TVA."""
+    640,00 € encaissés en octobre, 5 320,00 € en 2026 + 2 000,00 € ailleurs, donc 30 180,00 € avant le seuil de TVA."""
     rendez_vous = db.scalar(select(func.count()).select_from(RendezVous).where(
         RendezVous.prestataire_id == prestataire.id, RendezVous.statut == "confirme",
         RendezVous.debut >= maintenant, RendezVous.debut < fin_de_semaine(maintenant))) or 0
@@ -60,6 +61,7 @@ def du_prestataire(db: Session, prestataire: Prestataire, maintenant: datetime) 
     aujourd_hui = maintenant.astimezone(PARIS).date()
     mois, _trimestres = demarches.chiffre_d_affaires(db, prestataire, aujourd_hui.year, maintenant)
     annee = sum(m.encaisse_centimes for m in mois)
+    ailleurs = sum(e.montant_centimes for e in demarches.encaisse_ailleurs(db, prestataire, aujourd_hui.year))
     seuil = None if prestataire.facture_tva else reglages.SEUIL_TVA_SERVICES_CENTIMES
     return ChiffresPrestataire(
         demandes_pres=len(propositions.demandes_pour(db, prestataire, maintenant)),
@@ -68,8 +70,9 @@ def du_prestataire(db: Session, prestataire: Prestataire, maintenant: datetime) 
         encaisse_mois_centimes=mois[aujourd_hui.month - 1].encaisse_centimes,
         encaisse_annee_centimes=annee,
         annee=aujourd_hui.year,
+        ailleurs_annee_centimes=ailleurs,
         seuil_tva_centimes=seuil,
-        reste_avant_seuil_centimes=None if seuil is None else max(0, seuil - annee),
+        reste_avant_seuil_centimes=None if seuil is None else max(0, seuil - annee - ailleurs),
     )
 
 

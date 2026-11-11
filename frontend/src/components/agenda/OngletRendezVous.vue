@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // Mon agenda › Rendez-vous (.doc/ihm/RM-RENDEZ-VOUS-IHM.md) : rendez-vous à venir, puis passés.
+import { aParis, jourLisible } from '../../outils/agenda'
 import { computed, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
@@ -14,7 +15,6 @@ import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppChamp from '../ui/AppChamp.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
-import AppSection from '../ui/AppSection.vue'
 
 const props = defineProps<{ rendezVous: RendezVousVisible[]; siretVerifie: boolean }>()
 const emit = defineEmits<{ maj: [] }>()
@@ -101,20 +101,21 @@ const moinsDe24h = computed(() => !!cible.value && new Date(cible.value.rdv.debu
 </script>
 
 <template>
-  <AppSection titre="À venir">
-    <p v-if="!confirmes.length" class="text-texte-doux">Aucun rendez-vous à venir.</p>
-    <div class="flex flex-col divide-y divide-bord">
-      <LigneRendezVous v-for="r in confirmes" :key="r.id" :rdv="r" libelle-autre="Client">
+  <div v-if="!confirmes.length" class="carte vide">Aucun rendez-vous à venir.</div>
+  <div v-else class="liste">
+    <template v-for="(r, n) in confirmes" :key="r.id">
+      <p v-if="n === 0 || aParis(r.debut).jour !== aParis(confirmes[n - 1]!.debut).jour" class="jour">{{ jourLisible(aParis(r.debut).jour) }}</p>
+      <LigneRendezVous :rdv="r" libelle-autre="Client">
         <template #actions>
-          <AppBouton variante="danger" @click="ouvrir(r, 'annuler')">Annuler…</AppBouton>
+          <AppBouton variante="danger" petit @click="ouvrir(r, 'annuler')">Annuler…</AppBouton>
         </template>
       </LigneRendezVous>
-    </div>
-  </AppSection>
+    </template>
+  </div>
 
-  <details v-if="passes.length" class="rounded-rafals border border-bord bg-surface p-5" :open="passes.some((r) => absenceSignalable(r, 'prestataire') || contestable(r.absence, 'prestataire') || (r.avis && !r.avis.reponse) || (siretVerifie && encaissable(r)))">
+  <details v-if="passes.length" class="carte p-[18px]" :open="passes.some((r) => absenceSignalable(r, 'prestataire') || contestable(r.absence, 'prestataire') || (r.avis && !r.avis.reponse) || (siretVerifie && encaissable(r)))">
     <summary class="min-h-[28px] cursor-pointer font-bold">Passés et annulés ({{ passes.length }})</summary>
-    <div class="flex flex-col divide-y divide-bord">
+    <div class="liste mt-3">
       <LigneRendezVous v-for="r in passes" :key="r.id" :rdv="r" libelle-autre="Client">
         <template #actions>
           <div v-if="r.avis" class="w-full rounded-rafals bg-fond p-3">

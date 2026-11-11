@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // Messages (.doc/ihm/RM-MESSAGES-IHM.md ; RM-MESSAGERIE.md) : /messages = la liste de mes conversations ;
 // /messages/12 = le fil avec Karim (ou Marie D.), ses propositions, et la zone pour écrire.
-// Ordinateur : la liste reste à gauche, le fil est à droite. Téléphone : l'un ou l'autre.
+// Comme la grande maquette (10/11/2026) : la liste sur une page, chaque conversation sur la sienne (« ‹ Messages »),
+// les bulles, puis la barre d'écriture collée en bas.
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, ErreurServeur, messageErreur } from '../api'
@@ -13,14 +14,14 @@ import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppFenetre from '../components/ui/AppFenetre.vue'
-import AppPicto from '../components/ui/AppPicto.vue'
+import AppIcone from '../components/ui/AppIcone.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 import { useNonLus } from '../composables/useNonLus'
 import { texteNote } from '../outils/avis'
 import { formaterDate, formaterDateHeure } from '../outils/dates'
 import { type DemandeVisible, texteBudget, texteQuand } from '../outils/demandes'
-import { initialesDe } from '../outils/noms'
+import AppInitiales from '../components/ui/AppInitiales.vue'
 import {
   type ANoter, type ConversationResumee, type ConversationVisible, type MessageVisible, type PropositionVisible, repeteUneCarte,
 } from '../outils/messagerie'
@@ -44,6 +45,12 @@ const aNoter = ref<ANoter[]>([])
 const cibleAvis = ref<{ rendezVousId: number; avis: null; prestataire: string; quoi: string; versClient: boolean } | null>(null)
 const joursRestants = (jusquAu: string) => Math.max(0, Math.ceil((new Date(jusquAu).getTime() - Date.now()) / 86400000))
 const erreur = ref('')
+// « 2 conversations non lues. » ; à côté de chaque ligne, le jour du dernier message (« 12/11 »)
+const nonLues = computed(() => (liste.value ?? []).filter((c) => c.non_lus).length)
+watch([chargementFait, compte], () => {
+  if (chargementFait.value && !compte.value) routeur.replace('/connexion')
+})
+const jourCourtDe = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', timeZone: 'Europe/Paris' }) : '')
 
 const texte = ref('')
 const photos = ref<File[]>([])
@@ -172,192 +179,145 @@ function signaler() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
-    <h1 class="text-[clamp(28px,4.5vw,40px)] font-black">Messages</h1>
-    <template v-if="chargementFait && !compte">
-      <AppAlerte etat="neutre">Connectez-vous pour lire vos messages.</AppAlerte>
-      <div><AppBouton @click="routeur.push('/connexion')">Se connecter</AppBouton></div>
+  <div class="page">
+    <!-- ---------- La liste des conversations (grande maquette : une ligne par personne) ---------- -->
+    <template v-if="conversationId === null">
+      <div class="tete">
+        <h1>Messages</h1>
+        <p v-if="liste">{{ nonLues ? `${nonLues} conversation${nonLues > 1 ? 's' : ''} non lue${nonLues > 1 ? 's' : ''}.` : 'Tout est lu.' }}</p>
+      </div>
+      <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+      <div v-if="liste?.length" class="liste">
+        <RouterLink v-for="c in liste" :key="c.id" class="ligne" :to="`/messages/${c.id}`">
+          <AppInitiales :nom="c.avec" />
+          <div class="txt">
+            <b>{{ c.avec }}<AppBadge v-if="c.bloquee" etat="neutre" class="ml-2">bloquée</AppBadge></b>
+            <span>{{ c.apercu || 'Aucun message pour l’instant.' }}</span>
+          </div>
+          <span class="fin petit">
+            <span v-if="c.non_lus" class="point" aria-label="Non lu" />{{ jourCourtDe(c.dernier_message_le) }}
+          </span>
+        </RouterLink>
+      </div>
+      <div v-else-if="liste" class="carte vide">
+        <h3>Aucune conversation</h3>
+        <p style="margin-top: 6px">Publiez une demande, ou répondez à une demande si vous proposez vos services.</p>
+      </div>
     </template>
 
+    <!-- ---------- Une conversation ---------- -->
     <template v-else>
+      <RouterLink class="retour" to="/messages"><AppIcone nom="retour" />Messages</RouterLink>
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
-      <div class="carte grid overflow-hidden md:grid-cols-[300px_1fr]">
-        <!-- ---------- La liste (téléphone : cachée quand un fil est ouvert) ---------- -->
-        <div class="min-w-0 flex-col gap-1 p-2.5 md:flex md:border-r-2 md:border-fond" :class="conversationId === null ? 'flex' : 'hidden'">
-          <RouterLink
-            v-for="c in liste ?? []"
-            :key="c.id"
-            :to="`/messages/${c.id}`"
-            class="flex min-h-[64px] items-center gap-3 rounded-rafals px-3 py-2.5 hover:bg-fond"
-            :class="c.id === conversationId ? 'bg-fond' : ''"
-            :aria-current="c.id === conversationId ? 'page' : undefined"
-          >
-            <span class="grid size-11 shrink-0 place-items-center rounded-full bg-primaire-doux font-bold text-primaire" aria-hidden="true">
-              {{ initialesDe(c.avec) }}
+      <template v-if="conversation">
+        <div class="flex flex-wrap items-center gap-3">
+          <AppInitiales :nom="conversation.avec" />
+          <div class="mr-auto flex min-w-0 flex-col">
+            <h2>{{ conversation.avec }}</h2>
+            <span v-if="conversation.avec_avis" class="doux petit">
+              {{ texteNote(conversation.avec_note, conversation.avec_avis) }}
+              <RouterLink
+                :to="conversation.cote === 'prestataire' ? `/clients/${conversation.client_id}/avis` : `/prestataires/${conversation.prestataire_id}`"
+                class="lien"
+              >
+                Voir les avis
+              </RouterLink>
             </span>
-            <span class="flex min-w-0 flex-1 flex-col">
-              <span class="flex items-center gap-2">
-                <b class="truncate">{{ c.avec }}</b>
-                <AppBadge v-if="c.bloquee" etat="neutre">bloquée</AppBadge>
-              </span>
-              <span class="truncate text-[14px] text-texte-doux">{{ c.apercu || 'Aucun message pour l’instant.' }}</span>
-              <span class="text-[12px] text-texte-doux">{{ formaterDateHeure(c.dernier_message_le) }}</span>
-            </span>
-            <span v-if="c.non_lus" class="shrink-0 rounded-full bg-erreur px-2 py-0.5 text-xs font-bold text-sur-etat">{{ c.non_lus }}</span>
-          </RouterLink>
-          <p v-if="liste && !liste.length" class="p-3 text-texte-doux">
-            Aucune conversation. Publiez une demande sur l'accueil, ou répondez à une demande si vous proposez vos services.
-          </p>
+          </div>
+          <AppBouton variante="secondaire" petit @click="plusOuvert = !plusOuvert">Plus…</AppBouton>
+          <div v-if="plusOuvert" class="btns w-full justify-end">
+            <AppBouton variante="secondaire" petit @click="signaler">Signaler…</AppBouton>
+            <AppBouton v-if="!conversation.bloquee" variante="danger" petit @click="aBloquer = true">Bloquer…</AppBouton>
+            <AppBouton v-else-if="conversation.bloquee_par_moi" variante="secondaire" petit @click="bloquer(false)">Débloquer</AppBouton>
+          </div>
         </div>
 
-        <!-- ---------- Le fil (téléphone : caché tant qu'aucun n'est ouvert) ---------- -->
-        <section class="min-w-0 flex-col md:flex md:min-h-[520px]" :class="conversationId === null ? 'hidden' : 'flex'">
-          <p v-if="conversationId === null" class="m-auto p-6 text-center text-texte-doux">
-            Choisissez une conversation dans la liste. Une seule conversation par personne : tous vos échanges au même endroit.
-          </p>
-          <template v-else-if="conversation">
-            <div class="flex flex-wrap items-center gap-2.5 border-b-2 border-fond px-4 py-3">
-              <RouterLink
-                to="/messages"
-                class="grid size-[42px] shrink-0 place-items-center rounded-full bg-secondaire-fond text-xl font-bold text-primaire md:hidden"
-                aria-label="Retour à la liste des messages"
-              >
-                ‹
-              </RouterLink>
-              <span class="grid size-11 shrink-0 place-items-center rounded-full bg-primaire-doux font-bold text-primaire" aria-hidden="true">
-                {{ initialesDe(conversation.avec) }}
-              </span>
-              <div class="mr-auto flex min-w-0 flex-col leading-tight">
-                <h2 class="text-xl font-extrabold">{{ conversation.avec }}</h2>
-                <span class="text-[13.5px] text-texte-doux">
-                  {{ texteNote(conversation.avec_note, conversation.avec_avis) }}
-                  <RouterLink
-                    v-if="conversation.avec_avis"
-                    :to="conversation.cote === 'prestataire' ? `/clients/${conversation.client_id}/avis` : `/prestataires/${conversation.prestataire_id}`"
-                    class="ml-1 font-semibold text-primaire underline"
-                  >
-                    Voir les avis
-                  </RouterLink>
-                </span>
-              </div>
-              <AppBouton variante="secondaire" @click="plusOuvert = !plusOuvert">Plus…</AppBouton>
-              <div v-if="plusOuvert" class="flex w-full flex-wrap justify-end gap-2">
-                <AppBouton variante="secondaire" @click="signaler">Signaler…</AppBouton>
-                <AppBouton v-if="!conversation.bloquee" variante="danger" @click="aBloquer = true">Bloquer…</AppBouton>
-                <AppBouton v-else-if="conversation.bloquee_par_moi" variante="secondaire" @click="bloquer(false)">Débloquer</AppBouton>
-              </div>
-            </div>
+        <!-- Les demandes dont on parle, rappelées en haut -->
+        <p v-for="d in demandes" :key="d.id" class="dmd-vide petit">
+          Demande : <b style="color: var(--texte)">{{ d.titre }}</b> · {{ d.ville }} · {{ texteQuand(d) }}<template v-if="d.budget_centimes">
+            · budget {{ texteBudget(d.budget_centimes) }}</template>
+        </p>
 
-            <!-- Les demandes dont on parle, rappelées en haut -->
-            <div v-if="demandes.length" class="flex flex-col gap-2 px-4 pt-3">
-              <p v-for="d in demandes" :key="d.id" class="rounded-rafals bg-fond px-3 py-2 text-[14px] text-texte-doux">
-                Demande : <b class="text-texte">{{ d.titre }}</b> · {{ d.ville }} · {{ texteQuand(d) }}<template v-if="d.budget_centimes">
-                  · budget {{ texteBudget(d.budget_centimes) }}</template>
-              </p>
-            </div>
-
-            <div class="flex flex-1 flex-col gap-3 p-4" aria-live="polite">
-              <template v-for="element in fil" :key="element.cle">
-                <CarteProposition
-                  v-if="element.proposition"
-                  :proposition="element.proposition"
-                  :cote="conversation.cote"
-                  :avec="conversation.avec"
-                  @change="charger(true)"
-                />
-                <div v-else-if="element.noter" class="carte flex flex-col gap-2 p-4" :class="element.noter.deja_note ? 'opacity-80' : ''">
-                  <span class="text-[13px] text-texte-doux">
-                    Rendez-vous passé · {{ element.noter.titre }} · {{ formaterDate(element.noter.debut) }}
-                  </span>
-                  <b>Comment ça s'est passé avec {{ conversation.avec }} ?</b>
-                  <div v-if="element.noter.deja_note"><AppBadge etat="ok">avis laissé</AppBadge></div>
-                  <div v-else class="flex flex-wrap items-center gap-2">
-                    <AppBouton
-                      @click="cibleAvis = {
-                        rendezVousId: element.noter.rendez_vous_id, avis: null, prestataire: conversation.avec,
-                        quoi: `${element.noter.titre} · ${formaterDate(element.noter.debut)}`, versClient: conversation.cote === 'prestataire',
-                      }"
-                    >
-                      Noter {{ conversation.avec }}
-                    </AppBouton>
-                    <span class="text-[13px] text-texte-doux">encore {{ joursRestants(element.noter.jusqu_au) }} jours</span>
-                  </div>
-                </div>
-                <p v-else-if="element.message?.genre === 'information'" class="self-center rounded-full bg-neutre-doux px-3 py-1 text-center text-[13px] text-texte-doux">
-                  {{ element.message.texte }}
-                </p>
-                <div
-                  v-else-if="element.message"
-                  class="flex max-w-[85%] flex-col gap-1.5 px-4 py-2.5"
-                  :class="element.message.de_moi ? 'self-end rounded-[20px_20px_6px_20px] bg-primaire text-primaire-texte' : 'self-start rounded-[20px_20px_20px_6px] bg-fond'"
+        <div class="conv" aria-live="polite">
+          <template v-for="element in fil" :key="element.cle">
+            <CarteProposition
+              v-if="element.proposition"
+              :proposition="element.proposition"
+              :cote="conversation.cote"
+              :avec="conversation.avec"
+              @change="charger(true)"
+            />
+            <div v-else-if="element.noter" class="carte flex flex-col gap-2 p-[18px]" :class="element.noter.deja_note ? 'opacity-80' : ''">
+              <span class="doux petit">Rendez-vous passé · {{ element.noter.titre }} · {{ formaterDate(element.noter.debut) }}</span>
+              <b>Comment ça s'est passé avec {{ conversation.avec }} ?</b>
+              <div v-if="element.noter.deja_note"><AppBadge etat="ok">avis laissé</AppBadge></div>
+              <div v-else class="btns" style="align-items: center">
+                <AppBouton
+                  petit
+                  @click="cibleAvis = {
+                    rendezVousId: element.noter.rendez_vous_id, avis: null, prestataire: conversation.avec,
+                    quoi: `${element.noter.titre} · ${formaterDate(element.noter.debut)}`, versClient: conversation.cote === 'prestataire',
+                  }"
                 >
-                  <span v-if="element.message.texte" class="break-words whitespace-pre-line">{{ element.message.texte }}</span>
-                  <div v-if="element.message.nombre_photos" class="flex flex-wrap gap-2">
-                    <a v-for="n in element.message.nombre_photos" :key="n" :href="`/api/messages/${element.message.id}/photos/${n}`" target="_blank" rel="noopener">
-                      <img :src="`/api/messages/${element.message.id}/photos/${n}`" :alt="`Photo ${n} du message`" class="size-24 rounded-rafals object-cover" />
-                    </a>
-                  </div>
-                  <small class="text-[12px] opacity-80">
-                    {{ formaterDateHeure(element.message.cree_le) }}<template v-if="element.message.de_moi"> · {{ element.message.lu ? 'lu' : 'envoyé' }}</template>
-                  </small>
-                </div>
-              </template>
-              <p v-if="!fil.length" class="text-texte-doux">Aucun message pour l'instant : écrivez le premier.</p>
-              <span ref="basDuFil" />
-            </div>
-
-            <div v-if="conversation.bloquee" class="p-4">
-              <AppAlerte etat="neutre">Conversation bloquée : plus aucun message ne passe.</AppAlerte>
-            </div>
-            <form v-else class="flex flex-col gap-2 border-t-2 border-fond p-3" @submit.prevent="envoyer">
-              <ul v-if="photos.length" class="flex flex-wrap gap-1.5">
-                <li v-for="(photo, rang) in photos" :key="rang" class="inline-flex items-center gap-1.5 rounded-full bg-neutre-doux py-0.5 pr-1 pl-2.5 text-sm">
-                  {{ photo.name }}
-                  <button type="button" class="size-7 rounded-full font-bold hover:bg-erreur-doux" :aria-label="`Enlever ${photo.name}`" @click="photos.splice(rang, 1)">×</button>
-                </li>
-              </ul>
-              <AppAlerte v-if="erreurEnvoi">{{ erreurEnvoi }}</AppAlerte>
-              <!-- Une seule ligne : photo, texte, envoyer (deux boutons ronds à pictogramme, propres à cette ligne) -->
-              <div class="flex items-end gap-2">
-                <button
-                  v-if="photos.length < PHOTOS_MAX"
-                  type="button"
-                  class="grid size-[46px] shrink-0 place-items-center rounded-full bg-secondaire-fond text-primaire hover:brightness-95"
-                  :aria-label="`Joindre une photo (${photos.length} / ${PHOTOS_MAX})`"
-                  @click="champPhotos?.click()"
-                >
-                  <AppPicto code="appareil" :taille="22" />
-                </button>
-                <label for="message" class="sr-only">Votre message</label>
-                <textarea
-                  id="message"
-                  v-model="texte"
-                  rows="1"
-                  maxlength="2000"
-                  placeholder="Écrire un message…"
-                  class="min-h-[46px] min-w-0 flex-1 resize-y rounded-rafals border border-bord bg-fond px-3.5 py-2.5 text-texte outline-none focus:border-primaire focus:ring-2 focus:ring-primaire"
-                />
-                <button
-                  type="submit"
-                  class="grid size-[46px] shrink-0 place-items-center rounded-full bg-primaire text-primaire-texte hover:brightness-110"
-                  :class="envoiEnCours ? 'cursor-wait opacity-70' : ''"
-                  :aria-busy="envoiEnCours || undefined"
-                  aria-label="Envoyer"
-                >
-                  <AppPicto code="envoyer" :taille="22" />
-                </button>
+                  Noter {{ conversation.avec }}
+                </AppBouton>
+                <span class="doux petit">encore {{ joursRestants(element.noter.jusqu_au) }} jours</span>
               </div>
-              <div v-if="conversation.cote === 'prestataire'">
-                <AppBouton variante="accent" @click="fenetreProposition = true">Faire une proposition…</AppBouton>
-              </div>
-              <input ref="champPhotos" type="file" accept="image/jpeg,image/png" multiple class="sr-only" aria-label="Photos à joindre" @change="choisirPhotos" />
-            </form>
-            <p v-if="conversation.coordonnees_masquees" class="px-4 pb-3 text-[13px] text-texte-doux">
-              Téléphone et mail sont masqués dans les messages tant qu'il n'y a pas de rendez-vous entre vous.
+            </div>
+            <p v-else-if="element.message?.genre === 'information'" class="puce p-neutre self-center" style="white-space: normal; text-align: center">
+              {{ element.message.texte }}
             </p>
+            <div v-else-if="element.message" class="bulle" :class="{ moi: element.message.de_moi }">
+              <span v-if="element.message.texte" class="break-words whitespace-pre-line">{{ element.message.texte }}</span>
+              <div v-if="element.message.nombre_photos" class="mt-1.5 flex flex-wrap gap-2">
+                <a v-for="n in element.message.nombre_photos" :key="n" :href="`/api/messages/${element.message.id}/photos/${n}`" target="_blank" rel="noopener">
+                  <img :src="`/api/messages/${element.message.id}/photos/${n}`" :alt="`Photo ${n} du message`" class="size-24 rounded-[12px] object-cover" />
+                </a>
+              </div>
+              <small>
+                {{ formaterDateHeure(element.message.cree_le) }}<template v-if="element.message.de_moi"> · {{ element.message.lu ? 'lu' : 'envoyé' }}</template>
+              </small>
+            </div>
           </template>
-        </section>
-      </div>
+          <p v-if="!fil.length" class="doux">Aucun message pour l'instant : écrivez le premier.</p>
+          <span ref="basDuFil" />
+        </div>
+
+        <AppAlerte v-if="conversation.bloquee" etat="neutre">Conversation bloquée : plus aucun message ne passe.</AppAlerte>
+        <template v-else>
+          <div v-if="photos.length" class="btns">
+            <span v-for="(photo, rang) in photos" :key="rang" class="puce p-neutre">
+              {{ photo.name }}
+              <button type="button" class="font-bold" :aria-label="`Enlever ${photo.name}`" @click="photos.splice(rang, 1)">×</button>
+            </span>
+          </div>
+          <AppAlerte v-if="erreurEnvoi">{{ erreurEnvoi }}</AppAlerte>
+          <!-- La barre d'écriture de la maquette, collée en bas : photo, texte, envoyer -->
+          <form class="ecrire" @submit.prevent="envoyer">
+            <button
+              v-if="photos.length < PHOTOS_MAX"
+              type="button"
+              class="btn btn-2"
+              style="padding: 0 14px"
+              :aria-label="`Joindre une photo (${photos.length} / ${PHOTOS_MAX})`"
+              @click="champPhotos?.click()"
+            >
+              <AppIcone nom="photo" />
+            </button>
+            <input id="message" v-model="texte" maxlength="2000" autocomplete="off" :placeholder="`Écrire à ${conversation.avec.split(' ')[0]}…`" aria-label="Votre message" />
+            <button type="submit" class="btn btn-1" :class="envoiEnCours ? 'cursor-wait opacity-70' : ''" :aria-busy="envoiEnCours || undefined" aria-label="Envoyer">
+              <AppIcone nom="envoyer" />
+            </button>
+            <input ref="champPhotos" type="file" accept="image/jpeg,image/png" multiple class="sr-only" aria-label="Photos à joindre" @change="choisirPhotos" />
+          </form>
+          <div v-if="conversation.cote === 'prestataire'">
+            <AppBouton variante="accent" @click="fenetreProposition = true">Faire une proposition…</AppBouton>
+          </div>
+        </template>
+        <p v-if="conversation.coordonnees_masquees" class="doux petit">
+          Téléphone et mail sont masqués dans les messages tant qu'il n'y a pas de rendez-vous entre vous.
+        </p>
+      </template>
     </template>
 
     <FenetreProposition
@@ -372,7 +332,7 @@ function signaler() {
     <AppFenetre :ouverte="aBloquer" titre="Bloquer cette personne ?" @fermer="aBloquer = false">
       Plus aucun message ne passera, dans les deux sens. Les rendez-vous déjà pris restent.
       <template #pied>
-        <AppBouton variante="danger" @click="bloquer(true)">Bloquer</AppBouton>
+        <button type="button" class="btn btn-danger" @click="bloquer(true)">Bloquer</button>
         <AppBouton variante="secondaire" @click="aBloquer = false">Annuler</AppBouton>
       </template>
     </AppFenetre>

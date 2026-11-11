@@ -20,6 +20,8 @@ ACCORD_TAILLE_MAX_OCTETS = 5 * 1024 * 1024
 
 # Profil prestataire (RM-PRESTATAIRES.md ; valeurs choisies par Claude le 28/09/2026 en mode « tout seul », à valider)
 PRESTATAIRE_DISTANCE_MAX_KM = 100
+# Prix de l'heure d'un métier (schema_v35, grande maquette) : de 1 € à 1 000 €, facultatif
+PRIX_HEURE_CENTIMES = (100, 100_000)
 PRESTATAIRE_METIERS_SECONDAIRES_MAX = 5
 PRESTATAIRE_NOM_LONGUEUR = (2, 80)
 PRESTATAIRE_PRESENTATION_MAX = 1000
@@ -109,7 +111,8 @@ FACTURE_MOYENS_DIRECTS = ("especes", "cheque", "virement")
 
 # Mon activité (RM-MON-ACTIVITE.md, lot 10.1)
 # ⚠️ À confirmer par un comptable avant la mise en ligne : seuil de chiffre d'affaires au-delà duquel un auto-entrepreneur
-# de services doit facturer la TVA (37 500 € en 2026 ; il change presque chaque année).
+# de services doit facturer la TVA (37 500 € en 2026). Fixe depuis le 01/01/2025 (plus de mise à jour tous les 3 ans) :
+# il ne change que si une loi le change ; c'est alors cette seule ligne à modifier.
 SEUIL_TVA_SERVICES_CENTIMES = 37_500_00
 # Notification quand une facture fait passer ce pourcentage du seuil (demande de Raphael du 17/10/2026)
 SEUIL_TVA_PREVENIR_POUR_CENT = 80
@@ -206,3 +209,9 @@ ABONNEMENT_CRENEAU_ECART = timedelta(hours=6)  # au plus une notification « cr�
 ABONNEMENT_ABSENCE_MIN = timedelta(days=2)  # une fermeture de 2 jours ou plus compte comme une absence
 ABONNEMENT_RETOUR_HEURE = 8  # heure de Paris : « Karim est de retour » part à 8 h le jour de la reprise
 ABONNEMENT_RETOUR_RATTRAPAGE = timedelta(days=2)  # serveur arrêté : on rattrape les retours des 2 derniers jours
+
+# « Un problème ? Une idée ? » (RM-RETOURS.md, lot 13.1, validé par Raphael le 09/11/2026)
+RETOUR_SORTES = ("probleme", "idee")
+RETOUR_TEXTE = (10, 2000)
+RETOURS_PAR_JOUR = 5  # par compte, de minuit à minuit (heure de Paris)
+RETOUR_PAGE_MAX = 300  # l'adresse de la page, ex. /demandes/nouvelle

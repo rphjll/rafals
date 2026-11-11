@@ -13,7 +13,6 @@ import LigneRendezVous from './LigneRendezVous.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
-import AppSection from '../ui/AppSection.vue'
 import { useCompte } from '../../composables/useCompte'
 import { useMessage } from '../../composables/useMessage'
 import { JOURS, MOIS, aParis, jourLisible, jourSemaine } from '../../outils/agenda'
@@ -105,12 +104,12 @@ const cases = computed(() => {
   })
   return { avant: jourSemaine(`${cleDuMois.value}-01`) - 1, jours }
 })
-// Sous le calendrier : les rendez-vous du jour choisi, sinon tous ceux du mois affiché
-const montres = computed(() =>
-  jourChoisi.value
-    ? (parJour.value.get(jourChoisi.value) ?? [])
-    : [...parJour.value].filter(([jour]) => jour.startsWith(cleDuMois.value)).flatMap(([, liste]) => liste),
-)
+// Sous le calendrier : les rendez-vous du mois affiché ; un jour cliqué s'ouvre en plus dans la bulle du bas
+const zones = computed(() => [
+  { cle: 'mois', titre: 'Ce mois-ci', liste: [...parJour.value].filter(([jour]) => jour.startsWith(cleDuMois.value)).flatMap(([, liste]) => liste) },
+  ...(jourChoisi.value ? [{ cle: 'jour', titre: jourLisible(jourChoisi.value), liste: parJour.value.get(jourChoisi.value) ?? [] }] : []),
+])
+watch(cleDuMois, () => (jourChoisi.value = null))
 const dansLeDelai = (r: RendezVousVisible) => !r.annulable_jusqu_au || new Date() < new Date(r.annulable_jusqu_au)
 const raisonHorsDelai = (r: RendezVousVisible) =>
   `Le délai d'annulation gratuite est passé : appelez ${r.autre.nom}${r.autre.telephone ? ` au ${r.autre.telephone}` : ''}.`
@@ -173,142 +172,139 @@ async function retirerAvis(r: RendezVousVisible) {
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-[720px] flex-col gap-4">
-    <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
-    <AppAlerte v-if="retourPaiement" :etat="retourPaiement.etat">{{ retourPaiement.texte }}</AppAlerte>
+  <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+  <AppAlerte v-if="retourPaiement" :etat="retourPaiement.etat">{{ retourPaiement.texte }}</AppAlerte>
 
-    <template v-if="tous">
-      <!-- Le calendrier du mois : un clic sur un jour ne montre que ses rendez-vous ; un 2e clic les remontre tous -->
-      <section class="carte flex flex-col gap-3 p-4 sm:p-5">
-        <div class="flex items-center justify-between gap-2">
-          <AppBouton variante="secondaire" @click="changerDeMois(-1)">‹<span class="sr-only"> Mois précédent</span></AppBouton>
-          <h2 class="text-[19px] font-bold capitalize">{{ MOIS[mois.mois - 1] }} {{ mois.annee }}</h2>
-          <AppBouton variante="secondaire" @click="changerDeMois(1)"><span class="sr-only">Mois suivant </span>›</AppBouton>
-        </div>
-        <div class="grid grid-cols-7 gap-1 text-center">
-          <span v-for="nom in JOURS" :key="nom" class="pb-1 text-[12.5px] font-semibold text-texte-doux capitalize">{{ nom.slice(0, 3) }}</span>
+  <template v-if="tous">
+    <!-- Le calendrier du mois de la grande maquette : jours avec un rendez-vous à venir en vert, passés en gris -->
+    <div class="carte cal p-[18px]">
+      <div class="mois-nav">
+        <button type="button" class="btn btn-2 btn-petit" aria-label="Mois précédent" @click="changerDeMois(-1)">‹ {{ MOIS[(mois.mois + 10) % 12] }}</button>
+        <h2 class="first-letter:uppercase">{{ MOIS[mois.mois - 1] }} {{ mois.annee }}</h2>
+        <button type="button" class="btn btn-2 btn-petit" aria-label="Mois suivant" @click="changerDeMois(1)">{{ MOIS[mois.mois % 12] }} ›</button>
+      </div>
+      <p class="doux petit">Les rendez-vous que vous avez pris chez des prestataires. Cliquez sur un jour pour ne voir que lui.</p>
+      <div>
+        <div class="sem-tete"><span v-for="nom in JOURS" :key="nom">{{ nom.slice(0, 3) }}</span></div>
+        <div class="grille-j">
           <span v-for="vide in cases.avant" :key="`v${vide}`" />
           <button
             v-for="c in cases.jours"
             :key="c.jour"
             type="button"
-            class="flex min-h-[54px] flex-col items-center justify-start gap-0.5 rounded-rafals border px-0.5 py-1.5 tabular-nums"
-            :class="[
-              c.jour === jourChoisi ? 'border-primaire bg-primaire text-primaire-texte' : c.aVenir ? 'border-transparent bg-ouvert text-ouvert-texte' : c.nombre ? 'border-transparent bg-neutre-doux' : 'border-transparent hover:bg-fond',
-              c.jour === aujourdhui && c.jour !== jourChoisi ? 'ring-2 ring-accent' : '',
-            ]"
+            class="jcase client"
+            :class="{ 'a-rdv': c.aVenir, 'rdv-passe': c.nombre && !c.aVenir, auj: c.jour === aujourdhui, choisi: c.jour === jourChoisi }"
             :aria-pressed="c.jour === jourChoisi"
             :aria-label="`${jourLisible(c.jour)} : ${c.nombre ? `${c.nombre} rendez-vous` : 'aucun rendez-vous'}`"
             @click="jourChoisi = jourChoisi === c.jour ? null : c.jour"
           >
-            <span class="font-semibold">{{ c.numero }}</span>
-            <span v-if="c.nombre" class="text-[11.5px] leading-none font-bold">{{ c.nombre }} rdv</span>
+            <b>{{ c.numero }}</b>
+            <span v-if="c.nombre" class="nrdv">{{ c.nombre }} rdv</span>
           </button>
         </div>
-        <p class="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-texte-doux">
-          <span><span class="mr-1 inline-block size-3 rounded-sm bg-ouvert align-middle" />rendez-vous à venir</span>
-          <span><span class="mr-1 inline-block size-3 rounded-sm bg-neutre-doux align-middle" />passé ou annulé</span>
-          <span><span class="mr-1 inline-block size-3 rounded-sm ring-2 ring-accent align-middle" />aujourd'hui</span>
-        </p>
-      </section>
+      </div>
+      <div class="legende">
+        <span><i class="lg lg-ouvert" />rendez-vous à venir</span>
+        <span><i class="lg lg-gris" />rendez-vous passé</span>
+        <span><i class="lg lg-auj" />aujourd’hui</span>
+      </div>
+    </div>
 
-      <AppSection>
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <h2 class="text-xl font-bold first-letter:uppercase">{{ jourChoisi ? jourLisible(jourChoisi) : `${MOIS[mois.mois - 1]} ${mois.annee}` }}</h2>
-          <AppBouton v-if="jourChoisi" variante="secondaire" @click="jourChoisi = null">Voir tout le mois</AppBouton>
+    <!-- « Ce mois-ci », puis la bulle du jour cliqué, collée en bas de l'écran (mêmes lignes, mêmes boutons) -->
+    <template v-for="zone in zones" :key="zone.cle">
+      <div v-if="zone.cle === 'jour'" class="bulle-espace" aria-hidden="true" />
+      <component :is="zone.cle === 'jour' ? 'aside' : 'section'" :class="zone.cle === 'jour' ? 'bulle-jour' : 'section'" :aria-label="zone.titre">
+        <div v-if="zone.cle === 'jour'" class="bulle-tete">
+          <h3 class="first-letter:uppercase">{{ zone.titre }}</h3>
+          <button type="button" class="croix" aria-label="Fermer" @click="jourChoisi = null">×</button>
         </div>
-        <template v-if="!montres.length">
-          <p class="text-texte-doux">{{ jourChoisi ? 'Aucun rendez-vous ce jour-là.' : 'Aucun rendez-vous ce mois-ci.' }}</p>
-          <div v-if="!tous.length"><AppBouton @click="routeur.push('/')">Publier une demande</AppBouton></div>
+        <h2 v-else>Ce mois-ci</h2>
+        <template v-if="!zone.liste.length">
+          <p v-if="zone.cle === 'jour'" class="doux">Aucun rendez-vous ce jour-là.</p>
+          <div v-else class="carte vide">
+            Aucun rendez-vous ce mois-ci.
+            <div v-if="!tous.length" style="margin-top: 14px"><RouterLink class="btn btn-1" to="/demandes/nouvelle">Publier une demande</RouterLink></div>
+          </div>
         </template>
-        <div class="flex flex-col divide-y divide-bord">
-          <LigneRendezVous v-for="r in montres" :key="r.id" :rdv="r" libelle-autre="Avec">
+        <div v-else class="liste">
+          <LigneRendezVous v-for="r in zone.liste" :key="r.id" :rdv="r" libelle-autre="Avec">
             <template #actions>
               <!-- Rendez-vous à venir : annuler (pour changer d'heure, on écrit au prestataire) -->
               <template v-if="aVenir(r)">
                 <template v-if="r.statut === 'en_attente'">
-                  <span class="text-[13.5px] text-texte-doux">
-                    {{ r.autre.nom }} doit accepter avant le {{ momentCourt(r.reponse_avant ?? r.debut) }}.
-                  </span>
-                  <AppBouton variante="danger" @click="aAnnuler = r">Annuler la demande</AppBouton>
+                  <span class="doux petit">{{ r.autre.nom }} doit accepter avant le {{ momentCourt(r.reponse_avant ?? r.debut) }}.</span>
+                  <AppBouton variante="danger" petit @click="aAnnuler = r">Annuler la demande</AppBouton>
                 </template>
                 <template v-else-if="dansLeDelai(r)">
-                  <AppBouton variante="danger" @click="aAnnuler = r">Annuler…</AppBouton>
-                  <span v-if="r.annulable_jusqu_au" class="text-[13.5px] text-texte-doux">
-                    Annulation gratuite jusqu'au {{ momentCourt(r.annulable_jusqu_au) }}.
-                  </span>
+                  <AppBouton variante="secondaire" petit @click="aAnnuler = r">Annuler</AppBouton>
                 </template>
-                <template v-else>
-                  <AppBouton variante="verrouille" :raison-verrou="raisonHorsDelai(r)">Annuler</AppBouton>
-                </template>
+                <AppBouton v-else variante="verrouille" petit :raison-verrou="raisonHorsDelai(r)">Annuler</AppBouton>
               </template>
               <!-- Rendez-vous passé ou annulé : avis, absence -->
               <template v-else>
-                <div v-if="r.avis" class="w-full rounded-rafals bg-fond p-3">
+                <div v-if="r.avis" class="w-full rounded-[12px] bg-surface2 p-3">
                   <AvisAffiche :avis="r.avis" titre="Votre avis" :nom-prestataire="r.autre.nom">
                     <template #actions>
                       <template v-if="!r.avis.retire && !r.avis.cache_motif">
                         <AppBouton
                           v-if="new Date() < new Date(r.avis.modifiable_jusqu_au)"
                           variante="secondaire"
+                          petit
                           @click="aNoter = { rendezVousId: r.id, avis: r.avis, prestataire: r.autre.nom, quoi: plage(r) }"
                         >
                           Modifier
                         </AppBouton>
-                        <AppBouton variante="danger" @click="retirerAvis(r)">Retirer</AppBouton>
-                        <span v-if="new Date() < new Date(r.avis.modifiable_jusqu_au)" class="text-[13.5px] text-texte-doux">
-                          Modifiable jusqu'au {{ momentCourt(r.avis.modifiable_jusqu_au) }}.
-                        </span>
+                        <AppBouton variante="danger" petit @click="retirerAvis(r)">Retirer</AppBouton>
                       </template>
                     </template>
                   </AvisAffiche>
                 </div>
-                <template v-else-if="r.peut_noter">
-                  <AppBouton @click="aNoter = { rendezVousId: r.id, avis: null, prestataire: r.autre.nom, quoi: `${r.titre}, ${plage(r).toLowerCase()}.` }">
-                    Donner mon avis
-                  </AppBouton>
-                </template>
-                <AppBouton v-if="absenceSignalable(r, 'client')" variante="danger" @click="pasVenu = r">{{ r.autre.nom }} n'est pas venu…</AppBouton>
-                <AppBouton v-if="contestable(r.absence, 'client')" variante="secondaire" @click="aContester = contester(`/api/moi/rendez-vous/${r.id}/contester`)">
+                <span v-else-if="r.avis === null && !r.peut_noter && r.statut === 'confirme'" class="puce p-ok">Passé</span>
+                <AppBouton v-if="!r.avis && r.peut_noter" petit @click="aNoter = { rendezVousId: r.id, avis: null, prestataire: r.autre.nom, quoi: `${r.titre}, ${plage(r).toLowerCase()}.` }">
+                  Donner mon avis
+                </AppBouton>
+                <AppBouton v-if="absenceSignalable(r, 'client')" variante="danger" petit @click="pasVenu = r">{{ r.autre.nom }} n'est pas venu…</AppBouton>
+                <AppBouton v-if="contestable(r.absence, 'client')" variante="secondaire" petit @click="aContester = contester(`/api/moi/rendez-vous/${r.id}/contester`)">
                   Je suis venu…
                 </AppBouton>
               </template>
             </template>
           </LigneRendezVous>
         </div>
-      </AppSection>
+      </component>
     </template>
+  </template>
 
-    <AppFenetre :ouverte="aAnnuler !== null" :titre="aAnnuler?.statut === 'en_attente' ? 'Annuler la demande ?' : 'Annuler ce rendez-vous ?'" @fermer="aAnnuler = null">
-      <template v-if="aAnnuler">
+  <AppFenetre :ouverte="aAnnuler !== null" :titre="aAnnuler?.statut === 'en_attente' ? 'Annuler la demande ?' : 'Annuler ce rendez-vous ?'" @fermer="aAnnuler = null">
+    <template v-if="aAnnuler">
+      <p>
         {{ aAnnuler.titre }} avec {{ aAnnuler.autre.nom }}, {{ plage(aAnnuler).toLowerCase() }}.
         {{ aAnnuler.autre.nom }} est prévenu par mail et l'horaire redevient libre.
-        <AppAlerte v-if="aAnnuler.paiement?.rembourse_si_annule_centimes" etat="neutre" class="mt-3">
-          Payé par carte : vous serez remboursé de {{ montant(aAnnuler.paiement.rembourse_si_annule_centimes) }}
-          ({{ montant(aAnnuler.paiement.montant_centimes) }} moins
-          {{ montant(aAnnuler.paiement.montant_centimes - aAnnuler.paiement.rembourse_si_annule_centimes) }} de frais de paiement),
-          sous 5 à 10 jours.
-        </AppAlerte>
-      </template>
-      <template #pied>
-        <AppBouton variante="danger" @click="annuler">{{ aAnnuler?.statut === 'en_attente' ? 'Annuler la demande' : 'Annuler le rendez-vous' }}</AppBouton>
-        <AppBouton variante="secondaire" @click="aAnnuler = null">Garder</AppBouton>
-      </template>
-    </AppFenetre>
+        <template v-if="aAnnuler.annulable_jusqu_au"> Annulation gratuite jusqu'au {{ momentCourt(aAnnuler.annulable_jusqu_au) }}.</template>
+      </p>
+      <AppAlerte v-if="aAnnuler.paiement?.rembourse_si_annule_centimes" etat="neutre">
+        Payé par carte : vous serez remboursé de {{ montant(aAnnuler.paiement.rembourse_si_annule_centimes) }}
+        ({{ montant(aAnnuler.paiement.montant_centimes) }} moins
+        {{ montant(aAnnuler.paiement.montant_centimes - aAnnuler.paiement.rembourse_si_annule_centimes) }} de frais de paiement),
+        sous 5 à 10 jours.
+      </AppAlerte>
+    </template>
+    <template #pied>
+      <button type="button" class="btn btn-danger" @click="annuler">{{ aAnnuler?.statut === 'en_attente' ? 'Annuler la demande' : 'Annuler le rendez-vous' }}</button>
+      <AppBouton variante="secondaire" @click="aAnnuler = null">Garder</AppBouton>
+    </template>
+  </AppFenetre>
 
-    <AppFenetre :ouverte="pasVenu !== null" :titre="`${pasVenu?.autre.nom} n'est pas venu ?`" @fermer="pasVenu = null">
-      <template v-if="pasVenu">
-        {{ pasVenu.titre }}, {{ plage(pasVenu).toLowerCase() }}. {{ pasVenu.autre.nom }} est prévenu et a 7 jours pour
-        contester ; sinon, l'absence apparaîtra sur sa page.
-      </template>
-      <template #pied>
-        <AppBouton variante="danger" @click="signalerPasVenu">Signaler l'absence</AppBouton>
-        <AppBouton variante="secondaire" @click="pasVenu = null">Annuler</AppBouton>
-      </template>
-    </AppFenetre>
-    <FenetreTexte :demande="aContester" @fermer="aContester = null" @fait="(aContester = null), charger()" />
-
-    <FenetreAvis :cible="aNoter" @fermer="aNoter = null" @enregistre="(aNoter = null), charger()" />
-
-  </div>
+  <AppFenetre :ouverte="pasVenu !== null" :titre="`${pasVenu?.autre.nom} n'est pas venu ?`" @fermer="pasVenu = null">
+    <template v-if="pasVenu">
+      {{ pasVenu.titre }}, {{ plage(pasVenu).toLowerCase() }}. {{ pasVenu.autre.nom }} est prévenu et a 7 jours pour
+      contester ; sinon, l'absence apparaîtra sur sa page.
+    </template>
+    <template #pied>
+      <button type="button" class="btn btn-danger" @click="signalerPasVenu">Signaler l'absence</button>
+      <AppBouton variante="secondaire" @click="pasVenu = null">Annuler</AppBouton>
+    </template>
+  </AppFenetre>
+  <FenetreTexte :demande="aContester" @fermer="aContester = null" @fait="(aContester = null), charger()" />
+  <FenetreAvis :cible="aNoter" @fermer="aNoter = null" @enregistre="(aNoter = null), charger()" />
 </template>

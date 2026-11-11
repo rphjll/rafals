@@ -1,6 +1,20 @@
 # En-tête commun et sous-menu — Interface
 
-> Fichiers : `frontend/src/components/AppEntete.vue`, `frontend/src/components/AppSousMenu.vue`, `frontend/src/composables/useMenu.ts`, `frontend/src/App.vue`, `frontend/src/composables/useCompte.ts`. Construit au lot 0.4, zone du compte au lot 1.2 (28/09/2026).
+## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
+
+Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
+
+- En-tête de 64 px, un peu transparent : logo « rafals. », puis **Accueil · Trouver · Demandes · Messages (pastille orange des conversations non lues) · Mon activité**, chacune avec son icône ; à droite, le **bouton rond du compte** (rond de couleur avec la 1re lettre + prénom). Pas connecté : Accueil, Trouver, Demandes, puis [Se connecter].
+- Clic sur le bouton du compte : la liste **Mon profil · Mes abonnements · Paramètres · (Administration) · Un problème ? Une idée ? · (Installer rafals) · — · Se déconnecter**.
+- **Plus de sous-menu** sous l'en-tête (`AppSousMenu.vue` effacé) : chaque page de « Mon activité » commence par le lien « ‹ Mon activité » (`components/EnteteActivite.vue`).
+- **Téléphone (moins de 760 px)** : l'en-tête ne garde que le logo ; la **barre du bas** a 6 entrées : Accueil, Trouver, Demandes, Messages, Activité, **Moi**. « Moi » ouvre la page **/moi** (`pages/MoiPage.vue`) : mon rond et mon nom, puis Mon profil, Mes abonnements, Paramètres, (Administration), Un problème ? Une idée ?, (Installer rafals), Se déconnecter. Sans compte, Messages, Activité et Moi mènent à « Se connecter ».
+- « Proposer mes services » n'est plus une entrée de l'en-tête : il est dans « Mon activité » (carte du bas) et dans « Mon profil ».
+- Fichiers : `AppEntete.vue`, `AppBarreBas.vue`, `composables/useMenu.ts`, `composables/useRetour.ts` (la fenêtre « Un problème ? Une idée ? » partagée), `components/ui/AppIcone.vue` + `outils/icones.ts` (icônes de la maquette).
+
+
+> **Changé le 22/10/2026** (demande de Raphael : « fait en sort que le site resemble a ce que t'a fais dans la maquette », maquette https://claude.ai/artifact/Qix7D7jo4vJ9kpWotB59Q2, `.doc/ihm/maquette-site-complet.html`) : sur ordinateur, la liste sous le prénom commence par le nom complet et l'adresse mail (« Karim Benali », « karim@example.com »), puis chaque ligne a un petit dessin à gauche (Mon profil, Mes abonnements, Paramètres, Administration) ; la liste a les coins et l'ombre d'une carte. Dans le bouton du compte, le rond des initiales (quand il n'y a pas de photo) prend une teinte propre au nom, la même partout (composant `AppInitiales`, ex. « Marie D. » toujours dans la même couleur) ; avant : toujours vert clair.
+
+> Fichiers : `frontend/src/components/AppEntete.vue`, `frontend/src/composables/useMenu.ts`, `frontend/src/App.vue`, `frontend/src/composables/useCompte.ts`. Construit au lot 0.4, zone du compte au lot 1.2 (28/09/2026).
 > **Refait le 04/10/2026** (nouvelle présentation, maquette https://claude.ai/artifact/8GvhAaZ5x1m7Kyv1dLMQb3) : le menu passe de 10 entrées à 3, les autres pages sont rangées dans un sous-menu ou derrière le prénom.
 
 ## En-tête
@@ -68,3 +82,13 @@ Sous 768 px, les entrées principales quittent le menu ☰ et vont dans une barr
 
 ## « Mes abonnements » dans la liste du compte (21/10/2026, détail : `RM-ABONNEMENTS-IHM.md`)
 - Liste sous le prénom : « Mon profil », **« Mes abonnements »** (→ `/mes-abonnements`), « Paramètres », « Administration » (administrateurs), [Installer rafals], [Se déconnecter].
+
+## « Un problème ? Une idée ? » dans la liste du compte (09/11/2026, lot 13.1, détail : `RM-RETOURS-IHM.md`)
+- Liste sous le prénom (☰ sur téléphone) : « Mon profil », « Mes abonnements », « Paramètres », « Administration » (administrateurs), **« Un problème ? Une idée ? »** (petit dessin de bulle, comme « Messages »), [Installer rafals], [Se déconnecter].
+- Ce n'est pas une page : un clic referme la liste et ouvre la fenêtre par-dessus la page où l'on est (la page part avec le message).
+
+## Aspect de la grande maquette (10/11/2026, lot 14.1)
+- En-tête de 64 px, fond blanc un peu transparent avec flou (on devine la page qui défile dessous), logo « rafals. » en 28 px.
+- Chaque entrée a son petit dessin devant (les mêmes que la barre du bas : `picto` de `useMenu`) ; texte gris, entrée de la page affichée en vert sur vert clair.
+- Entre 768 et 1024 px de large, les entrées prennent leur mot court (« Trouver », « Activité ») pour tenir sur une ligne avec les dessins.
+

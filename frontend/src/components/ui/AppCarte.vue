@@ -1,12 +1,15 @@
 <script setup lang="ts">
-// Carte centrée pour les formulaires courts (inscription, connexion…) : titre, texte d'intro, contenu.
+// Carte centrée pour les formulaires courts (inscription, connexion…) : titre, texte d'intro, contenu (grande maquette).
 defineProps<{ titre: string; intro?: string }>()
 </script>
 
 <template>
-  <section class="mx-auto flex w-full max-w-[460px] flex-col gap-4 carte p-6">
-    <h1 class="text-[26px] font-bold">{{ titre }}</h1>
-    <p v-if="intro" class="-mt-2 text-texte-doux">{{ intro }}</p>
-    <slot />
-  </section>
+  <!-- Comme « Se connecter » dans la grande maquette : titre centré, puis le formulaire dans une carte de 420 px -->
+  <div class="connexion page">
+    <div class="tete" style="text-align: center">
+      <h1>{{ titre }}</h1>
+      <p v-if="intro">{{ intro }}</p>
+    </div>
+    <section class="carte form p-[18px]"><slot /></section>
+  </div>
 </template>

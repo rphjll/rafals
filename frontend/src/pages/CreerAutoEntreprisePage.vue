@@ -2,6 +2,7 @@
 // Créer mon auto-entreprise sans quitter rafals (.doc/ihm/RM-CREATION-AUTO-ENTREPRISE-IHM.md ; lot 7.2, maquette validée
 // par Raphael le 04/10/2026) : départ, 5 étapes, puis suivi du dossier. rafals envoie le dossier au guichet de l'État.
 // Le guide « je le fais moi-même » reste à /creer-mon-auto-entreprise/guide.
+import EnteteActivite from '../components/EnteteActivite.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
@@ -96,8 +97,8 @@ async function effacer() {
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-[720px] flex-col gap-4">
-    <h1 class="text-[28px] font-bold">{{ dossier && !modifiable ? 'Mon dossier de création' : 'Créer mon auto-entreprise' }}</h1>
+  <div class="page">
+    <EnteteActivite titre="Mon auto-entreprise" :texte="dossier && !modifiable ? 'Le suivi de votre dossier de création.' : 'La créer pas à pas, rafals remplit les papiers avec vous.'" />
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
 
     <!-- Les 5 étapes -->

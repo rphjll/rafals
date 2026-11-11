@@ -47,6 +47,20 @@ class MetierExerce(BaseModel):
     id: int
     nom: str
     fin_le: date | None = None
+    prix_centimes: int | None = None  # prix de l'heure (schema_v35), ex. 4500 = 45,00 €
+
+
+class MetierAvecPrix(BaseModel):
+    """Un métier sur la page publique : « Électricien », 45,00 € de l'heure (ou sans prix)."""
+
+    id: int
+    nom: str
+    prix_centimes: int | None = None
+
+
+class PrixHeure(BaseModel):
+    metier_id: int
+    prix_centimes: int | None = None  # None : effacer le prix
 
 
 class ProfilVisible(BaseModel):
@@ -66,7 +80,7 @@ class ProfilVisible(BaseModel):
     a_une_photo: bool
     photos: list[int]  # rangs des photos de son travail, ex. [1, 2, 3] → /api/prestataires/12/photos/1
     cree_le: datetime
-    facture_tva: bool  # case « Je facture la TVA » (lot 5.3, RM-DEVIS)
+    facture_tva: bool  # TVA activée (par la barre de « Mon activité » depuis le 17/10/2026, RM-MON-ACTIVITE)
 
 
 class FinMetier(BaseModel):
@@ -108,13 +122,16 @@ def visible(db: Base, prestataire: Prestataire) -> ProfilVisible:
         id=prestataire.id,
         nom_affiche=prestataire.nom_affiche,
         presentation=prestataire.presentation,
-        metier_principal=MetierExerce(id=principal.id, nom=principal.nom, fin_le=prestataire.metier_principal_fin_le),
+        metier_principal=MetierExerce(id=principal.id, nom=principal.nom, fin_le=prestataire.metier_principal_fin_le,
+                                      prix_centimes=prestataire.metier_principal_prix_centimes),
         metier_principal_suivant=MetierCourt(id=suivant.id, nom=suivant.nom) if suivant else None,
         metiers_secondaires=[
-            MetierExerce(id=m.id, nom=m.nom, fin_le=ligne.fin_le) for ligne, m in lignes if service.en_cours(ligne.fin_le, jour)
+            MetierExerce(id=m.id, nom=m.nom, fin_le=ligne.fin_le, prix_centimes=ligne.prix_centimes)
+            for ligne, m in lignes if service.en_cours(ligne.fin_le, jour)
         ],
         metiers_arretes=[
-            MetierExerce(id=m.id, nom=m.nom, fin_le=ligne.fin_le) for ligne, m in lignes if not service.en_cours(ligne.fin_le, jour)
+            MetierExerce(id=m.id, nom=m.nom, fin_le=ligne.fin_le, prix_centimes=ligne.prix_centimes)
+            for ligne, m in lignes if not service.en_cours(ligne.fin_le, jour)
         ],
         commune=commune_visible(db.get_one(Commune, prestataire.commune_id)),
         distance_km=prestataire.distance_km,
@@ -155,6 +172,14 @@ def mon_profil(db: Base, compte: CompteConnecte) -> ProfilVisible:
 @routeur.post("/moi/prestataire", status_code=201)
 def devenir(donnees: ProfilDemande, db: Base, compte: CompteConnecte) -> ProfilVisible:
     prestataire = service.devenir_prestataire(db, compte, service.Profil(**donnees.model_dump()), maintenant())
+    db.commit()
+    return visible(db, prestataire)
+
+
+@routeur.post("/moi/prestataire/prix")
+def prix_heure(donnees: PrixHeure, db: Base, compte: CompteConnecte) -> ProfilVisible:
+    """« Mes métiers › [Changer le prix] » : le prix de l'heure d'un métier (schema_v35)."""
+    prestataire = service.fixer_prix(db, mon_profil_ou_404(db, compte), donnees.metier_id, donnees.prix_centimes, maintenant())
     db.commit()
     return visible(db, prestataire)
 

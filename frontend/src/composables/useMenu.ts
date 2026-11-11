@@ -1,21 +1,19 @@
-// Le menu (.doc/ihm/RM-ENTETE-IHM.md) : l'en-tête, la barre du bas et le sous-menu lisent la même liste.
-// Depuis le 07/10/2026 (demande de Raphael) : tout est rangé dans « Mon activité » ; l'ancienne entrée
-// « Mon activité » (la fiche du prestataire) s'appelle « Mon profil » ; « Mes réservations » n'existe plus.
-// Le même jour, « Mon profil » et « Mon compte » ont fusionné : la page /profil s'ouvre par le rond des initiales.
+// Le menu (.doc/ihm/RM-ENTETE-IHM.md) : l'en-tête et la barre du bas lisent la même liste.
+// Depuis le 10/11/2026 (Raphael : « exactement pareil que la maquette ») : les 5 entrées de la grande maquette,
+// Accueil, Trouver, Demandes, Messages (une fois connecté) et Mon activité ; la barre du bas ajoute « Moi ».
+// Plus de sous-menu sous l'en-tête : chaque page de « Mon activité » a son lien « ‹ Mon activité » en haut.
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { adresseDe, fonctionsPour } from '../outils/activite'
+import type { NomIcone } from '../outils/icones'
 import { useCompte } from './useCompte'
 import { useNonLus } from './useNonLus'
 
-export interface LienMenu {
+/** Une entrée principale : « court » sert à la barre du bas sur téléphone */
+export interface EntreeMenu {
   vers: string
   texte: string
-}
-/** Une entrée principale : « court » et « picto » servent à la barre du bas sur téléphone */
-export interface EntreeMenu extends LienMenu {
   court: string
-  picto: string
+  icone: NomIcone
   actif: boolean
   compteur?: number
 }
@@ -23,6 +21,13 @@ export interface EntreeMenu extends LienMenu {
 export const PAGE_ACTIVITE = '/mon-activite'
 
 const estDans = (chemin: string, vers: string) => chemin === vers || chemin.startsWith(`${vers}/`)
+// Les pages rangées dans « Mon activité » : l'entrée « Mon activité » reste allumée sur elles
+const PAGES_DE_L_ACTIVITE = [
+  PAGE_ACTIVITE, '/mon-agenda', '/devis', '/factures', '/mes-clients', '/clients', '/mes-avis-recus', '/ma-carte-de-visite',
+  '/demarches', '/creer-mon-auto-entreprise',
+]
+// Les pages du compte : « Moi » (barre du bas) reste allumé sur elles
+const PAGES_DU_COMPTE = ['/moi', '/profil', '/mes-abonnements', '/parametres', '/administration']
 
 export function useMenu() {
   const route = useRoute()
@@ -30,36 +35,31 @@ export function useMenu() {
   const estPrestataire = computed(() => !!compte.value?.prestataire_id)
   const estSur = (vers: string) => estDans(route.path, vers)
 
-  // Les pages de « Mon activité » qui ont leur ligne dans le sous-menu (un prestataire en voit plus qu'un client)
-  const pagesActivite = computed<LienMenu[]>(() => {
-    const prestataireId = compte.value?.prestataire_id ?? null
-    return fonctionsPour(prestataireId)
-      .filter((f) => f.sousMenu)
-      .map((f) => ({ vers: adresseDe(f, prestataireId) ?? PAGE_ACTIVITE, texte: f.texte }))
-  })
-  // Le profil d'un client (/clients/12) s'ouvre depuis « Mes clients » : il fait partie de « Mon activité »
-  const dansActivite = computed(() => estSur(PAGE_ACTIVITE) || estSur('/clients') || pagesActivite.value.some((page) => estSur(page.vers)))
-
-  // Sous l'en-tête, sur une page de « Mon activité » (pas sur la page d'ensemble, qui montre déjà tout en tuiles)
-  const sousMenu = computed<LienMenu[]>(() =>
-    dansActivite.value && !estSur(PAGE_ACTIVITE) ? [{ vers: PAGE_ACTIVITE, texte: '‹ Mon activité' }, ...pagesActivite.value] : [],
-  )
-
-  // Les entrées principales : l'en-tête (ordinateur) et la barre du bas (téléphone) lisent la même liste.
   const { nonLus } = useNonLus()
   const entrees = computed<EntreeMenu[]>(() => [
-    { vers: '/', texte: 'Accueil', court: 'Accueil', picto: 'menu-accueil', actif: route.path === '/' },
-    { vers: '/trouver', texte: 'Trouver un prestataire', court: 'Trouver', picto: 'menu-trouver', actif: estSur('/trouver') },
-    // Le compteur rouge : nombre de conversations avec du nouveau
+    { vers: '/', texte: 'Accueil', court: 'Accueil', icone: 'accueil', actif: route.path === '/' },
+    { vers: '/trouver', texte: 'Trouver', court: 'Trouver', icone: 'trouver', actif: estSur('/trouver') || estSur('/prestataires') },
+    { vers: '/demandes', texte: 'Demandes', court: 'Demandes', icone: 'demandes', actif: estSur('/demandes') },
+    // Le compteur orange : nombre de conversations avec du nouveau
     ...(compte.value
-      ? [{ vers: '/messages', texte: 'Messages', court: 'Messages', picto: 'menu-messages', actif: estSur('/messages'), compteur: nonLus.value }]
+      ? [
+          { vers: '/messages', texte: 'Messages', court: 'Messages', icone: 'messages' as const, actif: estSur('/messages'), compteur: nonLus.value },
+          { vers: PAGE_ACTIVITE, texte: 'Mon activité', court: 'Activité', icone: 'activite' as const, actif: PAGES_DE_L_ACTIVITE.some(estSur) },
+        ]
       : []),
-    { vers: PAGE_ACTIVITE, texte: 'Mon activité', court: 'Activité', picto: 'menu-activite', actif: dansActivite.value },
-    // « Mon profil » s'ouvre par le rond des initiales (AppEntete) ; ici il ne reste que l'invitation à devenir prestataire
-    ...(estPrestataire.value
-      ? []
-      : [{ vers: '/profil?proposer=1', texte: 'Proposer mes services', court: 'Proposer', picto: 'services-personne', actif: estSur('/profil') }]),
   ])
+  // Téléphone : les mêmes entrées + « Moi » (la page du compte) ; sans compte, elles mènent à « Se connecter »
+  const entreesBas = computed<EntreeMenu[]>(() => {
+    const connecte = !!compte.value
+    const toutes: EntreeMenu[] = connecte
+      ? entrees.value
+      : [
+          ...entrees.value,
+          { vers: '/connexion', texte: 'Messages', court: 'Messages', icone: 'messages', actif: false },
+          { vers: '/connexion', texte: 'Mon activité', court: 'Activité', icone: 'activite', actif: false },
+        ]
+    return [...toutes, { vers: connecte ? '/moi' : '/connexion', texte: 'Moi', court: 'Moi', icone: 'moi', actif: PAGES_DU_COMPTE.some(estSur) || estSur('/connexion') }]
+  })
 
-  return { sousMenu, estPrestataire, estSur, entrees }
+  return { estPrestataire, estSur, entrees, entreesBas }
 }

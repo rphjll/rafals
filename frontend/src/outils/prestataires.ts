@@ -18,6 +18,8 @@ export interface MetierExerce {
   id: number
   nom: string
   fin_le: string | null
+  /** Prix de l'heure en centimes (schema_v35), ex. 4500 = 45 € ; null tant qu'il n'est pas donné */
+  prix_centimes: number | null
 }
 
 /** Où ont lieu les services d'un prestataire (RM-PRESTATAIRES § « Sans annonces ») */

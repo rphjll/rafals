@@ -1,6 +1,28 @@
 # Demandes — Interface (carte d'une demande, « Mes demandes », « Demandes près de chez moi »)
 
+## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
+
+Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
+
+- Haut : « Demandes », « Les besoins publiés près de chez vous. Tout le monde peut les voir. », bouton vert **[+ Publier une demande]** (→ /demandes/nouvelle).
+- **Carte d'une demande publique** : pastille orange du métier et date ; titre ; « 📍 Pessac · Dès que possible · chez le client · prix à proposer » ; le texte ; les photos (connecté) ; en bas, le rond et le nom du client (« particulier · 0 réponse sur 10 ») et [Répondre], [🔒 Répondre] ou [Voir la conversation], puis « Signaler… » en lien discret.
+- **Mes demandes** : « En cours » puis « Terminées » ; chaque demande repliée en une ligne (état, titre, « métier · ville · publiée le », « 2 réponses », ›) ; ouverte : le texte, « Pour quand », la phrase en gras (ouverte jusqu'au…, rendez-vous pris…), « 2 prestataires vous ont répondu » + [Lire leurs messages], puis [Modifier…] [Prolonger de 30 jours] [Fermer ma demande…] (ou [Rouvrir pour 30 jours]).
+- **Page « Publier une demande »** (/demandes/nouvelle, `pages/NouvelleDemandePage.vue`, formulaire `CartePublierDemande.vue`) : « ‹ Mes demandes », titre, puis le formulaire : **« De quoi avez-vous besoin ? »** et dessous **« ✓ Métier trouvé : Plombier · [Changer] »**, trouvé tout seul d'après les mots écrits (`outils/devineMetier.ts`, la liste de mots de la maquette reliée aux vrais métiers ; ex. « Fuite sous l'évier » → Plombier, « Réparer mon PC » → Dépannage informatique) ; aucun mot reconnu : « Nous n'avons pas reconnu le métier. [Choisir le métier] ». Puis Détails (20 caractères au moins), Pour quand ?, Où ? (adresse et plan), Le service a lieu (Chez moi / Chez le prestataire), Budget, Photos, [Publier ma demande] → « Mes demandes ».
+
+
+> **Changé le 22/10/2026** (demande de Raphael : « fait en sort que le site resemble a ce que t'a fais dans la maquette », maquette https://claude.ai/artifact/Qix7D7jo4vJ9kpWotB59Q2, `.doc/ihm/maquette-site-complet.html`) : sur la carte d'une demande, le rond des initiales (quand il n'y a pas de photo) prend une teinte propre au nom, la même partout (composant `AppInitiales`, ex. « Marie D. » toujours dans la même couleur) ; avant : toujours vert clair.
+
+> **Changé le 21/10/2026** (Raphael : « faudrai quand meme que y'ai le bouton grisé avec un cadenas et les explications ») : sur une carte de demande, un prestataire qui ne peut pas répondre voit toujours **[🔒 Répondre]** grisé ; un clic affiche la raison (`services/propositions.py`, `raison_verrou`) : autre métier (« Cette demande est pour « Coiffeur / Coiffeuse » : vous ne répondez qu'aux demandes de vos métiers (Électricien). Si vous exercez aussi ce métier, ajoutez-le dans « Mon profil ». »), trop loin (« Cette demande est à 38 km de Pessac : vous vous déplacez jusqu'à 15 km. Vous pouvez agrandir cette distance dans « Mon profil ». »), activité en pause (« Votre activité est en pause : reprenez-la dans « Mon profil » pour répondre aux demandes. »), pas d'adresse, limites sans SIRET, demande complète. Avant : pas de bouton du tout pour un autre métier ou trop loin.
+
 > Fichiers : `frontend/src/components/demandes/CarteDemande.vue`, `frontend/src/pages/MesDemandesPage.vue`, `frontend/src/pages/DemandesPresPage.vue`, `frontend/src/outils/demandes.ts`. Construit le 07/10/2026 (lot 8.4), d'après la maquette validée `maquette-niveau-8-demandes.html`. Règles : `RM-DEMANDES.md`. Publier une demande : `RM-ACCUEIL-IHM.md`.
+
+## Onglet « Demandes » (`/demandes`, lot 14.2, 10/11/2026, grande maquette)
+Remplace les pages « Mes demandes » et « Demandes près de chez moi » décrites plus bas : leurs adresses y mènent (`/mes-demandes` → onglet « Mes demandes », `/demandes-pres-de-chez-moi` → « Près de chez moi »). Entrée « Demandes » dans le menu et la barre du bas, entre « Trouver » et « Messages », visible même sans compte.
+1. Titre « Demandes », phrase « Les besoins publiés près de chez vous. Tout le monde peut les voir. », bouton orange [Publier une demande] → l'accueil (carte « Publier une demande ») ou la connexion.
+2. Deux sous-onglets (`AppOnglets`, `?onglet=miennes`) :
+   - **« Près de chez moi »** : « 4 demandes en ligne. » (+ « Vous pouvez répondre à celles de vos métiers, dans votre zone. » pour un prestataire), puis les cartes des demandes des autres (`CarteDemande`, la même que l'accueil : [Répondre] ou [🔒 Répondre] avec la raison). **Ses propres demandes n'y sont pas** (demande de Raphael du 09/11/2026 sur la maquette).
+   - **« Mes demandes (3) »** : sans compte, « Connectez-vous pour voir vos demandes. » ; sinon la liste `ListeMesDemandes` **repliée** : une ligne par demande (état, titre, « Peintre · Nantes · publiée le 03/11/2026 », « 2 réponses », ›) ; un clic la remplace par la carte entière avec ses boutons (Modifier, Prolonger, Fermer…) et un lien « ‹ Replier » au-dessus. Une seule ouverte à la fois. L'accueil garde la liste dépliée.
+3. Dans « Mon activité », la tuile « Mes demandes » est retirée (elle est dans l'onglet) ; « Demandes près de chez moi » et les chiffres mènent à l'onglet.
 
 ## Carte d'une demande (la même partout)
 **Redessinée le 07/10/2026 en style « chaleureux »** (carte blanche à ombre, classe `carte`). De haut en bas :
@@ -19,6 +41,8 @@
 7. Réponse refusée : bandeau rouge dans la carte.
 
 ## Mes demandes (`/mes-demandes`)
+
+> 21/10/2026 : la liste est le composant `ListeMesDemandes`, montré aussi dans l'onglet « Mes demandes » de l'accueil (`RM-ACCUEIL-IHM.md`).
 Sous-menu « Mes réservations », premier onglet. Contenu centré, 760 px au plus.
 1. Titre « Mes demandes » et, à droite, [Publier une demande] → l'accueil.
 2. Une carte par demande, la plus récente en haut, avec en plus :

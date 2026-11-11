@@ -1,9 +1,10 @@
 """S'abonner à un prestataire (demande de Raphael du 21/10/2026 ; MLD .doc/mld/MLD-abonnement.html, schema_v31).
-Un client suit un prestataire, le retrouve dans « Mes abonnements » et choisit, prestataire par prestataire, ses
-notifications : créneau libre, nouveau métier, retour après une absence. Le nombre d'abonnés est visible par tous,
+Un client suit un prestataire et le retrouve dans « Mes abonnements ». Ses notifications (créneau libre, nouveau
+métier, retour après une absence) se cochent une fois pour tous ses abonnements, dans « Paramètres » ; un abonnement
+peut être rendu muet (schema_v32, demande de Raphael du 21/10/2026). Le nombre d'abonnés est visible par tous,
 jamais leurs noms.
-Ex. 1 : Julie suit Karim avec « Créneau libre » coché → un client annule jeudi 23/10 à 14 h, Julie est prévenue.
-Ex. 2 : Julie suit Sonia, tout décoché → Julie ne reçoit rien, mais compte dans les « 12 abonnés » de Sonia."""
+Ex. 1 : Julie a « Créneau libre » coché, suit Karim (pas muet) → un client annule jeudi 23/10 à 14 h, Julie est prévenue.
+Ex. 2 : Julie a rendu Sonia muette → Julie ne reçoit rien d'elle, mais compte dans les « 12 abonnés » de Sonia."""
 
 from datetime import datetime, time
 
@@ -34,7 +35,7 @@ def abonnement_de(db: Session, compte_id: int, prestataire_id: int) -> Abonnemen
 
 
 def abonner(db: Session, compte: Compte, prestataire_id: int, maintenant: datetime) -> Abonnement:
-    """[S'abonner] : les 3 notifications sont cochées au départ. Déjà abonné : rien ne change."""
+    """[S'abonner] : pas muet au départ (les cases de « Paramètres » s'appliquent). Déjà abonné : rien ne change."""
     prestataire = db.get(Prestataire, prestataire_id)
     if prestataire is None or not _visible(prestataire):
         raise ErreurRegle("Ce prestataire n'existe pas.", 404)
@@ -42,8 +43,7 @@ def abonner(db: Session, compte: Compte, prestataire_id: int, maintenant: dateti
         raise ErreurRegle("Vous ne pouvez pas vous abonner à votre propre profil.")
     abonnement = abonnement_de(db, compte.id, prestataire_id)
     if abonnement is None:
-        abonnement = Abonnement(compte_id=compte.id, prestataire_id=prestataire_id, notif_creneau=True,
-                                notif_nouveaute=True, notif_retour=True, cree_le=maintenant)
+        abonnement = Abonnement(compte_id=compte.id, prestataire_id=prestataire_id, muet=False, cree_le=maintenant)
         db.add(abonnement)
         db.flush()
     return abonnement
@@ -54,14 +54,21 @@ def desabonner(db: Session, compte: Compte, prestataire_id: int) -> None:
     db.execute(delete(Abonnement).where(Abonnement.compte_id == compte.id, Abonnement.prestataire_id == prestataire_id))
 
 
-def regler(db: Session, compte: Compte, prestataire_id: int, *, creneau: bool, nouveaute: bool, retour: bool) -> Abonnement:
-    """La cloche d'une carte de « Mes abonnements » : les 3 cases de ce prestataire seulement."""
+def rendre_muet(db: Session, compte: Compte, prestataire_id: int, muet: bool) -> Abonnement:
+    """[Rendre muet] / [Réactiver les notifications] sur une carte de « Mes abonnements ». On reste abonné."""
     abonnement = abonnement_de(db, compte.id, prestataire_id)
     if abonnement is None:
         raise ErreurRegle("Vous n'êtes pas abonné à ce prestataire.", 404)
-    abonnement.notif_creneau, abonnement.notif_nouveaute, abonnement.notif_retour = creneau, nouveaute, retour
+    abonnement.muet = muet
     db.flush()
     return abonnement
+
+
+def regler(db: Session, compte: Compte, *, creneau: bool, nouveaute: bool, retour: bool) -> Compte:
+    """Les 3 cases de « Paramètres », pour tous les abonnements du compte."""
+    compte.abo_notif_creneau, compte.abo_notif_nouveaute, compte.abo_notif_retour = creneau, nouveaute, retour
+    db.flush()
+    return compte
 
 
 def mes_abonnements(db: Session, compte: Compte) -> list[Abonnement]:
@@ -96,11 +103,13 @@ def fermer_compte(db: Session, compte_id: int) -> None:
 
 
 def _prevenir(db: Session, prestataire: Prestataire, case, titre: str, texte: str, maintenant: datetime) -> int:
-    """Chaque abonné qui a coché cette case, sur ses appareils (notifications.prevenir). Rend le nombre d'abonnés visés.
-    Un prestataire caché (pause, bloqué, arrêté) ne prévient personne."""
+    """Chaque abonné qui n'a pas rendu ce prestataire muet et qui a coché cette case dans « Paramètres », sur ses
+    appareils (notifications.prevenir). Rend le nombre d'abonnés visés. Un prestataire caché (pause, bloqué, arrêté)
+    ne prévient personne."""
     if not _visible(prestataire):
         return 0
-    comptes = db.scalars(select(Abonnement.compte_id).where(Abonnement.prestataire_id == prestataire.id, case.is_(True))).all()
+    comptes = db.scalars(select(Abonnement.compte_id).join(Compte, Compte.id == Abonnement.compte_id).where(
+        Abonnement.prestataire_id == prestataire.id, Abonnement.muet.is_(False), case.is_(True))).all()
     for compte_id in comptes:
         notifications.prevenir(db, compte_id, titre, texte, f"/prestataires/{prestataire.id}", maintenant)
     return len(comptes)
@@ -128,7 +137,7 @@ def creneau_libre(db: Session, prestataire: Prestataire, debut: datetime, mainte
     if debut <= maintenant or _deja_prevenu(db, "prevenir_abonnes_creneau", "prestataire", prestataire.id,
                                             maintenant - reglages.ABONNEMENT_CRENEAU_ECART):
         return 0
-    prevenus = _prevenir(db, prestataire, Abonnement.notif_creneau, "Créneau libre",
+    prevenus = _prevenir(db, prestataire, Compte.abo_notif_creneau, "Créneau libre",
                          f"{prestataire.nom_affiche} est {_quand(debut)}", maintenant)
     if prevenus:
         journal.noter(db, auteur_id=None, action="prevenir_abonnes_creneau", table_cible="prestataire",
@@ -141,14 +150,14 @@ def nouveaux_metiers(db: Session, prestataire: Prestataire, metier_ids: list[int
     if not metier_ids:
         return 0
     noms = ", ".join(db.get_one(Metier, i).nom for i in metier_ids)
-    return _prevenir(db, prestataire, Abonnement.notif_nouveaute, "Nouveau métier",
+    return _prevenir(db, prestataire, Compte.abo_notif_nouveaute, "Nouveau métier",
                      f"{prestataire.nom_affiche} propose maintenant : {noms}", maintenant)
 
 
 def retour(db: Session, prestataire: Prestataire, reprise: datetime, maintenant: datetime) -> int:
     """Fin d'une absence (fermeture de 2 jours ou plus) ou fin d'une pause du profil."""
     local = reprise.astimezone(PARIS)
-    return _prevenir(db, prestataire, Abonnement.notif_retour, "De retour",
+    return _prevenir(db, prestataire, Compte.abo_notif_retour, "De retour",
                      f"{prestataire.nom_affiche} reprend son activité ce {JOURS[local.weekday()]} {local:%d/%m/%Y}", maintenant)
 
 

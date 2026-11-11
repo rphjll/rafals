@@ -1,89 +1,90 @@
 <script setup lang="ts">
-// Accueil (.doc/ihm/RM-ACCUEIL-IHM.md) : « Bonjour Julie », la barre et les bulles de services qui filtrent les
-// demandes des clients listées dessous, et à droite la carte où l'on écrit sa propre demande.
-// La recherche d'un prestataire est sur « Trouver un prestataire ».
-import { computed, onMounted, ref } from 'vue'
+// Accueil (.doc/ihm/RM-ACCUEIL-IHM.md), identique à la grande maquette depuis le 10/11/2026 :
+// - le bandeau vert foncé : « Bonjour Karim », « De quoi avez-vous besoin aujourd'hui ? », la recherche et les services ;
+// - « Votre journée » : les chiffres de « Mon activité » ;
+// - « Prochain rendez-vous » ;
+// - « Près de chez vous » : les 3 prestataires les plus proches.
+// Les demandes des clients sont dans l'onglet « Demandes » ; on publie la sienne par [Publier une demande].
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
-import dessinQuartier from '../assets/quartier.svg'
-import CarteDemande from '../components/demandes/CarteDemande.vue'
-import CartePublierDemande from '../components/demandes/CartePublierDemande.vue'
+import ChiffresActivite from '../components/prestataire/ChiffresActivite.vue'
+import CarteResultat from '../components/recherche/CarteResultat.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
-import AppBouton from '../components/ui/AppBouton.vue'
-import AppPicto from '../components/ui/AppPicto.vue'
+import AppIcone from '../components/ui/AppIcone.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 import { useMetiers } from '../composables/useMetiers'
-import type { DemandeVisible } from '../outils/demandes'
-import { teinte } from '../outils/pictos'
+import type { ActiviteChiffree } from '../outils/activite'
+import type { ProfilPrestataire } from '../outils/prestataires'
+import { type CarteResultat as Carte, type PageRubriques, villeRetenue } from '../outils/recherche'
+import { type RendezVousVisible, aVenir, badgeRendezVous } from '../outils/rendez_vous'
 
 const routeur = useRouter()
 const { compte, renvoyerLienVerification } = useCompte()
 const { afficherMessage } = useMessage()
 const { dossiers, chargerDossiers } = useMetiers()
-const etatServeur = ref('Vérification du serveur…')
-const serveurOk = ref<boolean | null>(null)
+onMounted(() => chargerDossiers().catch(() => {}))
 
-const demandes = ref<DemandeVisible[]>([])
-const chargementDemandes = ref(true)
-const erreurDemandes = ref('')
-const besoin = ref('')
-// Bulle choisie : un dossier de métiers (« Jardin & extérieur »), ou null pour « Tout »
-const dossierChoisi = ref<number | null>(null)
-// Seuls les dossiers qui ont au moins une demande ont une bulle : aucune bulle ne mène à une liste vide
-const bulles = computed(() =>
-  dossiers.value
-    .map((dossier, rang) => ({ id: dossier.id, code: dossier.code, nom: dossier.nom, teinte: teinte(rang), ids: new Set(dossier.metiers.map((m) => m.id)) }))
-    .filter((dossier) => demandes.value.some((d) => dossier.ids.has(d.metier_id))),
+// La recherche du bandeau ouvre « Trouver » avec le texte tapé ; un service ouvre « Trouver » sur ce service
+const texte = ref('')
+function chercher() {
+  routeur.push({ path: '/trouver', query: texte.value.trim() ? { q: texte.value.trim() } : {} })
+}
+const services = computed(() => dossiers.value.slice(0, 6))
+
+const chiffres = ref<ActiviteChiffree | null>(null)
+const prochain = ref<RendezVousVisible | null>(null)
+const ville = ref<{ id: number; nom: string } | null>(villeRetenue())
+const proches = ref<Carte[]>([])
+const erreur = ref('')
+
+watch(
+  compte,
+  async (c) => {
+    chiffres.value = null
+    prochain.value = null
+    if (c) {
+      appelerServeur<ActiviteChiffree>('/api/moi/activite').then((r) => (chiffres.value = r)).catch(() => {})
+      const chemin = c.prestataire_id ? '/api/moi/prestataire/rendez-vous' : '/api/moi/rendez-vous'
+      appelerServeur<RendezVousVisible[]>(chemin)
+        .then((liste) => (prochain.value = liste.filter((r) => aVenir(r)).sort((a, b) => a.debut.localeCompare(b.debut))[0] ?? null))
+        .catch(() => {})
+      // Un prestataire : les prestataires autour de sa ville, s'il n'en a pas donné d'autre dans « Trouver »
+      if (c.prestataire_id && !ville.value) {
+        const p = await appelerServeur<ProfilPrestataire>('/api/moi/prestataire').catch(() => null)
+        if (p) ville.value = p.commune
+      }
+    }
+    chargerProches()
+  },
+  { immediate: true },
 )
-const bullesAvecTout = computed(() => [{ id: null as number | null, code: 'tout', nom: 'Tout', teinte: teinte(2) }, ...bulles.value])
-// La liste ne garde que les demandes du dossier choisi qui contiennent le texte tapé (titre, description, métier ou ville)
-const demandesFiltrees = computed(() => {
-  const mot = besoin.value.trim().toLowerCase()
-  const ids = bulles.value.find((b) => b.id === dossierChoisi.value)?.ids
-  return demandes.value.filter(
-    (d) => (!ids || ids.has(d.metier_id)) && (!mot || `${d.titre} ${d.description} ${d.metier} ${d.ville}`.toLowerCase().includes(mot)),
-  )
-})
-const texteListeVide = computed(() => {
-  if (besoin.value.trim()) return `Aucune demande ne contient « ${besoin.value.trim()} ».`
-  return dossierChoisi.value ? 'Aucune demande dans ce type de service.' : 'Aucune demande pour l’instant.'
-})
-
-async function chargerDemandes() {
+async function chargerProches() {
+  if (!ville.value) return
   try {
-    demandes.value = await appelerServeur<DemandeVisible[]>('/api/demandes')
-    erreurDemandes.value = ''
+    const page = await appelerServeur<PageRubriques>(`/api/recherche/rubriques?commune_id=${ville.value.id}`)
+    const vus = new Map<number, Carte>()
+    for (const r of page.rubriques) for (const carte of r.resultats) if (carte.prestataire_id !== compte.value?.prestataire_id && !vus.has(carte.prestataire_id)) vus.set(carte.prestataire_id, carte)
+    proches.value = [...vus.values()].sort((a, b) => a.distance_km - b.distance_km).slice(0, 3)
   } catch (e) {
-    erreurDemandes.value = messageErreur(e)
-  } finally {
-    chargementDemandes.value = false
+    erreur.value = messageErreur(e)
   }
 }
 
-const ETAPES = [
-  { titre: 'Publiez votre demande', texte: 'Décrivez votre besoin et indiquez votre ville. C’est gratuit.', teinte: teinte(1) },
-  { titre: 'Recevez des propositions', texte: 'Les prestataires proches vous proposent un prix, un jour et une heure. Vous acceptez, refusez ou négociez.', teinte: teinte(2) },
-  { titre: 'Payez et donnez votre avis', texte: 'Par carte ou en espèces. La facture arrive dans votre compte.', teinte: teinte(0) },
-]
-const ATOUTS = [
-  'Les demandes des clients près de chez vous arrivent toutes seules',
-  'Devis et factures prêts en un clic',
-  'Un rappel avant chaque déclaration à l’URSSAF',
-]
-
-onMounted(async () => {
-  chargerDemandes()
-  chargerDossiers().catch(() => {}) // sans les dossiers, pas de bulles : la barre suffit
-  try {
-    etatServeur.value = (await appelerServeur<{ message: string }>('/api/etat')).message
-    serveurOk.value = true
-  } catch {
-    etatServeur.value = 'Le serveur ne répond pas. Relance demarrer.bat.'
-    serveurOk.value = false
-  }
-})
+// « 14 h », « Jeudi 12 novembre · Pessac »
+const PARIS = { timeZone: 'Europe/Paris' } as const
+const heureCourte = (iso: string) => {
+  const [h, m] = new Date(iso).toLocaleTimeString('fr-FR', { ...PARIS, hour: '2-digit', minute: '2-digit' }).split(':')
+  return `${Number(h)} h${m === '00' ? '' : ` ${m}`}`
+}
+const jourLong = (iso: string) => {
+  const t = new Date(iso).toLocaleDateString('fr-FR', { ...PARIS, weekday: 'long', day: 'numeric', month: 'long' })
+  return t.charAt(0).toUpperCase() + t.slice(1)
+}
+// La ville d'une adresse « 12 rue des Lilas, 33600 Pessac » → « Pessac »
+const villeDe = (adresse: string | null) => (adresse?.split(',').pop() ?? '').replace(/\d{5}/, '').trim()
 
 async function renvoyerLien() {
   try {
@@ -95,119 +96,62 @@ async function renvoyerLien() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-10">
+  <div class="page">
     <AppAlerte v-if="compte && !compte.email_verifie" etat="attente">
       Vérifiez votre adresse mail pour pouvoir réserver.
-      <AppBouton variante="secondaire" @click="renvoyerLien">Renvoyer le lien</AppBouton>
+      <button type="button" class="btn btn-2 btn-petit" @click="renvoyerLien">Renvoyer le lien</button>
     </AppAlerte>
 
-    <!-- Le bonjour et la barre à gauche, le dessin de la rue à droite (caché sur téléphone), puis les bulles -->
-    <div class="flex flex-col gap-4">
-      <section class="grid items-center gap-6 md:grid-cols-[1.1fr_0.9fr]">
-        <div class="flex min-w-0 flex-col gap-4">
-          <h1 class="text-[clamp(32px,5.4vw,56px)] leading-[1.05] font-black">
-            Bonjour<template v-if="compte"> {{ compte.prenom }}</template> !
-            <span class="text-primaire">{{ compte?.prestataire_id ? 'Qui pouvez-vous aider ?' : 'De quoi avez-vous besoin ?' }}</span>
-          </h1>
-          <p class="max-w-[42ch] text-[18px] text-texte-doux">
-            Un voisin ou un professionnel du quartier s'en occupe, souvent dès cette semaine.
-          </p>
-          <label class="flex max-w-[520px] items-center gap-3 rounded-bouton border border-bord-carte bg-surface py-1.5 shadow-carte pr-1.5 pl-5 focus-within:ring-2 focus-within:ring-primaire">
-            <span class="sr-only">Chercher dans les demandes</span>
-            <input
-              v-model="besoin"
-              type="search"
-              maxlength="80"
-              placeholder="ex. pelouse, ménage, robinet, Pessac…"
-              class="min-h-[46px] min-w-0 flex-1 bg-transparent text-texte outline-none"
-            />
-            <span class="grid size-[46px] shrink-0 place-items-center rounded-full bg-accent-vif text-accent-vif-texte" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                <circle cx="11" cy="11" r="7" />
-                <path d="M20 20l-3.5-3.5" />
-              </svg>
-            </span>
-          </label>
-          <div v-if="!compte"><AppBouton variante="secondaire" @click="routeur.push('/inscription')">Créer mon compte</AppBouton></div>
-        </div>
-        <img :src="dessinQuartier" alt="" class="hidden w-full max-w-[440px] justify-self-center md:block" />
-      </section>
-
-      <div v-if="bulles.length" class="flex gap-5 overflow-x-auto px-1 pt-2 pb-3" role="group" aria-label="Types de service">
-        <button
-          v-for="bulle in bullesAvecTout"
-          :key="bulle.id ?? 0"
-          type="button"
-          class="flex w-[84px] shrink-0 flex-col items-center gap-2 text-center text-[13.5px] leading-tight font-bold"
-          :aria-pressed="dossierChoisi === bulle.id"
-          @click="dossierChoisi = bulle.id"
-        >
-          <span
-            class="grid size-[72px] place-items-center rounded-full ring-offset-4 ring-offset-fond"
-            :class="[bulle.teinte, dossierChoisi === bulle.id ? 'ring-[3px] ring-primaire' : '']"
-          >
-            <AppPicto :code="bulle.code" />
-          </span>
-          {{ bulle.nom }}
+    <section class="hero">
+      <span class="forme f1" /><span class="forme f2" /><span class="forme f3" />
+      <p v-if="compte" style="font-weight: 600; opacity: 0.9">Bonjour {{ compte.prenom }}</p>
+      <h1>De quoi avez-vous besoin aujourd’hui ?</h1>
+      <p>Des prestataires de confiance {{ ville ? `autour de ${ville.nom}` : 'près de chez vous' }}, avec leurs vrais avis.</p>
+      <form class="recherche" @submit.prevent="chercher">
+        <input v-model="texte" placeholder="Ex. plombier, ménage, cours de maths…" aria-label="Que cherchez-vous ?" />
+        <button class="btn" type="submit"><AppIcone nom="trouver" />Chercher</button>
+      </form>
+      <div v-if="services.length" class="chips" style="margin-top: 14px">
+        <button v-for="d in services" :key="d.id" type="button" class="chip" @click="routeur.push({ path: '/trouver', query: { dossier: String(d.id) } })">
+          {{ d.nom }}
         </button>
       </div>
-    </div>
-
-    <!-- Ordinateur : la liste à gauche, la carte « Publier » à droite. Téléphone : la carte, puis la liste. -->
-    <div class="grid items-start gap-8 md:grid-cols-[1fr_380px]">
-      <section class="order-2 flex min-w-0 flex-col gap-4 md:order-1">
-        <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-          <h2 class="text-[26px] font-extrabold">Les demandes des clients</h2>
-          <span v-if="!chargementDemandes && !erreurDemandes" class="text-[13.5px] text-texte-doux">
-            {{ demandesFiltrees.length }} demande{{ demandesFiltrees.length > 1 ? 's' : '' }}
-          </span>
-        </div>
-        <AppAlerte v-if="erreurDemandes">{{ erreurDemandes }}</AppAlerte>
-        <ul v-else-if="demandesFiltrees.length" class="flex flex-col gap-4">
-          <li v-for="demande in demandesFiltrees" :key="demande.id"><CarteDemande :demande="demande" /></li>
-        </ul>
-        <p v-else-if="!chargementDemandes" class="rounded-carte border-2 border-dashed border-bord p-5 text-texte-doux">{{ texteListeVide }}</p>
-      </section>
-
-      <CartePublierDemande class="order-1 md:order-2" @publiee="chargerDemandes" />
-    </div>
-
-    <section class="flex flex-col gap-4">
-      <h2 class="text-[26px] font-extrabold">Comment ça marche</h2>
-      <ol class="grid gap-4 md:grid-cols-3">
-        <li v-for="(etape, rang) in ETAPES" :key="etape.titre" class="carte flex flex-col gap-2 p-5">
-          <span class="flex size-11 items-center justify-center rounded-full text-lg font-black" :class="etape.teinte" aria-hidden="true">
-            {{ rang + 1 }}
-          </span>
-          <b class="text-[17px]">{{ etape.titre }}</b>
-          <span class="text-texte-doux">{{ etape.texte }}</span>
-        </li>
-      </ol>
     </section>
 
-    <section
-      v-if="!compte?.prestataire_id"
-      class="flex flex-wrap items-center gap-6 rounded-carte bg-accent-vif p-6 text-accent-vif-texte md:p-10"
-    >
-      <div class="flex min-w-0 flex-[999_1_380px] flex-col gap-4">
-        <h2 class="text-[clamp(24px,4vw,32px)] leading-tight font-extrabold">Vous proposez vos services ?</h2>
-        <p class="max-w-[48ch] text-[17px]">
-          rafals vous aide à créer votre auto-entreprise, puis s'occupe de l'agenda, des devis et des factures.
-        </p>
-        <div class="flex flex-wrap gap-3">
-          <AppBouton @click="routeur.push('/proposer')">Proposer mes services</AppBouton>
-          <AppBouton variante="secondaire" @click="routeur.push('/creer-mon-auto-entreprise')">Créer mon auto-entreprise</AppBouton>
-        </div>
+    <section v-if="chiffres" class="section">
+      <h2>Votre journée</h2>
+      <ChiffresActivite :chiffres="chiffres" />
+    </section>
+
+    <section v-if="compte" class="section">
+      <div class="section-titre">
+        <h2>Prochain rendez-vous</h2>
+        <RouterLink to="/mon-agenda" class="doux petit">Tout voir</RouterLink>
       </div>
-      <ul class="flex flex-[1_1_260px] flex-col gap-2.5 font-semibold">
-        <li v-for="atout in ATOUTS" :key="atout" class="flex gap-2.5"><span aria-hidden="true">✓</span>{{ atout }}</li>
-      </ul>
+      <RouterLink v-if="prochain" class="ligne" to="/mon-agenda">
+        <span class="heure">{{ heureCourte(prochain.debut) }}</span>
+        <div class="txt">
+          <b>{{ prochain.titre }} {{ compte.prestataire_id ? 'chez' : 'avec' }} {{ prochain.autre.nom }}</b>
+          <span>{{ jourLong(prochain.debut) }}<template v-if="villeDe(prochain.adresse)"> · {{ villeDe(prochain.adresse) }}</template></span>
+        </div>
+        <span class="fin"><AppBadge :etat="badgeRendezVous(prochain).etat">{{ badgeRendezVous(prochain).texte }}</AppBadge></span>
+      </RouterLink>
+      <div v-else class="carte vide">Aucun rendez-vous à venir.</div>
     </section>
 
-    <!-- Pour le développement : état du serveur et catalogue des composants -->
-    <div class="flex flex-wrap items-center gap-3 border-t border-bord pt-4">
-      <AppBadge :etat="serveurOk === null ? 'neutre' : serveurOk ? 'ok' : 'erreur'">{{ etatServeur }}</AppBadge>
-      <AppBouton variante="secondaire" @click="routeur.push('/catalogue')">Voir le catalogue des composants</AppBouton>
-    </div>
+    <section class="section">
+      <div class="section-titre">
+        <h2>Près de chez vous</h2>
+        <RouterLink to="/trouver" class="doux petit">Tout voir</RouterLink>
+      </div>
+      <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+      <div v-else-if="proches.length" class="grille">
+        <CarteResultat v-for="c in proches" :key="c.prestataire_id" :resultat="c" />
+      </div>
+      <div v-else class="carte vide">
+        <template v-if="ville">Pas encore de prestataire autour de {{ ville.nom }}.</template>
+        <template v-else>Indiquez votre ville dans <RouterLink to="/trouver">Trouver</RouterLink> pour voir les prestataires près de chez vous.</template>
+      </div>
+    </section>
   </div>
 </template>

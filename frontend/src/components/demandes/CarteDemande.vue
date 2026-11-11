@@ -1,26 +1,24 @@
 <script setup lang="ts">
-// Carte d'une demande (.doc/ihm/RM-ACCUEIL-IHM.md, RM-DEMANDES-IHM.md) : la même sur l'accueil, dans « Demandes près
-// de chez moi » et dans « Mes demandes ». Un prestataire qui peut répondre voit [Répondre] ; les boutons propres à
-// une page (fermer, prolonger…) arrivent par l'emplacement du bas.
-import { computed, ref } from 'vue'
+// Carte d'une demande publique (.doc/ihm/RM-DEMANDES-IHM.md), « Demandes › Près de chez moi », comme la grande maquette.
+// Un prestataire qui peut répondre voit [Répondre] ; sinon [🔒 Répondre] et sa raison au clic.
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
 import { useCompte } from '../../composables/useCompte'
 import { texteNote } from '../../outils/avis'
 import { formaterDate } from '../../outils/dates'
-import { initialesDe } from '../../outils/noms'
 import { type DemandeVisible, REPONSES_MAX, texteBudget, texteQuand } from '../../outils/demandes'
 import FenetreTexte, { type DemandeTexte } from '../FenetreTexte.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
-import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
+import AppIcone from '../ui/AppIcone.vue'
+import AppInitiales from '../ui/AppInitiales.vue'
 
 const props = defineProps<{ demande: DemandeVisible }>()
 const routeur = useRouter()
 const { compte } = useCompte()
 const erreur = ref('')
 const occupe = ref(false)
-const initiales = computed(() => initialesDe(props.demande.client))
 
 // [Signaler…] : réservé aux prestataires ; l'administrateur laisse la demande ou la cache
 const aSignaler = ref<DemandeTexte | null>(null)
@@ -53,61 +51,63 @@ async function repondre() {
 </script>
 
 <template>
-  <article class="carte flex flex-col gap-3.5 p-5">
-    <!-- Qui demande, où, quand ; le budget à droite -->
-    <div class="flex items-center gap-3">
-      <span class="grid size-11 shrink-0 place-items-center rounded-full bg-primaire-doux font-bold text-primaire" aria-hidden="true">
-        {{ initiales }}
-      </span>
-      <div class="mr-auto flex min-w-0 flex-col leading-tight">
-        <b>{{ demande.client }}</b>
-        <span v-if="demande.client_avis" class="text-[13.5px]">
-          <b class="text-accent">{{ texteNote(demande.client_note, demande.client_avis) }}</b>
-          <RouterLink :to="`/clients/${demande.client_id}/avis`" class="ml-1 font-semibold text-primaire underline">Voir les avis</RouterLink>
-        </span>
-        <span class="text-[13.5px] text-texte-doux">{{ demande.ville }} · {{ formaterDate(demande.cree_le) }}</span>
-      </div>
-      <b v-if="demande.budget_centimes" class="rounded-full bg-primaire px-3.5 py-1 text-[17px] whitespace-nowrap text-primaire-texte tabular-nums">
-        {{ texteBudget(demande.budget_centimes) }}
-      </b>
-      <span v-else class="rounded-full bg-fond px-3 py-1 text-[13.5px] font-bold whitespace-nowrap text-primaire">Prix à proposer</span>
+  <!-- La demande publique de la grande maquette : le métier et la date, le titre, où et quand, le texte, puis qui demande et le bouton -->
+  <article class="carte dmd p-[18px]">
+    <div class="dmd-haut">
+      <span class="puce p-accent">{{ demande.metier }}</span>
+      <span class="doux petit">{{ formaterDate(demande.cree_le) }}</span>
     </div>
-    <div class="flex flex-col gap-1">
-      <h3 class="text-[19px] leading-snug font-bold">{{ demande.titre }}</h3>
-      <p class="whitespace-pre-line text-texte-doux">{{ demande.description }}</p>
+    <div>
+      <h3>{{ demande.titre }}</h3>
+      <p class="doux petit" style="margin-top: 2px">
+        <AppIcone nom="lieu" class="size-[15px]" style="vertical-align: -3px" /> {{ demande.ville }} · {{ texteQuand(demande) }}
+        · {{ demande.lieu === 'chez_moi' ? 'chez le client' : 'chez le prestataire' }}
+        · {{ demande.budget_centimes ? `budget ${texteBudget(demande.budget_centimes)}` : 'prix à proposer' }}
+      </p>
     </div>
+    <p class="whitespace-pre-line">{{ demande.description }}</p>
     <!-- Les photos demandent d'être connecté : elles montrent souvent l'intérieur d'un logement -->
     <div v-if="demande.nombre_photos && compte" class="flex flex-wrap gap-2">
       <a v-for="n in demande.nombre_photos" :key="n" :href="`/api/demandes/${demande.id}/photos/${n}`" target="_blank" rel="noopener">
-        <img :src="`/api/demandes/${demande.id}/photos/${n}`" :alt="`Photo ${n} de la demande « ${demande.titre} »`" class="size-24 rounded-rafals object-cover" />
+        <img :src="`/api/demandes/${demande.id}/photos/${n}`" :alt="`Photo ${n} de la demande « ${demande.titre} »`" class="size-24 rounded-[12px] object-cover" />
       </a>
     </div>
-    <div class="flex flex-wrap gap-1.5">
-      <AppBadge etat="neutre">{{ demande.metier }}</AppBadge>
-      <AppBadge etat="neutre">{{ texteQuand(demande) }}</AppBadge>
-      <AppBadge etat="neutre">{{ demande.lieu === 'chez_moi' ? 'Chez le client' : 'Chez le prestataire' }}</AppBadge>
-      <AppBadge etat="neutre">{{ demande.nombre_reponses }} réponse{{ demande.nombre_reponses > 1 ? 's' : '' }} sur {{ REPONSES_MAX }}</AppBadge>
-      <AppBadge v-if="demande.a_moi" etat="ok">Ma demande</AppBadge>
-      <AppBadge v-if="demande.nombre_photos && !compte" etat="neutre">
-        {{ demande.nombre_photos }} photo{{ demande.nombre_photos > 1 ? 's' : '' }} (connectez-vous pour les voir)
-      </AppBadge>
-    </div>
-    <div v-if="demande.conversation_id || demande.peut_repondre || demande.raison_verrou || (compte?.prestataire_id && !demande.a_moi) || (compte?.prestataire_id && demande.complete && !demande.a_moi) || $slots.default" class="flex flex-wrap gap-2">
-      <AppBouton v-if="demande.conversation_id" variante="secondaire" @click="routeur.push(`/messages/${demande.conversation_id}`)">
-        Voir la conversation
-      </AppBouton>
-      <AppBouton v-else-if="demande.peut_repondre" :occupe="occupe" @click="repondre">Répondre</AppBouton>
-      <!-- Prestataire sans SIRET : métier qui en demande un, adresse ou case manquante, plafond de l'année atteint -->
-      <AppBouton v-else-if="demande.raison_verrou" variante="verrouille" :raison-verrou="demande.raison_verrou">Répondre</AppBouton>
-      <AppBouton
-        v-else-if="compte?.prestataire_id && demande.complete && !demande.a_moi"
-        variante="verrouille"
-        :raison-verrou="`Cette demande est complète : ${REPONSES_MAX} prestataires ont déjà répondu.`"
-      >
-        Répondre
-      </AppBouton>
-      <AppBouton v-if="compte?.prestataire_id && !demande.a_moi" variante="secondaire" @click="signaler">Signaler…</AppBouton>
-      <slot />
+    <p v-else-if="demande.nombre_photos" class="doux petit">{{ demande.nombre_photos }} photo{{ demande.nombre_photos > 1 ? 's' : '' }} (connectez-vous pour les voir)</p>
+    <div class="dmd-pied">
+      <span class="qui">
+        <AppInitiales :nom="demande.client" />
+        <span>
+          <b>{{ demande.client }}</b>
+          <small class="doux">
+            {{ demande.a_moi ? 'vous' : 'particulier' }} · {{ demande.nombre_reponses }} réponse{{ demande.nombre_reponses > 1 ? 's' : '' }} sur {{ REPONSES_MAX }}
+            <template v-if="demande.client_avis">
+              · <b class="etoile">{{ texteNote(demande.client_note, demande.client_avis) }}</b>
+              <RouterLink :to="`/clients/${demande.client_id}/avis`" class="lien">Voir les avis</RouterLink>
+            </template>
+          </small>
+        </span>
+      </span>
+      <span class="btns">
+        <span v-if="demande.a_moi" class="puce p-neutre">C’est votre demande</span>
+        <RouterLink v-else-if="demande.conversation_id" class="btn btn-2 btn-petit" :to="`/messages/${demande.conversation_id}`">
+          <AppIcone nom="messages" />Voir la conversation
+        </RouterLink>
+        <button v-else-if="demande.peut_repondre" type="button" class="btn btn-1 btn-petit" :aria-busy="occupe || undefined" @click="repondre">
+          <AppIcone nom="messages" />Répondre
+        </button>
+        <!-- Verrouillé, avec la raison au clic : autre métier, trop loin, activité en pause, pas d'adresse ; sans SIRET : métier
+             qui en demande un, case manquante, plafond de l'année atteint -->
+        <AppBouton v-else-if="demande.raison_verrou" variante="verrouille" petit :raison-verrou="demande.raison_verrou">Répondre</AppBouton>
+        <AppBouton
+          v-else-if="compte?.prestataire_id && demande.complete"
+          variante="verrouille"
+          petit
+          :raison-verrou="`Cette demande est complète : ${REPONSES_MAX} prestataires ont déjà répondu.`"
+        >
+          Répondre
+        </AppBouton>
+        <button v-if="compte?.prestataire_id && !demande.a_moi" type="button" class="lien-discret" @click="signaler">Signaler…</button>
+      </span>
     </div>
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <FenetreTexte :demande="aSignaler" @fermer="aSignaler = null" @fait="aSignaler = null" />

@@ -9,6 +9,7 @@ import type { ProfilPrestataire } from '../../outils/prestataires'
 import { adressePhotoTravail } from '../../outils/recherche'
 import AppBouton from '../ui/AppBouton.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
+import AppIcone from '../ui/AppIcone.vue'
 
 const PHOTOS_MAX = 10
 
@@ -53,33 +54,18 @@ async function retirer(rang: number) {
 </script>
 
 <template>
-  <div class="flex flex-col">
-    <ul class="grid grid-cols-3 gap-[3px]">
-      <li v-for="(rang, i) in props.profil.photos" :key="rang">
-        <button type="button" class="relative block aspect-square w-full overflow-hidden" @click="enGrand = rang">
-          <img
-            :src="adressePhotoTravail(props.profil.id, rang, version)"
-            :alt="`Photo n° ${rang} de mon travail`"
-            class="size-full object-cover"
-          />
-          <span v-if="i < 2" class="absolute top-1.5 left-1.5 rounded-full bg-surface/90 px-2 py-px text-[11px] font-extrabold">
-            Sur ma carte
-          </span>
-        </button>
-      </li>
-      <li v-if="props.profil.photos.length < PHOTOS_MAX">
-        <button
-          type="button"
-          class="flex aspect-square w-full flex-col items-center justify-center gap-1 bg-fond text-texte-doux"
-          :disabled="envoi"
-          @click="champ?.click()"
-        >
-          <span class="text-3xl leading-none" aria-hidden="true">+</span>
-          <span class="text-[12px] font-extrabold">{{ envoi ? 'Envoi…' : 'Ajouter une photo' }}</span>
-        </button>
-      </li>
-    </ul>
-    <p class="px-5 py-3 text-[13px] text-texte-doux max-sm:px-4">
+  <!-- La grille de la grande maquette : 3 colonnes, « Sur ma carte » sur les 2 premières, la case « + Ajouter une photo » -->
+  <div class="flex flex-col gap-3">
+    <div class="photos">
+      <button v-for="(rang, i) in props.profil.photos" :key="rang" type="button" class="ph" style="--c: var(--surface2)" :aria-label="`Ouvrir la photo ${i + 1}`" @click="enGrand = rang">
+        <img :src="adressePhotoTravail(props.profil.id, rang, version)" :alt="`Photo n° ${rang} de mon travail`" />
+        <span v-if="i < 2" class="sur">Sur ma carte</span>
+      </button>
+      <button v-if="props.profil.photos.length < PHOTOS_MAX" type="button" class="ph ajout" :disabled="envoi" @click="champ?.click()">
+        <AppIcone nom="plus" />{{ envoi ? 'Envoi…' : 'Ajouter une photo' }}
+      </button>
+    </div>
+    <p class="doux petit">
       <template v-if="!props.profil.photos.length">Aucune photo pour l'instant. Montrez ce que vous savez faire : une cuisine posée, une haie taillée… </template>
       {{ props.profil.photos.length }} photo{{ props.profil.photos.length > 1 ? 's' : '' }} sur {{ PHOTOS_MAX }} (JPG ou PNG, 5 Mo
       chacune). Les 2 premières sont sur votre carte dans « Trouver un prestataire ».

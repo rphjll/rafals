@@ -2,7 +2,7 @@
 Règles : RM-MON-ACTIVITE.md."""
 
 from dataclasses import asdict
-from datetime import datetime
+from datetime import date, datetime
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from app.routes.dependances import Base, CompteConnecte, maintenant
 from app.routes.prestataires import mon_profil_ou_404
 from app.services import activite as service
+from app.services import demarches
 from app.services import prestataires as service_prestataires
 
 routeur = APIRouter(prefix="/api")
@@ -22,6 +23,7 @@ class ChiffresPrestataire(BaseModel):
     encaisse_mois_centimes: int
     encaisse_annee_centimes: int
     annee: int
+    ailleurs_annee_centimes: int  # encaissé hors de rafals cette année, compté dans la barre de la TVA
     seuil_tva_centimes: int | None  # None : il facture déjà la TVA, pas de barre
     reste_avant_seuil_centimes: int | None
 
@@ -45,6 +47,49 @@ def mon_activite(db: Base, compte: CompteConnecte) -> Activite:
     if prestataire is not None:
         return Activite(prestataire=ChiffresPrestataire(**asdict(service.du_prestataire(db, prestataire, maintenant()))), client=None)
     return Activite(prestataire=None, client=ChiffresClient(**asdict(service.du_client(db, compte, maintenant()))))
+
+
+class EncaisseAilleurs(BaseModel):
+    id: int
+    montant_centimes: int
+    encaisse_le: date
+
+
+class EncaisseAilleursAjoute(EncaisseAilleurs):
+    tva_activee: bool  # vrai si la barre est pleine : la TVA est activée (peut-être par cet ajout)
+
+
+class NouvelEncaisseAilleurs(BaseModel):
+    montant_centimes: int
+    encaisse_le: date
+
+
+@routeur.get("/moi/prestataire/encaisse-ailleurs")
+def mes_encaissements_ailleurs(db: Base, compte: CompteConnecte) -> list[EncaisseAilleurs]:
+    """Ce que j'ai encaissé hors de rafals cette année (sous la barre de la TVA), le plus récent d'abord."""
+    annee = maintenant().astimezone(demarches.PARIS).year
+    return [EncaisseAilleurs(id=e.id, montant_centimes=e.montant_centimes, encaisse_le=e.encaisse_le)
+            for e in demarches.encaisse_ailleurs(db, mon_profil_ou_404(db, compte), annee)]
+
+
+@routeur.post("/moi/prestataire/encaisse-ailleurs", status_code=201)
+def ajouter_encaisse_ailleurs(donnees: NouvelEncaisseAilleurs, db: Base, compte: CompteConnecte) -> EncaisseAilleursAjoute:
+    """[Ajouter ce que j'ai encaissé ailleurs] : peut activer la TVA si la barre devient pleine (RM-MON-ACTIVITE)."""
+    prestataire = mon_profil_ou_404(db, compte)
+    ligne = demarches.ajouter_ailleurs(db, prestataire, donnees.montant_centimes, donnees.encaisse_le, maintenant())
+    db.commit()
+    return EncaisseAilleursAjoute(id=ligne.id, montant_centimes=ligne.montant_centimes, encaisse_le=ligne.encaisse_le,
+                                  tva_activee=prestataire.facture_tva)
+
+
+@routeur.post("/moi/prestataire/encaisse-ailleurs/{ligne_id}/retirer")
+def retirer_encaisse_ailleurs(ligne_id: int, db: Base, compte: CompteConnecte) -> dict[str, bool | str]:
+    """Un ajout fait par erreur disparaît ; la TVA activée par la barre se désactive si rien n'a été facturé avec
+    (décision de Raphael du 09/11/2026). Ex. {"retire": true, "tva_activee": false, "message": "40 000,00 € retirés. …"}"""
+    prestataire = mon_profil_ou_404(db, compte)
+    message = demarches.supprimer_ailleurs(db, prestataire, ligne_id, maintenant())
+    db.commit()
+    return {"retire": True, "tva_activee": prestataire.facture_tva, "message": message}
 
 
 class ClientVisible(BaseModel):

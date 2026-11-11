@@ -27,42 +27,12 @@ watch(
 </script>
 
 <template>
-  <div
-    class="border-bord"
-    :class="egaux ? 'grid auto-cols-fr grid-flow-col border-t' : 'flex flex-wrap gap-1.5 border-b'"
-    role="tablist"
-  >
-    <button
-      v-for="o in onglets"
-      :key="o.id"
-      type="button"
-      role="tab"
-      :aria-selected="actif === o.id"
-      :class="[
-        egaux
-          ? '-mt-px flex min-h-12 items-center justify-center gap-2 border-t-2 px-2 text-[14px] font-extrabold'
-          : '-mb-px min-h-[42px] border-b-[3px] px-3 py-2.5 font-semibold',
-        actif === o.id ? (egaux ? 'border-texte text-texte' : 'border-primaire text-primaire') : 'border-transparent text-texte-doux',
-      ]"
-      @click="choisir(o.id)"
-    >
-      <svg
-        v-if="o.icone"
-        class="size-[18px] shrink-0"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <path :d="o.icone" />
-      </svg>
-      {{ o.texte }}
-      <span v-if="compteurs?.[o.id]" class="ml-1 rounded-full bg-accent px-[7px] py-px text-xs text-sur-etat">
-        {{ compteurs[o.id] }}
-      </span>
+  <!-- Onglets de la grande maquette : trait vert sous l'onglet choisi ; « egaux » : ceux du profil (trait en haut) -->
+  <div :class="egaux ? 'ig-onglets' : 'onglets'" role="tablist">
+    <button v-for="o in onglets" :key="o.id" type="button" role="tab" :aria-selected="actif === o.id" @click="choisir(o.id)">
+      <svg v-if="o.icone" class="i" viewBox="0 0 24 24" aria-hidden="true"><path :d="o.icone" /></svg>
+      <span>{{ o.texte }}</span>
+      <span v-if="compteurs?.[o.id]" class="badge">{{ compteurs[o.id] }}</span>
     </button>
   </div>
 </template>

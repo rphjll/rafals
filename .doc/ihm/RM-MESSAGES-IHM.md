@@ -1,5 +1,15 @@
 # Messages — Interface
 
+## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
+
+Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
+
+- **/messages** : « Messages », « 2 conversations non lues. » (ou « Tout est lu. »), puis une ligne par personne : rond, nom, dernier message, point orange si non lu, jour du dernier message.
+- **/messages/12** : une page à part (plus de liste à gauche) : « ‹ Messages », rond et nom (+ note et [Voir les avis]), [Plus…] (Signaler, Bloquer) ; la demande rappelée en pointillés ; les **bulles** (les miennes en vert à droite) ; en bas, la **barre d'écriture collée** : [photo] « Écrire à Julie… » [envoyer] ; dessous [Faire une proposition…] pour un prestataire.
+
+
+> **Changé le 22/10/2026** (demande de Raphael : « fait en sort que le site resemble a ce que t'a fais dans la maquette », maquette https://claude.ai/artifact/Qix7D7jo4vJ9kpWotB59Q2, `.doc/ihm/maquette-site-complet.html`) : la ligne « Demande : Fuite sous l'évier · Pessac… » en haut du fil a un bord en pointillés (avant : fond gris) ; la conversation ouverte est surlignée en vert clair dans la liste (avant : gris) ; le rond des initiales (quand il n'y a pas de photo) prend une teinte propre au nom, la même partout (composant `AppInitiales`, ex. « Marie D. » toujours dans la même couleur) ; avant : toujours vert clair.
+
 > Fichiers : `frontend/src/pages/MessagesPage.vue`, `frontend/src/components/messagerie/CarteProposition.vue`, `frontend/src/components/messagerie/FenetreProposition.vue`, `frontend/src/composables/useNonLus.ts`, `frontend/src/outils/messagerie.ts`. Construit le 07/10/2026 (lots 8.2 et 8.4), d'après la maquette validée `maquette-niveau-8-demandes.html`. Règles : `RM-MESSAGERIE.md`, `RM-DEMANDES.md`.
 
 ## Où

@@ -38,7 +38,7 @@ async function connexion() {
 </script>
 
 <template>
-  <AppCarte titre="Se connecter">
+  <AppCarte titre="Bon retour !" intro="Connectez-vous pour retrouver vos messages et rendez-vous.">
     <form class="flex flex-col gap-4" @submit.prevent="connexion">
       <AppChamp v-model="email" etiquette="Adresse mail" type="email" obligatoire autocomplete="email" />
       <AppChamp v-model="motDePasse" etiquette="Mot de passe" type="password" obligatoire autocomplete="current-password" />

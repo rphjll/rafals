@@ -8,6 +8,7 @@ import { appelerServeur, messageErreur } from '../../api'
 import { useCompte } from '../../composables/useCompte'
 import { useMessage } from '../../composables/useMessage'
 import { type EtatAbonnement, cheminAbonnement } from '../../outils/abonnements'
+import AppIcone from '../ui/AppIcone.vue'
 
 const props = withDefaults(defineProps<{ prestataireId: number; nom: string; abonne: boolean; petit?: boolean }>(), { petit: false })
 const emit = defineEmits<{ change: [etat: EtatAbonnement] }>()
@@ -37,18 +38,15 @@ async function basculer() {
 </script>
 
 <template>
+  <!-- Comme la grande maquette : [♡ S'abonner] blanc bordé, [✓ Abonné] vert pâle -->
   <button
     type="button"
-    class="relative z-10 rounded-bouton font-extrabold whitespace-nowrap"
-    :class="[
-      abonne ? 'bg-primaire-doux text-primaire' : 'bg-primaire text-primaire-texte',
-      petit ? 'min-h-9 px-3.5 text-[13.5px]' : 'min-h-[42px] px-[18px]',
-      occupe ? 'cursor-wait opacity-70' : 'cursor-pointer',
-    ]"
+    class="btn relative z-10"
+    :class="[abonne ? 'btn-ok' : 'btn-2', petit ? 'btn-petit' : '', occupe ? 'cursor-wait opacity-70' : 'cursor-pointer!']"
     :aria-pressed="abonne"
     :disabled="occupe"
     @click.stop.prevent="basculer"
   >
-    {{ abonne ? 'Abonné ✓' : "S'abonner" }}
+    <AppIcone :nom="abonne ? 'ok' : 'coeur'" />{{ abonne ? 'Abonné' : 'S’abonner' }}
   </button>
 </template>

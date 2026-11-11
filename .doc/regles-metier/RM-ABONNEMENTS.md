@@ -2,12 +2,14 @@
 
 > Demande de Raphael du 21/10/2026, mot pour mot : « on vas ajouter un système d'abonnement donc dans trouver un prestataire a chaques prestataires on peut s'abonner et que ca apparaise a un endroit comme sur les réseaux un peut ».
 > Réponses de Raphael le 21/10/2026 : une liste « Mes abonnements » + des notifications choisies (« bah la liste et dans les notifs on peut choisir quoi activer comme notifs ») ; 3 notifications ; choix **pour chaque prestataire** ; nombre d'abonnés **visible par tous**.
-> Données : table `ABONNEMENT` (MLD `.doc/mld/MLD-abonnement.html`, validé le 21/10/2026 ; `db/schema_v31.sql`). Code : `backend/app/services/abonnements.py`. Tests : `backend/tests/test_abonnements.py`.
+> **Changé le 21/10/2026** (Raphael, mot pour mot : « on vas faire encore plus simple en gros dans parametre on coche par défaut et dans abonnement au lieux de choisir qui fais quoi ou quoi juste on met un bouton rendre muet ou un truc tres simple le plus compréhensible possible pour dire que je ne veux plus recevoir de notif de la par de cet personne ou de plusieurs si il en a mut plusieurs ») : les 3 cases se cochent **une fois pour tous les abonnements**, dans « Paramètres » ; dans « Mes abonnements », un seul bouton **[🔕 Rendre muet]** par prestataire. MLD `.doc/mld/MLD-abonnement-defaut.html` validé le 21/10/2026 (« oui ») ; `db/schema_v32.sql`.
+> Données : table `ABONNEMENT` (MLD `.doc/mld/MLD-abonnement.html`, validé le 21/10/2026 ; `db/schema_v31.sql`), 3 cases dans `COMPTE` et `abonnement.muet` (`schema_v32.sql`). Code : `backend/app/services/abonnements.py`. Tests : `backend/tests/test_abonnements.py`.
 
 ## S'abonner
 1. Il faut être connecté. Un compte suit **une seule fois** le même prestataire (la base refuse un doublon).
 2. On ne suit qu'un prestataire visible (activité active). Un prestataire ne peut pas s'abonner à lui-même.
-3. Au moment de l'abonnement, les 3 notifications sont **cochées**.
+3. Au moment de l'abonnement, il n'est **pas muet** : les cases de « Paramètres » s'appliquent. Ces 3 cases sont **cochées** au départ pour tout compte.
+3 bis. **Rendre muet** : plus aucune notification de ce prestataire, quelles que soient les cases de « Paramètres ». On reste abonné (il reste dans « Mes abonnements » et compte dans les abonnés). On peut rendre muets autant de prestataires qu'on veut, et les réactiver.
 4. Se désabonner efface la ligne, même si le prestataire est en pause, bloqué ou arrêté.
 5. Compte fermé : ses abonnements sont effacés (il ne compte plus dans les abonnés).
 
@@ -15,7 +17,7 @@
 « 12 abonnés » sur la carte de « Trouver un prestataire » et sur la fiche du prestataire, visible par tous, même sans compte. Il n'est rangé nulle part : il est compté à chaque affichage. **Personne ne voit qui sont les abonnés**, pas même le prestataire.
 
 ## Les 3 notifications (sur l'appareil, comme les messages ; jamais de mail)
-Chacune part seulement aux abonnés qui l'ont cochée pour ce prestataire, et seulement si son profil est visible. Un clic ouvre sa fiche.
+Chacune part seulement aux abonnés qui **n'ont pas rendu ce prestataire muet** et qui ont **coché cette case dans « Paramètres »**, et seulement si son profil est visible. Ex. Julie a « Nouveau métier » décoché : elle n'est prévenue d'aucun nouveau métier, de personne ; elle a rendu Sophie muette : rien de Sophie, même un créneau libre. Un clic ouvre sa fiche.
 
 | Notification | Quand | Exemple |
 |---|---|---|

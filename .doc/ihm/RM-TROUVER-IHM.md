@@ -1,5 +1,21 @@
 # Trouver un prestataire — Interface
 
+## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
+
+Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
+
+- Titre « Trouver un prestataire », phrase « Autour de Pessac, triés du plus proche au plus loin. [Changer de ville] ». Sans ville connue : une carte « Votre ville » d'abord.
+- Le champ **« Nom, métier ou ville… »** filtre les cartes affichées (ex. « plom » ne garde que les plombiers) ; les **pastilles** « Tous » + un service par rubrique de la ville (ex. « Maison & travaux ») ; un service montre tous ses prestataires, [Voir plus] charge la suite.
+- « 6 prestataires », puis une **grille de cartes** (`CarteResultat.vue`) : rond ou photo, nom, « Métier · Ville, 5 km », « ★ 4,9 (23 avis) » (ou « Nouveau sur rafals ») et le nombre d'abonnés, puis « SIRET vérifié » ou « Sans SIRET ». Toute la carte ouvre la page du prestataire. [S'abonner] n'est plus sur la carte : il est sur sa page (comme la maquette). Les 2 photos de la carte ne sont plus montrées sur la carte.
+- En bas à droite de la carte : le **prix de l'heure** du métier de la carte, « 45 €/h » (depuis le 11/11/2026, `schema_v35`) ; sans prix, le nombre d'abonnés.
+- Les anciens liens /trouver?metier=3&ville=12768 montrent toujours les résultats d'un métier avec tri et filtres.
+
+
+> **Changé le 22/10/2026** (demande de Raphael : « fait en sort que le site resemble a ce que t'a fais dans la maquette », maquette https://claude.ai/artifact/Qix7D7jo4vJ9kpWotB59Q2, `.doc/ihm/maquette-site-complet.html`). Ce paragraphe passe avant le reste du document pour la présentation :
+> - **Rubrique** : à gauche du titre, un rond de couleur avec le pictogramme du dossier (`AppPicto`) ; dessous, « 14 prestataires près de Pessac » ; **[Voir tout]** est à droite du titre (avant : centré sous la rangée).
+> - **Carte d'un prestataire** (`CarteResultat.vue`) : « SIRET vérifié » / « Particulier » en pastille ronde dans le coin en haut à droite (avant : languette collée au coin) ; le métier en vert ; « Pessac · à 2 km · 12 abonnés » sur une seule ligne ; les 2 photos sont arrondies, à l'intérieur de la carte (avant : collées aux bords) ; « Pas encore de photos » dans un cadre de la même hauteur ; la carte monte un peu au survol. Ce que fait la carte ne change pas.
+> - Le rond des initiales (quand il n'y a pas de photo) prend une teinte propre au nom, la même partout (composant `AppInitiales`, ex. « Marie D. » toujours dans la même couleur) ; avant : toujours vert clair.
+
 > **Changé le 21/10/2026** (abonnements, `RM-ABONNEMENTS-IHM.md`) : chaque petite carte montre « 12 abonnés » sous la ville et un bouton [S'abonner] / [Abonné ✓] en bas à droite (absent sur sa propre carte). Le lien du nom couvre toute la carte : un clic ailleurs que sur le bouton ouvre toujours la fiche.
 
 > **Changé le 09/10/2026** (lot 9.3, retrait des annonces) : dans les résultats d'une recherche par métier, les filtres sont réduits à deux pastilles, « Vient chez moi » et « Paiement par carte ». La pastille « Libre dans les 7 jours » et le champ « Prix maximum » sont retirés.

@@ -1,5 +1,18 @@
 # Accueil et « Bientôt disponible » — Interface
 
+## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
+
+Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
+
+- **Bandeau vert foncé** avec des formes qui flottent : « Bonjour Karim » (connecté), « De quoi avez-vous besoin aujourd'hui ? », « Des prestataires de confiance autour de Pessac, avec leurs vrais avis. », la barre « Ex. plombier, ménage, cours de maths… » + [Chercher] (ouvre « Trouver » avec le texte), puis les pastilles des 6 premiers services (ouvrent « Trouver » sur ce service).
+- **« Votre journée »** (connecté) : les chiffres de « Mon activité » (prestataire : demandes près de chez vous, rendez-vous d'ici dimanche, devis en attente, encaissé du mois ; client : demandes en ligne, conversations à lire, rendez-vous à venir).
+- **« Prochain rendez-vous »** [Tout voir] : une ligne « 14 h · Prise à changer chez Julie M. · Jeudi 12 novembre · Pessac » + son état ; sinon « Aucun rendez-vous à venir. »
+- **« Près de chez vous »** [Tout voir] : les 3 prestataires les plus proches (ville retenue dans « Trouver », sinon celle du prestataire connecté).
+- Retirés de l'accueil (comme la maquette) : la liste des demandes et le formulaire « Publier une demande » (→ onglet « Demandes » et page /demandes/nouvelle), « Comment ça marche », le bandeau orange « Vous proposez vos services ? », la ligne « état du serveur / catalogue » (le catalogue reste à l'adresse /catalogue).
+
+
+> **Changé le 22/10/2026** (demande de Raphael : « fait en sort que le site resemble a ce que t'a fais dans la maquette », maquette https://claude.ai/artifact/Qix7D7jo4vJ9kpWotB59Q2, `.doc/ihm/maquette-site-complet.html`) : dans le bandeau orange, chaque atout coché a sa coche dans un rond foncé ; sur les cartes des demandes, le rond des initiales (quand il n'y a pas de photo) prend une teinte propre au nom, la même partout (composant `AppInitiales`, ex. « Marie D. » toujours dans la même couleur) ; avant : toujours vert clair.
+
 > Fichiers : `frontend/src/pages/AccueilPage.vue`, `frontend/src/pages/BientotPage.vue`, `frontend/src/router.ts`. Construit au lot 0.4 (28/09/2026).
 > **Refait le 04/10/2026** (nouvelle présentation, maquette https://claude.ai/artifact/8GvhAaZ5x1m7Kyv1dLMQb3).
 > **Changé le 05/10/2026** (demande de Raphael) : l'accueil sert à publier une demande ; la recherche et les dossiers de métiers sont repartis sur leur page « Trouver un prestataire » (`/trouver`, `RM-TROUVER-IHM.md`).
@@ -22,6 +35,12 @@
      - Une carte par demande : le composant commun `CarteDemande` (`RM-DEMANDES-IHM.md`), avec **[Répondre]** pour un prestataire qui peut répondre et [Voir la conversation] s'il l'a déjà fait (branché le 07/10/2026).
      - La barre filtre sur le titre, la description, le métier et la ville. Ex. « pessac » ne garde que les demandes de Pessac.
      - Liste vide : « Aucune demande pour l'instant. » dans un cadre (ou « Aucune demande ne contient « pelouse ». ») ; serveur injoignable : bandeau rouge avec le message.
+   - **Sur téléphone, « Publier une demande » est repliée au départ** (demande de Raphael du 22/10/2026, mot pour mot : « dans acceuille … publier ma demande je veux que par défaut ca soit une bulle avec publier ma demande et si je clic dessus ca s'ouvre en dessous ») : une bulle orange arrondie [＋ Publier ma demande], toute la largeur, à la place de la carte. Un toucher ouvre la carte juste en dessous (la bulle disparaît) ; un [×] à droite du titre la replie. Après une publication réussie, elle se replie. Sur ordinateur, rien ne change : la carte reste ouverte dans sa colonne de droite.
+   - **Deux onglets au-dessus de la liste, si on est connecté** (demande de Raphael du 21/10/2026, mot pour mot : « dans acceuille doit y'avoir un truc pour acceder a mes demandes … genre un espece d'onglet ou y'a mes demandes et elles doivent pas apparaitres pour moi dans les demandes des autres ») : [Les demandes des clients | Mes demandes (2)]. Le titre suit l'onglet choisi.
+     - « Les demandes des clients » **n'affiche plus mes propres demandes** (champ `a_moi` envoyé par le serveur). Ex. Karim a publié « Tondre ma pelouse » : il ne la voit pas dans cette liste, mais Julie la voit.
+     - « Mes demandes (2) » montre la même liste que la page « Mes demandes » (composant commun `ListeMesDemandes`) : état, [Modifier…], [Prolonger de 30 jours], [Fermer ma demande…], [Rouvrir…]. Le nombre entre parenthèses est absent quand il n'y en a aucune.
+     - Après une publication, les deux listes se rechargent.
+     - Personne n'est connecté : pas d'onglets, seulement « Les demandes des clients ».
    - **À droite, carte blanche « Publier une demande »** (`frontend/src/components/demandes/CartePublierDemande.vue`), de haut en bas. **Branchée le 06/10/2026** : elle publie vraiment.
      1. « Quel métier ? * » : choix par les premières lettres (`RM-CHOIX-METIER-IHM.md`).
      2. « Titre * » (ex. « Tondre ma pelouse », 80 caractères au plus).

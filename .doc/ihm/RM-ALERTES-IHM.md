@@ -1,12 +1,14 @@
 # Alertes — Interface
 
-> Fichier : `frontend/src/pages/AlertesPage.vue`. Construit le 12/10/2026 (lot 8.6), d'après la maquette validée `maquette-niveau-8-demandes.html` (onglet « Alertes », réécrit en questions complètes à la demande de Raphael le 04/10/2026). Règles : `RM-ALERTES.md`.
+> Fichier : `frontend/src/components/alertes/ReglagesAlertes.vue` (ancienne page `AlertesPage.vue`). Construit le 12/10/2026 (lot 8.6), d'après la maquette validée `maquette-niveau-8-demandes.html` (onglet « Alertes », réécrit en questions complètes à la demande de Raphael le 04/10/2026). Règles : `RM-ALERTES.md`.
 
 ## Où
-« Mon activité » → « Alertes » (`/alertes`), réservée aux prestataires (même gardien que « Mon agenda »). Contenu centré, 720 px au plus.
+**Depuis le 21/10/2026 : « Paramètres » → partie « Notifications »** (`/parametres#notifications`), sous « Apparence », seulement pour un prestataire (demande de Raphael, mot pour mot : « enleve notifictions de mon activitée et met le dans paramètre »). La tuile « Alertes » de « Mon activité » est retirée ; l'ancienne adresse `/alertes` mène à « Paramètres ». Le mail de test « Les notifications sont activées sur cet appareil. » ouvre aussi « Paramètres ».
+
+Avant : « Mon activité » → « Alertes » (`/alertes`).
 
 ## Ce qu'on voit, de haut en bas
-1. Titre « Alertes : être prévenu des nouvelles demandes ».
+1. Titre « Notifications : être prévenu des nouvelles demandes » (titre de partie, plus petit que « Paramètres »).
 2. Cadre **« Pour quels métiers voulez-vous être prévenu ? »** : pour chaque métier exercé,
    - la phrase « Un client cherche « Plombier » près de chez vous : » ;
    - deux cases collées [Me prévenir] | [Ne pas me prévenir] (la réponse en cours est en vert) ;

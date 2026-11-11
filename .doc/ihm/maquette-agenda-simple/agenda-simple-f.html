@@ -130,6 +130,8 @@
   })
   const lacher = () => clearTimeout(attente)
   g.addEventListener('pointerdown', (e) => {
+    // Le clic droit sert seulement à ouvrir la fenêtre des horaires : il ne ferme ni n'ouvre jamais un jour
+    if (e.button !== 0) return
     const c = e.target.closest('.case')
     if (c && !mode && e.pointerType !== 'mouse') {
       clearTimeout(attente)

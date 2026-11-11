@@ -7,7 +7,7 @@ export interface EtatAbonnement {
   abonnes: number
 }
 
-/** Les 3 cases de la cloche, pour un seul prestataire */
+/** Les 3 cases de « Paramètres », pour tous mes abonnements (schema_v32, demande de Raphael du 21/10/2026) */
 export interface NotificationsAbonnement {
   creneau: boolean
   nouveaute: boolean
@@ -26,7 +26,8 @@ export interface AbonnementVisible {
   abonnes: number
   /** false : en pause, bloqué ou arrêté → « Profil en pause », pas de lien */
   visible: boolean
-  notifications: NotificationsAbonnement
+  /** true : plus aucune notification de ce prestataire, on reste abonné */
+  muet: boolean
   abonne_le: string
 }
 

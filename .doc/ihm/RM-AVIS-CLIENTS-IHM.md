@@ -1,5 +1,7 @@
 # Avis sur les clients — Interface (noter un client, page publique d'un client, « Mes avis reçus »)
 
+> **Changé le 22/10/2026** (demande de Raphael : « fait en sort que le site resemble a ce que t'a fais dans la maquette », maquette https://claude.ai/artifact/Qix7D7jo4vJ9kpWotB59Q2, `.doc/ihm/maquette-site-complet.html`) : sur la page publique d'un client, le rond des initiales (quand il n'y a pas de photo) prend une teinte propre au nom, la même partout (composant `AppInitiales`, ex. « Marie D. » toujours dans la même couleur) ; avant : toujours vert clair.
+
 > Fichiers : `frontend/src/pages/AvisClientPage.vue`, `frontend/src/pages/MesAvisRecusPage.vue`, `frontend/src/components/avis/FenetreAvis.vue` (la même fenêtre que pour noter un prestataire), carte « Rendez-vous passé » de `frontend/src/pages/MessagesPage.vue`, `frontend/src/outils/avis.ts`. Construit le 12/10/2026 (lot 8.6), d'après la maquette validée `maquette-niveau-8-demandes.html`. Règles : `RM-AVIS.md` § « Notation dans les deux sens ».
 
 ## La carte « Rendez-vous passé » dans une conversation

@@ -1,10 +1,27 @@
 # Page publique d'un prestataire — Interface
 
+## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
+
+Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
+
+- Classes exactes de la maquette : bande de couleur, photo de 116 px posée dessus (ou la 1re lettre sur une couleur), nom + « SIRET vérifié » ou « Particulier, non professionnel », métiers, lieu, 3 chiffres (note → descend aux avis, photos, abonnés), **[Écrire à Karim] [♡ S'abonner]** puis [Demander un devis] ; « À propos » ; « Son travail en photos » ; « Avis » (la note en grand à gauche, les avis à droite : rond, nom, étoiles, texte, mois) ; en bas « Le téléphone et l'adresse sont donnés après une réservation. » et « Signaler ce prestataire… » en lien discret.
+- Prix de l'heure (11/11/2026) : le chiffre du milieu devient « 45 € / de l'heure » quand le métier principal a un prix (sinon le nombre de photos) ; après « aussi », « Plombier (50 €/h) ».
+- Sa propre page : bandeau orange pâle « Voici votre page, telle que les clients la voient. [Modifier] ».
+
+
+> **Changé le 22/10/2026** (demande de Raphael : « fait en sort que le site resemble a ce que t'a fais dans la maquette », maquette https://claude.ai/artifact/Qix7D7jo4vJ9kpWotB59Q2, `.doc/ihm/maquette-site-complet.html`) : nom un peu plus grand (30 à 46 px), note « ★ 4,8 · 23 avis » en 17 px, le lieu (« Part de Pessac, se déplace jusqu'à 20 km ») précédé d'un repère et en gras, présentation en 17 px ; dans « Avis », la note en très grand (56 px) et les étoiles en 22 px. Le rond des initiales (quand il n'y a pas de photo) prend une teinte propre au nom, la même partout (composant `AppInitiales`, ex. « Marie D. » toujours dans la même couleur) ; avant : toujours vert clair.
+
 > **Changé le 21/10/2026** (abonnements, `RM-ABONNEMENTS-IHM.md`) : sous les badges, [S'abonner] / [Abonné ✓] et « 12 abonnés » (« Aucun abonné pour l'instant » s'il n'y en a pas). Sur sa propre page, seulement le nombre.
 
 > **Changé le 09/10/2026** (lot 9.3) : dans la carte « Besoin de Karim ? », sous [Écrire à Karim], un bouton secondaire **[Demander un devis]**, actif seulement si le prestataire a un SIRET vérifié ; sinon (15/10/2026) il reste visible, **verrouillé 🔒** : « Ce prestataire n'a pas de SIRET vérifié : il ne fait pas de devis. Écrivez-lui pour vous mettre d'accord. » Pas connecté → page de connexion puis retour. Il ouvre la fenêtre « Demander un devis à Karim » (`RM-DEVIS-IHM.md`) ; après l'envoi : « Demande envoyée : Karim vous répond par un devis. » et la page « Mes devis ». La phrase du bas devient « Son téléphone et son adresse vous sont donnés après un rendez-vous. »
 
 > Fichiers : `frontend/src/pages/PrestatairePage.vue`, `frontend/src/components/prestataire/AvatarPrestataire.vue`. Construit au lot 4.2 (30/09/2026). Règles : `RM-RECHERCHE.md` (précisions du lot 4.1). Maquette : `maquette-lot-4.2-recherche.html` (écran 3).
+
+## Présentation depuis le 10/11/2026 (grande maquette, lot 14.3) — remplace le paragraphe suivant
+- Une colonne centrée de 720 px. En haut, **une grande carte** : bande de couleur verte (120 px), la grande photo ronde (ou les initiales) posée à cheval dessus avec un anneau blanc, puis centrés : le nom avec « SIRET vérifié » (ou « Particulier, non professionnel ») et « Nouveau sur rafals » sans avis ; « **Plombier** · aussi Électricien » ; le lieu (📍) ; **3 chiffres** dans un cadre : « ★ 4,8 / 27 avis » (un clic descend aux avis), « 8 photos », « 12 abonnés ».
+- Pour un client (pas sur sa propre page), sous les chiffres : **[Écrire à Karim]** (principal, toute la largeur), puis côte à côte [Demander un devis] (ou 🔒) et [S'abonner] / [Abonné ✓]. La carte foncée « Besoin de Karim ? » à droite est retirée.
+- Dessous : « À propos » (la présentation), « Son travail en photos » (grille carrée de 3 colonnes), « Avis » (la note en très grand dans un cadre vert clair, puis les avis), la phrase « Son téléphone et son adresse vous sont donnés après un rendez-vous. », [Signaler ce prestataire…].
+- Pas recopié de la maquette : les « Prochains créneaux libres » (la réservation directe a été retirée le 04/10/2026 ; on prend rendez-vous par une proposition).
 
 ## Présentation depuis le 07/10/2026 (style « chaleureux »)
 Ce que fait la page ne change pas ; pour la présentation, ce paragraphe remplace le début de « Page `/prestataires/12` » ci-dessous.

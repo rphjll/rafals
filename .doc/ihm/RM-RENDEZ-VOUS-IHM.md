@@ -1,5 +1,12 @@
 # Rendez-vous — Interface
 
+## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
+
+Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
+
+- Une ligne par rendez-vous (`LigneRendezVous.vue`) : l'heure en grand à gauche (« 14 h »), le titre, puis « Jeudi 12/11/2026, 14 h 00 – 15 h 00 · Julie M. · adresse · 50 € · espèces », l'état et les boutons à droite. Voir aussi `RM-AGENDA-IHM.md` (bulle du jour).
+
+
 > **Changé le 09/10/2026** (lot 9.3, retrait des annonces ; ce paragraphe passe avant le reste du document) : le bouton [Déplacer] disparaît partout (calendrier du client) ; la fenêtre « Déplacer » et le choix d'un horaire (`ChoixHoraire`, `FenetreReservation`) sont supprimés ; dans l'onglet « Rendez-vous » du prestataire, la carte « Demandes à accepter » ([Accepter], [Refuser…]) est retirée : un rendez-vous est confirmé dès que le client accepte la proposition. Pour changer d'heure, le client écrit au prestataire dans « Messages ».
 
 > **Changé le 07/10/2026** (demande de Raphael, mot pour mot : « l'onglet mes rdv il faut l'enlever et aussi quand y'a un rdv ca doit aparaitre dans le planing mais si c'est un client il faut qu'il ai un a=calendrier clien par contre si c'est un prestataire il faut que ca soit un calendrier par metier et si c'est les 2 il faut tout » ; puis son choix « Enlever la page client »). **La page « Mes rendez-vous » du client (`/rendez-vous`) n'existe plus** : elle est remplacée par le calendrier du client, dans « Mon agenda » (`frontend/src/components/rendez-vous/CalendrierClient.vue`, décrit dans `RM-AGENDA-IHM.md` § « Calendrier du client »). Tout ce que ce document dit des boutons du client (annuler, déplacer, donner un avis, absence, retour du paiement) reste vrai : ils sont maintenant sous le calendrier. L'adresse `/rendez-vous` renvoie vers `/mon-agenda?calendrier=client` en gardant ses réglages (retour du paiement par carte compris). L'onglet « Rendez-vous » du prestataire, dans « Mon agenda », ne change pas.

@@ -2,6 +2,7 @@
 // Mes avis reçus (.doc/ihm/RM-AVIS-CLIENTS-IHM.md ; RM-AVIS.md § « Notation dans les deux sens ») : les avis que des
 // prestataires m'ont laissés comme client. Je peux répondre une fois à chacun et le signaler à l'administrateur.
 // Ouvrir la page remet son compteur rouge à zéro.
+import EnteteActivite from '../components/EnteteActivite.vue'
 import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
@@ -58,14 +59,10 @@ function signaler(a: AvisClientRecu) {
 </script>
 
 <template>
-  <div class="mx-auto flex max-w-[760px] flex-col gap-5">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="text-[clamp(28px,4.5vw,40px)] font-black">Mes avis reçus</h1>
-      <AppBouton v-if="compte" variante="secondaire" @click="routeur.push(`/clients/${compte.id}/avis`)">Voir ma page publique</AppBouton>
-    </div>
-    <p class="text-texte-doux">
-      Après un rendez-vous, le prestataire peut vous noter, comme vous le notez. Ces avis sont visibles de tous, avec votre prénom et l'initiale de votre nom.
-    </p>
+  <div class="page">
+    <EnteteActivite titre="Mes avis reçus" texte="Ce que les prestataires disent de vous, visible par tous avec votre prénom et l'initiale de votre nom.">
+      <RouterLink v-if="compte" class="btn btn-2" :to="`/clients/${compte.id}/avis`">Voir ma page publique</RouterLink>
+    </EnteteActivite>
     <template v-if="chargementFait && !compte">
       <AppAlerte etat="neutre">Connectez-vous pour voir vos avis reçus.</AppAlerte>
       <div><AppBouton @click="routeur.push('/connexion')">Se connecter</AppBouton></div>

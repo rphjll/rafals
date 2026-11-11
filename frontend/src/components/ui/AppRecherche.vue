@@ -52,8 +52,8 @@ function clavier(evenement: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-1.5">
-    <label :for="id" class="text-[13px] font-semibold">
+  <div class="champ">
+    <label :for="id">
       {{ etiquette }}<span v-if="obligatoire" class="text-erreur" aria-hidden="true"> *</span>
     </label>
     <input
@@ -63,10 +63,9 @@ function clavier(evenement: KeyboardEvent) {
       :placeholder="placeholder"
       role="combobox"
       :aria-expanded="resultats.length > 0"
-      class="min-h-[42px] rounded-rafals border border-bord bg-fond px-3 py-2.5 text-texte outline-none focus:border-primaire focus:ring-2 focus:ring-primaire"
       @keydown="clavier"
     />
-    <div v-if="resultats.length" class="overflow-hidden rounded-rafals border border-bord bg-surface" role="listbox">
+    <div v-if="resultats.length" class="overflow-hidden rounded-[12px] border border-bord bg-surface shadow-carte" role="listbox">
       <button
         v-for="(element, i) in resultats"
         :key="cle(element)"
@@ -81,6 +80,6 @@ function clavier(evenement: KeyboardEvent) {
       </button>
     </div>
     <slot v-else-if="rechercheFaite" name="aucun-resultat" :texte="texte" />
-    <p v-if="aide" class="text-[13px] text-texte-doux">{{ aide }}</p>
+    <small v-if="aide">{{ aide }}</small>
   </div>
 </template>

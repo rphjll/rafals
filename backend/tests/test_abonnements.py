@@ -1,6 +1,6 @@
 """S'abonner à un prestataire (demande de Raphael du 21/10/2026 ; services/abonnements.py) : bouton [S'abonner],
-« 12 abonnés » visible par tous, « Mes abonnements » et sa cloche, notifications choisies prestataire par prestataire
-(créneau libre, nouveau métier, retour après une absence)."""
+« 12 abonnés » visible par tous, « Mes abonnements » et [Rendre muet], notifications cochées dans « Paramètres » pour
+tous les abonnements (créneau libre, nouveau métier, retour après une absence ; schema_v32)."""
 
 from datetime import datetime, time, timedelta
 
@@ -25,8 +25,13 @@ def abonner(compte, prestataire_id: int):
     return compte.client.post(f"/api/prestataires/{prestataire_id}/abonnement")
 
 
-def cloche(compte, prestataire_id: int, creneau: bool = True, nouveaute: bool = True, retour: bool = True):
-    return compte.client.post(f"/api/moi/abonnements/{prestataire_id}/notifications",
+def muet(compte, prestataire_id: int, oui: bool = True):
+    return compte.client.post(f"/api/moi/abonnements/{prestataire_id}/muet", json={"muet": oui})
+
+
+def cases(compte, creneau: bool = True, nouveaute: bool = True, retour: bool = True):
+    """Les 3 cases de « Paramètres »."""
+    return compte.client.post("/api/moi/abonnements/notifications",
                               json={"creneau": creneau, "nouveaute": nouveaute, "retour": retour})
 
 
@@ -61,24 +66,32 @@ def test_s_abonner_et_nombre_d_abonnes(fabrique_prestataire, fabrique_compte, cl
     assert retire.json() == {"abonne": False, "abonnes": 1}
 
 
-def test_mes_abonnements_et_la_cloche(fabrique_prestataire, fabrique_compte, lea) -> None:  # noqa: F811
+def test_mes_abonnements_muet_et_parametres(fabrique_prestataire, fabrique_compte, lea, client) -> None:  # noqa: F811
     karim, julie = fabrique_prestataire(), fabrique_compte()
     karim_id, lea_id = numero(karim), numero(lea)
     abonner(julie, karim_id)
     abonner(julie, lea_id)
 
-    reglee = cloche(julie, karim_id, creneau=False, nouveaute=False)
-    pas_abonne = cloche(julie, 999_999_999)
+    au_depart = julie.client.get("/api/moi/abonnements/notifications").json()
+    reglees = cases(julie, creneau=False, nouveaute=False)
+    relues = julie.client.get("/api/moi/abonnements/notifications").json()
+    rendu_muet = muet(julie, karim_id)
+    pas_abonne = muet(julie, 999_999_999)
+    sans_compte = client.get("/api/moi/abonnements/notifications")
     lea.client.post("/api/moi/prestataire/statut", json={"action": "pause"})
     liste = julie.client.get("/api/moi/abonnements").json()
     nouveau_en_pause = abonner(fabrique_compte(), lea_id)
+    reactive = muet(julie, karim_id, oui=False)
 
-    assert reglee.json() == {"creneau": False, "nouveaute": False, "retour": True}
-    assert pas_abonne.status_code == 404
-    # Le plus récent d'abord ; les 3 cases cochées au départ ; un profil en pause reste dans la liste
+    assert au_depart == {"creneau": True, "nouveaute": True, "retour": True}  # cochées au départ
+    assert reglees.json() == relues == {"creneau": False, "nouveaute": False, "retour": True}
+    assert rendu_muet.json() == {"muet": True} and reactive.json() == {"muet": False}
+    assert pas_abonne.status_code == 404 and sans_compte.status_code == 401
+    # Le plus récent d'abord ; pas muet au départ ; un profil en pause reste dans la liste
     assert [c["prestataire_id"] for c in liste] == [lea_id, karim_id]
-    assert liste[0]["notifications"] == {"creneau": True, "nouveaute": True, "retour": True}
-    assert liste[1]["notifications"] == {"creneau": False, "nouveaute": False, "retour": True}
+    assert (liste[0]["muet"], liste[1]["muet"]) == (False, True)
+    # Rendu muet, on reste abonné : Karim garde son abonnée
+    assert liste[1]["abonnes"] == 1
     assert (liste[0]["visible"], liste[1]["visible"]) == (False, True)
     assert liste[1]["metier"] == "Plombier" and liste[1]["ville"] == "Pessac" and liste[1]["abonnes"] == 1
     assert nouveau_en_pause.status_code == 404  # un profil caché ne se suit pas
@@ -90,14 +103,14 @@ def test_creneau_libre_quand_un_client_annule(lea, dupont, fabrique_compte, noti
     for compte in (julie, paul):
         abonner(compte, lea_id)
         activer(compte)
-    cloche(paul, lea_id, creneau=False)
+    muet(paul, lea_id)
     rdv = reserver(dupont, lea, a(MARDI, 10)).json()
 
     dupont.client.post(f"/api/moi/rendez-vous/{rdv['id']}/annuler")
 
     assert recues(notifications_envoyees, julie, "Créneau libre") == [
         f"Karim Benali est libre mardi {MARDI:%d/%m/%Y} à 10 h 00"]
-    assert recues(notifications_envoyees, paul, "Créneau libre") == []  # case décochée
+    assert recues(notifications_envoyees, paul, "Créneau libre") == []  # Léa rendue muette
     assert recues(notifications_envoyees, dupont, "Créneau libre") == []  # pas abonnée
 
 
@@ -123,7 +136,7 @@ def test_nouveau_metier(fabrique_prestataire, fabrique_compte, metiers, notifica
     for compte in (julie, paul):
         abonner(compte, karim_id)
         activer(compte)
-    cloche(paul, karim_id, nouveaute=False)
+    cases(paul, nouveaute=False)
     profil = karim.client.get("/api/moi/prestataire").json()
     formulaire = {"nom_affiche": profil["nom_affiche"], "metier_principal_id": metiers["Plombier"],
                   "commune_id": profil["commune"]["id"], "distance_km": 15}
@@ -133,7 +146,7 @@ def test_nouveau_metier(fabrique_prestataire, fabrique_compte, metiers, notifica
 
     # Électricien retiré : rien ; Maçon ajouté : une notification
     assert recues(notifications_envoyees, julie, "Nouveau métier") == ["Karim Benali propose maintenant : Maçon"]
-    assert recues(notifications_envoyees, paul, "Nouveau métier") == []
+    assert recues(notifications_envoyees, paul, "Nouveau métier") == []  # « Nouveau métier » décoché dans Paramètres
 
 
 def test_retour_apres_une_absence(lea, fabrique_compte, base: Session, notifications_envoyees) -> None:  # noqa: F811

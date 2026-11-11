@@ -1,5 +1,5 @@
 """Miroir exact des tables commune, prestataire, metier_secondaire (db/schema_v5.sql, v7, v8, v9, v12, v13, v17, v16)
-et photo_prestataire (db/schema_v24.sql), prestataire.lieu (db/schema_v25.sql). Aucun calcul ici."""
+et photo_prestataire (db/schema_v24.sql), prestataire.lieu (db/schema_v25.sql), encaisse_ailleurs (db/schema_v30.sql). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -64,6 +64,7 @@ class Prestataire(Base):
     # Ma carte de visite (schema_v33) : couleur parmi 6 toutes prêtes, petite phrase de 40 caractères au plus
     carte_couleur: Mapped[str] = mapped_column(Text, server_default="vert")
     carte_phrase: Mapped[str | None] = mapped_column(Text)
+    metier_principal_prix_centimes: Mapped[int | None] = mapped_column(Integer)  # schema_v35
 
 
 class MetierSecondaire(Base):
@@ -73,6 +74,7 @@ class MetierSecondaire(Base):
     prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
     metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
     fin_le: Mapped[date | None] = mapped_column(Date)
+    prix_centimes: Mapped[int | None] = mapped_column(Integer)  # schema_v35
 
 
 class PhotoPrestataire(Base):
@@ -92,4 +94,16 @@ class AlerteCoupee(Base):
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
     prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
     metier_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("metier.id"))
+    cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class EncaisseAilleurs(Base):
+    """Un montant encaissé en dehors de rafals, ajouté à la barre de TVA de « Mon activité » (schema_v30)."""
+
+    __tablename__ = "encaisse_ailleurs"
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    prestataire_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("prestataire.id"))
+    montant_centimes: Mapped[int] = mapped_column(Integer)
+    encaisse_le: Mapped[date] = mapped_column(Date)
     cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

@@ -168,6 +168,11 @@ def _periode(debut: datetime, fin: datetime, maintenant: datetime) -> tuple[date
     return debut, fin
 
 
+def _minuit(moment: datetime) -> bool:
+    """Minuit à Paris (début ou fin d'un jour entier)."""
+    return moment.astimezone(PARIS).time() == time(0)
+
+
 def bloquer(
     db: Session, prestataire: Prestataire, *, debut: datetime, fin: datetime, motif: str | None, maintenant: datetime,
     rendez_vous: str | None = None, metier_id: int | None = None,
@@ -178,11 +183,32 @@ def bloquer(
     verifier_modifiable(prestataire)
     metier_id = metier_du_calendrier(db, prestataire, metier_id)
     debut, fin = _periode(debut, fin, maintenant)
+    motif = (motif or "").strip()[:120] or None
+    # Jours entiers : une fermeture de jours entiers qui touche ou chevauche celle-ci (même motif) s'y fond, pour
+    # n'avoir qu'une seule période. Ex. 20 au 24 déjà fermés, puis 23 au 31 → une seule fermeture du 20 au 31.
+    absorbees = []
+    if _minuit(debut) and _minuit(fin):
+        from app.modeles.devis import Devis
+
+        travaux = set(db.scalars(select(Devis.blocage_id).where(Devis.blocage_id.is_not(None))))
+        change = True
+        while change:
+            change = False
+            for b in db.scalars(select(Blocage).where(
+                Blocage.prestataire_id == prestataire.id, Blocage.metier_id == metier_id,
+                Blocage.debut <= fin, Blocage.fin >= debut,
+            )).all():
+                if b in absorbees or b.id in travaux or b.motif != motif or not (_minuit(b.debut) and _minuit(b.fin)):
+                    continue
+                absorbees.append(b)
+                if b.debut < debut or b.fin > fin:
+                    debut, fin, change = min(debut, b.debut), max(fin, b.fin), True
     touches = [r for r in _rendez_vous_du_metier(db, prestataire, metier_id, maintenant) if r.debut < fin and r.fin > debut]
     _decider(db, prestataire, touches, rendez_vous, "pendant cette période",
              "Le prestataire n'est pas disponible à cette date.", maintenant)
-    blocage = Blocage(prestataire_id=prestataire.id, metier_id=metier_id, debut=debut, fin=fin,
-                      motif=(motif or "").strip()[:120] or None, cree_le=maintenant)
+    for b in absorbees:
+        db.delete(b)
+    blocage = Blocage(prestataire_id=prestataire.id, metier_id=metier_id, debut=debut, fin=fin, motif=motif, cree_le=maintenant)
     db.add(blocage)
     db.flush()
     for ouverture in db.scalars(select(Ouverture).where(
@@ -298,6 +324,120 @@ def retirer_ouverture(db: Session, prestataire: Prestataire, ouverture_id: int, 
     )
     db.delete(ouverture)
     return ouverture.metier_id
+
+
+# ---------- Les horaires d'un seul jour (clic droit sur un jour, agenda simplifié du 17/10/2026) ----------
+
+MOTIF_HORAIRES_DU_JOUR = "Horaires du jour"  # marque les morceaux posés par « horaires d'un jour » (lus par l'écran)
+Minutes = tuple[int, int]  # ex. (540, 720) = de 9 h 00 à 12 h 00 ; 1440 = minuit le soir
+
+
+def _moins(plages: list[Minutes], retirees: list[Minutes]) -> list[Minutes]:
+    """Ex. [(540, 1140)] moins [(720, 840)] → [(540, 720), (840, 1140)]."""
+    for de, a in retirees:
+        plages = [m for x, y in plages for m in ((x, min(y, de)), (max(x, a), y)) if m[1] > m[0]]
+    return plages
+
+
+def _verifier_plages(plages: list[Minutes], vide_permis: bool = False) -> list[Minutes]:
+    """vide_permis : pour des heures ouvertes, aucune plage = fermé toute la journée."""
+    triees = sorted((int(de), int(a)) for de, a in plages)
+    if not triees and not vide_permis:
+        raise ErreurRegle("Indiquez au moins une plage d'heures.")
+    if any(not 0 <= de < a <= 1440 for de, a in triees):
+        raise ErreurRegle("Chaque plage doit finir après son début (entre 0 h et 24 h).")
+    if any(de < triees[i - 1][1] for i, (de, _) in enumerate(triees) if i):
+        raise ErreurRegle("Deux plages se chevauchent : changez leurs heures.")
+    return triees
+
+
+def _moment(jour: date, minutes: int) -> datetime:
+    return a_paris(jour + timedelta(days=minutes // 1440), time(minutes % 1440 // 60, minutes % 60))
+
+
+def fixer_jour(
+    db: Session, prestataire: Prestataire, *, jour: date, maintenant: datetime, metier_id: int | None = None,
+    ouvert: list[Minutes] | None = None, ferme: list[Minutes] | None = None, rendez_vous: str | None = None,
+) -> int:
+    """Les horaires d'un seul jour, dans le calendrier d'un métier (RM-AGENDA § « Agenda simplifié »). Trois façons :
+    - ouvert : ce jour-là, ouvert seulement à ces heures. Ex. mardi (9 h-12 h, 14 h-19 h) → 8 h-12 h et 14 h-18 h.
+      Posé comme une fermeture du reste de la journée et une ouverture de ce qui dépasse la semaine type, marquées
+      « Horaires du jour » ; les fermetures et ouvertures exceptionnelles déjà posées ce jour-là sont retirées.
+    - ferme : jour fermé par une fermeture exceptionnelle, fermé seulement à ces heures. Ex. congés du 20 au 24,
+      le 22 fermé seulement de 14 h à 19 h → congés du 20 au 21 et du 23 au 24, et le 22 de 14 h à 19 h.
+    - ni l'un ni l'autre : ce jour reprend sa semaine type (toutes ses fermetures et ouvertures exceptionnelles partent ;
+      depuis le 21/10/2026, l'écran n'a plus d'autre moyen de les retirer).
+    Rendez-vous de ce métier qui ne tiennent plus dans les heures ouvertes : le prestataire choisit « annuler » ou
+    « garder » (sinon refus 409). Les jours de travaux d'un devis ne bougent jamais. Rend le métier du calendrier."""
+    verifier_modifiable(prestataire)
+    metier_id = metier_du_calendrier(db, prestataire, metier_id)
+    if jour < aujourd_hui(maintenant):
+        raise ErreurRegle("Ce jour est passé : ses horaires ne se changent plus.")
+    if ouvert is not None and ferme is not None:
+        raise ErreurRegle("Choisissez des heures ouvertes ou des heures fermées, pas les deux.")
+    voulu = _verifier_plages(ouvert, vide_permis=True) if ouvert is not None else None  # [] : fermé toute la journée
+    fermees = _verifier_plages(ferme) if ferme is not None else None
+    debut_jour, fin_jour = a_paris(jour, time(0)), a_paris(jour + timedelta(days=1), time(0))
+    from app.modeles.devis import Devis
+
+    travaux = set(db.scalars(select(Devis.blocage_id).where(Devis.blocage_id.is_not(None))))
+    seulement_marques = voulu is None and fermees is None
+    motif_ferme = None
+    # 1. On retire ce jour des fermetures et ouvertures qui le touchent (ce qui dépasse avant ou après reste)
+    retirees: list = []
+    for modele in (Blocage, Ouverture):
+        for periode in db.scalars(select(modele).where(
+            modele.prestataire_id == prestataire.id, modele.metier_id == metier_id,
+            modele.debut < fin_jour, modele.fin > debut_jour,
+        )).all():
+            if modele is Blocage and periode.id in travaux:
+                continue
+            if modele is Blocage and periode.debut <= debut_jour and periode.fin >= fin_jour:
+                motif_ferme = periode.motif  # la fermeture du jour entier garde son motif pour les heures fermées
+            retirees.append((modele, periode))
+    # 2. Ce qu'on pose à la place
+    semaine = sorted((p.debut.hour * 60 + p.debut.minute, p.fin.hour * 60 + p.fin.minute)
+                     for p in plages_de(db, prestataire, metier_id) if p.jour_semaine == jour.isoweekday())
+    fermetures: list[tuple[Minutes, str | None]] = []
+    ouvertures: list[Minutes] = []
+    if voulu is not None:
+        fermetures = [(m, MOTIF_HORAIRES_DU_JOUR) for m in _moins([(0, 1440)], voulu)]
+        ouvertures = _moins(voulu, semaine)
+    elif fermees is not None:
+        fermetures = [(m, motif_ferme) for m in fermees]
+    # 3. Rendez-vous qui ne tiennent plus dans les heures ouvertes de ce jour (avant de rien changer)
+    if not seulement_marques:
+        # Ouvert : exactement ces heures ; fermé à ces heures : la semaine type moins ces heures
+        ouvertes = voulu if voulu is not None else _moins(semaine, fermees or [])
+
+        def dedans(r: RendezVous) -> bool:
+            de = int((r.debut - debut_jour).total_seconds() // 60)
+            a = int((r.fin - debut_jour).total_seconds() // 60)
+            return any(x <= de and a <= y for x, y in ouvertes)
+
+        touches = [r for r in _rendez_vous_du_metier(db, prestataire, metier_id, maintenant)
+                   if r.debut < fin_jour and r.fin > debut_jour and not dedans(r)]
+        _decider(db, prestataire, touches, rendez_vous, "ce jour-là en dehors de ces heures",
+                 "Le prestataire n'est pas disponible à cette heure.", maintenant)
+    for modele, periode in retirees:
+        for de, a in ((periode.debut, debut_jour), (fin_jour, periode.fin)):
+            if de < a:
+                db.add(modele(prestataire_id=prestataire.id, metier_id=metier_id, debut=de, fin=a,
+                              motif=periode.motif, cree_le=periode.cree_le))
+        db.delete(periode)
+    db.flush()
+    for (de, a), motif in fermetures:
+        db.add(Blocage(prestataire_id=prestataire.id, metier_id=metier_id, debut=_moment(jour, de), fin=_moment(jour, a),
+                       motif=motif, cree_le=maintenant))
+    for de, a in ouvertures:
+        db.add(Ouverture(prestataire_id=prestataire.id, metier_id=metier_id, debut=_moment(jour, de), fin=_moment(jour, a),
+                         motif=MOTIF_HORAIRES_DU_JOUR, cree_le=maintenant))
+    db.flush()
+    journal.noter(
+        db, auteur_id=prestataire.compte_id, action="fixer_horaires_jour", table_cible="prestataire", ligne_id=prestataire.id,
+        apres={"metier_id": metier_id, "jour": jour.isoformat(), "ouvert": voulu, "ferme": fermees}, maintenant=maintenant,
+    )
+    return metier_id
 
 
 # ---------- Réglages ----------

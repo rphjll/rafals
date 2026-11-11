@@ -8,7 +8,7 @@ from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, Prestataire
 from app.routes.dependances import Base, CompteOuPersonne, maintenant
-from app.routes.prestataires import CommuneVisible, MetierCourt, commune_visible
+from app.routes.prestataires import CommuneVisible, MetierAvecPrix, MetierCourt, commune_visible
 from app.services import abonnements as service_abonnements
 from app.services import absences
 from app.services import avis as service_avis
@@ -39,6 +39,7 @@ class CarteResultat(BaseModel):
     carte_possible: bool
     abonnes: int  # « 12 abonnés », visible par tous
     abonne: bool  # la personne connectée le suit : bouton [Abonné ✓]
+    prix_centimes: int | None = None  # prix de l'heure du métier de la carte (schema_v35) : « 45 €/h »
 
 
 class PageResultats(BaseModel):
@@ -76,7 +77,7 @@ class PrestatairePublic(BaseModel):
     ville: str
     distance_km: int
     lieu: str  # chez_client, chez_moi ou les_deux
-    metiers: list[MetierCourt]
+    metiers: list[MetierAvecPrix]
     siret_verifie: bool
     note: float | None
     nombre_avis: int
@@ -102,6 +103,7 @@ def carte(db: Base, r: service.Resultat, abonnes: int, abonne: bool) -> CarteRes
         note=r.note, nombre_avis=r.nombre_avis,
         nouveau=r.nouveau, vient_chez_vous=service.vient_chez_le_client(r),
         carte_possible=service.carte_acceptee(r.prestataire), abonnes=abonnes, abonne=abonne,
+        prix_centimes=service_prestataires.prix_du_metier(db, r.prestataire, r.metier_id),
     )
 
 
@@ -174,7 +176,8 @@ def page_publique(prestataire_id: int, db: Base, compte: CompteOuPersonne) -> Pr
     return PrestatairePublic(
         id=prestataire.id, nom_affiche=prestataire.nom_affiche, presentation=prestataire.presentation,
         a_une_photo=prestataire.photo_id is not None, ville=db.get_one(Commune, prestataire.commune_id).nom,
-        distance_km=prestataire.distance_km, lieu=prestataire.lieu, metiers=[MetierCourt(id=m.id, nom=m.nom) for m in metiers],
+        distance_km=prestataire.distance_km, lieu=prestataire.lieu, metiers=[MetierAvecPrix(id=m.id, nom=m.nom, prix_centimes=service_prestataires.prix_du_metier(db, prestataire, m.id))
+                                                                  for m in metiers],
         siret_verifie=prestataire.siret_statut == "verifie", note=note, nombre_avis=nombre,
         absences=len(absences.absences_du_prestataire(db, prestataire.id, maintenant_)),
         photos=[p.ordre for p in service_prestataires.photos_de(db, prestataire.id)],

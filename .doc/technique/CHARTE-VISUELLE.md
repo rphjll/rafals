@@ -1,9 +1,23 @@
 # rafals — Charte visuelle
 
+## Depuis le 10/11/2026 : le style de la grande maquette, partout (lots 14.5 et 14.6)
+
+Demande de Raphael : « exactement pareil que la maquette » (`.doc/ihm/maquette-site-complet.html`). Ce qui suit l'emporte sur les sections plus bas quand elles se contredisent.
+- **Où** : les styles de la maquette sont recopiés tels quels dans `frontend/src/style.css`, bloc `@layer components` (une classe Tailwind posée en plus garde la priorité). Les écrans écrivent ces classes : `page`, `tete`, `section`, `section-titre`, `carte` (+ `p-[18px]`), `ligne` / `liste`, `ico-rond`, `puce p-ok|p-att|p-err|p-neutre|p-accent`, `btn btn-1|btn-2|btn-danger|btn-danger-2|btn-verrou|btn-accent` (+ `btn-petit`), `btns`, `chips`/`chip`, `stats`/`stat`, `tuiles`/`tuile`, `onglets`, `seg` (+ `seg-inline`), `switch`, `reglage`/`rl`/`exemple`, `bandeau b-ok|b-att|b-err|b-neutre|b-vert`, `champ`/`form`, `hero`, `presta`, `dmd`…, `pp-…` (page publique), `ig-…`/`bm`/`dep` (profil), `jcase`/`cal`/`legende`/`bulle-jour` (agenda), `voile`/`fenetre` (fenêtres), `toast` (message court). Les composants communs les posent déjà (`AppBouton`, `AppChamp`, `AppOnglets`, `AppSegment`, `AppBadge`, `AppAlerte`, `AppSection`, `AppFenetre`, `AppMessage`, `AppInterrupteur`).
+- **Couleurs** : celles de la maquette, en clair et en sombre (fond `#F2F6F1`, texte `#16211A`, vert `#2F6B4F`, orange `#E0773A`…), plus 3 nouvelles : `--surface2` (fond des lignes et cadres doux), `--accent-doux` (orange pâle), `--hachure` (rouge des heures fermées de l'agenda). Les ronds des personnes : 10 couleurs pleines `--av1` à `--av10`, lettre blanche (`AppInitiales`, `couleurDe` dans `outils/noms.ts`).
+- **Formes** : cartes 18 px de coin, fine bordure grise et ombre légère ; boutons 14 px (46 px de haut, 38 px en petit) ; champs 12 px (48 px de haut) ; colonne de page de 880 px (1100 px pour l'agenda et l'administration, 680 px pour le profil, la page publique et la connexion).
+- **Icônes** : celles de la maquette, au trait (`AppIcone`, tracés dans `outils/icones.ts`). `AppPicto` reste pour les dossiers de métiers.
+- **Compteur des messages** : pastille orange (avant : rouge).
+- **Montants** : l'espace des milliers, « 37 500,00 € ».
+- **« Mon agenda » n'a plus de style à part** : la classe `style-classique` est retirée (Raphael : « tu fais l'agenda pareil que la maquette »).
+
+
 > Choisie par Raphael le 28/09/2026 en regardant la maquette cliquable `.doc/ihm/maquette-charte.html` (https://claude.ai/artifact/K2WSEd51fSMiCsQ2S3s3R7) : ambiance **B. Vert sauge**, boutons **arrondis**.
 > Ces valeurs sont recopiées telles quelles dans les réglages de Tailwind au lot des écrans ; on ne tape jamais une couleur à la main dans un écran.
 
 > **Style « chaleureux » depuis le 07/10/2026** (choisi par Raphael, « A », sur la maquette `.doc/ihm/maquette-trois-styles.html`, puis `.doc/ihm/maquette-style-chaleureux.html`, https://claude.ai/artifact/3GejTyBQFa9dZXbrmmChQc) : les couleurs ne changent pas ; les polices et les formes changent (voir « Polices » et « Formes »). **Exception : l'écran « Mon agenda » garde les formes d'avant** (Raphael, 04/10/2026 : « l'agenda ne dois pas changer »).
+
+> **Grande maquette depuis le 10/11/2026** (lot 14.1, demande de Raphael : « change le style de mon site avec la maquette complete », `.doc/ihm/maquette-site-complet.html`) : les couleurs ne changent pas ; **polices** Bricolage Grotesque (titres) et Figtree (texte) à la place de Nunito ; **formes** : coins moyens (champs 12 px, cartes 18 px, boutons 14 px), fine bordure grise + ombre légère sur les cartes, bouton secondaire blanc à bordure grise ; **formes douces qui flottent** derrière les pages (`.deco`, `App.vue`) ; **en-tête** un peu transparent avec flou, petites icônes devant les entrées. Les tableaux « Polices » et « Formes » plus bas décrivent le style « chaleureux » d'avant, gardé pour l'historique. « Mon agenda » garde toujours son ancien style (sans les formes qui flottent).
 
 ## Couleurs
 
@@ -79,7 +93,8 @@ Installées avec l'application (paquets `@fontsource-variable`), jamais chargée
 
 - **Une carte s'écrit `carte`**, jamais « `rounded-… border border-bord bg-surface` » à la main. Ex. `<article class="carte p-5">`. Les écrans pas encore repassés gardent leur bordure avec des coins de 16 px : à convertir au fur et à mesure.
 - Ombre des cartes : `0 8px 28px` vert foncé à 10 % en clair, noir à 35 % en sombre (`--ombre-carte`).
-- **Comment « Mon agenda » garde l'ancien style** : toutes ces valeurs sont des réglages de `style.css` (`--coin`, `--coin-carte`, `--coin-bouton`, `--ombre-carte`, `--bord-carte`, polices, fonds des boutons secondaire et danger). `App.vue` pose la classe `style-classique` sur la page tant qu'on est sur `/mon-agenda` ; elle remet les valeurs d'avant. Rien n'est écrit dans les fichiers de l'agenda.
+- (Jusqu'au 10/11/2026, « Mon agenda » gardait l'ancien style par la classe `style-classique` : retirée, voir en haut.)
+- **Rond d'une personne sans photo** : depuis le 10/11/2026, couleur pleine (`--av1` à `--av10`) et 1re lettre en blanc, toujours la même couleur pour un même nom (`AppInitiales`). Ex. « Marie D. » est toujours dans la même couleur, à l'accueil comme dans les messages.
 - Pictogrammes des dossiers de métiers : `AppPicto` (tracés et teintes dans `frontend/src/outils/pictos.ts`). Dessin de la rue aux trois maisons : `frontend/src/assets/quartier.svg` (une image : ses couleurs sont dans le fichier).
 
 ## Boutons (un seul composant `AppBouton`, 5 variantes)

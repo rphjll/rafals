@@ -2,6 +2,7 @@
 // Mes démarches (.doc/ihm/RM-DEMARCHES-IHM.md ; RM-DEMARCHES.md, lot 6.2) : le chiffre d'affaires à déclarer à
 // l'URSSAF, par mois ou par trimestre, préparé d'après les factures. Depuis le lot 7.3, le prestataire qui a donné
 // son accord peut déclarer d'un clic (components/demarches/DeclarerUrssaf.vue) ; sinon il déclare sur le site de l'URSSAF.
+import EnteteActivite from '../components/EnteteActivite.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
@@ -105,7 +106,7 @@ function ouvrirUrssaf() {
 
 <template>
   <GardePrestataire titre="Mes démarches">
-    <h1 class="text-[28px] font-bold">Mes démarches</h1>
+    <EnteteActivite titre="Déclarer à l’URSSAF" texte="Votre prochaine déclaration, déjà préparée." />
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <AppSection v-if="demarches && !demarches.siret_verifie" titre="Déclaration à l'URSSAF">
       <p class="text-texte-doux">Les démarches concernent les prestataires avec un SIRET vérifié : sans lui, rafals ne fait pas de facture.</p>
@@ -130,10 +131,12 @@ function ouvrirUrssaf() {
           prélèvement que vous y avez réglé). Pour corriger cette déclaration, passez aussi par le site de l'URSSAF.
         </p>
       </template>
-      <AppAlerte v-else-if="prochaine" etat="attente">
-        À déclarer pour {{ nom(prochaine).toLowerCase() }} : <b>{{ montant(prochaine.encaisse_centimes) }}</b>, avant le
-        {{ jourCourt(prochaine.a_declarer_avant) }}.
-      </AppAlerte>
+      <!-- La carte vert foncé de la grande maquette : la prochaine déclaration, sa date limite et son montant -->
+      <div v-else-if="prochaine" class="carte p-[18px]" style="display: flex; flex-direction: column; gap: 6px; background: var(--fonce); color: var(--sur-fonce); border: 0">
+        <span style="opacity: 0.8">Prochaine déclaration : {{ nom(prochaine).toLowerCase() }}</span>
+        <h2 style="font-size: 28px">Avant le {{ jourCourt(prochaine.a_declarer_avant) }}</h2>
+        <span>À déclarer : <b>{{ montant(prochaine.encaisse_centimes) }}</b></span>
+      </div>
       <DeclarerUrssaf :urssaf="demarches.urssaf" :periodicite="demarches.periodicite" @change="charger" @site="ouvrirUrssaf" />
       <div class="flex flex-wrap items-center gap-3">
         <AppSegment v-model="vue" etiquette="Voir" :options="[{ valeur: 'mois', texte: 'Par mois' }, { valeur: 'trimestres', texte: 'Par trimestre' }]" />

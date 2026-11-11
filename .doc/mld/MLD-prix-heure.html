@@ -1,0 +1,114 @@
+<title>MLD prix de l'heure</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Fond blanc uni imposé par les règles du projet (format du MLD) : un seul thème, couleurs fixées */
+  :root { color-scheme: light; --fond:#ffffff; --texte:#1d2620; --doux:#58665c; --trait:#d8e1da; --vert:#2f6b4f; --pale:#f3f6f2; --orange:#b26a00; --orange-pale:#fcf0dc; }
+  body { background:var(--fond); color:var(--texte); font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:24px 48px; }
+  .page { max-width:1040px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:var(--doux); }
+  .schema { border:1px solid var(--trait); border-radius:10px; padding:16px; background:var(--fond); overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:16px; }
+  .carte { border:1px solid var(--trait); border-radius:10px; padding:14px 16px; min-width:0; display:flex; flex-direction:column; gap:8px; }
+  .carte h3 { margin:0; font-size:16px; font-family:Consolas, monospace; color:var(--vert); }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:var(--orange); background:var(--orange-pale); border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; white-space:nowrap; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:var(--pale); padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid var(--vert); padding:8px 12px; background:var(--pale); border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:var(--doux); }
+  ol { margin:0; padding-left:20px; font-size:14.5px; display:flex; flex-direction:column; gap:4px; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD : le prix de l'heure de chaque métier</h1>
+    <p class="sous">rafals · proposé le 10/11/2026 · aucune table nouvelle, aucune table supprimée, 2 rubriques ajoutées. Demande de Raphael : prix à l'heure comme sur la grande maquette (« 22 €/h » sur la carte, « 45 € de l'heure » dans le profil).</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  METIER["<b>METIER</b><br/>id (PK)"]
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)<br/>metier_principal_id (FK)"]
+  METIER_SECONDAIRE["<b>METIER_SECONDAIRE</b><br/>id (PK)<br/>prestataire_id (FK)<br/>metier_id (FK)"]
+  METIER -- "métier principal · (0,n) —— (1,1)" --- PRESTATAIRE
+  PRESTATAIRE -- "exerce aussi · (0,n) —— (1,1)" --- METIER_SECONDAIRE
+  METIER -- "(0,n) —— (1,1)" --- METIER_SECONDAIRE
+  classDef changee fill:#fcf0dc,stroke:#b26a00,color:#1d2620;
+  class PRESTATAIRE,METIER_SECONDAIRE changee;
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>lecture</b><span>un prestataire a un et un seul métier principal ; il exerce aussi zéro, un ou plusieurs métiers secondaires, chacun rangé dans <code>METIER_SECONDAIRE</code>. Le prix va là où chaque métier est déjà rangé.</span>
+      <b>orange</b><span>table qui reçoit une rubrique nouvelle.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les rubriques ajoutées</h2>
+    <div class="tables">
+      <div class="carte"><h3>PRESTATAIRE <span class="nouveau">+ 1 rubrique</span></h3>
+        <ul>
+          <li><code>metier_principal_prix_centimes</code> : le prix de l'heure du métier principal, en centimes (4 500 = 45,00 €). Facultatif : vide tant que le prestataire ne l'a pas donné. De 1 € à 1 000 €.</li>
+        </ul>
+      </div>
+      <div class="carte"><h3>METIER_SECONDAIRE <span class="nouveau">+ 1 rubrique</span></h3>
+        <ul>
+          <li><code>prix_centimes</code> : le prix de l'heure de ce métier, en centimes. Facultatif, de 1 € à 1 000 €.</li>
+        </ul>
+      </div>
+      <div class="carte"><h3>METIER</h3>
+        <p class="note">Ne change pas.</p>
+      </div>
+    </div>
+    <p class="note" style="margin-top:12px">Pourquoi facultatif : les prestataires déjà inscrits n'ont pas de prix ; leur carte reste sans prix jusqu'à ce qu'ils le donnent. Pourquoi en centimes : comme tous les autres montants de rafals (devis, factures, budget d'une demande).</p>
+    <p class="note">Quand le métier principal s'arrête et qu'un métier secondaire devient principal (règle déjà en place), son prix passe avec lui dans <code>metier_principal_prix_centimes</code>.</p>
+  </section>
+
+  <section>
+    <h2>Ce que fera rafals avec ces rubriques</h2>
+    <ol>
+      <li>« Mon profil › Mes métiers » : à côté de chaque métier, « 45 € de l'heure » et [Changer le prix] ; la fenêtre « Ajouter un métier » demande aussi « Votre prix de l'heure (€) ».</li>
+      <li>« Trouver » et l'accueil : la carte montre « 45 €/h » en bas à droite (le prix du métier affiché sur la carte).</li>
+      <li>La page publique : le chiffre du milieu devient « 45 € de l'heure » (comme la maquette).</li>
+      <li>Sans prix : rien n'est écrit à cet endroit.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>PRESTATAIRE</code> n° 19 : nom = « Karim Benali », métier principal = Électricien, <code>metier_principal_prix_centimes</code> = 4500.
+      <p class="trad"><b>Traduction :</b> Karim demande 45,00 € de l'heure comme électricien. Sa carte dans « Trouver » affiche « Électricien · Pessac, 2 km » et « 45 €/h ».</p>
+    </div>
+    <div class="exemple">
+      <code>METIER_SECONDAIRE</code> n° 7 : prestataire = n° 19 (Karim), métier = Plombier, <code>prix_centimes</code> = 5000, fin = vide.
+      <p class="trad"><b>Traduction :</b> Karim est aussi plombier, à 50,00 € de l'heure. Quand un client cherche un plombier, la carte de Karim affiche « Aussi plombier » et « 50 €/h ».</p>
+    </div>
+    <div class="exemple">
+      <code>METIER_SECONDAIRE</code> n° 8 : prestataire = n° 23 (Julie), métier = Repassage, <code>prix_centimes</code> = vide.
+      <p class="trad"><b>Traduction :</b> Julie fait aussi du repassage mais n'a pas encore donné de prix : sa carte n'en affiche pas.</p>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, securityLevel: "loose" });</script>

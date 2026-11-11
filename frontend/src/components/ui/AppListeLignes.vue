@@ -23,7 +23,7 @@ provide(CLE_LISTE_LIGNES, { ouvertes, resumes: toRef(props, 'resumes'), basculer
 </script>
 
 <template>
-  <div class="flex flex-col divide-y divide-bord">
+  <div class="liste">
     <slot />
   </div>
 </template>

@@ -1,0 +1,144 @@
+<title>Un problème ? Une idée ?</title>
+<style>
+/* Maquette du lot 13.1 : couleurs et formes du vrai site (CHARTE-VISUELLE.md, style « chaleureux ») */
+:root{--fond:#F3F6F2;--surface:#FFFFFF;--texte:#1D2620;--doux:#58665C;--bord:#D8E1DA;--primaire:#2F6B4F;--primaire-texte:#FFFFFF;--primaire-doux:#E2EEE7;--accent:#D9793A;--ok:#2E7D4F;--ok-doux:#E3F2E8;--erreur:#B3261E;--erreur-doux:#FBE4E2;--voile:rgba(15,23,32,.55);--ombre:0 8px 28px rgba(31,77,56,.10)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--erreur:#F08A82;--erreur-doux:#3A1A18;--ombre:0 8px 28px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--fond:#121713;--surface:#1A211C;--texte:#E7ECF2;--doux:#A3AEBD;--bord:#2C3730;--primaire:#79C49C;--primaire-texte:#0F1A13;--primaire-doux:#1C3024;--accent:#F0955A;--ok:#6CC592;--ok-doux:#17301F;--erreur:#F08A82;--erreur-doux:#3A1A18;--ombre:0 8px 28px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);font:500 16px/1.5 Nunito,system-ui,sans-serif}
+button,input,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--bord);padding:0 16px}
+.barre{max-width:1080px;margin:0 auto;height:60px;display:flex;align-items:center;gap:8px}
+.logo{font-family:"Bricolage Grotesque",Nunito,sans-serif;font-weight:800;font-size:24px;color:var(--primaire);text-decoration:none}
+.logo span{color:var(--accent)}
+nav{margin-left:auto;display:flex;align-items:center;gap:4px}
+nav a{padding:8px 12px;border-radius:999px;font-weight:700;text-decoration:none;color:var(--texte)}
+nav a:hover{background:var(--primaire-doux);color:var(--primaire)}
+.compte{position:relative;margin-left:6px}
+.compte>button{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:4px 12px 4px 4px;border-radius:999px;border:1px solid var(--bord);background:var(--surface);font-weight:600;cursor:pointer}
+.compte>button[aria-expanded="true"]{border-color:var(--primaire);color:var(--primaire)}
+.init{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;background:#DCEAF7;color:#1D4A72}
+.menu{position:absolute;right:0;top:calc(100% + 8px);width:270px;background:var(--surface);border-radius:26px;box-shadow:var(--ombre);border:1px solid var(--bord);padding:8px;display:flex;flex-direction:column;gap:4px}
+.menu .qui{padding:6px 12px 10px;border-bottom:1px solid var(--bord);line-height:1.25}
+.menu .qui small{display:block;color:var(--doux);font-size:13px}
+.menu a,.menu .entree{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;font-weight:600;text-decoration:none;color:var(--texte);background:none;border:0;cursor:pointer;text-align:left;width:100%}
+.menu a:hover,.menu .entree:hover{background:var(--primaire-doux);color:var(--primaire)}
+.menu .entree.nouveau{outline:2px dashed var(--accent);outline-offset:-2px}
+.ico{width:20px;height:20px;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 18px;border-radius:999px;border:0;font-weight:700;cursor:pointer}
+.btn-1{background:var(--primaire);color:var(--primaire-texte)}
+.btn-2{background:var(--primaire-doux);color:var(--primaire)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.plein{width:100%}
+main{max-width:1080px;margin:0 auto;padding:28px 16px 80px;display:flex;flex-direction:column;gap:16px}
+.carte{background:var(--surface);border-radius:26px;box-shadow:var(--ombre);padding:20px}
+.aide{color:var(--doux);font-size:15px}
+.etiquette-maquette{display:inline-block;font-size:13px;font-weight:700;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);padding:2px 10px;border-radius:999px}
+/* Fenêtre */
+.voile{position:fixed;inset:0;z-index:20;background:var(--voile);display:grid;place-items:center;padding:16px}
+.fenetre{background:var(--surface);border-radius:26px;width:100%;max-width:480px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;box-shadow:var(--ombre)}
+.f-haut{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 22px 6px}
+.f-haut h2{margin:0;font-size:21px;font-weight:900}
+.fermer{width:42px;height:42px;border-radius:50%;border:0;background:none;font-size:24px;cursor:pointer;color:var(--doux)}
+.f-corps{padding:8px 22px 4px;overflow:auto;display:flex;flex-direction:column;gap:16px}
+.f-pied{padding:14px 22px 20px;display:flex;gap:8px;flex-wrap:wrap}
+.choix{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choix button{min-height:64px;border-radius:16px;border:2px solid var(--bord);background:var(--surface);cursor:pointer;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.choix button small{font-weight:500;color:var(--doux);font-size:13px}
+.choix button[aria-pressed="true"]{border-color:var(--primaire);background:var(--primaire-doux);color:var(--primaire)}
+label.et{font-weight:700;display:block;margin-bottom:6px}
+label.et i{color:var(--erreur);font-style:normal}
+textarea{width:100%;min-height:120px;padding:12px 14px;border-radius:16px;border:1px solid var(--bord);background:var(--surface);resize:vertical}
+textarea:focus{outline:3px solid var(--accent);outline-offset:1px}
+.compteur{display:flex;justify-content:space-between;font-size:13px;color:var(--doux);margin-top:4px}
+.fichier{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border:2px dashed var(--bord);border-radius:16px}
+.fichier .nom{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.fichier .vide{flex:1;color:var(--doux);font-size:15px}
+.alerte{padding:10px 14px;border-radius:16px;font-weight:600;font-size:15px}
+.alerte.erreur{background:var(--erreur-doux);color:var(--erreur)}
+.joint{font-size:13px;color:var(--doux)}
+.message{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ok);color:#fff;padding:12px 20px;border-radius:999px;font-weight:700;z-index:30;box-shadow:var(--ombre);max-width:calc(100% - 32px);text-align:center}
+@media (max-width:767px){nav a{display:none}.menu{position:fixed;left:16px;right:16px;top:68px;width:auto}}
+</style>
+
+<header><div class="barre">
+  <a class="logo" href="#">rafals<span>.</span></a>
+  <nav>
+    <a href="#">Accueil</a><a href="#">Trouver un prestataire</a><a href="#">Messages</a><a href="#">Mon activité</a>
+    <div class="compte">
+      <button id="b-compte" aria-expanded="true" aria-controls="menu"><span class="init">JM</span>Julie <span aria-hidden="true">▾</span></button>
+      <div class="menu" id="menu">
+        <div class="qui"><b>Julie Martin</b><small>julie@example.com</small></div>
+        <a href="#"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Mon profil</a>
+        <a href="#"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9z"/></svg>Mes abonnements</a>
+        <a href="#"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Paramètres</a>
+        <button class="entree nouveau" id="ouvrir"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 7v4M12 14h.01"/></svg>Un problème ? Une idée ?</button>
+        <button class="btn btn-2 plein">Se déconnecter</button>
+      </div>
+    </div>
+  </nav>
+</div></header>
+
+<main>
+  <span class="etiquette-maquette">Maquette · lot 13.1</span>
+  <div class="carte">
+    <p><b>Le menu de Julie est ouvert.</b> La nouvelle entrée est entourée en orange (seulement dans la maquette). Cliquez dessus.</p>
+    <p class="aide" style="margin-top:8px">Sur téléphone, la même entrée est dans la liste du compte du menu ☰. Essayez : envoyer sans texte, choisir « Une idée », joindre une capture, envoyer 6 fois.</p>
+  </div>
+</main>
+
+<div id="fenetre"></div>
+<div id="message" class="message" hidden></div>
+
+<script>
+const S={ouverte:false,sorte:'probleme',texte:'',capture:null,erreur:'',envoyes:0};
+const ex={probleme:['Que s’est-il passé ?','Ex. Le bouton Publier ne répond pas sur mon téléphone.'],idee:['Quelle est votre idée ?','Ex. Pouvoir mettre une vidéo de mon travail sur mon profil.']};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function dessine(){
+  const z=document.getElementById('fenetre');
+  if(!S.ouverte){z.innerHTML='';return;}
+  const [et,ph]=ex[S.sorte];
+  z.innerHTML=`<div class="voile" data-voile><div class="fenetre" role="dialog" aria-modal="true" aria-labelledby="f-t">
+   <div class="f-haut"><h2 id="f-t">Un problème ? Une idée ?</h2><button class="fermer" data-act="fermer" aria-label="Fermer">×</button></div>
+   <div class="f-corps">
+    <div class="choix" role="group" aria-label="Sorte de message">
+     <button data-act="sorte" data-v="probleme" aria-pressed="${S.sorte==='probleme'}">Un problème<small>quelque chose ne marche pas</small></button>
+     <button data-act="sorte" data-v="idee" aria-pressed="${S.sorte==='idee'}">Une idée<small>quelque chose à ajouter</small></button>
+    </div>
+    <div><label class="et" for="t">${et} <i>*</i></label><textarea id="t" maxlength="2000" placeholder="${ph}">${esc(S.texte)}</textarea>
+     <div class="compteur"><span>10 caractères au moins</span><span id="cpt">${S.texte.length} / 2000</span></div></div>
+    <div><span class="et" style="font-weight:700;display:block;margin-bottom:6px">Capture d’écran (facultatif)</span>
+     <div class="fichier">${S.capture?`<span class="nom">📎 ${esc(S.capture)}</span><button class="btn btn-2" data-act="retirer">Retirer</button>`:`<span class="vide">JPG ou PNG, 5 Mo au plus</span><button class="btn btn-2" data-act="choisir">Choisir une image</button>`}</div>
+     <input type="file" id="f" accept="image/png,image/jpeg" hidden></div>
+    <p class="joint">La page où vous êtes, votre appareil et votre navigateur sont joints tout seuls pour nous aider. Rien d’autre.</p>
+    ${S.erreur?`<div class="alerte erreur" role="alert">${esc(S.erreur)}</div>`:''}
+   </div>
+   <div class="f-pied"><button class="btn btn-1" data-act="envoyer">${S.sorte==='probleme'?'Envoyer le problème':'Envoyer l’idée'}</button><button class="btn btn-2" data-act="fermer">Annuler</button></div>
+  </div></div>`;
+}
+function message(t){const m=document.getElementById('message');m.textContent=t;m.hidden=false;clearTimeout(message.t);message.t=setTimeout(()=>m.hidden=true,3000);}
+document.addEventListener('click',e=>{
+  if(e.target.matches('[data-voile]')){S.ouverte=false;dessine();return;}
+  if(e.target.closest('#ouvrir')){Object.assign(S,{ouverte:true,sorte:'probleme',texte:'',capture:null,erreur:''});dessine();document.getElementById('t').focus();return;}
+  if(e.target.closest('#b-compte')){const m=document.getElementById('menu');const o=m.hidden;m.hidden=!o;e.target.closest('#b-compte').setAttribute('aria-expanded',o);return;}
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act;
+  if(a==='fermer'){S.ouverte=false;dessine();}
+  else if(a==='sorte'){S.sorte=b.dataset.v;S.erreur='';dessine();document.getElementById('t').focus();}
+  else if(a==='choisir'){document.getElementById('f').click();}
+  else if(a==='retirer'){S.capture=null;dessine();}
+  else if(a==='envoyer'){
+    const t=S.texte.trim();
+    if(t.length<10){S.erreur='Décrivez un peu plus (10 caractères au moins).';dessine();return;}
+    if(S.envoyes>=5){S.erreur='Vous avez déjà envoyé 5 messages aujourd’hui, merci ! Vous pourrez en envoyer d’autres demain.';dessine();return;}
+    S.envoyes++;S.ouverte=false;dessine();message('Merci, c’est envoyé. Nous regardons chaque soir.');
+  }
+});
+document.addEventListener('input',e=>{if(e.target.id==='t'){S.texte=e.target.value;document.getElementById('cpt').textContent=S.texte.length+' / 2000';}});
+document.addEventListener('change',e=>{if(e.target.id==='f'){const f=e.target.files[0];if(!f)return;
+  if(!/^image\/(png|jpeg)$/.test(f.type)){S.erreur='Ce fichier n’est pas accepté : envoyez un JPG, PNG.';}
+  else if(f.size>5*1024*1024){S.erreur='Le fichier est trop lourd : 5 Mo au maximum (une photo de téléphone suffit).';}
+  else{S.capture=f.name;S.erreur='';}
+  dessine();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.ouverte){S.ouverte=false;dessine();}});
+</script>

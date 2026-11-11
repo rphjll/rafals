@@ -1,5 +1,7 @@
-// Les fonctions rangées dans « Mon activité » (.doc/ihm/RM-MON-ACTIVITE-IHM.md) : la page en fait des tuiles, et le
-// sous-menu (useMenu) reprend celles qui ont leur propre page. Liste validée par Raphael le 07/10/2026 ;
+import type { NomIcone } from './icones'
+
+// Les fonctions rangées dans « Mon activité » (.doc/ihm/RM-MON-ACTIVITE-IHM.md) : la page en fait des tuiles.
+// Liste validée par Raphael le 07/10/2026 ;
 // « Messages » et « Mon profil » n'y sont pas : ce sont des onglets à part.
 
 export type GroupeActivite = 'clients' | 'gerer' | 'connaitre' | 'demarches'
@@ -12,13 +14,11 @@ export interface FonctionActivite {
   groupe: GroupeActivite
   texte: string
   detail: string
-  /** Tracé dans outils/pictos.ts */
-  picto: string
+  /** Icône de la grande maquette (outils/icones.ts) */
+  icone: NomIcone
   pour: Pour
   /** Page ouverte par la tuile ; sans page : fonction pas encore construite, tuile « bientôt » */
   vers?: string | ((prestataireId: number) => string)
-  /** Reprise dans le sous-menu affiché sur les pages du groupe */
-  sousMenu?: boolean
 }
 
 export const GROUPES_ACTIVITE: { cle: GroupeActivite; titre: string; titreClient?: string }[] = [
@@ -29,28 +29,28 @@ export const GROUPES_ACTIVITE: { cle: GroupeActivite; titre: string; titreClient
 ]
 
 export const FONCTIONS_ACTIVITE: FonctionActivite[] = [
-  { cle: 'demandes-pres', groupe: 'clients', texte: 'Demandes près de chez moi', detail: 'Les clients qui cherchent mon métier', picto: 'repere', pour: 'prestataire', vers: '/demandes-pres-de-chez-moi', sousMenu: true },
-  { cle: 'alertes', groupe: 'clients', texte: 'Alertes', detail: 'Un mail à chaque nouvelle demande', picto: 'cloche', pour: 'prestataire', vers: '/alertes', sousMenu: true },
-  { cle: 'mise-en-avant', groupe: 'clients', texte: 'Être mis en avant', detail: 'Apparaître en premier dans les résultats', picto: 'evenements', pour: 'prestataire' },
+  { cle: 'demandes-pres', groupe: 'clients', texte: 'Demandes près de chez moi', detail: 'Les clients qui cherchent mon métier', icone: 'demandes', pour: 'prestataire', vers: '/demandes' },
+  // « Alertes » est dans « Paramètres › Notifications » depuis le 21/10/2026 (demande de Raphael)
+  { cle: 'mise-en-avant', groupe: 'clients', texte: 'Être mis en avant', detail: 'Apparaître en premier dans les résultats', icone: 'fusee', pour: 'prestataire' },
 
-  { cle: 'mes-demandes', groupe: 'gerer', texte: 'Mes demandes', detail: 'Ce que j’ai publié, et les réponses', picto: 'liste', pour: 'tous', vers: '/mes-demandes', sousMenu: true },
-  { cle: 'mes-avis-recus', groupe: 'gerer', texte: 'Mes avis reçus', detail: 'Ce que les prestataires disent de moi', picto: 'liste', pour: 'tous', vers: '/mes-avis-recus', sousMenu: true },
+  // « Mes demandes » a quitté Mon activité : elle est dans l'onglet « Demandes » (lot 14.2, grande maquette)
+  { cle: 'mes-avis-recus', groupe: 'gerer', texte: 'Mes avis reçus', detail: 'Ce que les prestataires disent de moi', icone: 'etoile', pour: 'tous', vers: '/mes-avis-recus' },
   // Un seul endroit pour les rendez-vous : le calendrier (la page « Rendez-vous » a été retirée le 07/10/2026)
-  { cle: 'agenda-prestataire', groupe: 'gerer', texte: 'Mon agenda', detail: 'Mes rendez-vous, mes horaires, mes jours fermés', picto: 'menu-reservations', pour: 'prestataire', vers: '/mon-agenda', sousMenu: true },
-  { cle: 'agenda-client', groupe: 'gerer', texte: 'Mon agenda', detail: 'Le calendrier de mes rendez-vous', picto: 'menu-reservations', pour: 'client', vers: '/mon-agenda', sousMenu: true },
-  { cle: 'devis', groupe: 'gerer', texte: 'Devis', detail: 'Demandes de devis et devis envoyés', picto: 'document', pour: 'tous', vers: '/devis', sousMenu: true },
-  { cle: 'factures', groupe: 'gerer', texte: 'Factures', detail: 'Toutes mes factures en PDF', picto: 'euro', pour: 'tous', vers: '/factures', sousMenu: true },
-  { cle: 'paiements-prestataire', groupe: 'gerer', texte: 'Paiements', detail: 'Ce que j’ai encaissé, par carte et en espèces', picto: 'carte-bancaire', pour: 'prestataire', vers: '/mon-agenda?onglet=paiements' },
-  { cle: 'paiements-client', groupe: 'gerer', texte: 'Paiements', detail: 'Ce que j’ai payé par carte', picto: 'carte-bancaire', pour: 'client', vers: '/compte' },
-  { cle: 'clients', groupe: 'gerer', texte: 'Mes clients', detail: 'Les personnes pour qui j’ai déjà travaillé', picto: 'services-personne', pour: 'prestataire', vers: '/mes-clients', sousMenu: true },
-  { cle: 'avis-client', groupe: 'gerer', texte: 'Mes avis', detail: 'À donner après un rendez-vous passé', picto: 'evenements', pour: 'client', vers: '/mon-agenda' },
+  { cle: 'agenda-prestataire', groupe: 'gerer', texte: 'Mon agenda', detail: 'Mes rendez-vous, mes horaires, mes jours fermés', icone: 'agenda', pour: 'prestataire', vers: '/mon-agenda' },
+  { cle: 'agenda-client', groupe: 'gerer', texte: 'Mon agenda', detail: 'Le calendrier de mes rendez-vous', icone: 'agenda', pour: 'client', vers: '/mon-agenda' },
+  { cle: 'devis', groupe: 'gerer', texte: 'Devis', detail: 'Demandes de devis et devis envoyés', icone: 'devis', pour: 'tous', vers: '/devis' },
+  { cle: 'factures', groupe: 'gerer', texte: 'Factures', detail: 'Toutes mes factures en PDF', icone: 'devis', pour: 'tous', vers: '/factures' },
+  { cle: 'paiements-prestataire', groupe: 'gerer', texte: 'Paiements', detail: 'Ce que j’ai encaissé, par carte et en espèces', icone: 'euro', pour: 'prestataire', vers: '/mon-agenda?onglet=paiements' },
+  { cle: 'paiements-client', groupe: 'gerer', texte: 'Paiements', detail: 'Ce que j’ai payé par carte', icone: 'euro', pour: 'client', vers: '/compte' },
+  { cle: 'clients', groupe: 'gerer', texte: 'Mes clients', detail: 'Les personnes pour qui j’ai déjà travaillé', icone: 'clients', pour: 'prestataire', vers: '/mes-clients' },
+  { cle: 'avis-client', groupe: 'gerer', texte: 'Mes avis', detail: 'À donner après un rendez-vous passé', icone: 'etoile', pour: 'client', vers: '/mon-agenda' },
 
-  { cle: 'avis-prestataire', groupe: 'connaitre', texte: 'Mes avis', detail: 'Ce que mes clients disent de moi', picto: 'evenements', pour: 'prestataire', vers: (id) => `/prestataires/${id}` },
-  { cle: 'carte-visite', groupe: 'connaitre', texte: 'Ma carte de visite', detail: 'À imprimer, avec un carré à scanner', picto: 'carte-bancaire', pour: 'prestataire', vers: '/ma-carte-de-visite', sousMenu: true },
-  { cle: 'site', groupe: 'connaitre', texte: 'Mon site', detail: 'Une page à mon nom, visible sur Google', picto: 'numerique-bureau', pour: 'prestataire' },
+  { cle: 'avis-prestataire', groupe: 'connaitre', texte: 'Mes avis', detail: 'Ce que mes clients disent de moi', icone: 'etoile', pour: 'prestataire', vers: (id) => `/prestataires/${id}` },
+  { cle: 'carte-visite', groupe: 'connaitre', texte: 'Ma carte de visite', detail: 'À imprimer, avec un carré à scanner', icone: 'carte', pour: 'prestataire', vers: '/ma-carte-de-visite' },
+  { cle: 'site', groupe: 'connaitre', texte: 'Mon site', detail: 'Une page à mon nom, visible sur Google', icone: 'site', pour: 'prestataire' },
 
-  { cle: 'urssaf', groupe: 'demarches', texte: 'Déclarer à l’URSSAF', detail: 'Mes déclarations et leurs rappels', picto: 'banque', pour: 'prestataire', vers: '/demarches', sousMenu: true },
-  { cle: 'auto-entreprise', groupe: 'demarches', texte: 'Mon auto-entreprise', detail: 'La créer et suivre mon dossier', picto: 'drapeau', pour: 'prestataire', vers: '/creer-mon-auto-entreprise' },
+  { cle: 'urssaf', groupe: 'demarches', texte: 'Déclarer à l’URSSAF', detail: 'Mes déclarations et leurs rappels', icone: 'batiment', pour: 'prestataire', vers: '/demarches' },
+  { cle: 'auto-entreprise', groupe: 'demarches', texte: 'Mon auto-entreprise', detail: 'La créer et suivre mon dossier', icone: 'bouclier', pour: 'prestataire', vers: '/creer-mon-auto-entreprise' },
 ]
 
 /** Les fonctions que ce compte voit (prestataireId : null pour un compte sans profil de prestataire) */
@@ -73,9 +73,18 @@ export interface ChiffresPrestataire {
   encaisse_mois_centimes: number
   encaisse_annee_centimes: number
   annee: number
-  /** null : il facture déjà la TVA, pas de barre */
+  /** Encaissé hors de rafals cette année : compté dans la barre de la TVA */
+  ailleurs_annee_centimes: number
+  /** null : la TVA est activée, pas de barre */
   seuil_tva_centimes: number | null
   reste_avant_seuil_centimes: number | null
+}
+
+/** Un montant encaissé hors de rafals (« Mon activité », sous la barre de la TVA) */
+export interface EncaisseAilleurs {
+  id: number
+  montant_centimes: number
+  encaisse_le: string
 }
 
 export interface ChiffresClient {
@@ -104,7 +113,7 @@ export function chiffresAffiches(activite: ActiviteChiffree, montant: (centimes:
   const p = activite.prestataire
   if (p) {
     return [
-      { valeur: String(p.demandes_pres), texte: accorde(p.demandes_pres, 'demande près de chez vous', 'demandes près de chez vous'), vers: '/demandes-pres-de-chez-moi' },
+      { valeur: String(p.demandes_pres), texte: accorde(p.demandes_pres, 'demande près de chez vous', 'demandes près de chez vous'), vers: '/demandes' },
       { valeur: String(p.rendez_vous_semaine), texte: 'rendez-vous d’ici dimanche', vers: '/mon-agenda?onglet=rendez-vous' },
       { valeur: String(p.devis_en_attente), texte: 'devis en attente de réponse', vers: '/devis' },
       { valeur: montant(p.encaisse_mois_centimes), texte: `encaissés en ${mois}`, vers: '/mon-agenda?onglet=paiements' },
@@ -113,7 +122,7 @@ export function chiffresAffiches(activite: ActiviteChiffree, montant: (centimes:
   const c = activite.client
   if (!c) return []
   return [
-    { valeur: String(c.demandes_en_ligne), texte: accorde(c.demandes_en_ligne, 'demande en ligne', 'demandes en ligne'), vers: '/mes-demandes' },
+    { valeur: String(c.demandes_en_ligne), texte: accorde(c.demandes_en_ligne, 'demande en ligne', 'demandes en ligne'), vers: '/demandes?onglet=miennes' },
     { valeur: String(c.conversations_a_lire), texte: accorde(c.conversations_a_lire, 'conversation à lire', 'conversations à lire'), vers: '/messages' },
     { valeur: String(c.rendez_vous_a_venir), texte: 'rendez-vous à venir', vers: '/mon-agenda' },
   ]

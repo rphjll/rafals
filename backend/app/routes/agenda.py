@@ -46,6 +46,17 @@ class OuvertureDemande(BaseModel):
     motif: str | None = None
 
 
+class HorairesJour(BaseModel):
+    """Les horaires d'un seul jour, en minutes depuis minuit : ex. ouvert=[[480, 720], [840, 1080]] = 8 h-12 h et 14 h-18 h.
+    ouvert : le jour ouvert seulement à ces heures ; ferme : le jour (fermé en entier) fermé seulement à ces heures ;
+    ni l'un ni l'autre : les horaires habituels reviennent."""
+
+    metier_id: int | None = None
+    ouvert: list[tuple[int, int]] | None = None
+    ferme: list[tuple[int, int]] | None = None
+    rendez_vous: Literal["annuler", "garder"] | None = None  # si des rendez-vous ne tiennent plus dans ces heures
+
+
 class Retrait(BaseModel):
     rendez_vous: Literal["annuler", "garder"] | None = None  # si des rendez-vous ont été pris pendant l'ouverture
 
@@ -144,6 +155,15 @@ def ouvrir(donnees: OuvertureDemande, db: Base, compte: CompteConnecte) -> Agend
 def retirer_ouverture(ouverture_id: int, db: Base, compte: CompteConnecte, donnees: Retrait | None = None) -> AgendaVisible:
     prestataire = mon_profil_ou_404(db, compte)
     metier_id = service.retirer_ouverture(db, prestataire, ouverture_id, maintenant(), donnees.rendez_vous if donnees else None)
+    db.commit()
+    return agenda_visible(db, prestataire, metier_id)
+
+
+@routeur.post("/moi/agenda/jours/{jour}")
+def fixer_jour(jour: date, donnees: HorairesJour, db: Base, compte: CompteConnecte) -> AgendaVisible:
+    """Ex. /api/moi/agenda/jours/2026-10-27 : clic droit sur un jour du calendrier (RM-AGENDA § « Agenda simplifié »)."""
+    prestataire = mon_profil_ou_404(db, compte)
+    metier_id = service.fixer_jour(db, prestataire, jour=jour, maintenant=maintenant(), **donnees.model_dump())
     db.commit()
     return agenda_visible(db, prestataire, metier_id)
 

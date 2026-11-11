@@ -1,16 +1,20 @@
 <script setup lang="ts">
-// Accueil › carte « Publier une demande » (.doc/ihm/RM-ACCUEIL-IHM.md ; RM-DEMANDES.md) : le métier, le titre, le besoin,
-// l'adresse avec son plan, pour quand, le budget, jusqu'à 5 photos. Envoyée au serveur par /api/demandes.
+// Le formulaire « Publier une demande » (page /demandes/nouvelle ; .doc/ihm/RM-DEMANDES-IHM.md ; RM-DEMANDES.md), comme la
+// grande maquette depuis le 10/11/2026 : le client écrit son besoin avec ses mots et rafals trouve le métier tout seul
+// (« Métier trouvé : Plombier · [Changer] »), grâce aux mots-clés des métiers ; puis les détails, pour quand, l'adresse
+// avec son plan, où a lieu le service, le budget et jusqu'à 5 photos. Envoyé au serveur par /api/demandes.
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { type MetierVisible as Metier, useMetiers } from '../../composables/useMetiers'
+import { devinerMetier } from '../../outils/devineMetier'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
 import { useCompte } from '../../composables/useCompte'
-import type { MetierVisible } from '../../composables/useMetiers'
 import { useMessage } from '../../composables/useMessage'
 import { QUAND, type DemandeVisible } from '../../outils/demandes'
 import AppChoixMetier from '../AppChoixMetier.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
+import AppIcone from '../ui/AppIcone.vue'
 import AppChamp from '../ui/AppChamp.vue'
 import AppChampFichier from '../ui/AppChampFichier.vue'
 import AppElementChoisi from '../ui/AppElementChoisi.vue'
@@ -50,7 +54,7 @@ const routeur = useRouter()
 const { compte } = useCompte()
 const { afficherMessage } = useMessage()
 
-const metier = ref<MetierVisible | null>(null)
+const metier = ref<Metier | null>(null)
 const titre = ref('')
 const texte = ref('')
 const adresse = ref<Adresse | null>(null)
@@ -63,6 +67,28 @@ const choisie = ref<File | null>(null)
 const erreurPhoto = ref('')
 const erreur = ref('')
 const envoiEnCours = ref(false)
+
+// Métier trouvé tout seul à partir du titre et des détails (outils/devineMetier.ts : les mots de chaque métier, comme
+// la grande maquette). Ex. « Fuite sous l'évier » → Plombier. [Changer] ouvre le choix à la main ; ensuite le métier
+// choisi n'est plus remplacé.
+const { dossiers, chargerDossiers } = useMetiers()
+chargerDossiers().catch(() => {})
+const choixALaMain = ref(false)
+const changerMetier = ref(false)
+const recherchePasFaite = ref(true)
+watch([titre, texte, dossiers], () => {
+  if (choixALaMain.value) return
+  const ecrit = `${titre.value} ${texte.value}`.trim()
+  recherchePasFaite.value = ecrit.length < 4
+  const code = devinerMetier(ecrit)
+  metier.value = (code && dossiers.value.flatMap((d) => d.metiers).find((m) => m.code === code)) || null
+})
+watch(changerMetier, (ouvert) => {
+  if (ouvert) choixALaMain.value = true
+})
+watch(metier, (m) => {
+  if (m && changerMetier.value) changerMetier.value = false
+})
 
 const jourPrecis = computed(() => quand.value !== null && QUAND[quand.value].valeur === 'jour_precis')
 
@@ -116,7 +142,10 @@ onBeforeUnmount(oublierPhotos)
 
 async function publier() {
   erreur.value = ''
-  if (!metier.value) erreur.value = 'Choisissez un métier : il dit quels prestataires prévenir.'
+  if (!metier.value) {
+    erreur.value = 'Choisissez le métier : nous ne l’avons pas reconnu.'
+    changerMetier.value = true
+  }
   else if (!adresse.value) erreur.value = 'Choisissez votre adresse dans la liste proposée.'
   else if (quand.value === null) erreur.value = 'Indiquez pour quand.'
   if (erreur.value || !metier.value || !adresse.value || quand.value === null) return
@@ -154,73 +183,77 @@ async function publier() {
 </script>
 
 <template>
-  <form class="carte flex flex-col gap-4 p-5" @submit.prevent="publier">
-    <h2 class="text-xl font-bold">Publier une demande</h2>
-
-    <AppChoixMetier v-model="metier" :avec-dossiers="false" etiquette="Quel métier ?" obligatoire />
-    <AppChamp v-model="titre" etiquette="Titre" obligatoire placeholder="ex. Tondre ma pelouse" maxlength="80" />
+  <form class="carte form p-[18px]" @submit.prevent="publier">
+    <div class="champ">
+      <label for="d-titre">De quoi avez-vous besoin ? <span class="text-erreur" aria-hidden="true">*</span></label>
+      <input id="d-titre" v-model="titre" required autocomplete="off" maxlength="80" placeholder="Ex. Fuite sous l’évier de la cuisine" />
+      <!-- Le métier trouvé tout seul -->
+      <div class="zone-metier" aria-live="polite">
+        <AppChoixMetier v-if="changerMetier" v-model="metier" :avec-dossiers="false" etiquette="Choisissez le métier" class="flex-1" />
+        <template v-else-if="metier">
+          <span class="trouve"><AppIcone nom="ok" />Métier trouvé : <b>{{ metier.nom }}</b></span>
+          <button type="button" class="lien" @click="changerMetier = true">Changer</button>
+        </template>
+        <span v-else-if="recherchePasFaite" class="doux petit">Écrivez votre besoin avec vos mots : rafals trouve tout seul le bon métier.</span>
+        <template v-else>
+          <span class="pas-trouve">Nous n’avons pas reconnu le métier.</span>
+          <button type="button" class="lien" @click="changerMetier = true">Choisir le métier</button>
+        </template>
+      </div>
+    </div>
     <AppZoneTexte
       v-model="texte"
-      etiquette="Décrivez votre besoin"
+      etiquette="Détails"
       obligatoire
       :maximum="1000"
-      aide="ex. 200 m², terrain plat, j'ai une prise dehors. Au moins 20 caractères, sans téléphone ni mail."
+      aide="Ex. L’eau coule dans le meuble depuis hier. Au moins 20 caractères, sans téléphone ni mail."
     />
-
-    <div class="flex flex-col gap-2">
-      <template v-if="adresse">
-        <AppElementChoisi :texte="adresse.libelle" @changer="adresse = null" />
-        <iframe
-          :src="adressePlan"
-          :title="`Plan : ${adresse.libelle}`"
-          class="h-56 w-full rounded-rafals border border-bord"
-          loading="lazy"
-          referrerpolicy="no-referrer"
-        />
-      </template>
-      <AppRecherche
-        v-else
-        etiquette="Adresse"
-        obligatoire
-        :chercher="chercherAdresse"
-        :libelle="(a: Adresse) => a.libelle"
-        :cle="(a: Adresse) => a.id"
-        placeholder="ex. 12 rue des Lilas, Mérignac"
-        aide="Seul le prestataire que vous choisirez verra la rue ; les autres voient la ville."
-        @choisir="(a: Adresse) => (adresse = a)"
-      />
-      <AppSegment v-model="lieu" etiquette="Où a lieu le service ?" :options="LIEUX" />
-    </div>
-
     <AppSelection v-model="quand" etiquette="Pour quand ?" :options="OPTIONS_QUAND" obligatoire />
     <AppChamp v-if="jourPrecis" v-model="jour" etiquette="Quel jour ?" type="date" obligatoire />
-    <AppChamp v-model="budget" etiquette="Budget en euros (facultatif)" inputmode="decimal" placeholder="ex. 40" />
 
-    <div class="flex flex-col gap-2">
-      <AppChampFichier
-        v-if="photos.length < PHOTOS_MAX"
-        v-model="choisie"
-        :etiquette="`Photos (${photos.length} / ${PHOTOS_MAX})`"
-        aide="JPG ou PNG, 5 Mo au plus"
-        accepte="image/jpeg,image/png"
-      />
-      <p v-else class="text-[13px] font-semibold">Photos ({{ PHOTOS_MAX }} / {{ PHOTOS_MAX }})</p>
-      <AppAlerte v-if="erreurPhoto">{{ erreurPhoto }}</AppAlerte>
-      <ul v-if="photos.length" class="grid grid-cols-3 gap-2">
-        <li v-for="(photo, rang) in photos" :key="photo.apercu" class="flex flex-col gap-1">
-          <img :src="photo.apercu" :alt="`Photo ${rang + 1} : ${photo.fichier.name}`" class="aspect-square w-full rounded-rafals border border-bord object-cover" />
-          <button type="button" class="text-[13px] font-semibold text-erreur underline" @click="enleverPhoto(rang)">Enlever</button>
-        </li>
-      </ul>
+    <div v-if="adresse" class="champ">
+      <label>Où ?</label>
+      <AppElementChoisi :texte="adresse.libelle" @changer="adresse = null" />
+      <iframe :src="adressePlan" :title="`Plan : ${adresse.libelle}`" class="h-56 w-full rounded-[12px] border border-bord" loading="lazy" referrerpolicy="no-referrer" />
+      <small>Votre adresse exacte n’est jamais montrée : les prestataires voient la ville.</small>
+    </div>
+    <AppRecherche
+      v-else
+      etiquette="Où ?"
+      obligatoire
+      :chercher="chercherAdresse"
+      :libelle="(a: Adresse) => a.libelle"
+      :cle="(a: Adresse) => a.id"
+      placeholder="Ex. 12 rue des Lilas, Mérignac"
+      aide="Votre adresse exacte n’est jamais montrée : les prestataires voient la ville."
+      @choisir="(a: Adresse) => (adresse = a)"
+    />
+    <div class="champ">
+      <label>Le service a lieu</label>
+      <AppSegment v-model="lieu" etiquette="Où a lieu le service ?" :options="LIEUX" />
+    </div>
+    <AppChamp v-model="budget" etiquette="Budget en euros (facultatif)" inputmode="decimal" placeholder="Ex. 40" />
+
+    <AppChampFichier
+      v-if="photos.length < PHOTOS_MAX"
+      v-model="choisie"
+      :etiquette="`Photos, facultatif (${photos.length} / ${PHOTOS_MAX})`"
+      aide="JPG ou PNG, 5 Mo au plus"
+      accepte="image/jpeg,image/png"
+    />
+    <AppAlerte v-if="erreurPhoto">{{ erreurPhoto }}</AppAlerte>
+    <div v-if="photos.length" class="photos">
+      <div v-for="(photo, rang) in photos" :key="photo.apercu" class="ph" style="--c: var(--surface2)">
+        <img :src="photo.apercu" :alt="`Photo ${rang + 1} : ${photo.fichier.name}`" />
+        <button type="button" class="sur" style="border: 0; color: #fff; cursor: pointer" @click="enleverPhoto(rang)">Enlever</button>
+      </div>
     </div>
 
-    <div class="mt-auto flex flex-col gap-3">
-      <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
-      <AppBouton v-if="compte" type="submit" variante="accent" pleine-largeur :occupe="envoiEnCours">Publier ma demande</AppBouton>
-      <template v-else>
-        <p class="text-[13px] text-texte-doux">Il faut un compte pour publier une demande. C'est gratuit.</p>
-        <AppBouton variante="accent" pleine-largeur @click="routeur.push('/connexion')">Se connecter pour publier</AppBouton>
-      </template>
-    </div>
+    <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+    <AppBouton v-if="compte" type="submit" :occupe="envoiEnCours" style="align-self: flex-start">Publier ma demande</AppBouton>
+    <template v-else>
+      <p class="doux petit">Il faut un compte pour publier une demande. C’est gratuit.</p>
+      <AppBouton style="align-self: flex-start" @click="routeur.push('/connexion')">Se connecter pour publier</AppBouton>
+    </template>
   </form>
 </template>

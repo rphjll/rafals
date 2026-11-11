@@ -11,6 +11,11 @@ import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 
 const props = defineProps<{ rdv: RendezVousVisible; libelleAutre: 'Avec' | 'Client' }>()
+// « 14 h », « 9 h 30 »
+const heureDebut = computed(() => {
+  const [h, m] = aParis(props.rdv.debut).heure.split(':')
+  return `${Number(h)} h${m === '00' ? '' : ` ${m}`}`
+})
 
 // L'absence vue par chacun (RM-RENDEZ-VOUS) : « moi » = celui qui regarde
 const moi = computed(() => (props.libelleAutre === 'Avec' ? 'client' : 'prestataire'))
@@ -44,44 +49,24 @@ const absence = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-1.5 py-3.5">
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <h3 class="text-[17px] font-bold">
-        {{ rdv.titre }}<template v-if="rdv.heures"> · {{ rdv.heures }} h</template>
-      </h3>
+  <!-- La ligne de la grande maquette : l'heure en grand à gauche, ce qu'on fait et chez qui, l'état et les boutons à droite -->
+  <div class="ligne ligne-rdv">
+    <span class="heure">{{ heureDebut }}</span>
+    <div class="txt">
+      <b>{{ rdv.titre }}<template v-if="rdv.heures"> · {{ rdv.heures }} h</template></b>
+      <span class="whitespace-normal!">
+        {{ plage(rdv) }} ·
+        <RouterLink v-if="rdv.autre.prestataire_id" :to="`/prestataires/${rdv.autre.prestataire_id}`" class="lien">{{ rdv.autre.nom }}</RouterLink>
+        <template v-else>{{ libelleAutre === 'Client' ? '' : 'avec ' }}{{ rdv.autre.nom }}</template><template v-if="rdv.autre.telephone"> · {{ rdv.autre.telephone }}</template>
+        <template v-if="rdv.adresse"> · {{ rdv.lieu === 'chez_client' && libelleAutre === 'Avec' ? 'chez vous : ' : '' }}{{ rdv.adresse }}</template>
+        · {{ prix }}<template v-if="rdv.motif"> · motif « {{ rdv.motif }} »</template>
+      </span>
+      <span v-if="rdv.autre.absences" class="puce p-err mt-1 self-start">{{ rdv.autre.absences }} absence{{ rdv.autre.absences > 1 ? 's' : '' }} en 6 mois</span>
+    </div>
+    <span class="fin flex-wrap">
       <AppBadge :etat="badgeRendezVous(rdv).etat">{{ badgeRendezVous(rdv).texte }}</AppBadge>
-    </div>
-    <p class="font-semibold">{{ plage(rdv) }}</p>
-    <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-[14.5px]">
-      <dt class="text-texte-doux">{{ libelleAutre }}</dt>
-      <dd class="font-medium">
-        <RouterLink
-          v-if="rdv.autre.prestataire_id"
-          :to="`/prestataires/${rdv.autre.prestataire_id}`"
-          class="underline hover:text-primaire"
-        >
-          {{ rdv.autre.nom }}
-        </RouterLink>
-        <template v-else>{{ rdv.autre.nom }}</template>
-        <template v-if="rdv.autre.telephone"> · {{ rdv.autre.telephone }}</template>
-        <AppBadge v-if="rdv.autre.absences" etat="erreur" class="ml-1.5">
-          {{ rdv.autre.absences }} absence{{ rdv.autre.absences > 1 ? 's' : '' }} en 6 mois
-        </AppBadge>
-      </dd>
-      <template v-if="rdv.adresse">
-        <dt class="text-texte-doux">Où</dt>
-        <dd class="font-medium">{{ rdv.lieu === 'chez_client' && libelleAutre === 'Avec' ? 'Chez vous : ' : '' }}{{ rdv.adresse }}</dd>
-      </template>
-      <dt class="text-texte-doux">Prix</dt>
-      <dd class="font-medium">{{ prix }}</dd>
-      <template v-if="rdv.motif">
-        <dt class="text-texte-doux">Motif</dt>
-        <dd class="font-medium">« {{ rdv.motif }} »</dd>
-      </template>
-    </dl>
-    <AppAlerte v-if="absence" :etat="absence.visee ? 'attente' : 'ok'">{{ absence.texte }}</AppAlerte>
-    <div class="flex flex-wrap items-center gap-2 pt-1 empty:hidden">
       <slot name="actions" />
-    </div>
+    </span>
+    <AppAlerte v-if="absence" class="w-full" :etat="absence.visee ? 'attente' : 'ok'">{{ absence.texte }}</AppAlerte>
   </div>
 </template>

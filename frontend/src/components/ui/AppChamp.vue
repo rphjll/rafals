@@ -20,10 +20,9 @@ const id = useId()
 </script>
 
 <template>
-  <div class="flex flex-col gap-1.5">
-    <label :for="id" class="text-[13px] font-semibold">
-      {{ etiquette }}<span v-if="obligatoire" class="text-erreur" aria-hidden="true"> *</span>
-    </label>
+  <!-- Champ de la grande maquette (classe « champ ») : étiquette en gras, case de 48 px, aide en petit dessous -->
+  <div class="champ">
+    <label :for="id">{{ etiquette }}<span v-if="obligatoire" class="text-erreur" aria-hidden="true"> *</span></label>
     <input
       v-bind="$attrs"
       :id="id"
@@ -32,10 +31,9 @@ const id = useId()
       :required="obligatoire"
       :aria-invalid="erreur ? true : undefined"
       :aria-describedby="erreur || aide ? `${id}-aide` : undefined"
-      class="min-h-[42px] rounded-rafals border bg-fond px-3 py-2.5 text-texte outline-none focus:border-primaire focus:ring-2 focus:ring-primaire"
-      :class="erreur ? 'border-erreur' : 'border-bord'"
+      :class="erreur ? 'border-erreur!' : ''"
     />
-    <p v-if="erreur" :id="`${id}-aide`" class="text-[13px] font-medium text-erreur">{{ erreur }}</p>
-    <p v-else-if="aide" :id="`${id}-aide`" class="text-[13px] text-texte-doux">{{ aide }}</p>
+    <p v-if="erreur" :id="`${id}-aide`" class="erreur-champ">{{ erreur }}</p>
+    <small v-else-if="aide" :id="`${id}-aide`">{{ aide }}</small>
   </div>
 </template>

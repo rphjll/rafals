@@ -21,7 +21,7 @@ function choisir(option: { valeur: V; raisonVerrou?: string }) {
 
 <template>
   <div class="flex flex-col gap-1.5" role="radiogroup" :aria-labelledby="id">
-    <span :id="id" class="text-[13px] font-semibold">
+    <span :id="id" class="font-bold">
       {{ etiquette }}<span v-if="obligatoire" class="text-erreur" aria-hidden="true"> *</span>
     </span>
     <div class="grid gap-2 sm:grid-cols-3">
@@ -32,13 +32,13 @@ function choisir(option: { valeur: V; raisonVerrou?: string }) {
         role="radio"
         :aria-checked="valeur === option.valeur"
         :aria-disabled="option.raisonVerrou ? true : undefined"
-        class="min-h-[42px] rounded-rafals border px-3 py-2.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primaire"
+        class="min-h-[46px] rounded-[12px] border px-3 py-2.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-primaire"
         :class="
           option.raisonVerrou
             ? 'cursor-not-allowed border-neutre-doux bg-neutre-doux text-texte-doux'
             : valeur === option.valeur
               ? 'border-primaire bg-primaire-doux font-semibold text-primaire'
-              : 'border-bord bg-fond text-texte'
+              : 'border-bord bg-surface2 text-texte'
         "
         @click="choisir(option)"
       >

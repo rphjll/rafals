@@ -7,7 +7,7 @@ const TYPE = [[], [], JT, JT, JT, JT, JT] // semaine type : fermé dimanche et l
 // Une période : du jour « de » à l'heure « hd », jusqu'au jour « a » à l'heure « ha »
 const F = [{ de: 16, hd: 16, a: 16, ha: 20, motif: 'Dentiste' }, { de: 20, hd: 0, a: 24, ha: 24, motif: 'Congés' }]
 const O = [{ de: 18, hd: 10, a: 18, ha: 13, motif: 'Mariage' }]
-// Horaires changés pour un seul jour (clic droit ou appui long) : jour → [début, fin]. Passe avant tout le reste.
+// Horaires changés pour un seul jour (clic droit ou appui long) : jour → plages, ex. [[8, 12], [14, 18]]. Passe avant tout.
 const H = {}
 const RDV = [
   { j: 6, d: 14, f: 14.75, quoi: 'Coupe femme', qui: 'Inès Garcia' },
@@ -60,7 +60,7 @@ function jour(n) {
   let type = tout ? 'conge' : fe.length ? 'partiel' : ou.length ? 'plus' : base.length ? 'ouvert' : 'ferme'
   const h = H[n]
   if (h) {
-    res = [h]
+    res = union(h)
     type = base.length ? 'ouvert' : 'plus'
   }
   return {
@@ -135,11 +135,16 @@ function grille(el, o) {
         const a = Math.max(f.h[0], 7), b = Math.min(f.h[1], 21)
         if (b > a) dedans = `<span class="bande" style="left:${((a - 7) / 14) * 100}%;width:${((b - a) / 14) * 100}%"></span>` + dedans
       })
-    if (j.h) dedans += `<span class="eti"><i class="long">ce jour : ${court([j.h])}</i><i class="bref">${court([j.h])}</i></span>`
-    else if (j.base.length && j.type !== 'conge') dedans += `<span class="hh">${court(j.base)}</span>`
-    if (j.type === 'conge') dedans += '<span class="eti"><i class="long">fermé (exceptionnel)</i><i class="bref">fermé</i></span>'
-    if (j.type === 'partiel') dedans += '<span class="eti"><i class="long">partiellement fermé</i><i class="bref">partiel</i></span>'
-    if (j.ou.length && j.type !== 'conge') dedans += `<span class="eti"><i class="long">+ ${court(j.ou.map((x) => x.h))}</i><i class="bref">+ ouvert</i></span>`
+    if (j.h) {
+      // Horaires changés pour ce jour (clic droit) : les heures en dehors sont dessinées fermées, à gauche et à droite
+      // (ex. ouvert de 9 h à 19 h → bande de 7 h à 9 h et de 19 h à 21 h), comme une fermeture de quelques heures
+      const fermes = j.h.reduce((reste, plage) => moins(reste, plage), [[7, 21]])  // la case va de 7 h à 21 h
+      fermes.forEach(([a, b]) => (dedans = `<span class="bande" style="left:${((a - 7) / 14) * 100}%;width:${((b - a) / 14) * 100}%"></span>` + dedans))
+    }
+    // Les heures réellement ouvertes ce jour-là, exceptions comprises (ex. « 11-13 · 14-18 ») ; rien si fermé
+    if (j.res.length) dedans += `<span class="hh">${court(j.res)}</span>`
+    // Aucun mot dans la case pour une fermeture ou une ouverture exceptionnelle (demande de Raphael du 17/10/2026) :
+    // le hachuré et le bord en pointillés suffisent, expliqués par la légende sous le calendrier
     if (j.rdv.length) dedans += `<span class="pastille">${j.rdv.length}<i> rdv</i></span>`
     const dessin = j.type === 'partiel' ? 'ouvert' : j.type === 'plus' ? 'plus' : j.type
     s += `<button type="button" class="case ${dessin}${j.ou.length && j.type !== 'conge' ? ' plus' : ''}${j.passe ? ' passe' : ''}${c ? ' choisi' : ''}${n === AUJ ? ' auj' : ''}" data-n="${n}" aria-pressed="${c}" aria-label="${j.nom}, ${BADGE[j.type][0]}${j.rdv.length ? ', ' + j.rdv.length + ' rendez-vous' : ''}">${dedans}</button>`
@@ -151,20 +156,24 @@ function grille(el, o) {
   }
 }
 
-function retirer(code) {
-  const s = code[0]
+// Retire une ou plusieurs lignes d'un coup (une ligne de la liste peut regrouper plusieurs jours de suite).
+// codes : ex. ["F3", "F5"] (fermetures n° 3 et 5), ["O0"], ["H27", "H28"] (horaires changés des 27 et 28)
+function retirer(codes) {
+  codes = [].concat(codes)
+  const s = codes[0][0]
   if (s === 'H') {
-    delete H[+code.slice(1)]
-    return dire('Horaires habituels remis pour ce jour.')
+    codes.forEach((c) => delete H[+c.slice(1)])
+    return dire(codes.length > 1 ? 'Horaires habituels remis pour ces jours.' : 'Horaires habituels remis pour ce jour.')
   }
-  ;(s === 'F' ? F : O).splice(+code.slice(1), 1)
+  const t = s === 'F' ? F : O
+  codes.map((c) => +c.slice(1)).sort((x, y) => y - x).forEach((i) => t.splice(i, 1))  // du plus grand rang au plus petit
   dire(s === 'F' ? 'Fermeture retirée : ces horaires sont de nouveau réservables.' : 'Ouverture retirée : ces horaires ne sont plus réservables.')
 }
 function ecouterRetirer(el, maj) {
   el.onclick = (e) => {
     const b = e.target.closest('[data-r]')
     if (!b) return
-    retirer(b.dataset.r)
+    retirer(b.dataset.r.split(','))
     maj()
   }
 }
@@ -189,14 +198,44 @@ function detailJour(el, n, maj) {
 }
 
 // Liste des fermetures (s = 'F') ou des ouvertures (s = 'O') à venir ; renvoie leur nombre
+// Liste des fermetures (s = 'F') ou des ouvertures (s = 'O') à venir ; renvoie le nombre de lignes.
+// Les jours qui se suivent avec les mêmes heures (et le même motif) tiennent sur une seule ligne :
+// ex. 27, 28 et 29 fermés toute la journée → « Du 27/10/2026 au 29/10/2026 ».
 function listes(el, s, maj) {
-  const l = (s === 'F' ? F : O).map((p, i) => [p, i]).filter(([p]) => p.a >= AUJ).sort((x, y) => x[0].de - y[0].de)
+  const t = s === 'F' ? F : O
+  const jours = {}  // un élément par jour (ou par période de plusieurs jours entiers) : { de, a, cle, detail, motif, codes }
+  const elements = []
+  t.forEach((p, i) => {
+    if (p.a < AUJ) return
+    if (entier(p) || p.de !== p.a) {
+      elements.push({ de: p.de, a: p.a, cle: entier(p) ? 'entier' : `periode${i}`, detail: entier(p) ? '' : `de ${heure(p.hd)} à ${heure(p.ha)}`, motif: p.motif, codes: [s + i] })
+      return
+    }
+    // Quelques heures d'un seul jour : les plages d'un même jour sont réunies (ex. de 9 h à 12 h · de 14 h à 16 h)
+    const j = jours[p.de] || (jours[p.de] = { de: p.de, a: p.de, plages: [], motif: p.motif, codes: [] })
+    j.plages.push([p.hd, p.ha])
+    j.codes.push(s + i)
+  })
+  Object.values(jours).forEach((j) => {
+    j.plages.sort((x, y) => x[0] - y[0])
+    elements.push({ ...j, cle: JSON.stringify(j.plages), detail: j.plages.map(([a, b]) => `de ${heure(a)} à ${heure(b)}`).join(' · ') })
+  })
   // Les jours aux horaires changés : dans les fermetures si le jour est ouvert d'habitude, sinon dans les ouvertures
-  const hs = Object.keys(H).map(Number).filter((n) => n >= AUJ && TYPE[(n + 3) % 7].length > 0 === (s === 'F')).sort((x, y) => x - y)
-  const lignes = l.map(([p, i]) => `<li><span><b>${periodeTexte(p)}</b>${p.motif ? `<br><span class="doux">${p.motif}</span>` : ''}</span><button type="button" class="btn danger petit" data-r="${s}${i}">Retirer</button></li>`)
-    .concat(hs.map((n) => `<li><span><b>${d2(n)}</b><br><span class="doux">${s === 'F' ? 'Ouvert seulement' : 'Ouvert'} de ${heure(H[n][0])} à ${heure(H[n][1])}</span></span><button type="button" class="btn danger petit" data-r="H${n}">Retirer</button></li>`))
+  Object.keys(H).map(Number).filter((n) => n >= AUJ && TYPE[(n + 3) % 7].length > 0 === (s === 'F')).forEach((n) => {
+    elements.push({ de: n, a: n, cle: 'H' + JSON.stringify(H[n]), detail: `${s === 'F' ? 'Ouvert seulement' : 'Ouvert'} : ${plagesTexte(H[n])}`, motif: '', codes: ['H' + n] })
+  })
+  // Réunir les jours qui se suivent et se ressemblent (les codes H ne se mélangent pas avec F ou O)
+  elements.sort((x, y) => x.de - y.de)
+  const lignes = []
+  for (const e of elements) {
+    const prec = lignes[lignes.length - 1]
+    if (prec && prec.a + 1 === e.de && prec.cle === e.cle && prec.motif === e.motif && prec.codes[0][0] === e.codes[0][0]) {
+      prec.a = e.a
+      prec.codes.push(...e.codes)
+    } else lignes.push({ ...e, codes: [...e.codes] })
+  }
   el.innerHTML = lignes.length
-    ? `<ul class="periodes">${lignes.join('')}</ul>`
+    ? `<ul class="periodes">${lignes.map((l) => `<li><span><b>${l.de === l.a ? d2(l.de) : `Du ${d2(l.de)} au ${d2(l.a)}`}</b>${[l.detail, l.motif].filter(Boolean).length ? `<br><span class="doux">${[l.detail, l.motif].filter(Boolean).join(' · ')}</span>` : ''}</span><button type="button" class="btn danger petit" data-r="${l.codes.join(',')}">Retirer</button></li>`).join('')}</ul>`
     : `<p class="doux">Aucune ${s === 'F' ? 'fermeture' : 'ouverture'} à venir.</p>`
   ecouterRetirer(el, maj)
   return lignes.length
@@ -262,11 +301,19 @@ function fenetre(s, de, a, maj) {
   q('f-de').focus()
 }
 
-// Fenêtre « Horaires du mardi 27 octobre » (clic droit sur un jour, appui long sur téléphone) : les heures de ce jour seul
+// Fenêtre « Horaires du mardi 27 octobre » (clic droit sur un jour, appui long sur téléphone), pour ce jour seul :
+// - jour fermé en entier par une fermeture exceptionnelle → « Fermé » : les heures fermées, le reste suit la semaine type ;
+// - jour ouvert (même en partie) ou ouverture exceptionnelle → « Ouvert » : les heures ouvertes.
+// Une ligne par plage (ex. 8 h – 12 h, puis 14 h – 18 h), [×] pour en retirer une, [+ Ajouter une plage].
 function fenetreHoraires(n, maj) {
   const j = jour(n)
   if (j.passe) return dire('Ce jour est passé : ses horaires ne se changent plus.')
-  const depart = j.res.length ? [j.res[0][0], j.res[j.res.length - 1][1]] : [9, 12]
+  const ferme = !j.h && j.type === 'conge'
+  const mot = ferme ? 'fermé' : 'ouvert'
+  const motif = ferme ? j.fe[0].p.motif : ''
+  // Au départ : fermé toute la journée → ses heures habituelles proposées comme heures fermées ; sinon ses heures ouvertes
+  let plages = (ferme ? j.base : j.res).map((p) => [...p])
+  if (!plages.length) plages = [[9, 12]]
   const hs = (v, x0, x1) => {
     let r = ''
     for (let x = x0; x <= x1; x += 0.25) r += `<option value="${x}"${x === v ? ' selected' : ''}>${heure(x)}</option>`
@@ -276,24 +323,63 @@ function fenetreHoraires(n, maj) {
   v.className = 'voile'
   v.innerHTML = `<div class="fenetre" role="dialog" aria-modal="true" aria-labelledby="h-titre">
     <h2 id="h-titre">Horaires du ${j.nom}</h2>
-    <p class="doux">D'habitude : ${j.base.length ? plagesTexte(j.base) : 'fermé'}. Ces horaires valent pour ce jour seulement.</p>
-    <div class="champs" style="grid-template-columns:1fr 1fr">
-      <label for="h-de">Ouvert de * <select id="h-de">${hs(depart[0], 0, 23.75)}</select></label>
-      <label for="h-a">à * <select id="h-a">${hs(depart[1], 0.25, 24)}</select></label>
-    </div>
-    <p class="erreur" id="h-err" hidden>La fin doit être après le début.</p>
+    <p class="doux">D'habitude : ${j.base.length ? plagesTexte(j.base) : 'fermé'}. ${ferme ? 'Ce jour a une fermeture exceptionnelle : choisissez les heures fermées, le reste du jour suit vos horaires habituels.' : 'Ces horaires valent pour ce jour seulement.'}</p>
+    <div id="h-plages" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div><button type="button" class="btn sec petit" id="h-plus">+ Ajouter une plage</button></div>
+    <p class="erreur" id="h-err" hidden></p>
     <div class="boutons">
       <button type="button" class="btn" id="h-ok"></button>
+      ${ferme ? '<button type="button" class="btn sec" id="h-tout">Fermer toute la journée</button>' : ''}
       ${j.h ? '<button type="button" class="btn sec" id="h-habituel">Remettre les horaires habituels</button>' : ''}
       <button type="button" class="btn sec" id="h-non">Annuler</button>
     </div>
   </div>`
   document.body.appendChild(v)
   const q = (id) => v.querySelector('#' + id)
-  const lire = () => {
-    const p = [+q('h-de').value, +q('h-a').value]
-    q('h-ok').textContent = `Enregistrer : ${d2(n)}, de ${heure(p[0])} à ${heure(p[1])}`
-    return p
+  const dessiner = () => {
+    q('h-plages').innerHTML = plages.map((p, i) => `<div class="champs" style="grid-template-columns:1fr 1fr auto;align-items:end">
+      <label for="h-de-${i}">${Maj(mot)} de * <select id="h-de-${i}" data-i="${i}" data-bout="0">${hs(p[0], 0, 23.75)}</select></label>
+      <label for="h-a-${i}">à * <select id="h-a-${i}" data-i="${i}" data-bout="1">${hs(p[1], 0.25, 24)}</select></label>
+      <button type="button" class="btn danger petit" data-retirer="${i}" aria-label="Retirer la plage ${i + 1}"${plages.length === 1 ? ' disabled' : ''}>×</button>
+    </div>`).join('')
+    q('h-ok').textContent = `Enregistrer : ${d2(n)}, ${mot} ${plagesTexte([...plages].sort((x, y) => x[0] - y[0]))}`
+  }
+  // Plages dans l'ordre, chacune finit après son début, et elles ne se chevauchent pas
+  const controler = () => {
+    const triees = [...plages].sort((x, y) => x[0] - y[0])
+    if (triees.some(([a, b]) => b <= a)) return 'Chaque plage doit finir après son début.'
+    if (triees.some((p, i) => i > 0 && p[0] < triees[i - 1][1])) return 'Deux plages se chevauchent : changez leurs heures.'
+    return ''
+  }
+  q('h-plages').onchange = (e) => {
+    const c = e.target.closest('select')
+    if (!c) return
+    plages[+c.dataset.i][+c.dataset.bout] = +c.value
+    q('h-err').hidden = true
+    dessiner()
+  }
+  q('h-plages').onclick = (e) => {
+    const b = e.target.closest('[data-retirer]')
+    if (!b || plages.length === 1) return
+    plages.splice(+b.dataset.retirer, 1)
+    dessiner()
+  }
+  q('h-plus').onclick = () => {
+    // La nouvelle plage commence 2 h après la dernière (ex. après 8 h – 12 h : 14 h – 18 h)
+    const derniere = Math.max(...plages.map((p) => p[1]))
+    const de = Math.min(derniere + 2, 22)
+    plages.push([de, Math.min(de + 4, 24)])
+    dessiner()
+  }
+  // Une période qui couvre ce jour est coupée autour de lui (ex. du 20 au 24 → du 20 au 21, ce jour, du 23 au 24)
+  const couperAutour = (liste) => {
+    for (let i = liste.length - 1; i >= 0; i--) {
+      const f = liste[i]
+      if (f.de > n || f.a < n) continue
+      liste.splice(i, 1)
+      if (f.de < n) liste.push({ de: f.de, hd: f.hd, a: n - 1, ha: 24, motif: f.motif })
+      if (f.a > n) liste.push({ de: n + 1, hd: 0, a: f.a, ha: f.ha, motif: f.motif })
+    }
   }
   const clavier = (e) => e.key === 'Escape' && fermer()
   const fermer = () => {
@@ -301,18 +387,36 @@ function fenetreHoraires(n, maj) {
     document.removeEventListener('keydown', clavier)
   }
   document.addEventListener('keydown', clavier)
-  v.onchange = lire
-  lire()
+  dessiner()
   v.onclick = (e) => e.target === v && fermer()
   q('h-non').onclick = fermer
   if (j.h) q('h-habituel').onclick = () => { retirer('H' + n); fermer(); maj() }
-  q('h-ok').onclick = () => {
-    const p = lire()
-    if (p[1] <= p[0]) return void (q('h-err').hidden = false)
-    H[n] = p
+  if (ferme) q('h-tout').onclick = () => {
+    couperAutour(F)
+    F.push({ de: n, hd: 0, a: n, ha: 24, motif })
     fermer()
-    dire(`Horaires enregistrés : ${d2(n)}, de ${heure(p[0])} à ${heure(p[1])}.`)
+    dire(`Fermé toute la journée : ${d2(n)}.`)
     maj()
   }
-  q('h-de').focus()
+  q('h-ok').onclick = () => {
+    const erreur = controler()
+    if (erreur) {
+      q('h-err').textContent = erreur
+      q('h-err').hidden = false
+      return
+    }
+    const triees = [...plages].sort((x, y) => x[0] - y[0])
+    couperAutour(F)
+    if (ferme) {
+      triees.forEach(([de, a]) => F.push({ de: n, hd: de, a: n, ha: a, motif }))
+    } else {
+      // Ce jour suit seulement ces heures : ses fermetures et ouvertures exceptionnelles de ce jour-là sont retirées
+      couperAutour(O)
+      H[n] = triees
+    }
+    fermer()
+    dire(`Horaires enregistrés : ${d2(n)}, ${mot} ${plagesTexte(triees)}.`)
+    maj()
+  }
+  q('h-de-0').focus()
 }

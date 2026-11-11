@@ -36,6 +36,10 @@ const TRACES: Record<string, string> = {
   'carte-bancaire': 'M5 6h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zM3 10.5h18M7 15h4',
   banque: 'M3 10l9-6 9 6zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18',
   drapeau: 'M5 21V4h12l-2 4 2 4H5',
+  // Liste du compte, sous le prénom (maquette complète du 22/10/2026)
+  coeur: 'M12 20s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 10c0 5.5-7 10-7 10z',
+  reglages: 'M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4',
+  bouclier: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
 }
 
 // Une couleur par dossier, dans l'ordre, puis on recommence (noms écrits en entier pour Tailwind)

@@ -29,12 +29,14 @@ def test_fiche_prestataire(base: Session) -> None:
                "siret": "44306184100047", "siret_statut": "a_verifier", "statut": "en_pause",
                "metier_principal_suivant_id": electricien.id, "agenda_pas_minutes": 15,
                "annulation_delai_heures": 24, "declaration_periodicite": "mois", "lieu": "chez_moi",
-               "alerte_mail": "resume", "carte_couleur": "bleu-nuit", "carte_phrase": "ZZTEST Devis gratuit"}
+               "alerte_mail": "resume", "carte_couleur": "bleu-nuit", "carte_phrase": "ZZTEST Devis gratuit",
+               "metier_principal_prix_centimes": 4500}  # schema_v35 : de 1 € à 1 000 €
     liens_2 = {"compte_id": compte.id, "metier_principal_id": electricien.id, "commune_id": talence.id, "photo_id": None,
                "siret": None, "siret_statut": "absent", "statut": "actif",
                "metier_principal_suivant_id": None, "agenda_pas_minutes": 30,
                "annulation_delai_heures": 48, "declaration_periodicite": "trimestre", "lieu": "les_deux",
-               "alerte_mail": "aucun", "carte_couleur": "noir", "carte_phrase": None}
+               "alerte_mail": "aucun", "carte_couleur": "noir", "carte_phrase": None,
+               "metier_principal_prix_centimes": None}
 
     # 1. Ajout, puis relecture
     ajout = valeurs(Prestataire, 1, liens_1)
@@ -51,12 +53,12 @@ def test_fiche_prestataire(base: Session) -> None:
     relire_et_comparer(base, Prestataire, prestataire.id, modification)
 
     # 3. Fiche liée : un métier secondaire (ajout, modification, suppression du prestataire refusée)
-    ajout_lie = valeurs(MetierSecondaire, 1, {"prestataire_id": prestataire.id, "metier_id": plombier.id})
+    ajout_lie = valeurs(MetierSecondaire, 1, {"prestataire_id": prestataire.id, "metier_id": plombier.id, "prix_centimes": 5000})
     secondaire = MetierSecondaire(**ajout_lie)
     base.add(secondaire)
     base.commit()
     relire_et_comparer(base, MetierSecondaire, secondaire.id, ajout_lie)
-    modification_liee = valeurs(MetierSecondaire, 2, {"prestataire_id": prestataire.id, "metier_id": electricien.id})
+    modification_liee = valeurs(MetierSecondaire, 2, {"prestataire_id": prestataire.id, "metier_id": electricien.id, "prix_centimes": None})
     for rubrique, valeur in modification_liee.items():
         setattr(secondaire, rubrique, valeur)
     base.commit()

@@ -5,10 +5,12 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
+import { teinte } from '../../outils/pictos'
 import { type PageRubriques, pluriel } from '../../outils/recherche'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppPages from '../ui/AppPages.vue'
+import AppPicto from '../ui/AppPicto.vue'
 import AppSection from '../ui/AppSection.vue'
 import CarteResultat from './CarteResultat.vue'
 
@@ -67,10 +69,19 @@ function voir(dossierId?: number, numero?: number) {
         <div><AppBouton variante="accent" @click="routeur.push('/')">Publier une demande</AppBouton></div>
       </AppSection>
 
-      <section v-for="rubrique in page.rubriques" :key="rubrique.dossier_id" class="flex flex-col gap-3">
-        <div>
-          <h2 class="text-[24px] font-black">{{ rubrique.nom }}</h2>
-          <p class="text-[14.5px] text-texte-doux">{{ pluriel(rubrique.total, 'prestataire') }} près de {{ page.ville.nom }}</p>
+      <section v-for="(rubrique, rang) in page.rubriques" :key="rubrique.dossier_id" class="flex flex-col gap-3">
+        <!-- Le rond du dossier à gauche du titre, [Voir tout] à droite (maquette complète du 22/10/2026) -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex min-w-0 items-center gap-3">
+            <span class="grid size-11 shrink-0 place-items-center rounded-full" :class="teinte(rang)">
+              <AppPicto :code="rubrique.code" :taille="22" />
+            </span>
+            <div class="min-w-0">
+              <h2 class="text-[24px] leading-tight font-black">{{ rubrique.nom }}</h2>
+              <p class="text-[14px] font-semibold text-texte-doux">{{ pluriel(rubrique.total, 'prestataire') }} près de {{ page.ville.nom }}</p>
+            </div>
+          </div>
+          <AppBouton v-if="!dossier" variante="secondaire" @click="voir(rubrique.dossier_id)">Voir tout</AppBouton>
         </div>
 
         <template v-if="dossier">
@@ -86,9 +97,6 @@ function voir(dossierId?: number, numero?: number) {
             <div v-for="r in rubrique.resultats" :key="r.prestataire_id" class="w-[min(318px,82vw)] shrink-0 snap-start">
               <CarteResultat :resultat="r" />
             </div>
-          </div>
-          <div class="flex justify-center">
-            <AppBouton variante="secondaire" @click="voir(rubrique.dossier_id)">Voir tout</AppBouton>
           </div>
         </template>
       </section>

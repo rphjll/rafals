@@ -10,22 +10,26 @@ const props = withDefaults(
     raisonVerrou?: string
     type?: 'button' | 'submit'
     pleineLargeur?: boolean
+    // Petit bouton (38 px de haut) : dans une ligne, une liste, un pied de carte
+    petit?: boolean
     // Demande en cours d'envoi : le bouton ne réagit plus, pour ne pas envoyer deux fois
     occupe?: boolean
   }>(),
-  { variante: 'principal', raisonVerrou: '', type: 'button', pleineLargeur: false, occupe: false },
+  { variante: 'principal', raisonVerrou: '', type: 'button', pleineLargeur: false, petit: false, occupe: false },
 )
 const emit = defineEmits<{ click: [evenement: MouseEvent] }>()
 
 const bulleVisible = ref(false)
 const verrouille = computed(() => props.variante === 'verrouille')
 
+// Classes de la grande maquette (style.css) : btn-1 vert plein, btn-2 blanc bordé, btn-danger-2 bordé de rouge,
+// btn-verrou grisé en pointillés, btn-accent orange (10/11/2026)
 const classesVariante: Record<string, string> = {
-  principal: 'bg-primaire text-primaire-texte border-primaire hover:brightness-110',
-  secondaire: 'bg-secondaire-fond text-primaire border-secondaire-bord hover:brightness-95',
-  danger: 'bg-danger-fond text-erreur border-danger-bord hover:brightness-95',
-  verrouille: 'bg-neutre-doux text-neutre border-neutre-doux cursor-not-allowed',
-  accent: 'bg-accent-vif text-accent-vif-texte border-accent-vif hover:brightness-105',
+  principal: 'btn-1',
+  secondaire: 'btn-2',
+  danger: 'btn-danger-2',
+  verrouille: 'btn-verrou',
+  accent: 'btn-accent',
 }
 
 function clic(evenement: MouseEvent) {
@@ -47,8 +51,8 @@ function clic(evenement: MouseEvent) {
       :type="verrouille ? 'button' : type"
       :aria-disabled="verrouille || undefined"
       :aria-busy="occupe || undefined"
-      class="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-bouton border px-[18px] py-2.5 font-bold transition"
-      :class="[classesVariante[variante], pleineLargeur ? 'w-full' : '', occupe ? 'cursor-wait opacity-70' : '']"
+      class="btn"
+      :class="[classesVariante[variante], petit ? 'btn-petit' : '', pleineLargeur ? 'w-full' : '', occupe ? 'cursor-wait opacity-70' : '']"
       @click="clic"
       @blur="bulleVisible = false"
     >

@@ -9,7 +9,7 @@ import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppSection from '../components/ui/AppSection.vue'
 import { type ClientPublic, etoiles, texteNote } from '../outils/avis'
-import { initialesDe } from '../outils/noms'
+import AppInitiales from '../components/ui/AppInitiales.vue'
 
 const route = useRoute()
 const routeur = useRouter()
@@ -39,9 +39,7 @@ onBeforeUnmount(() => balise.remove())
     <template v-if="client">
       <AppSection>
         <div class="flex items-center gap-4">
-          <span class="grid size-16 shrink-0 place-items-center rounded-full bg-primaire-doux text-xl font-bold text-primaire" aria-hidden="true">
-            {{ initialesDe(client.nom) }}
-          </span>
+          <AppInitiales :nom="client.nom" taille="size-16 text-xl" />
           <div class="flex flex-col">
             <h1 class="text-[26px] font-bold">{{ client.nom }}</h1>
             <span class="text-texte-doux">Membre depuis {{ client.membre_depuis }}</span>

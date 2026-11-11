@@ -39,6 +39,8 @@ Les mails qui existent déjà (rendez-vous confirmé, annulé, rappel, avis…) 
 
 ## Réglages du prestataire : onglet « Alertes » (choix de Claude, réécrit le 04/10/2026)
 L'onglet garde son nom « Alertes » (Raphael, 04/10/2026 : « je voulais pas que tu enleve l'onglet alerte ») ; seul son contenu est réécrit. Titre de l'écran : « Alertes : être prévenu des nouvelles demandes ».
+
+> **21/10/2026 : déplacé dans « Paramètres »** (Raphael : « enleve notifictions de mon activitée et met le dans paramètre »). La tuile « Alertes » quitte « Mon activité » ; le même contenu devient la partie « Notifications : être prévenu des nouvelles demandes » de « Paramètres », pour les prestataires. Les règles ci-dessous ne changent pas.
 Raphael, mot pour mot : « l'onglet alerte n'est pas claire meme moi je ne comprend pas ce que c'est demande de plombier oui ou non ». L'écran est donc écrit en questions complètes, chacune avec ses réponses en toutes lettres et un exemple :
 1. **« Pour quels métiers voulez-vous être prévenu ? »** — pour chaque métier : « Un client cherche un plombier près de chez vous : » [Me prévenir] / [Ne pas me prévenir], avec dessous la conséquence (« Vous êtes prévenu de chaque demande de plombier dans votre rayon de 15 km. » ou « Vous ne recevez rien pour plombier. Les demandes restent visibles dans « Demandes près de chez moi ». »).
    - Exemple : Karim garde « Me prévenir » pour Plombier et choisit « Ne pas me prévenir » pour Jardinier.

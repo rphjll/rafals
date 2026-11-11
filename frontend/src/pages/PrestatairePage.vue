@@ -6,17 +6,16 @@ import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import AvisAffiche from '../components/avis/AvisAffiche.vue'
 import FenetreDemandeDevis from '../components/devis/FenetreDemandeDevis.vue'
-import AvatarPrestataire from '../components/prestataire/AvatarPrestataire.vue'
 import BoutonAbonnement from '../components/prestataire/BoutonAbonnement.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
-import AppBadge from '../components/ui/AppBadge.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
-import AppSection from '../components/ui/AppSection.vue'
+import AppIcone from '../components/ui/AppIcone.vue'
 import BoutonSignaler from '../components/BoutonSignaler.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
-import { texteAbonnes } from '../outils/abonnements'
 import { type AvisPublic, etoiles } from '../outils/avis'
+import { couleurDe } from '../outils/noms'
+import { euros } from '../outils/prix'
 import { VERROU_SIRET, lieuPourUnClient } from '../outils/prestataires'
 import { type PrestatairePublic, adressePhotoTravail, noteLisible } from '../outils/recherche'
 
@@ -75,6 +74,10 @@ function devisEnvoye() {
 
 const monProfil = computed(() => !!prestataire.value && compte.value?.prestataire_id === prestataire.value.id)
 // Retour à la page d'avant (ex. les résultats) ; ouverte directement par un lien : la recherche
+// Un clic sur la note (les 3 chiffres du haut) descend en douceur jusqu'aux avis
+function versAvis() {
+  document.getElementById('avis')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 function retour() {
   if (window.history.state?.back) routeur.back()
   else routeur.push('/trouver')
@@ -83,110 +86,88 @@ const prenom = computed(() => prestataire.value?.nom_affiche.replace(/^ZZTEST\s+
 </script>
 
 <template>
-  <div class="flex w-full flex-col gap-4">
+  <div class="page">
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
 
     <template v-if="prestataire">
-      <p class="text-[13.5px] text-texte-doux">
-        <a href="#" class="hover:text-primaire" @click.prevent="retour">‹ Retour</a>
-      </p>
-      <AppAlerte v-if="monProfil" etat="attente">
-        Votre page, telle que les clients la voient.
-        <RouterLink to="/profil" class="font-semibold underline">Mon profil</RouterLink>
+      <div v-if="monProfil" class="pp-auteur"><AppIcone nom="moi" /><span>Voici votre page, telle que les clients la voient.</span><RouterLink to="/profil">Modifier</RouterLink></div>
+      <a v-else href="#" class="retour" @click.prevent="retour"><AppIcone nom="retour" />Retour</a>
+
+      <!-- La carte de la grande maquette : bande de couleur, photo posée dessus, nom, métiers, lieu, 3 chiffres, boutons -->
+      <section class="carte pp" style="--c: var(--primaire)">
+        <div class="pp-couv" aria-hidden="true" />
+        <div class="pp-corps">
+          <img v-if="prestataire.a_une_photo" class="pp-photo" :src="`/api/prestataires/${prestataire.id}/photo`" :alt="`Photo de ${prestataire.nom_affiche}`" />
+          <span v-else class="pp-photo" :style="{ background: couleurDe(prestataire.nom_affiche) }">{{ prenom[0]?.toUpperCase() }}</span>
+          <div class="pp-nom">
+            <h1>{{ prestataire.nom_affiche }}</h1>
+            <span v-if="prestataire.siret_verifie" class="puce p-ok"><AppIcone nom="bouclier" class="size-4" />SIRET vérifié</span>
+            <!-- Sans SIRET vérifié : l'étiquette que la règle impose (RM-PRESTATAIRES, limites sans SIRET) -->
+            <span v-else class="puce p-accent">Particulier, non professionnel</span>
+          </div>
+          <p v-if="prestataire.metiers.length" class="pp-metier">
+            <b>{{ prestataire.metiers[0]?.nom }}</b><template v-if="prestataire.metiers.length > 1"> · aussi {{ prestataire.metiers.slice(1).map((m) => (m.prix_centimes ? `${m.nom} (${euros(m.prix_centimes)}/h)` : m.nom)).join(', ') }}</template>
+          </p>
+          <p class="doux"><AppIcone nom="lieu" /> {{ lieuPourUnClient(prestataire) }}</p>
+          <!-- 3 chiffres ; un clic sur la note descend jusqu'aux avis -->
+          <div class="pp-chiffres">
+            <button type="button" @click="versAvis">
+              <b>{{ prestataire.nombre_avis ? `★ ${noteLisible(prestataire.note ?? 0)}` : 'Nouveau' }}</b><small>{{ prestataire.nombre_avis }} avis</small>
+            </button>
+            <span v-if="prestataire.metiers[0]?.prix_centimes"><b>{{ euros(prestataire.metiers[0].prix_centimes) }}</b><small>de l’heure</small></span>
+            <span v-else><b>{{ prestataire.photos.length }}</b><small>photo{{ prestataire.photos.length > 1 ? 's' : '' }}</small></span>
+            <span><b>{{ prestataire.abonnes }}</b><small>abonné{{ prestataire.abonnes > 1 ? 's' : '' }}</small></span>
+          </div>
+          <template v-if="!monProfil">
+            <div class="pp-btns">
+              <button type="button" class="btn btn-1" @click="ecrire"><AppIcone nom="messages" />Écrire à {{ prenom }}</button>
+              <BoutonAbonnement :prestataire-id="prestataire.id" :nom="prestataire.nom_affiche" :abonne="prestataire.abonne" @change="Object.assign(prestataire, $event)" />
+            </div>
+            <div class="w-full max-w-[420px]">
+              <AppBouton v-if="prestataire.siret_verifie" variante="secondaire" pleine-largeur @click="demanderDevis"><AppIcone nom="devis" />Demander un devis</AppBouton>
+              <AppBouton v-else variante="verrouille" pleine-largeur :raison-verrou="VERROU_SIRET.devisClient">Demander un devis</AppBouton>
+            </div>
+            <AppAlerte v-if="erreurEcrire">{{ erreurEcrire }}</AppAlerte>
+          </template>
+        </div>
+      </section>
+      <AppAlerte v-if="prestataire.absences" etat="attente">
+        {{ prestataire.absences }} absence{{ prestataire.absences > 1 ? 's' : '' }} sans prévenir ces 6 derniers mois
       </AppAlerte>
 
-      <!-- Ordinateur : la fiche à gauche, la carte « Besoin de Karim ? » à droite, qui reste visible.
-           Téléphone : la présentation, la carte, puis les photos et les avis. -->
-      <div class="grid items-start gap-8" :class="monProfil ? '' : 'md:grid-cols-[1fr_340px]'">
-        <div class="flex min-w-0 flex-col gap-6">
-          <div class="grid items-center gap-5 sm:grid-cols-[auto_1fr]">
-            <AvatarPrestataire :id="prestataire.id" :nom="prestataire.nom_affiche" :a-une-photo="prestataire.a_une_photo" taille="grande" />
-            <div class="flex min-w-0 flex-col gap-2">
-              <h1 class="text-[clamp(28px,4.5vw,40px)] leading-tight font-black">{{ prestataire.nom_affiche }}</h1>
-              <p v-if="prestataire.nombre_avis">
-                <b class="text-accent">★ {{ noteLisible(prestataire.note ?? 0) }}</b>
-                <span class="text-texte-doux"> · {{ prestataire.nombre_avis }} avis</span>
-              </p>
-              <div class="flex flex-wrap gap-1.5">
-                <AppBadge v-if="!prestataire.nombre_avis" etat="attente">Nouveau sur rafals</AppBadge>
-                <AppBadge v-if="prestataire.siret_verifie" etat="ok">SIRET vérifié</AppBadge>
-              <!-- Sans SIRET vérifié : l'étiquette que la règle impose (RM-PRESTATAIRES, limites sans SIRET) -->
-              <AppBadge v-else etat="attente">Particulier, non professionnel</AppBadge>
-              </div>
-              <!-- [S'abonner] et « 12 abonnés » (21/10/2026) ; sur sa propre page, seulement le nombre -->
-              <div class="flex flex-wrap items-center gap-x-3.5 gap-y-2">
-                <BoutonAbonnement
-                  v-if="!monProfil"
-                  :prestataire-id="prestataire.id"
-                  :nom="prestataire.nom_affiche"
-                  :abonne="prestataire.abonne"
-                  @change="Object.assign(prestataire, $event)"
-                />
-                <span class="text-[13.5px] font-bold text-texte-doux tabular-nums">
-                  {{ texteAbonnes(prestataire.abonnes) || "Aucun abonné pour l'instant" }}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="flex flex-col gap-1 text-texte-doux">
-            <p v-if="prestataire.metiers.length">
-              <b class="text-texte">{{ prestataire.metiers[0]?.nom }}</b>
-              <template v-if="prestataire.metiers.length > 1">
-                · aussi {{ prestataire.metiers.slice(1).map((m) => m.nom).join(', ') }}
-              </template>
-            </p>
-            <p>{{ lieuPourUnClient(prestataire) }}</p>
-          </div>
-          <AppAlerte v-if="prestataire.absences" etat="attente">
-            {{ prestataire.absences }} absence{{ prestataire.absences > 1 ? 's' : '' }} sans prévenir ces 6 derniers mois
-          </AppAlerte>
-          <p v-if="prestataire.presentation" class="max-w-[65ch] text-[16.5px] whitespace-pre-line">{{ prestataire.presentation }}</p>
-        </div>
+      <section v-if="prestataire.presentation" class="section">
+        <h2>À propos</h2>
+        <div class="carte p-[18px]"><p class="pp-bio whitespace-pre-line">{{ prestataire.presentation }}</p></div>
+      </section>
 
-        <aside v-if="!monProfil" class="flex flex-col gap-3 rounded-carte bg-fonce p-6 text-sur-fonce md:sticky md:top-24">
-          <h2 class="text-[22px] font-extrabold">Besoin de {{ prenom }} ?</h2>
-          <AppBouton variante="accent" pleine-largeur @click="ecrire">Écrire à {{ prenom }}</AppBouton>
-          <AppAlerte v-if="erreurEcrire">{{ erreurEcrire }}</AppAlerte>
-          <AppBouton v-if="prestataire.siret_verifie" variante="secondaire" pleine-largeur @click="demanderDevis">Demander un devis</AppBouton>
-          <AppBouton v-else variante="verrouille" pleine-largeur :raison-verrou="VERROU_SIRET.devisClient">Demander un devis</AppBouton>
-          <p class="text-[13.5px] text-sur-fonce-doux">Son téléphone et son adresse vous sont donnés après un rendez-vous.</p>
-        </aside>
-      </div>
-
-      <AppSection v-if="prestataire.photos.length" titre="Son travail en photos">
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
-          <a v-for="rang in prestataire.photos" :key="rang" :href="adressePhotoTravail(prestataire.id, rang)" target="_blank" rel="noopener">
-            <img
-              :src="adressePhotoTravail(prestataire.id, rang)"
-              :alt="`Photo n° ${rang} du travail de ${prenom}`"
-              loading="lazy"
-              class="aspect-[4/3] w-full rounded-rafals object-cover hover:ring-2 hover:ring-primaire"
-            />
+      <section v-if="prestataire.photos.length" class="section">
+        <h2>Son travail en photos</h2>
+        <div class="photos pp-photos">
+          <a v-for="rang in prestataire.photos" :key="rang" class="ph" style="--c: var(--surface2)" :href="adressePhotoTravail(prestataire.id, rang)" target="_blank" rel="noopener">
+            <img :src="adressePhotoTravail(prestataire.id, rang)" :alt="`Photo n° ${rang} du travail de ${prenom}`" loading="lazy" />
           </a>
         </div>
-      </AppSection>
+      </section>
 
-      <AppSection titre="Avis">
-        <template v-if="avis.length">
-          <div class="flex flex-wrap items-center gap-3.5">
-            <span class="text-[40px] leading-none font-black">{{ noteLisible(prestataire.note ?? 0) }}</span>
-            <div>
-              <div class="text-lg tracking-wide text-accent">{{ etoiles(prestataire.note ?? 0) }}</div>
-              <span class="text-[13.5px] text-texte-doux">{{ prestataire.nombre_avis }} avis de clients ayant eu un rendez-vous</span>
-            </div>
+      <section id="avis" class="section">
+        <h2>Avis</h2>
+        <div class="carte pp-avis p-[18px]">
+          <div class="pp-note">
+            <b>{{ prestataire.nombre_avis ? noteLisible(prestataire.note ?? 0) : '—' }}</b>
+            <span class="etoile">{{ etoiles(prestataire.note ?? 0) }}</span>
+            <small class="doux">{{ prestataire.nombre_avis }} avis</small>
           </div>
-          <div class="flex flex-col divide-y divide-bord">
-            <div v-for="a in avis.slice(0, nombreAffiches)" :key="a.id" class="py-3 first:pt-0">
-              <AvisAffiche :avis="a" :nom-prestataire="prenom" />
-            </div>
+          <div class="pp-liste">
+            <div v-for="a in avis.slice(0, nombreAffiches)" :key="a.id" class="avis"><AvisAffiche :avis="a" :nom-prestataire="prenom" /></div>
+            <p v-if="!avis.length" class="doux">Pas encore d'avis : seuls les clients qui ont eu un rendez-vous peuvent en laisser un.</p>
+            <button v-if="avis.length > nombreAffiches" type="button" class="btn btn-2 btn-petit" @click="nombreAffiches += AVIS_PAR_PAGE">Voir plus d'avis</button>
           </div>
-          <div v-if="avis.length > nombreAffiches">
-            <AppBouton variante="secondaire" @click="nombreAffiches += AVIS_PAR_PAGE">Voir plus d'avis</AppBouton>
-          </div>
-        </template>
-        <p v-else class="text-[14px] text-texte-doux">Pas encore d'avis.</p>
-      </AppSection>
-      <BoutonSignaler v-if="!monProfil" :prestataire-id="prestataire.id" :nom-prestataire="prestataire.nom_affiche" />
+        </div>
+      </section>
+      <p class="pp-pied doux petit">
+        <AppIcone nom="bouclier" />Le téléphone et l’adresse sont donnés après une réservation.
+        <BoutonSignaler v-if="!monProfil" :prestataire-id="prestataire.id" :nom-prestataire="prestataire.nom_affiche" />
+      </p>
       <FenetreDemandeDevis :prestataire="prestataire" :ouverte="devisOuvert" @fermer="devisOuvert = false" @envoyee="devisEnvoye" />
     </template>
   </div>

@@ -156,6 +156,40 @@ def metiers_secondaires(db: Session, prestataire: Prestataire, jour: date) -> li
     return [ligne.metier_id for ligne in lignes_secondaires(db, prestataire) if en_cours(ligne.fin_le, jour)]
 
 
+def prix_du_metier(db: Session, prestataire: Prestataire, metier_id: int) -> int | None:
+    """Le prix de l'heure d'un métier du prestataire, en centimes (ex. 4500 = 45,00 €) ; None s'il ne l'a pas donné."""
+    if metier_id == prestataire.metier_principal_id:
+        return prestataire.metier_principal_prix_centimes
+    ligne = db.scalar(select(MetierSecondaire).where(
+        MetierSecondaire.prestataire_id == prestataire.id, MetierSecondaire.metier_id == metier_id))
+    return ligne.prix_centimes if ligne else None
+
+
+def fixer_prix(db: Session, prestataire: Prestataire, metier_id: int, prix_centimes: int | None, maintenant: datetime) -> Prestataire:
+    """« Mon profil › Mes métiers › [Changer le prix] » : le prix de l'heure d'un métier exercé, ou None pour l'effacer.
+    Ex. Karim, Électricien : 4500 (45,00 € de l'heure)."""
+    mini, maxi = reglages.PRIX_HEURE_CENTIMES
+    if prix_centimes is not None and not mini <= prix_centimes <= maxi:
+        raise ErreurRegle(f"Le prix de l'heure doit être entre {mini // 100:_} € et {maxi // 100:_} €.".replace("_", " "))
+    if metier_id == prestataire.metier_principal_id:
+        avant = prestataire.metier_principal_prix_centimes
+        prestataire.metier_principal_prix_centimes = prix_centimes
+    else:
+        jour = aujourd_hui(maintenant)
+        ligne = next((l for l in lignes_secondaires(db, prestataire) if l.metier_id == metier_id and en_cours(l.fin_le, jour)), None)
+        if ligne is None:
+            raise ErreurRegle("Ce métier n'est pas dans votre profil.", 404)
+        avant = ligne.prix_centimes
+        ligne.prix_centimes = prix_centimes
+    journal.noter(
+        db, auteur_id=prestataire.compte_id, action="fixer_prix_heure", table_cible="prestataire", ligne_id=prestataire.id,
+        avant={"metier_id": metier_id, "prix_centimes": avant}, apres={"metier_id": metier_id, "prix_centimes": prix_centimes},
+        maintenant=maintenant,
+    )
+    db.flush()
+    return prestataire
+
+
 def metiers_exerces(db: Session, prestataire: Prestataire, jour: date) -> list[int]:
     """Métier principal (s'il n'est pas arrêté) puis métiers secondaires exercés ce jour-là : ceux où il peut publier."""
     principal = [prestataire.metier_principal_id] if en_cours(prestataire.metier_principal_fin_le, jour) else []
@@ -213,12 +247,17 @@ def _mettre_a_jour_metiers(
     nouveau_principal = prestataire.metier_principal_id
     lignes = {ligne.metier_id: ligne for ligne in lignes_secondaires(db, prestataire)} if prestataire.id else {}
     principal_change = ancien_principal is not None and ancien_principal != nouveau_principal
+    # Le prix de l'heure suit son métier (schema_v35) : ex. Plombier devient principal avec ses 50 €
+    prix_lignes = {metier_id: ligne.prix_centimes for metier_id, ligne in lignes.items()}
+    ancien_prix = prestataire.metier_principal_prix_centimes
 
     if (principal_change and ancien_principal not in voulus
             and not en_cours(prestataire.metier_principal_fin_le, jour)):
         # Métier principal déjà arrêté (ex. Léa) : il reste dans le profil comme métier arrêté
-        db.add(MetierSecondaire(prestataire_id=prestataire.id, metier_id=ancien_principal, fin_le=prestataire.metier_principal_fin_le))
+        db.add(MetierSecondaire(prestataire_id=prestataire.id, metier_id=ancien_principal, fin_le=prestataire.metier_principal_fin_le,
+                                prix_centimes=ancien_prix))
     if principal_change:
+        prestataire.metier_principal_prix_centimes = prix_lignes.get(nouveau_principal)
         prestataire.metier_principal_fin_le = None
         prestataire.metier_principal_suivant_id = None
 
@@ -233,7 +272,8 @@ def _mettre_a_jour_metiers(
     db.flush()
     for metier_id in voulus:
         if metier_id not in lignes:
-            db.add(MetierSecondaire(prestataire_id=prestataire.id, metier_id=metier_id))
+            prix = ancien_prix if principal_change and metier_id == ancien_principal else None
+            db.add(MetierSecondaire(prestataire_id=prestataire.id, metier_id=metier_id, prix_centimes=prix))
     if prestataire.metier_principal_suivant_id is not None and prestataire.metier_principal_suivant_id not in voulus:
         prestataire.metier_principal_suivant_id = None
     db.flush()
@@ -463,9 +503,11 @@ def appliquer_fins_de_metier(db: Session, maintenant: datetime) -> int:
         if choix is None:
             continue  # seul métier arrêté (ex. Léa) : le profil reste affiché
         ancien, fin, nouveau = prestataire.metier_principal_id, prestataire.metier_principal_fin_le, choix.metier_id
+        ancien_prix, nouveau_prix = prestataire.metier_principal_prix_centimes, choix.prix_centimes
         db.delete(choix)
         db.flush()
-        db.add(MetierSecondaire(prestataire_id=prestataire.id, metier_id=ancien, fin_le=fin))
+        db.add(MetierSecondaire(prestataire_id=prestataire.id, metier_id=ancien, fin_le=fin, prix_centimes=ancien_prix))
+        prestataire.metier_principal_prix_centimes = nouveau_prix
         prestataire.metier_principal_id = nouveau
         prestataire.metier_principal_fin_le = None
         prestataire.metier_principal_suivant_id = None

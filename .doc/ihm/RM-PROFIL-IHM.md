@@ -1,5 +1,15 @@
 # Mon profil — Interface
 
+## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
+
+Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
+
+- Carte « insta » de la maquette : photo de 96 px (ou les initiales), 4 chiffres à côté, nom + pastilles (actif, SIRET vérifié), métier en gras « · aussi … », présentation, lieu, SIRET ; [Modifier mon profil] [Changer ma photo] [Mon activité] ; les métiers en bulles rondes (le principal entouré de vert) + [+ Ajouter] ; onglets Photos · Mon activité · Mon compte (trait noir en haut).
+- Les lignes qui se déplient sont des cartes séparées (rond coloré avec l'icône de la maquette, titre, résumé, ›) ; « Notifications sur cet appareil » a un interrupteur.
+- Sous la carte : « Voir ma page publique › ».
+- **« Mes métiers »** (11/11/2026, prix de l'heure) : une ligne par métier, « Électricien [principal] · 45 € de l'heure » (ou « Pas de prix de l'heure »), [Prix…] et [Arrêter ce métier…] ; [Prix…] ouvre « Prix de l'heure — Électricien » : « Votre prix de l'heure (€) », [Enregistrer], [Effacer le prix], [Annuler]. La fenêtre « Ajouter un métier » demande aussi « Votre prix de l'heure (€), facultatif ».
+
+
 > **Changé le 21/10/2026 : présentation façon Instagram.** Demande de Raphael, mot pour mot : « la rubrique mon profil est moche essaye de faire un truc du style instagrame ». Maquette validée (« comme la maquette ») : https://claude.ai/artifact/VvWuWo8jwdMoCyTfsJhUr7 (`.doc/ihm/maquette-profil-instagram.html`). **Les onglets remplacent la règle du 07/10/2026 « l'un sous l'autre (pas d'onglets) »** (choix de Raphael du 21/10/2026). Rien n'a disparu : chaque carte est rangée dans un onglet. Largeur 640 px au plus. Fichiers : `ProfilPage.vue`, `prestataire/FicheActivite.vue`, `prestataire/CartePhotosTravail.vue`, `profil/EnteteProfil.vue`, `profil/LignesCompte.vue`, `ui/AppListeLignes.vue`, `ui/AppSection.vue`, `ui/AppOnglets.vue` (variante `egaux`), `outils/profil.ts`.
 >
 > **Prestataire** (ex. Karim Benali), une seule grande carte, de haut en bas :
@@ -9,7 +19,7 @@
 > 4. Les métiers en **bulles rondes** (initiale du métier ; le principal entouré de vert, « principal » dessous) Un clic sur un métier ouvre l'onglet « Mon activité » sur la ligne « Mes métiers ». La bulle « + Ajouter » ouvre la fenêtre **« Ajouter un métier »** (demande de Raphael du 21/10/2026 : « quand je clic sur ajouter un metier ca m'enmène en bas alors que je veux que ca fasse comme si j'ajoute un métier ») : champ « Métier à ajouter » (propositions dès la 1re lettre, sans le principal ni les secondaires déjà là), puis [Ajouter Chauffagiste] / [Annuler] → message « Chauffagiste ajouté à vos métiers. ». Avec 5 métiers secondaires : « Vous avez déjà 5 métiers secondaires : c'est le maximum. Arrêtez-en un d'abord (ligne « Mes métiers »). » Fichier : `prestataire/FenetreAjoutMetier.vue`.
 > 5. 3 onglets à dessins, de même largeur : **Photos** · **Mon activité** · **Mon compte** (adresse `?onglet=activite`, `?onglet=compte`). Activité arrêtée : seulement « Mon compte ».
 > 6. **Photos** : grille carrée de 3 colonnes ; les 2 premières portent « Sur ma carte » ; dernière case « + Ajouter une photo » (tant qu'il y en a moins de 10). Un clic sur une photo l'ouvre en grand : [Retirer cette photo] / [Fermer]. Dessous : « 8 photos sur 10 (JPG ou PNG, 5 Mo chacune). Les 2 premières sont sur votre carte dans « Trouver un prestataire ». »
-> 7. **Mon activité** : « Sans SIRET : vos limites » (seulement sans SIRET vérifié), « Paiement par carte », « Mes métiers », « TVA », « Visibilité ».
+> 7. **Mon activité** : « Sans SIRET : vos limites » (seulement sans SIRET vérifié), « Paiement par carte », « Mes métiers », « Visibilité ».
 > 8. **Mon compte** : « Mes informations », « Accord de tes parents » (16-17 ans), « Mon adresse », « Absences » (s'il y en a), « Notifications sur cet appareil », « Mes paiements par carte » (s'il y en a), « Mes données », « Fermer mon compte » (titre en rouge).
 >
 > **Chaque carte est une ligne** : picto sur une pastille de couleur, titre, petit résumé (ex. « karim@example.com · 06 12 34 56 78 », « Plombier (principal) · Chauffagiste », « Actif : vous apparaissez dans les recherches »), « › ». Un clic la déplie sur place avec exactement le contenu et les boutons d'avant ; un 2ᵉ clic la replie. Le badge d'une carte (ex. « Activé » de « Paiement par carte ») reste visible à droite de la ligne fermée.
@@ -17,6 +27,8 @@
 > **Client** (ex. Julie Martin) : ses initiales « JM », 3 chiffres « 5 rendez-vous » (confirmés, passés ou à venir), « 3 avis donnés », « 4 abonnements » ; son nom, son adresse mail ; [Modifier mes informations] (ouvre la ligne « Mes informations ») ; le bloc « Proposer mes services » sur fond dégradé orange-vert (mêmes textes et mêmes bandeaux qu'avant) ; le titre « MON COMPTE » puis les mêmes lignes que l'onglet « Mon compte ».
 >
 > Décisions prises seul, à confirmer : pas de [Changer ma photo] pour un client (un client n'a pas de photo dans rafals aujourd'hui : ce serait une fonction nouvelle) ; les bulles montrent l'initiale du métier (un métier n'a pas de dessin à lui) ; « Mon profil » n'est plus écrit en titre (c'est le nom, comme sur Instagram).
+
+> **Changé le 17/10/2026** (agenda simplifié) : dans la carte « **Mes métiers** », chaque métier exercé a un bouton danger **[Arrêter ce métier…]** ; il ouvre la fenêtre « Date d'arrêt — Coiffeuse » (avant : dans « Mon agenda ») avec un champ « Dernier jour de travail * » (aujourd'hui au départ), le texte « À partir du …, tous les jours du calendrier « Coiffeuse » sont fermés. Les rendez-vous de ce métier pris après cette date sont annulés : chaque client est prévenu par mail. », le choix du métier qui deviendra principal, puis [Arrêter Coiffeuse après le 31/10/2026] (danger) / [Annuler]. Un métier qui a déjà une date d'arrêt montre **[Retirer la date d'arrêt]** → « Date d'arrêt retirée : Coiffeuse continue. ». Phrase du bas : « Arrêter un métier : [Arrêter ce métier…], puis choisir son dernier jour. »
 
 > Fichier : `frontend/src/pages/ProfilPage.vue`. Créé le 07/10/2026. Le détail de chaque carte reste dans `RM-PROPOSER-IHM.md` (cartes du prestataire) et `RM-COMPTE-IHM.md` (cartes du compte).
 
@@ -33,8 +45,8 @@ Demande de Raphael du 07/10/2026, mot pour mot : « on vas fusioner mon compte e
 
 **Prestataire** (ex. Karim Benali, plombier) :
 1. Titre « Mon profil ».
-2. Sa fiche de prestataire et ses cartes, comme avant (`RM-PROPOSER-IHM.md`) : fiche (photo, métier, zone, SIRET, présentation), « Photos de mon travail », « Paiement par carte », « TVA », « Mes métiers », « Visibilité » (la carte « Mon local » a disparu, voir plus bas). [Modifier mon profil] remplace la fiche par le formulaire.
-3. Les cartes du compte, comme avant (`RM-COMPTE-IHM.md`) : « Mes informations », « Accord de tes parents » (16-17 ans), « Mon adresse », les absences (s'il y en a), **« Notifications sur cet appareil »** (lot 8.7 ; même carte que dans « Alertes », voir `RM-ALERTES-IHM.md` § « Sur ce téléphone » ; exemple « Une notification quand on vous écrit ou qu'on vous fait une proposition, ex. « Karim vous a écrit ». »), « Mes paiements par carte » (s'il y en a), « Mes données », « Fermer mon compte » tout en bas.
+2. Sa fiche de prestataire et ses cartes, comme avant (`RM-PROPOSER-IHM.md`) : fiche (photo, métier, zone, SIRET, présentation), « Photos de mon travail », « Paiement par carte », « Mes métiers », « Visibilité » (la carte « Mon local » a disparu, voir plus bas ; la carte « TVA » aussi, le 17/10/2026 : la TVA s'active toute seule par la barre de « Mon activité »). [Modifier mon profil] remplace la fiche par le formulaire.
+3. Les cartes du compte, comme avant (`RM-COMPTE-IHM.md`) : « Mes informations », « Accord de tes parents » (16-17 ans), « Mon adresse », les absences (s'il y en a), **« Notifications sur cet appareil »** (lot 8.7 ; même carte que dans « Paramètres › Notifications », voir `RM-ALERTES-IHM.md` § « Sur ce téléphone » ; exemple « Une notification quand on vous écrit ou qu'on vous fait une proposition, ex. « Karim vous a écrit ». »), « Mes paiements par carte » (s'il y en a), « Mes données », « Fermer mon compte » tout en bas.
 
 **Client qui n'est pas prestataire** (ex. Julie Martin) :
 1. Titre « Mon profil ».

@@ -23,6 +23,8 @@ export interface CarteResultat {
   abonnes: number
   /** La personne connectée le suit : bouton [Abonné ✓] */
   abonne: boolean
+  /** Prix de l'heure du métier de la carte, en centimes (« 45 €/h ») ; null s'il n'est pas donné */
+  prix_centimes: number | null
 }
 
 export interface PageResultats {
@@ -59,7 +61,7 @@ export interface PrestatairePublic {
   ville: string
   distance_km: number
   lieu: LieuService
-  metiers: { id: number; nom: string }[]
+  metiers: { id: number; nom: string; prix_centimes: number | null }[]
   siret_verifie: boolean
   note: number | null
   nombre_avis: number

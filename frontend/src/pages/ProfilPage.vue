@@ -14,6 +14,7 @@ import LignesCompte from '../components/profil/LignesCompte.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppCarte from '../components/ui/AppCarte.vue'
+import AppIcone from '../components/ui/AppIcone.vue'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 import type { ProfilPrestataire } from '../outils/prestataires'
@@ -76,17 +77,18 @@ async function enregistre(nouveau: ProfilPrestataire) {
     <AppBouton variante="secondaire" pleine-largeur @click="routeur.push('/inscription')">Créer mon compte</AppBouton>
   </AppCarte>
 
-  <div v-else-if="compte && profilCharge" class="mx-auto flex w-full max-w-[640px] flex-col gap-[18px]">
+  <div v-else-if="compte && profilCharge" class="page">
     <!-- Prestataire : son profil façon Instagram (ou le formulaire pour le modifier) -->
     <template v-if="profil">
       <FormulaireProfil v-if="enModification" :existant="profil" @enregistre="enregistre" @annuler="enModification = false" />
       <FicheActivite v-else :profil="profil" @maj="(p) => (profil = p)" @modifier="enModification = true">
         <template #compte><LignesCompte :compte="compte" prestataire /></template>
       </FicheActivite>
+      <RouterLink v-if="!enModification" class="retour" :to="`/prestataires/${profil.id}`" style="margin: 0 auto">Voir ma page publique <AppIcone nom="suite" /></RouterLink>
     </template>
 
     <!-- Client : ses chiffres, de quoi devenir prestataire, puis son compte -->
-    <section v-else class="carte overflow-hidden">
+    <section v-else class="carte insta">
       <EnteteProfil :nom="`${compte.prenom} ${compte.nom}`" :chiffres="chiffresClient">
         <template #photo>
           <AvatarPrestataire :id="0" :nom="`${compte.prenom} ${compte.nom}`" :a-une-photo="false" taille="grande" />
@@ -97,7 +99,7 @@ async function enregistre(nouveau: ProfilPrestataire) {
         </template>
       </EnteteProfil>
 
-      <div class="mx-5 mt-5 mb-4 flex flex-col gap-2.5 rounded-carte bg-linear-135 from-teinte-orange to-teinte-vert p-5 max-sm:mx-4">
+      <div class="flex flex-col gap-2.5 rounded-[16px] p-[18px]" style="background: var(--accent-doux)">
         <h2 class="text-[17px] font-black">Proposer mes services</h2>
         <AppAlerte v-if="!compte.email_verifie" etat="attente">
           Vérifiez d'abord votre adresse mail (lien reçu par mail), puis revenez proposer vos services.
@@ -119,7 +121,7 @@ async function enregistre(nouveau: ProfilPrestataire) {
         </template>
       </div>
 
-      <h2 class="px-5 pt-2 text-[12px] font-extrabold tracking-[.06em] text-texte-doux uppercase max-sm:px-4">Mon compte</h2>
+      <h2 class="h-sec">Mon compte</h2>
       <LignesCompte ref="lignesClient" :compte="compte" :prestataire="false" />
     </section>
   </div>

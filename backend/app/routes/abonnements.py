@@ -23,6 +23,8 @@ class EtatAbonnement(BaseModel):
 
 
 class Notifications(BaseModel):
+    """Les 3 cases de « Paramètres », pour tous mes abonnements."""
+
     creneau: bool
     nouveaute: bool
     retour: bool
@@ -40,7 +42,7 @@ class AbonnementVisible(BaseModel):
     nombre_avis: int
     abonnes: int
     visible: bool  # False : en pause, bloqué ou arrêté → « Profil en pause » sur la carte, pas de lien
-    notifications: Notifications
+    muet: bool  # plus aucune notification de ce prestataire
     abonne_le: datetime
 
 
@@ -64,12 +66,34 @@ def desabonner(prestataire_id: int, db: Base, compte: CompteConnecte) -> EtatAbo
     return _etat(db, compte.id, prestataire_id)
 
 
-@routeur.post("/moi/abonnements/{prestataire_id}/notifications")
-def regler(prestataire_id: int, donnees: Notifications, db: Base, compte: CompteConnecte) -> Notifications:
-    """La cloche : ex. {"creneau": true, "nouveaute": false, "retour": true} pour Karim seulement."""
-    a = service.regler(db, compte, prestataire_id, creneau=donnees.creneau, nouveaute=donnees.nouveaute, retour=donnees.retour)
+class Muet(BaseModel):
+    muet: bool
+
+
+@routeur.post("/moi/abonnements/{prestataire_id}/muet")
+def rendre_muet(prestataire_id: int, donnees: Muet, db: Base, compte: CompteConnecte) -> Muet:
+    """[Rendre muet] : {"muet": true} ; [Réactiver les notifications] : {"muet": false}."""
+    a = service.rendre_muet(db, compte, prestataire_id, donnees.muet)
     db.commit()
-    return Notifications(creneau=a.notif_creneau, nouveaute=a.notif_nouveaute, retour=a.notif_retour)
+    return Muet(muet=a.muet)
+
+
+def _cases(compte) -> Notifications:
+    return Notifications(creneau=compte.abo_notif_creneau, nouveaute=compte.abo_notif_nouveaute, retour=compte.abo_notif_retour)
+
+
+@routeur.get("/moi/abonnements/notifications")
+def lire_notifications(compte: CompteConnecte) -> Notifications:
+    """« Paramètres » : les 3 cases, pour tous mes abonnements."""
+    return _cases(compte)
+
+
+@routeur.post("/moi/abonnements/notifications")
+def regler(donnees: Notifications, db: Base, compte: CompteConnecte) -> Notifications:
+    """« Paramètres » : ex. {"creneau": true, "nouveaute": false, "retour": true}, pour tous mes abonnements."""
+    service.regler(db, compte, creneau=donnees.creneau, nouveaute=donnees.nouveaute, retour=donnees.retour)
+    db.commit()
+    return _cases(compte)
 
 
 @routeur.get("/moi/abonnements")
@@ -87,7 +111,7 @@ def mes_abonnements(db: Base, compte: CompteConnecte) -> list[AbonnementVisible]
             ville=db.get_one(Commune, p.commune_id).nom, metier=db.get_one(Metier, p.metier_principal_id).nom,
             note=somme / nombre if nombre else None, nombre_avis=nombre, abonnes=nombres.get(p.id, 0),
             visible=page_publique_visible(p),
-            notifications=Notifications(creneau=a.notif_creneau, nouveaute=a.notif_nouveaute, retour=a.notif_retour),
+            muet=a.muet,
             abonne_le=a.cree_le,
         ))
     return cartes

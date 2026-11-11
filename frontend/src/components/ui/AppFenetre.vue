@@ -31,7 +31,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', surTouche))
   <Teleport to="body">
     <div
       v-if="ouverte"
-      class="fixed inset-0 z-20 grid place-items-center bg-voile p-4"
+      class="voile"
       @click.self="emit('fermer')"
     >
       <div
@@ -39,12 +39,11 @@ onBeforeUnmount(() => document.removeEventListener('keydown', surTouche))
         role="dialog"
         aria-modal="true"
         :aria-label="titre"
-        class="max-h-[calc(100dvh-32px)] w-full overflow-y-auto carte p-[22px] text-texte"
-        :class="large ? 'max-w-[640px]' : 'max-w-[440px]'"
+        class="fenetre text-texte"
       >
-        <h3 class="mb-2 text-xl font-bold">{{ titre }}</h3>
-        <div class="mb-[18px] leading-relaxed text-texte-doux"><slot /></div>
-        <div class="flex min-h-[42px] flex-wrap justify-between gap-2.5">
+        <h2>{{ titre }}</h2>
+        <div class="flex flex-col gap-3 leading-relaxed"><slot /></div>
+        <div class="btns f-btns">
           <slot name="pied" />
         </div>
       </div>

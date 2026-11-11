@@ -4,6 +4,7 @@
 // Depuis le 22/10/2026 : 6 couleurs toutes prêtes et une petite phrase, gardées par [Enregistrer ma carte] (schema_v33),
 // et 2 onglets : « Chez un imprimeur » (une carte) et « Chez moi » (la planche A4 de 10 cartes), chacun avec son bouton.
 // Verrouillé sans SIRET vérifié ou si le profil n'est pas actif (raison donnée par le serveur).
+import EnteteActivite from '../components/EnteteActivite.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
@@ -98,7 +99,7 @@ function telecharger(forme: 'planche' | 'carte') {
 
 <template>
   <GardePrestataire titre="Ma carte de visite">
-    <h1 class="text-[clamp(28px,4.5vw,40px)] font-black">Ma carte de visite</h1>
+    <EnteteActivite titre="Ma carte de visite" texte="Choisissez une couleur et une petite phrase. Le carré renvoie vers votre page." />
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
 
     <template v-if="apercu">

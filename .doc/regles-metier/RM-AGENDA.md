@@ -2,6 +2,27 @@
 
 > Validé et formalisé le 29/09/2026 (lot 3.0). Modifié le 03/10/2026 (refonte du calendrier : un calendrier par métier, ouvertures exceptionnelles).
 
+## Un seul geste : dire quand on est ouvert (décision de Raphael du 21/10/2026)
+Raphael, mot pour mot : « enleve le sistème de fermeture exeptionel et ouverture exeptionel et juste quand il clic sur le jours il dis quand il est ouvert et si il ne dis pas qu'il est ouvert il est automatiquement fermé ». Les boutons « fermeture / ouverture exceptionnelle » disparaissent de l'écran ; le seul geste est de dire, pour un jour, ses heures d'ouverture (une ou plusieurs plages, ou aucune).
+- Exemple 1 : mardi 27, « ouvert de 8 h à 12 h et de 14 h à 18 h » → fermé de 0 h à 8 h, de 12 h à 14 h et de 18 h à 24 h.
+- Exemple 2 : jeudi 29, toutes les plages retirées → fermé toute la journée.
+- Les fermetures et ouvertures exceptionnelles déjà posées restent valables. [Remettre les horaires habituels] sur un jour les enlève pour ce jour-là (une période de plusieurs jours est coupée autour de lui). Ex. congés du 20 au 24, « horaires habituels » le 22 → congés du 20 au 21 et du 23 au 24.
+
+## Agenda simplifié (validé par Raphael le 17/10/2026 sur la maquette `.doc/ihm/maquette-agenda-simple/agenda-simple-f.html`)
+Raphael, mot pour mot, au bout des essais : « ok la elle est bien tu peux la remplacer par celle de mon site ». Les règles des fermetures et des ouvertures exceptionnelles ne changent pas ; trois façons de les poser s'ajoutent ou changent :
+- **Fermer ou ouvrir des jours entiers, sans fenêtre** : le prestataire active [Fermeture exceptionnelle] ou [Ouverture exceptionnelle], puis clique un jour (ou maintient et glisse sur plusieurs) : ces jours sont fermés (ou ouverts) **de 0 h à 24 h**, aussitôt. Un jour déjà fermé (ou ouvert) toute la journée n'est pas posé deux fois.
+  - Exemple 1 : [Fermeture exceptionnelle], puis glisser du mardi 27 au samedi 31 → fermé du 27/10/2026 au 31/10/2026, toute la journée.
+  - Exemple 2 : [Ouverture exceptionnelle], puis clic sur le dimanche 25 → ouvert le 25/10/2026 de 0 h à 24 h.
+  - Des rendez-vous tombent dans les jours à fermer : le prestataire choisit de les annuler ou de les garder, comme avant.
+- **Les horaires d'un seul jour** (clic sur un jour sans bouton activé, toucher sur téléphone ; avant le 18/10/2026 : clic droit), avec une ou plusieurs plages :
+  - jour ouvert (même en partie), ou fermé d'habitude : « **Ouvert de … à …** ». Ce jour-là, il est ouvert seulement à ces heures ; les fermetures et ouvertures exceptionnelles déjà posées ce jour-là sont remplacées. Ex. mardi (d'habitude 9 h-12 h et 14 h-19 h) → 8 h-12 h et 14 h-18 h.
+  - jour fermé en entier par une fermeture exceptionnelle : aussi « Ouvert de … à … » (Raphael, 17/10/2026 : on écrit toujours les heures d'OUVERTURE). La fermeture est coupée autour de ce jour. Ex. congés du 20 au 24, le 22 ouvert de 9 h à 12 h → congés du 20 au 21 et du 23 au 24, et le 22 ouvert seulement le matin. (Le serveur sait aussi recevoir des heures fermées, « Fermé de … à … », mais l'écran ne s'en sert plus.)
+  - [Remettre les horaires habituels] : ce jour reprend sa semaine type.
+  - Rendez-vous qui ne tiennent plus dans les heures ouvertes : annuler ou garder, au choix.
+  - Comment c'est rangé (choix de Claude, sans nouvelle table) : « ouvert seulement de 8 h à 12 h et de 14 h à 18 h » est enregistré comme des fermetures (0 h-8 h, 12 h-14 h, 18 h-24 h) et, si besoin, des ouvertures (ce qui dépasse la semaine type), toutes avec le motif « Horaires du jour ». L'écran les relit et les montre sur une seule ligne.
+- **La date d'arrêt d'un métier** se pose dans « Mon profil › Mes métiers » ([Arrêter ce métier…]), plus dans l'agenda. La règle elle-même ne change pas (`RM-PRESTATAIRES.md`).
+- Les jours de travaux d'un devis accepté ne bougent jamais, quoi qu'on fasse sur le jour.
+
 ## Sans annonces (décision de Raphael du 04/10/2026 ; construit le 09/10/2026, lot 9.2)
 Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). **L'écran « Mon agenda » ne change pas.** Après les lots 8.3 et 8.4 (choix de Claude, proposés avec le MLD `MLD-retrait-annonces.html`) :
 - Le client **ne voit plus les horaires libres** : c'est le prestataire qui propose un jour et une heure. Une proposition est refusée si elle tombe sur un autre de ses rendez-vous (`RM-DEMANDES.md`).

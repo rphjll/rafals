@@ -9,7 +9,9 @@
 3. S'il est interdit, le bouton reste visible, grisé, avec un cadenas et une bulle qui dit pourquoi et quoi faire. Ex. « 🔒 Payer par carte » chez Karim : « Karim n'a pas encore de SIRET : il ne peut être payé qu'en espèces… ».
 
 ## Structure des pages
-- En-tête fixe en haut : logo « rafals. » à gauche (retour à l'accueil), menu à droite (Accueil · Trouver un prestataire · Messages · Mon activité · Mon profil / Proposer mes services · pastille du compte ; refait le 07/10/2026). Sous l'en-tête, sur les pages rangées dans « Mon activité », un sous-menu les montre (`AppSousMenu`) ; la liste des fonctions est écrite une seule fois, dans `frontend/src/outils/activite.ts` (tuiles de la page et sous-menu) ; détail : `ihm/RM-ENTETE-IHM.md` et `ihm/RM-MON-ACTIVITE-IHM.md`. Sur téléphone, les entrées sont dans la barre du bas (`AppBarreBas`).
+- En-tête collé en haut (grande maquette, 10/11/2026) : logo « rafals. », puis Accueil · Trouver · Demandes · Messages · Mon activité, puis le bouton rond du compte et sa liste. Plus de sous-menu : chaque page de « Mon activité » commence par « ‹ Mon activité », son titre et une phrase (`components/EnteteActivite.vue`) ; la liste des fonctions est écrite une seule fois, dans `frontend/src/outils/activite.ts`. Sur téléphone, la barre du bas (`AppBarreBas`) a 6 entrées, dont « Moi » (`/moi`). Détail : `ihm/RM-ENTETE-IHM.md`.
+- Chaque page pose la classe `page` sur son premier élément (colonne avec 22 px d'écart, petite entrée animée) ; le haut d'une page : `<div class="tete"><h1>…</h1><p>…</p></div>`.
+- Composants ajoutés le 10/11/2026 : `AppIcone` (icônes de la maquette), `AppInterrupteur` (interrupteur vert), `EnteteActivite`, `prestataire/ChiffresActivite` (les chiffres de « Mon activité » et de l'accueil), `agenda/EditeurSemaine` (semaine type sur place ; remplace `FenetreSemaine`), page `MoiPage`, page `NouvelleDemandePage`. `AppBouton` a une option `petit`, `AppSegment` une option `en-ligne`, `AppBadge` un état `accent`.
 - Contenu centré, largeur maximale 1080 px, marges d'au moins 16 px sur les côtés.
 - Fil d'Ariane en haut des pages profondes. Ex. « Accueil › Électricien › Pessac › Karim Benali ».
 - Écrans d'administration : même en-tête ; l'entrée « Administration » est dans la liste du compte (sous le prénom), visible seulement des administrateurs.
@@ -77,5 +79,7 @@ Un seul composant par élément répété (dossier `frontend/src/components/ui/`
 - Thème clair ou sombre : toujours par `frontend/src/composables/useTheme.ts` (page « Paramètres », 17/10/2026) ; `AppChoix` a un slot facultatif « avant » pour un petit dessin au-dessus du texte de chaque case (aperçus du thème).
 - `BoutonAbonnement` (dans `components/prestataire/`) — [S'abonner] / [Abonné ✓], le même sur les cartes de résultat (petit) et la page publique ; types, textes (« 12 abonnés ») et les 3 cases de la cloche : `frontend/src/outils/abonnements.ts` (21/10/2026).
 - `ApercuCarteVisite` (dans `components/prestataire/`) — aperçu d'une carte de visite, le même en grand et en petit sur la planche A4 (tailles en `cqw`, papier blanc même en mode sombre) (lot 10.4, 22/10/2026).
+- `AppInitiales` — rond des initiales d'une personne sans photo, dans une teinte propre à son nom (`teinteDe`, `frontend/src/outils/noms.ts`) : en-tête, cartes des demandes, messages, mes clients, `AvatarPrestataire` (22/10/2026).
+- `FenetreRetour` (dans `components/retours/`) — « Un problème ? Une idée ? », ouverte depuis la liste du compte (`AppEntete`) (lot 13.1, 09/11/2026).
 - Dates : toujours par `frontend/src/outils/dates.ts` (« 28/09/2026 à 18 h 40 », heure de Paris ; âge).
 - Appels au serveur : toujours par `frontend/src/api.ts` (messages d'erreur du serveur montrés tels quels).

@@ -7,7 +7,6 @@ import { useRoute, useRouter } from 'vue-router'
 import { useCompte } from '../composables/useCompte'
 import { useMessage } from '../composables/useMessage'
 import FenetreTexte, { type DemandeTexte } from './FenetreTexte.vue'
-import AppBouton from './ui/AppBouton.vue'
 
 const props = defineProps<{ prestataireId: number; nomPrestataire: string }>()
 const route = useRoute()
@@ -38,8 +37,7 @@ function ouvrir() {
 </script>
 
 <template>
-  <div class="flex justify-end">
-    <AppBouton variante="danger" @click="ouvrir">Signaler ce prestataire…</AppBouton>
-  </div>
+  <!-- Un lien discret, comme la grande maquette (en bas de la page publique) -->
+  <button type="button" class="lien-discret" @click="ouvrir">Signaler ce prestataire…</button>
   <FenetreTexte :demande="demande" @fermer="demande = null" @fait="demande = null" />
 </template>

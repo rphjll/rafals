@@ -338,7 +338,8 @@ def annuler_prestataire(devis_id: int, donnees: Motif, db: Base, compte: CompteC
 
 @routeur.post("/moi/prestataire/tva")
 def choisir_tva(donnees: ChoixTva, db: Base, compte: CompteConnecte) -> ChoixTva:
-    """Case « Je facture la TVA » (RM-DEVIS) : vaut pour les prochains devis, pas pour ceux déjà envoyés."""
+    """Ancienne case « Je facture la TVA » (RM-DEVIS) : plus aucun écran ne l'appelle depuis le 17/10/2026 (la TVA s'active
+    par la barre de « Mon activité ») ; gardée pour les tests qui ont besoin d'un prestataire avec TVA."""
     prestataire = mon_profil_ou_404(db, compte)
     avant = prestataire.facture_tva
     prestataire.facture_tva = donnees.facture_tva

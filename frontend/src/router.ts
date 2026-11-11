@@ -2,14 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AccueilPage from './pages/AccueilPage.vue'
 import AdministrationPage from './pages/AdministrationPage.vue'
 import AgendaPage from './pages/AgendaPage.vue'
-import AlertesPage from './pages/AlertesPage.vue'
 import AvisClientPage from './pages/AvisClientPage.vue'
 import ClientPage from './pages/ClientPage.vue'
 import BientotPage from './pages/BientotPage.vue'
 import CataloguePage from './pages/CataloguePage.vue'
 import CreerAutoEntreprisePage from './pages/CreerAutoEntreprisePage.vue'
 import GuideAutoEntreprisePage from './pages/GuideAutoEntreprisePage.vue'
-import DemandesPresPage from './pages/DemandesPresPage.vue'
+import DemandesPage from './pages/DemandesPage.vue'
 import DemarchesPage from './pages/DemarchesPage.vue'
 import DevisPage from './pages/DevisPage.vue'
 import FacturesPage from './pages/FacturesPage.vue'
@@ -19,8 +18,9 @@ import MesAbonnementsPage from './pages/MesAbonnementsPage.vue'
 import MaCarteVisitePage from './pages/MaCarteVisitePage.vue'
 import MesClientsPage from './pages/MesClientsPage.vue'
 import MesAvisRecusPage from './pages/MesAvisRecusPage.vue'
-import MesDemandesPage from './pages/MesDemandesPage.vue'
 import MessagesPage from './pages/MessagesPage.vue'
+import MoiPage from './pages/MoiPage.vue'
+import NouvelleDemandePage from './pages/NouvelleDemandePage.vue'
 import MonActivitePage from './pages/MonActivitePage.vue'
 import MotDePasseOubliePage from './pages/MotDePasseOubliePage.vue'
 import NouveauMotDePassePage from './pages/NouveauMotDePassePage.vue'
@@ -56,16 +56,21 @@ export const routeur = createRouter({
     { path: '/ma-carte-de-visite', name: 'ma-carte-de-visite', component: MaCarteVisitePage },
     { path: '/mes-abonnements', name: 'mes-abonnements', component: MesAbonnementsPage },
     { path: '/clients/:id(\\d+)/avis', name: 'avis-client', component: AvisClientPage },
-    { path: '/alertes', name: 'alertes', component: AlertesPage },
+    { path: '/alertes', redirect: '/parametres#notifications' }, // ancienne page, déplacée dans Paramètres le 21/10/2026
     { path: '/mes-avis-recus', name: 'mes-avis-recus', component: MesAvisRecusPage },
     { path: '/clients/:id(\\d+)', name: 'client', component: ClientPage },
-    { path: '/mes-demandes', name: 'mes-demandes', component: MesDemandesPage },
-    { path: '/demandes-pres-de-chez-moi', name: 'demandes-pres', component: DemandesPresPage },
+    // Onglet « Demandes » (lot 14.2) ; les 2 anciennes pages y mènent (liens des mails et des notifications)
+    { path: '/demandes', name: 'demandes', component: DemandesPage },
+    { path: '/demandes/nouvelle', name: 'nouvelle-demande', component: NouvelleDemandePage },
+    { path: '/mes-demandes', redirect: { path: '/demandes', query: { onglet: 'miennes' } } },
+    { path: '/demandes-pres-de-chez-moi', redirect: '/demandes' },
     // « Mon profil » réunit les anciennes pages « Mon profil » (/proposer) et « Mon compte » (/compte) depuis le 07/10/2026.
     // Les anciens liens y arrivent avec leurs réglages (ex. /proposer?siret=91234567800017, retour de Stripe).
     { path: '/profil', name: 'profil', component: ProfilPage },
     // Thème clair ou sombre (17/10/2026), ouverte depuis la liste sous le prénom
     { path: '/parametres', name: 'parametres', component: ParametresPage },
+    // « Moi » : la page du compte de la barre du bas, sur téléphone (grande maquette, 10/11/2026)
+    { path: '/moi', name: 'moi', component: MoiPage },
     { path: '/proposer', redirect: (vers) => ({ path: '/profil', query: { ...vers.query, proposer: '1' } }) },
     { path: '/compte', redirect: (vers) => ({ path: '/profil', query: vers.query }) },
     { path: '/mon-agenda', name: 'mon-agenda', component: AgendaPage },
@@ -81,5 +86,6 @@ export const routeur = createRouter({
     { path: '/administration', name: 'administration', component: AdministrationPage },
     { path: '/:chemin(.*)*', name: 'introuvable', ...bientot('Page introuvable', '') },
   ],
-  scrollBehavior: () => ({ top: 0 }),
+  // Une adresse avec « # » descend à la partie visée (ex. /parametres#abonnements), sinon haut de page
+  scrollBehavior: (vers) => (vers.hash ? { el: vers.hash, top: 90, behavior: 'smooth' } : { top: 0 }),
 })

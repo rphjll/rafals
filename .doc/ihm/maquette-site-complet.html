@@ -1,0 +1,1270 @@
+<title>rafals Maquette Complète</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Mise en page : en-tête collant (ordinateur) ou barre d'onglets en bas (téléphone) ; une colonne centrée de 880 px ; cartes blanches sur fond vert très pâle ; formes douces qui flottent derrière. */
+:root{
+  --fond:#F2F6F1; --surface:#FFFFFF; --surface2:#F7FAF6; --texte:#16211A; --doux:#5A6A5F; --bord:#DCE6DE;
+  --primaire:#2F6B4F; --primaire-texte:#FFFFFF; --primaire-doux:#E2EFE6; --fonce:#1E4B37; --fonce-texte:#F2FFF6;
+  --accent:#E0773A; --accent-doux:#FCEBDD;
+  --ok:#2E7D4F; --ok-doux:#E1F2E7; --attente:#A86300; --attente-doux:#FBEFD9; --erreur:#B3261E; --erreur-doux:#FBE4E2;
+  --ombre:0 1px 2px rgba(22,33,26,.06),0 6px 20px rgba(22,33,26,.06);
+  --forme1:rgba(47,107,79,.10); --forme2:rgba(224,119,58,.09);
+  --ouvert:#5FD38A; --ouvert-texte:#0F2A1A; --hachure:rgba(214,48,49,.38);
+  --titre:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --corps:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#0E1410; --surface:#172019; --surface2:#1B251E; --texte:#E7EEE9; --doux:#9EB0A4; --bord:#29362D;
+  --primaire:#7CC7A0; --primaire-texte:#0E1A13; --primaire-doux:#1B3125; --fonce:#163828; --fonce-texte:#E8F7EE;
+  --accent:#F0955A; --accent-doux:#3A2414;
+  --ok:#6CC592; --ok-doux:#17301F; --attente:#F0B35A; --attente-doux:#33260F; --erreur:#F08A82; --erreur-doux:#3A1A18;
+  --ombre:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --forme1:rgba(124,199,160,.10); --forme2:rgba(240,149,90,.08); color-scheme:dark;
+  --ouvert:#1F8A4A; --ouvert-texte:#F2FFF6; --hachure:rgba(240,110,110,.40);
+}}
+:root[data-theme="dark"]{
+  --fond:#0E1410; --surface:#172019; --surface2:#1B251E; --texte:#E7EEE9; --doux:#9EB0A4; --bord:#29362D;
+  --primaire:#7CC7A0; --primaire-texte:#0E1A13; --primaire-doux:#1B3125; --fonce:#163828; --fonce-texte:#E8F7EE;
+  --accent:#F0955A; --accent-doux:#3A2414;
+  --ok:#6CC592; --ok-doux:#17301F; --attente:#F0B35A; --attente-doux:#33260F; --erreur:#F08A82; --erreur-doux:#3A1A18;
+  --ombre:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --forme1:rgba(124,199,160,.10); --forme2:rgba(240,149,90,.08); color-scheme:dark;
+  --ouvert:#1F8A4A; --ouvert-texte:#F2FFF6; --hachure:rgba(240,110,110,.40);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--fond);color:var(--texte);font-family:var(--corps);font-size:16px;line-height:1.5;transition:background .3s,color .3s}
+h1,h2,h3{font-family:var(--titre);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(28px,5vw,38px);font-weight:800;letter-spacing:-.5px}
+h2{font-size:21px;font-weight:700}
+h3{font-size:17px;font-weight:700;font-family:var(--corps)}
+p{margin:0}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+svg.i{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.petit{font-size:14px}.doux{color:var(--doux)}
+
+/* Fond animé */
+.deco{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.deco span{position:absolute;border-radius:40% 60% 55% 45%;filter:blur(2px);animation:flotte 26s ease-in-out infinite alternate}
+.deco .d1{width:420px;height:420px;background:var(--forme1);left:-140px;top:120px}
+.deco .d2{width:300px;height:300px;background:var(--forme2);right:-90px;top:45%;animation-duration:32s}
+.deco .d3{width:200px;height:200px;background:var(--forme1);left:55%;bottom:-80px;animation-duration:22s;border-radius:32px}
+.deco .d4{width:90px;height:90px;background:var(--forme2);left:30%;top:18%;border-radius:22px;animation-duration:18s}
+@keyframes flotte{50%{transform:translate(50px,-40px) rotate(20deg)}100%{transform:translate(-30px,30px) rotate(-12deg)}}
+
+/* En-tête */
+.entete{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--bord)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--surface)}
+.entete-in{max-width:1100px;margin:0 auto;height:64px;display:flex;align-items:center;gap:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.logo{font-family:var(--titre);font-weight:800;font-size:28px;letter-spacing:-1px;color:var(--primaire);text-decoration:none;flex:none}
+.logo b{color:var(--accent)}
+.nav{display:flex;gap:4px;flex:1}
+.nav a{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;text-decoration:none;font-weight:600;color:var(--doux);position:relative;transition:background .15s,color .15s}
+.nav a:hover{background:var(--surface2);color:var(--texte)}
+.nav a.actif{background:var(--primaire-doux);color:var(--primaire)}
+.badge{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:inline-grid;place-items:center}
+.compte{position:relative;margin-left:auto}
+.compte-btn{display:flex;align-items:center;gap:10px;background:none;border:1px solid var(--bord);padding:5px 12px 5px 5px;border-radius:999px;cursor:pointer;font-weight:600}
+.compte-btn:hover{background:var(--surface2)}
+.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;flex:none;font-size:15px}
+.av.g{width:64px;height:64px;font-size:26px}
+.menu{position:absolute;right:0;top:calc(100% + 8px);width:240px;background:var(--surface);border:1px solid var(--bord);border-radius:16px;box-shadow:var(--ombre);padding:6px;animation:apparait .15s ease-out}
+.menu a,.menu button{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;border-radius:10px;text-decoration:none;font-weight:600;background:none;border:0;cursor:pointer;text-align:left}
+.menu a:hover,.menu button:hover{background:var(--surface2)}
+.menu hr{border:0;border-top:1px solid var(--bord);margin:4px 0}
+@keyframes apparait{from{opacity:0;transform:translateY(-4px)}}
+
+/* Barre du bas (téléphone) */
+.basbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--bord);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.basbar nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
+.basbar a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;text-decoration:none;font-size:11px;white-space:nowrap;font-weight:600;color:var(--doux);position:relative;border-radius:12px}
+.basbar a.actif{color:var(--primaire)}
+.basbar a.actif svg{background:var(--primaire-doux);border-radius:12px;padding:3px 10px;width:44px;height:30px}
+.basbar .badge{position:absolute;top:2px;left:calc(50% + 6px);min-width:18px;height:18px;font-size:11px}
+
+/* Page */
+main{position:relative;z-index:1;max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+.page{animation:entre .25s ease-out;display:flex;flex-direction:column;gap:22px}
+@keyframes entre{from{opacity:0;transform:translateY(8px)}}
+.retour{display:inline-flex;align-items:center;gap:4px;font-weight:600;color:var(--primaire);text-decoration:none;margin-bottom:-10px;align-self:flex-start;padding:4px 8px 4px 0}
+.retour:hover{text-decoration:underline}
+.tete{display:flex;flex-direction:column;gap:6px}
+.tete p{color:var(--doux);font-size:17px}
+.section{display:flex;flex-direction:column;gap:12px}
+.section-titre{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:18px;padding:18px;box-shadow:var(--ombre)}
+.ligne{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--bord);border-radius:16px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s,box-shadow .15s;min-width:0}
+a.ligne:hover,button.ligne:hover{border-color:var(--primaire);transform:translateY(-1px);box-shadow:var(--ombre)}
+button.ligne{width:100%;text-align:left;cursor:pointer}
+.ligne .txt{flex:1;min-width:0}
+.ligne .txt b{display:block;font-weight:700}
+.ligne .txt span{display:block;color:var(--doux);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ligne .fin{flex:none;display:flex;align-items:center;gap:8px;color:var(--doux);font-weight:600}
+.liste{display:flex;flex-direction:column;gap:10px}
+.ico-rond{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--primaire-doux);color:var(--primaire);flex:none}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.puce{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap}
+.p-ok{background:var(--ok-doux);color:var(--ok)}.p-att{background:var(--attente-doux);color:var(--attente)}.p-err{background:var(--erreur-doux);color:var(--erreur)}.p-neutre{background:var(--surface2);color:var(--doux);border:1px solid var(--bord)}.p-accent{background:var(--accent-doux);color:var(--accent)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:14px;border:1px solid transparent;font-weight:700;cursor:pointer;text-decoration:none;transition:filter .15s,transform .1s,background .15s;white-space:nowrap}
+.btn:active{transform:scale(.98)}
+.btn-1{background:var(--primaire);color:var(--primaire-texte)}
+.btn-1:hover{filter:brightness(1.08)}
+.btn-2{background:var(--surface);border-color:var(--bord);color:var(--texte)}
+.btn-2:hover{border-color:var(--primaire);color:var(--primaire)}
+.btn-ok{background:var(--ok-doux);color:var(--ok);cursor:default}
+.btn-petit{min-height:38px;padding:0 14px;font-size:14px;border-radius:12px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* Accueil */
+.hero{position:relative;overflow:hidden;background:var(--fonce);color:var(--fonce-texte);border-radius:24px;padding:32px 28px}
+.hero h1{max-width:18ch}
+.hero p{opacity:.85;margin-top:8px;font-size:17px}
+.hero .forme{position:absolute;border-radius:28px;background:rgba(255,255,255,.07);animation:flotte 16s ease-in-out infinite alternate}
+.hero .f1{width:180px;height:180px;right:-40px;top:-50px}
+.hero .f2{width:90px;height:90px;right:120px;bottom:-30px;border-radius:50%;background:rgba(240,149,90,.25);animation-duration:12s}
+.hero .f3{width:50px;height:50px;right:40px;bottom:40px;animation-duration:9s}
+.recherche{position:relative;display:flex;gap:8px;margin-top:20px;max-width:560px;flex-wrap:wrap}
+.recherche input{flex:1;min-width:0;min-height:52px;border-radius:14px;border:0;padding:0 16px;font-size:17px;background:#fff;color:#16211A}
+.recherche .btn{min-height:52px;background:var(--accent);color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--bord);background:var(--surface);padding:8px 14px;border-radius:999px;font-weight:600;cursor:pointer;font-size:14px;transition:.15s}
+.chip:hover{border-color:var(--primaire)}
+.chip.on{background:var(--primaire);border-color:var(--primaire);color:var(--primaire-texte)}
+.hero .chip{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:var(--fonce-texte)}
+.hero .chip:hover{background:rgba(255,255,255,.2)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{display:flex;flex-direction:column;gap:4px;padding:16px;background:var(--surface);border:1px solid var(--bord);border-radius:18px;text-decoration:none;transition:.15s}
+.stat:hover{border-color:var(--primaire);transform:translateY(-2px);box-shadow:var(--ombre)}
+.stat b{font-family:var(--titre);font-size:30px;font-weight:800;color:var(--primaire);line-height:1.1}
+.stat span{font-size:14px;color:var(--doux);font-weight:600}
+
+/* Prestataires */
+.presta{display:flex;flex-direction:column;gap:12px;padding:16px;background:var(--surface);border:1px solid var(--bord);border-radius:18px;text-decoration:none;transition:.15s}
+.presta:hover{border-color:var(--primaire);transform:translateY(-2px);box-shadow:var(--ombre)}
+.presta .haut{display:flex;gap:12px;align-items:center}
+.presta .haut div{min-width:0}
+.presta b{display:block;font-size:17px}
+.presta .bas{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.etoile{color:var(--accent);font-weight:700}
+.prix{font-weight:700;color:var(--primaire)}
+.vide{text-align:center;padding:36px 16px;color:var(--doux)}
+.fiche{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.fiche .infos{flex:1;min-width:200px;display:flex;flex-direction:column;gap:4px}
+.creneaux{display:flex;gap:8px;flex-wrap:wrap}
+.creneau{border:1px solid var(--bord);background:var(--surface2);border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+.creneau:hover{border-color:var(--primaire)}
+.creneau.on{background:var(--primaire);color:var(--primaire-texte);border-color:var(--primaire)}
+.avis{display:flex;flex-direction:column;gap:4px;padding:14px 0;border-top:1px solid var(--bord)}
+.avis:first-child{border-top:0;padding-top:0}
+
+/* Messages */
+.conv{display:flex;flex-direction:column;gap:10px;min-height:300px}
+.bulle{max-width:78%;padding:10px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--bord);align-self:flex-start;animation:entre .2s ease-out}
+.bulle.moi{align-self:flex-end;background:var(--primaire);color:var(--primaire-texte);border-color:var(--primaire)}
+.bulle small{display:block;font-size:12px;opacity:.7;margin-top:2px}
+.ecrire{display:flex;gap:8px;position:sticky;bottom:12px}
+.ecrire input{flex:1;min-width:0;min-height:50px;border-radius:14px;border:1px solid var(--bord);background:var(--surface);padding:0 16px;box-shadow:var(--ombre)}
+.point{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none}
+
+/* Formulaires */
+.champ{display:flex;flex-direction:column;gap:6px}
+.champ label{font-weight:700}
+.champ input,.champ select,.champ textarea{min-height:48px;border-radius:12px;border:1px solid var(--bord);background:var(--surface);padding:10px 14px}
+.champ textarea{min-height:110px;resize:vertical}
+.champ small{color:var(--doux)}
+.form{display:flex;flex-direction:column;gap:16px}
+
+/* Réglages */
+.reglage{display:flex;flex-direction:column;gap:10px;padding:16px 0;border-top:1px solid var(--bord)}
+.reglage:first-of-type{border-top:0;padding-top:4px}
+.reglage .rl{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.reglage .rl div{min-width:0}
+.exemple{font-size:14px;color:var(--doux);background:var(--surface2);border-radius:10px;padding:8px 12px}
+.seg{display:flex;flex-wrap:wrap;gap:6px;background:var(--surface2);border:1px solid var(--bord);padding:4px;border-radius:14px}
+.seg button{flex:1;min-width:110px;min-height:42px;border:0;border-radius:10px;background:none;font-weight:600;cursor:pointer;color:var(--doux);transition:.15s}
+.seg button:hover{color:var(--texte)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--primaire);box-shadow:var(--ombre);font-weight:700}
+.switch{flex:none;width:54px;height:32px;border-radius:16px;border:0;background:var(--bord);position:relative;cursor:pointer;transition:background .2s}
+.switch::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.switch[aria-checked="true"]{background:var(--primaire)}
+.switch[aria-checked="true"]::after{transform:translateX(22px)}
+
+/* Activité */
+.tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tuile{display:flex;gap:14px;align-items:flex-start;padding:16px;background:var(--surface);border:1px solid var(--bord);border-radius:18px;text-decoration:none;transition:.15s;position:relative}
+a.tuile:hover{border-color:var(--primaire);transform:translateY(-2px);box-shadow:var(--ombre)}
+.tuile b{display:block}
+.tuile span.d{color:var(--doux);font-size:14px}
+.tuile.bientot{opacity:.6}
+.tuile .badge,.tuile .puce{position:absolute;top:12px;right:12px}
+
+/* Onglets */
+.onglets{display:flex;gap:4px;border-bottom:1px solid var(--bord);overflow-x:auto;scrollbar-width:none}
+.onglets button{background:none;border:0;padding:12px 16px;font-weight:700;color:var(--doux);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.onglets button[aria-selected="true"]{color:var(--primaire);border-color:var(--primaire)}
+.jour{font-weight:700;color:var(--doux);font-size:14px;text-transform:uppercase;letter-spacing:.6px;margin-top:6px}
+.heure{font-family:var(--titre);font-weight:800;font-size:20px;color:var(--primaire);width:64px;flex:none}
+
+/* Avis */
+.note-grande{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.note-grande .n{font-family:var(--titre);font-size:56px;font-weight:800;line-height:1}
+.barres{flex:1;min-width:200px;display:flex;flex-direction:column;gap:6px}
+.barres div{display:flex;align-items:center;gap:10px;font-size:14px}
+.barres i{flex:1;height:8px;border-radius:4px;background:var(--surface2);overflow:hidden;border:1px solid var(--bord)}
+.barres i::after{content:"";display:block;height:100%;width:var(--l);background:var(--accent)}
+
+/* Carte de visite */
+.cv{max-width:100%;width:420px;aspect-ratio:85/55;border-radius:16px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.2);transition:background .3s}
+.cv b{font-family:var(--titre);font-size:26px;display:block}
+.cv .qr{width:64px;height:64px;background:#fff;border-radius:8px;padding:6px;display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+.cv .qr i{background:#111;border-radius:1px}
+.cv .qr i:nth-child(3n){background:transparent}
+.nuancier{display:flex;gap:10px;flex-wrap:wrap}
+.nuance{width:42px;height:42px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--bord);cursor:pointer}
+.nuance.on{box-shadow:0 0 0 3px var(--texte)}
+
+/* Étapes */
+.etapes{display:flex;flex-direction:column;gap:0}
+.etape{display:flex;gap:14px;padding-bottom:18px;position:relative}
+.etape::before{content:"";position:absolute;left:15px;top:32px;bottom:0;width:2px;background:var(--ok)}
+.etape:last-child::before{display:none}
+.etape .rond{width:32px;height:32px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;flex:none}
+.etape .rond svg{width:18px;height:18px}
+
+/* Connexion */
+.connexion{max-width:420px;margin:20px auto 0;width:100%}
+
+/* Agenda */
+main.large{max-width:1100px}
+.heure{width:auto;min-width:64px}
+.bandeau{border-radius:12px;padding:12px 14px;font-weight:600}
+.b-vert{background:var(--ouvert);color:var(--ouvert-texte);font-size:17px}
+.b-err{background:var(--erreur-doux);color:var(--erreur)}
+.b-att{background:var(--attente-doux);color:var(--attente);display:flex;flex-direction:column;gap:8px}
+.b-att ul{margin:0;padding-left:18px;font-weight:500}
+.btn-danger{background:var(--erreur);color:#fff}
+.btn-danger:hover{filter:brightness(1.08)}
+.plage{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.plage select{min-height:42px;border-radius:10px;border:1px solid var(--bord);background:var(--surface);padding:0 10px}
+.croix{width:36px;height:36px;border-radius:50%;border:1px solid var(--bord);background:var(--surface);cursor:pointer;font-size:18px;line-height:1}
+.croix:hover{border-color:var(--erreur);color:var(--erreur)}
+.lien-plus{background:none;border:0;color:var(--primaire);font-weight:700;cursor:pointer;padding:6px 0;align-self:flex-start}
+.lien-plus:hover{text-decoration:underline}
+.semaine{display:flex;flex-direction:column}
+.sem-jour{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--bord);align-items:start}
+.sem-jour:first-child{border-top:0}
+.sem-nom{padding-top:9px}
+.sem-plages{display:flex;flex-direction:column;gap:8px;align-items:flex-start;min-width:0}
+.sem-plages .puce{margin-top:8px}
+.cal-choix{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.seg-inline{display:inline-flex}
+.seg-inline button{min-width:0;padding:0 14px}
+.cal{display:flex;flex-direction:column;gap:14px}
+.cal-barre{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mois-nav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mois-nav h2{text-align:center}
+.mois-liste{display:grid;gap:24px}
+.mois-liste.deux{grid-template-columns:1fr 1fr}
+.mois-nom{font-weight:700;margin-bottom:6px}
+.mois-liste:not(.deux) .mois-nom{display:none}
+.sem-tete,.grille-j{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.sem-tete span{font-size:13px;font-weight:700;color:var(--doux);text-align:center;padding-bottom:4px}
+.jcase{position:relative;min-height:80px;border:1px solid var(--bord);border-radius:10px;background:repeating-linear-gradient(135deg,var(--hachure) 0 2px,transparent 2px 8px),var(--surface);overflow:hidden;text-align:left;padding:6px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;cursor:pointer;color:var(--texte);transition:transform .12s,box-shadow .12s;min-width:0;font:inherit}
+.jcase:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 0 0 2px var(--primaire)}
+.jcase>*:not(.bandes){position:relative}
+.bandes{position:absolute;inset:0}
+.bandes i{position:absolute;top:0;bottom:0;background:var(--ouvert)}
+.jcase b{font-size:15px}
+.jcase .h,.nrdv{font-size:11px;font-weight:700;background:var(--surface);color:var(--texte);border-radius:6px;padding:1px 5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nrdv{background:var(--fonce);color:var(--fonce-texte)}
+.jcase.passe{opacity:.4;cursor:default}
+.jcase.auj{box-shadow:0 0 0 3px var(--accent)}
+.jcase.client{background:var(--surface)}
+.jcase.a-rdv{background:var(--ouvert);color:var(--ouvert-texte)}
+.jcase.rdv-passe{background:var(--surface2)}
+.jcase.choisi{box-shadow:0 0 0 3px var(--primaire)}
+.mois-liste.deux .jcase .h{display:none}
+.legende{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--doux)}
+.legende span{display:flex;align-items:center;gap:6px}
+.lg{width:18px;height:14px;border-radius:4px;border:1px solid var(--bord);display:inline-block;flex:none}
+.lg-ouvert{background:var(--ouvert)}
+.lg-ferme{background:repeating-linear-gradient(135deg,var(--hachure) 0 2px,transparent 2px 6px),var(--surface)}
+.lg-gris{background:var(--surface2)}
+.lg-auj{box-shadow:0 0 0 2px var(--accent)}
+.ligne-rdv{flex-wrap:wrap}
+.bulle-jour{position:fixed;z-index:30;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(600px,calc(100% - 32px));max-height:45vh;overflow:auto;background:var(--surface);border:2px solid var(--primaire);border-radius:20px;padding:14px 16px;box-shadow:0 14px 40px rgba(0,0,0,.28);display:flex;flex-direction:column;gap:10px;animation:monte-bulle .2s ease-out}
+.bulle-jour .ligne{background:var(--surface2)}
+.bulle-tete{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bulle-espace{height:200px}
+@keyframes monte-bulle{from{opacity:0;transform:translate(-50%,16px)}}
+@media (max-width:760px){.bulle-jour{bottom:calc(80px + env(safe-area-inset-bottom,0px))}}
+.voile{position:fixed;inset:0;z-index:40;background:rgba(8,16,11,.55);display:grid;place-items:center;padding:16px;animation:apparait .15s}
+.fenetre{background:var(--surface);border-radius:20px;width:100%;max-width:580px;max-height:calc(100vh - 32px);overflow:auto;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.f-btns .btn{white-space:normal;text-align:center;padding-block:8px}
+body.bloque{overflow:hidden}
+@media (max-width:760px){
+  .jcase{min-height:52px;padding:4px}
+  .jcase .h{display:none}
+  .nrdv{font-size:10px;padding:0 3px}
+  .sem-tete,.grille-j{gap:3px}
+  .mois-nav .btn{padding:0 10px}
+  .sem-jour{grid-template-columns:1fr;gap:6px}
+  .sem-nom{padding-top:0}
+}
+
+/* Page publique d'un prestataire */
+.pp-auteur{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;border-radius:14px;background:var(--accent-doux);color:var(--texte);font-weight:600}
+.pp-auteur a{margin-left:auto;color:var(--primaire);font-weight:700}
+.pp{padding:0;overflow:hidden}
+.pp-couv{height:120px;background:radial-gradient(120% 140% at 0% 0%,color-mix(in srgb,var(--c) 35%,#fff) 0%,transparent 55%),linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 45%,#fff))}
+.pp-corps{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:0 22px 22px;margin-top:-58px}
+.pp-photo{width:116px;height:116px;border-radius:50%;border:5px solid var(--surface);display:grid;place-items:center;font-family:var(--titre);font-weight:800;font-size:40px;color:#fff;object-fit:cover;box-shadow:var(--ombre)}
+.pp-nom{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:4px}
+.pp-nom h1{font-size:32px;line-height:1.1}
+.pp-metier{font-size:17px}
+.pp-corps .doux .i{width:16px;height:16px;vertical-align:-3px}
+.pp-chiffres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;max-width:420px;margin-top:8px;border:1px solid var(--bord);border-radius:16px;overflow:hidden}
+.pp-chiffres>*{display:flex;flex-direction:column;align-items:center;padding:10px 4px;text-decoration:none;color:inherit}
+.pp-chiffres>*+*{border-left:1px solid var(--bord)}
+.pp-chiffres button{background:none;border:0;font:inherit;cursor:pointer;align-items:center}
+.pp-chiffres button:hover{background:var(--surface2)}
+.pp-chiffres b{font-family:var(--titre);font-size:20px}
+.pp-chiffres small{color:var(--doux);font-size:13px}
+.pp-btns{display:grid;grid-template-columns:2fr 1fr;gap:8px;width:100%;max-width:420px;margin-top:6px}
+.btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.3)}
+.pp-bio{font-size:17px;line-height:1.55}
+.pp-photos .ph{cursor:default}
+.pp-avis{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:start}
+.pp-note{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px;border-radius:16px;background:var(--surface2)}
+.pp-note b{font-family:var(--titre);font-size:46px;line-height:1}
+.pp-qui{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pp-qui .av{width:28px;height:28px;font-size:13px}
+.pp-pied{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pp-pied .i{width:16px;height:16px}
+.lien-discret{margin-left:auto;background:none;border:0;color:var(--doux);text-decoration:underline;cursor:pointer;font:inherit}
+@media (max-width:520px){.pp-avis{grid-template-columns:1fr}.pp-nom h1{font-size:26px}.pp-btns{grid-template-columns:1fr}}
+/* Métier trouvé tout seul */
+.zone-metier{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:34px;margin-top:6px}
+.zone-metier .trouve{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--primaire-doux);color:var(--primaire);font-size:14px}
+.zone-metier .trouve .i{width:16px;height:16px}
+.zone-metier .pas-trouve{color:var(--accent);font-weight:600;font-size:14px}
+.zone-metier select{flex:1;min-width:200px}
+.lien{background:none;border:0;padding:4px 2px;color:var(--primaire);font-weight:700;text-decoration:underline;cursor:pointer;font:inherit;font-size:14px}
+/* Carte « Encaissé en 2026 » et barre de la TVA */
+.tva{display:flex;flex-direction:column;gap:10px}
+.tva-haut{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tva-somme{font-family:var(--titre);font-size:28px;font-weight:800;color:var(--primaire)}
+.tva-barre{height:14px;border-radius:999px;background:var(--surface2);overflow:hidden}
+.tva-barre span{display:block;height:100%;border-radius:999px;background:var(--primaire);transition:width .4s}
+.tva-ok{display:flex;align-items:center;gap:8px;color:var(--ok,#2E7D4F);font-weight:700}
+.tva-liste{display:flex;flex-direction:column;gap:6px;padding-top:10px;border-top:1px solid var(--bord)}
+.tva-ligne{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+.erreur-champ{color:var(--erreur);font-weight:600;font-size:14px}
+/* Demandes */
+.onglets a{padding:12px 16px;font-weight:700;color:var(--doux);text-decoration:none;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.onglets a[aria-selected="true"]{color:var(--primaire);border-color:var(--primaire)}
+.onglets .nb{background:var(--surface2);border-radius:999px;padding:0 8px;font-size:13px}
+.dmd-perso{padding:0;gap:0;overflow:hidden}
+.dmd-tete{display:flex;align-items:center;gap:12px;width:100%;padding:16px 18px;background:none;border:0;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.dmd-tete:hover{background:var(--surface2)}
+.dmd-tete .txt{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.dmd-tete .fin{display:flex;align-items:center;gap:10px;flex:none}
+.dmd-perso.ouvert .chev{transform:rotate(90deg)}
+.dmd-corps{display:flex;flex-direction:column;gap:12px;padding:4px 18px 18px;animation:entre .2s ease-out}
+.dmd-pied{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--bord)}
+.dmd-pied .qui{display:flex;align-items:center;gap:10px}
+.dmd-pied .qui>span{display:flex;flex-direction:column;line-height:1.2}
+.btn-verrou{background:var(--surface2);color:var(--doux);border:1px dashed var(--bord)}
+.h-sec{font-size:18px}
+.dmd{display:flex;flex-direction:column;gap:12px}
+.dmd-haut{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.dmd-rep{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--bord)}
+.dmd-rep .ligne{width:100%;text-align:left;font:inherit;cursor:pointer;background:var(--surface2)}
+.dmd-rep .ligne .txt span{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dmd-rep .fin{display:flex;align-items:center;gap:6px;color:var(--primaire);font-weight:700}
+.dmd-vide{padding:12px 14px;border:2px dashed var(--bord);border-radius:14px;color:var(--doux)}
+.btn-danger-2{background:none;border:1px solid var(--erreur);color:var(--erreur)}
+@media (max-width:520px){.cache-tel{display:none}}
+@media (min-width:761px) and (max-width:1000px){.nav a svg{display:none}.nav a{padding:9px 10px}}
+/* Profil façon Instagram */
+main.etroit{max-width:680px}
+.insta{display:flex;flex-direction:column;gap:16px;padding:22px}
+.ig-haut{display:flex;align-items:center;gap:22px}
+.ig-photo{width:96px;height:96px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--titre);font-weight:800;font-size:34px;color:var(--primaire-texte);background:var(--primaire);object-fit:cover}
+.ig-chiffres{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;text-align:center}
+.ig-chiffres>*{display:flex;flex-direction:column;align-items:center;text-decoration:none;padding:6px 2px;border-radius:12px;background:none;border:0;color:inherit;font:inherit}
+.ig-chiffres a:hover,.ig-chiffres button:hover{background:var(--surface2);cursor:pointer}
+.ig-chiffres b{font-family:var(--titre);font-size:22px;font-weight:800;white-space:nowrap}
+.ig-chiffres small{color:var(--doux);font-size:13px}
+.ig-infos{display:flex;flex-direction:column;gap:4px}
+.ig-nom{font-size:24px}
+.ig-btns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ig-btns .btn{min-height:42px;padding:0 10px;font-size:14px;white-space:normal;text-align:center}
+.bulles-m{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 2px;scrollbar-width:none}
+.bm{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;cursor:pointer;font-size:13px;font-weight:600;flex:none;width:76px;color:inherit}
+.bm .rond{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-family:var(--titre);font-size:24px;font-weight:800;background:var(--surface2);border:2px solid var(--bord);color:var(--primaire);transition:transform .15s}
+.bm:hover .rond{transform:scale(1.06)}
+.bm.principal .rond{border:3px solid var(--primaire)}
+.bm small{color:var(--doux);font-size:11px;margin-top:-4px}
+.bm.ajout .rond{border-style:dashed;color:var(--doux)}
+.ig-onglets{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--bord)}
+.ig-onglets button{background:none;border:0;border-top:2px solid transparent;margin-top:-1px;padding:12px 4px;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:700;color:var(--doux);cursor:pointer}
+.ig-onglets button[aria-selected="true"]{color:var(--texte);border-color:var(--texte)}
+.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.ph{position:relative;aspect-ratio:1;max-width:100%;border:0;padding:0;cursor:pointer;overflow:hidden;border-radius:6px;background:var(--c);color:#fff;display:flex;align-items:flex-end;font:inherit}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph .leg{position:relative;font-size:12px;font-weight:700;padding:6px 8px;text-align:left;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.ph .sur{position:absolute;top:6px;left:6px;font-size:11px;font-weight:700;background:rgba(0,0,0,.55);padding:2px 7px;border-radius:999px}
+.ph.ajout{background:var(--surface2);border:2px dashed var(--bord);color:var(--doux);align-items:center;justify-content:center;flex-direction:column;gap:4px;font-weight:700;font-size:13px;text-align:center}
+.ph:hover{filter:brightness(1.06)}
+.ph.grande{cursor:default;border-radius:14px;width:100%}
+.ph.grande .leg{font-size:16px;padding:12px 14px}
+.dep{border:1px solid var(--bord);border-radius:16px;background:var(--surface);overflow:hidden}
+.dep-tete{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;background:none;border:0;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.dep-tete:hover{background:var(--surface2)}
+.dep-tete .txt{flex:1;min-width:0}
+.dep-tete .txt b{display:block}
+.dep-tete .txt span{display:block;color:var(--doux);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chev{transition:transform .2s;color:var(--doux);font-size:22px;line-height:1}
+.dep.ouvert .chev{transform:rotate(90deg)}
+.dep-corps{padding:4px 16px 16px;display:flex;flex-direction:column;gap:12px;animation:entre .2s ease-out}
+.dep-corps .rl{display:flex;justify-content:space-between;align-items:center;gap:14px}
+@media (max-width:520px){
+  .insta{padding:16px}
+  .ig-haut{gap:12px}
+  .ig-photo{width:74px;height:74px;font-size:26px}
+  .ig-chiffres b{font-size:17px}
+  .ig-chiffres small{font-size:11px}
+  .ig-btns{grid-template-columns:1fr 1fr}
+  .ig-btns .btn:first-child{grid-column:1/-1}
+  .ig-onglets span{display:none}
+}
+
+/* Message court */
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;background:var(--texte);color:var(--fond);padding:12px 18px;border-radius:14px;font-weight:600;z-index:50;transition:.25s;pointer-events:none;max-width:calc(100% - 32px);display:flex;gap:8px;align-items:center}
+.toast.vu{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:760px){
+  .nav,.compte{display:none}
+  .entete-in{height:56px}
+  .basbar{display:block}
+  main{padding-block:20px 110px}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .hero{padding:24px 20px}
+  .recherche .btn{width:100%}
+}
+@media (prefers-reduced-motion:reduce){.page,.bulle,.menu{animation:none}}
+</style>
+
+<div class="deco" aria-hidden="true"><span class="d1"></span><span class="d2"></span><span class="d3"></span><span class="d4"></span></div>
+
+<header class="entete">
+  <div class="entete-in">
+    <a class="logo" href="#accueil">rafals<b>.</b></a>
+    <nav class="nav" id="nav" aria-label="Menu principal"></nav>
+    <div class="compte" id="compte"></div>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<div class="basbar"><nav id="basbar" aria-label="Menu"></nav></div>
+<div class="toast" id="toast" role="status"></div>
+<div id="modal"></div>
+
+<script>
+/* ================= Icônes ================= */
+const P={
+ accueil:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+ trouver:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+ messages:'<path d="M4 5h16v11H9l-5 4z"/>',
+ activite:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+ moi:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+ coeur:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+ reglages:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+ agenda:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+ devis:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
+ euro:'<path d="M17 6.5a6.5 6.5 0 1 0 0 11"/><path d="M4 10h9M4 14h9"/>',
+ etoile:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+ carte:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h6M7 14h4"/>',
+ batiment:'<path d="M4 21V5l8-2v18M12 8h8v13M8 8v.01M8 12v.01M8 16v.01M16 12v.01M16 16v.01"/>',
+ cloche:'<path d="M6 16v-5a6 6 0 1 1 12 0v5l2 2H4z"/><path d="M10 21h4"/>',
+ clients:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
+ demandes:'<path d="M3 13h5l1.5 3h5L16 13h5"/><path d="M5 5h14l2 8v6H3v-6z"/>',
+ retour:'<path d="m15 18-6-6 6-6"/>',
+ suite:'<path d="m9 18 6-6-6-6"/>',
+ lieu:'<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+ ok:'<path d="m5 12 5 5 9-10"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ envoyer:'<path d="M4 12 20 4l-4 16-4-7z"/>',
+ site:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+ sortir:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>',
+ bouclier:'<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+ telecharger:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+ photo:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+ fusee:'<path d="M12 15c-2 0-3-1-3-3 0-5 3-9 9-9 0 6-4 9-9 9"/><path d="M9 15l-3 3M7 12H4l3-4h3M12 17v3l4-3v-3"/>'
+};
+const ic=(n,c='i')=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const euros=n=>n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+
+/* ================= Données d’exemple ================= */
+const MOI={nom:'Karim B.',prenom:'Karim',couleur:'#2F6B4F',ville:'Nantes'};
+const PRESTAS=[
+ {id:1,nom:'Julie M.',metier:'Ménage',ville:'Rezé',km:5,prix:22,note:4.9,nb:23,siret:true,couleur:'#3E7CB1',bio:'Ménage, repassage et vitres. Je viens avec mes produits, écologiques si vous préférez.',creneaux:['Jeu. 12/11 · 9 h 00','Ven. 13/11 · 14 h 00','Lun. 16/11 · 10 h 00'],avis:[['Nadia K.',5,'Très sérieuse, maison impeccable. Je recommande !','02/11/2026'],['Paul R.',5,'Ponctuelle et efficace.','18/10/2026']]},
+ {id:2,nom:'Sofiane T.',metier:'Plombier',ville:'Saint-Herblain',km:7,prix:50,note:4.7,nb:41,siret:true,couleur:'#7A4FC0',bio:'Fuites, chauffe-eau, salle de bain. Devis gratuit, intervention rapide.',creneaux:['Jeu. 12/11 · 8 h 00','Sam. 14/11 · 9 h 00'],avis:[['Claire D.',5,'Fuite réparée en 30 minutes, top.','30/10/2026'],['Hugo B.',4,'Bon travail, un peu de retard.','12/10/2026']]},
+ {id:3,nom:'Léa P.',metier:'Jardinage',ville:'Orvault',km:9,prix:28,note:5.0,nb:12,siret:true,couleur:'#3B8A55',bio:'Tonte, taille de haies, potager. Je repars avec les déchets verts.',creneaux:['Mar. 17/11 · 9 h 00','Mer. 18/11 · 14 h 00'],avis:[['Marc T.',5,'Jardin méconnaissable, merci !','25/10/2026']]},
+ {id:4,nom:'Marc D.',metier:'Peintre',ville:'Nantes',km:4,prix:35,note:4.6,nb:18,siret:false,couleur:'#C0475F',bio:'Peinture intérieure, papier peint, petites réparations de plâtre.',creneaux:['Lun. 16/11 · 8 h 00'],avis:[['Sarah L.',5,'Propre et soigné.','20/10/2026']]},
+ {id:5,nom:'Inès R.',metier:'Cours',ville:'Carquefou',km:11,prix:25,note:4.9,nb:30,siret:true,couleur:'#C98A12',bio:'Cours de maths du collège au lycée. Méthode simple, beaucoup d’exercices.',creneaux:['Mer. 18/11 · 17 h 00','Sam. 21/11 · 10 h 00'],avis:[['Lucas M.',5,'Mon fils a pris 4 points en un trimestre.','01/11/2026']]},
+ {id:6,nom:'Thomas L.',metier:'Électricien',ville:'Bouguenais',km:12,prix:42,note:4.5,nb:9,siret:true,couleur:'#D06A2B',bio:'Prises, tableaux, éclairage. Mise aux normes.',creneaux:['Ven. 13/11 · 8 h 00'],avis:[['Anne V.',4,'Travail propre.','22/10/2026']]}
+];
+const METIERS=['Tous','Ménage','Plombier','Électricien','Jardinage','Peintre','Cours'];
+
+const S={
+ connecte:true, menu:false, theme:'auto',
+ recherche:'', metier:'Tous',
+ abonnes:new Set([1,3]), muets:new Set([3]),
+ notif:{creneau:true,metier:true,retour:true},
+ alertes:{'Électricien':true,'Plombier':true}, telephone:true, mail:'chaque',
+ convs:[
+  {id:1,avec:'Julie M.',couleur:'#3E7CB1',nonLu:true,msgs:[['eux','Bonjour Karim, vous êtes libre jeudi pour la prise du salon ?','Hier 18 h 12']]},
+  {id:2,avec:'Thomas G.',couleur:'#8A5A44',nonLu:true,msgs:[['moi','Bonjour, voici mon devis pour le tableau électrique : 1 240,00 €.','Lun. 09/11 10 h 03'],['eux','Merci, je le regarde ce soir.','Lun. 09/11 12 h 40']]},
+  {id:3,avec:'Nadia K.',couleur:'#5B7F3A',nonLu:false,msgs:[['eux','Merci pour hier, tout marche !','Sam. 07/11 9 h 15'],['moi','Avec plaisir, à bientôt !','Sam. 07/11 9 h 30']]}
+ ],
+ demandesPres:[
+  {id:1,client:'Sophie L.',couleur:'#3E7CB1',titre:'Prise qui ne marche plus dans le salon',metier:'Électricien',ville:'Rezé',km:5,quand:'Cette semaine',desc:'Une prise ne donne plus de courant depuis hier. Le disjoncteur est en place.',date:'Aujourd’hui',fait:false},
+  {id:2,client:'Paul D.',couleur:'#8A5A44',titre:'Fuite sous l’évier',metier:'Plombier',ville:'Nantes',km:3,quand:'Dès que possible',desc:'Petite fuite au niveau du siphon, l’eau coule dans le meuble.',date:'Aujourd’hui',fait:false},
+  {id:4,client:'Amina S.',couleur:'#6B2F5B',titre:'Garder mon chat 1 semaine',metier:'Garde d’animaux',ville:'Nantes',km:2,quand:'Du 20 au 27/11',desc:'Chat calme, il faut passer une fois par jour.',date:'Hier',fait:false},
+  {id:3,client:'Lucas B.',couleur:'#1F3A6B',titre:'Installer 4 spots au plafond',metier:'Électricien',ville:'Orvault',km:9,quand:'Avant le 30/11',desc:'Cuisine de 12 m², les spots sont déjà achetés.',date:'Hier',fait:false},
+  {id:6,client:'Inès G.',couleur:'#2B6F8F',titre:'Je voudrais me faire masser le dos',metier:'Masseur / Masseuse',ville:'Nantes',km:4,quand:'Cette semaine',desc:'Dos bloqué depuis une semaine, massage à domicile si possible.',date:'Lun. 09/11',fait:false},
+  {id:5,client:'Claire M.',couleur:'#5B7F3A',titre:'Tailler une haie de 15 m',metier:'Jardinier',ville:'Saint-Herblain',km:7,quand:'Ce mois-ci',desc:'Haie de thuyas, environ 2 m de haut.',date:'Lun. 09/11',fait:false}
+ ],
+ mesDemandes:[
+  {id:1,titre:'Peindre un salon de 20 m²',metier:'Peintre',ville:'Nantes',quand:'Cette semaine',desc:'Murs et plafond en blanc. La peinture est déjà achetée.',date:'03/11/2026',etat:'ouverte',fin:'03/12/2026',reponses:[{nom:'Marc D.',couleur:'#C8622A',msg:'Bonjour, je peux passer jeudi pour voir le salon. Devis gratuit.',quand:'Hier 17 h 20'},{nom:'Hugo R.',couleur:'#1F3A6B',msg:'Disponible la semaine prochaine, environ 2 jours de travail.',quand:'Lun. 09/11 8 h 45'}]},
+  {id:2,titre:'Fuite sous la douche',metier:'Plombier',ville:'Nantes',quand:'Un jour précis',desc:'L’eau coule sous le bac de douche.',date:'25/10/2026',etat:'pourvue',rdv:'samedi 14/11 à 10 h',reponses:[{nom:'Sofiane T.',couleur:'#6B2F5B',msg:'Je peux venir samedi matin à 10 h.',quand:'Lun. 26/10 9 h 10'}]},
+  {id:3,titre:'Tondre ma pelouse',metier:'Jardinier',ville:'Nantes',quand:'Dès que possible',desc:'Environ 200 m².',date:'02/10/2026',etat:'expiree',fin:'01/11/2026',reponses:[]}
+ ],
+ rdv:[
+  {id:1,date:'2026-11-12',debut:840,fin:900,qui:'Julie M.',quoi:'Prise à changer',ville:'Rezé',etat:'Confirmé',metier:'Électricien'},
+  {id:2,date:'2026-11-12',debut:990,fin:1050,qui:'Nadia K.',quoi:'Contrôle du chauffe-eau',ville:'Nantes',etat:'Confirmé',metier:'Plombier'},
+  {id:3,date:'2026-11-14',debut:540,fin:600,qui:'Thomas G.',quoi:'Visite pour le tableau électrique',ville:'Orvault',etat:'En attente',metier:'Électricien'},
+  {id:4,date:'2026-11-19',debut:600,fin:690,qui:'Paul R.',quoi:'Installer 2 prises',ville:'Nantes',etat:'Confirmé',metier:'Électricien'}
+ ],
+ rdvClient:[
+  {id:11,date:'2026-11-03',debut:600,fin:690,avec:'Julie M.',pid:1,quoi:'Ménage',etat:'Passé',avis:false},
+  {id:14,date:'2026-11-14',debut:600,fin:720,avec:'Sofiane T.',pid:2,quoi:'Fuite sous la douche',etat:'Confirmé'},
+  {id:12,date:'2026-11-18',debut:540,fin:660,avec:'Léa P.',pid:3,quoi:'Taille de haies',etat:'Confirmé'},
+  {id:13,date:'2026-12-02',debut:1020,fin:1080,avec:'Inès R.',pid:5,quoi:'Cours de maths pour Yanis',etat:'Confirmé'}
+ ],
+ profilOnglet:'photos', profilOuvert:null, avatar:null, visible:true, carteBancaire:true, fermerConfirm:false, arrets:{},
+ bio:'Électricien et plombier à Nantes depuis 8 ans. Devis gratuit, intervention rapide.', ville:'Nantes (44000)', adresse:'12 rue des Lilas, 44000 Nantes', infos:{mail:'karim@example.com',tel:'06 12 34 56 78'},
+ photos:[{c:'linear-gradient(140deg,#2F6B4F,#79C49C)',leg:'Tableau électrique refait'},{c:'linear-gradient(140deg,#1F3A6B,#5B8BD6)',leg:'Salle de bain'},{c:'linear-gradient(140deg,#C8622A,#F0B35A)',leg:'Spots de cuisine'},{c:'linear-gradient(140deg,#6B2F5B,#C46FA8)',leg:'Chauffe-eau'},{c:'linear-gradient(140deg,#3A4650,#8C9AA6)',leg:'Prises extérieures'},{c:'linear-gradient(140deg,#7A1F2B,#D0606E)',leg:'Mise aux normes'},{c:'linear-gradient(140deg,#2B6F8F,#7FC4DE)',leg:'Douche à l’italienne'},{c:'linear-gradient(140deg,#5B7F3A,#A9CC74)',leg:'Éclairage du jardin'}],
+ dmdOuverte:null, encaisseMois:640, encaisseRafals:5320, ailleurs:[{m:2000,d:'2026-02-03'}], tvaActive:false, tvaFactureEnvoyee:false, dmdTexte:'', dmdDevine:null, dmdForce:null, dmdChoix:false, agendaPret:false, onboard:0, edSem:null, semaines:{}, exceptions:{}, calMetier:'Électricien', moisDecal:0, nbMois:1, jourClient:null, fenetre:null,
+ regAgenda:{confirm:'moi',annul:'24',pas:'30',pause:'15',tot:'2h',tard:'2m',bloque:'oui'},
+ agendaOnglet:'cal', devisOnglet:'tous',
+ creneauChoisi:null,
+ metiersMoi:[['Électricien',45],['Plombier',50]], zone:15,
+ couleurCarte:0, phraseCarte:'Dépannage rapide, devis gratuit',
+ ca:4380
+};
+const DEVIS=[
+ {n:'D-2026-042',quoi:'Remplacement du tableau électrique',qui:'Thomas G.',ville:'Orvault',montant:1240,etat:'En attente',date:'09/11/2026'},
+ {n:'D-2026-041',quoi:'Prise du salon',qui:'Julie M.',ville:'Rezé',montant:85,etat:'Accepté',date:'06/11/2026'},
+ {n:'D-2026-039',quoi:'Spots de la cuisine',qui:'Hugo B.',ville:'Nantes',montant:320,etat:'Refusé',date:'28/10/2026'}
+];
+const FACTURES=[
+ {n:'F-2026-058',qui:'Nadia K.',date:'06/11/2026',montant:120,paye:'Carte'},
+ {n:'F-2026-057',qui:'Paul R.',date:'04/11/2026',montant:85,paye:'Espèces'},
+ {n:'F-2026-056',qui:'Claire D.',date:'02/11/2026',montant:310,paye:'Carte'},
+ {n:'F-2026-055',qui:'Sarah L.',date:'01/11/2026',montant:125,paye:'Carte'}
+];
+const CLIENTS=[['Nadia K.','Nantes',3,'06/11/2026','#5B7F3A'],['Julie M.','Rezé',2,'12/11/2026','#3E7CB1'],['Paul R.','Nantes',1,'04/11/2026','#2B6F8F'],['Claire D.','Saint-Herblain',1,'02/11/2026','#A0522D'],['Sarah L.','Orvault',1,'01/11/2026','#7A4FC0']];
+const MES_AVIS=[['Nadia K.',5,'Rapide et soigneux, merci !','07/11/2026'],['Claire D.',5,'Très pro, explique bien ce qu’il fait.','03/11/2026'],['Paul R.',4,'Bon travail, prix correct.','05/11/2026']];
+const COULEURS=[['Vert rafals','#2F6B4F'],['Bleu nuit','#1F3A6B'],['Orange','#C8622A'],['Prune','#6B2F5B'],['Ardoise','#3A4650'],['Bordeaux','#7A1F2B']];
+
+/* ================= Petits morceaux ================= */
+const av=(nom,couleur,g)=>`<span class="av${g?' g':''}" style="background:${couleur}">${esc(nom[0])}</span>`;
+const etoiles=n=>'★'.repeat(n)+'☆'.repeat(5-n);
+const puceEtat=e=>`<span class="puce ${e==='Confirmé'||e==='Accepté'||e==='Payé'?'p-ok':e==='Refusé'||e==='Annulé'?'p-err':'p-att'}">${e}</span>`;
+const retour=(vers,texte)=>`<a class="retour" href="#${vers}">${ic('retour')}${texte}</a>`;
+const tete=(t,p)=>`<div class="tete"><h1>${t}</h1>${p?`<p>${p}</p>`:''}</div>`;
+const nonLus=()=>S.convs.filter(c=>c.nonLu).length;
+const demandesNouv=()=>S.demandesPres.filter(d=>!d.fait&&metiersNoms().includes(d.metier)).length;
+const presta=id=>PRESTAS.find(p=>p.id===id);
+function toast(t){const e=document.getElementById('toast');e.innerHTML=ic('ok')+esc(t);e.classList.add('vu');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('vu'),2400);}
+function sw(on,act,label){return `<button class="switch" role="switch" aria-checked="${on}" aria-label="${esc(label)}" data-act="${act}"></button>`;}
+function seg(valeurs,courant,act){return `<div class="seg" role="group">${valeurs.map(([v,t])=>`<button aria-pressed="${v===courant}" data-act="${act}" data-v="${esc(v)}">${t}</button>`).join('')}</div>`;}
+function cartePresta(p){return `<a class="presta" href="#prestataire-${p.id}"><div class="haut">${av(p.nom,p.couleur)}<div><b>${esc(p.nom)}</b><span class="doux petit">${p.metier} · ${p.ville}, ${p.km} km</span></div></div><div class="bas"><span class="etoile">★ ${p.note.toLocaleString('fr-FR',{minimumFractionDigits:1})} <span class="doux petit">(${p.nb} avis)</span></span><span class="prix">${p.prix} €/h</span></div>${p.siret?'<span class="puce p-ok" style="align-self:flex-start">'+ic('bouclier','i').replace('class="i"','class="i" style="width:16px;height:16px"')+'SIRET vérifié</span>':'<span class="puce p-neutre" style="align-self:flex-start">Sans SIRET</span>'}</a>`;}
+
+/* ================= Pages ================= */
+const PAGES={};
+
+PAGES.accueil=()=>`
+<section class="hero"><span class="forme f1"></span><span class="forme f2"></span><span class="forme f3"></span>
+ <p style="font-weight:600;opacity:.9">Bonjour ${MOI.prenom}</p>
+ <h1>De quoi avez-vous besoin aujourd’hui ?</h1>
+ <p>Des prestataires de confiance autour de Nantes, avec leurs vrais avis.</p>
+ <form class="recherche" data-form="chercher"><input id="q-accueil" name="q" placeholder="Ex. plombier, ménage, cours de maths…" aria-label="Que cherchez-vous ?"><button class="btn" type="submit">${ic('trouver')}Chercher</button></form>
+ <div class="chips" style="margin-top:14px">${METIERS.slice(1).map(m=>`<button class="chip" data-act="metier-accueil" data-v="${m}">${m}</button>`).join('')}</div>
+</section>
+<section class="section"><h2>Votre journée</h2>
+ ${statsPro()}</section>
+<section class="section"><div class="section-titre"><h2>Prochain rendez-vous</h2><a href="#agenda" class="doux petit">Tout voir</a></div>
+ ${(()=>{const r=prochainRdv();return r?`<a class="ligne" href="#agenda"><span class="heure">${hC(r.debut)}</span><div class="txt"><b>${r.quoi} chez ${r.qui}</b><span>${cap(dateLongue(r.date))} · ${r.ville}</span></div><span class="fin">${puceEtat(r.etat)}</span></a>`:'<div class="carte vide">Aucun rendez-vous à venir.</div>';})()}
+</section>
+<section class="section"><div class="section-titre"><h2>Près de chez vous</h2><a href="#trouver" class="doux petit">Tout voir</a></div>
+ <div class="grille">${PRESTAS.slice(0,3).map(cartePresta).join('')}</div></section>`;
+
+function resultats(){
+ const q=S.recherche.trim().toLowerCase();
+ const r=PRESTAS.filter(p=>(S.metier==='Tous'||p.metier===S.metier)&&(!q||(p.nom+' '+p.metier+' '+p.ville).toLowerCase().includes(q)));
+ return r.length?`<p class="doux petit">${r.length} prestataire${r.length>1?'s':''}</p><div class="grille">${r.map(cartePresta).join('')}</div>`:`<div class="carte vide"><h3>Personne pour l’instant</h3><p style="margin-top:6px">Essayez un autre métier, ou <a href="#nouvelle-demande">publiez une demande</a> : les prestataires viendront à vous.</p></div>`;
+}
+PAGES.trouver=()=>`${tete('Trouver un prestataire','Autour de Nantes, triés du plus proche au plus loin.')}
+ <div class="champ"><input id="q-trouver" value="${esc(S.recherche)}" placeholder="Nom, métier ou ville…" aria-label="Rechercher"></div>
+ <div class="chips">${METIERS.map(m=>`<button class="chip${m===S.metier?' on':''}" data-act="metier" data-v="${m}">${m}</button>`).join('')}</div>
+ <div id="resultats" class="section">${resultats()}</div>`;
+
+/* ================= Page publique d'un prestataire (une seule mise en page, pour tous) ================= */
+const PHOTOS_P={1:[['#3E7CB1','#8FB8DE','Cuisine après ménage'],['#2B6F8F','#7FC4DE','Vitres'],['#5B7F3A','#A9CC74','Terrasse']],2:[['#7A4FC0','#B79BE6','Salle de bain'],['#1F3A6B','#5B8BD6','Chauffe-eau'],['#2B6F8F','#7FC4DE','Douche']],3:[['#3B8A55','#9BD3A9','Haie taillée'],['#5B7F3A','#A9CC74','Potager'],['#7A6A2B','#D6C27A','Pelouse']]};
+function pagePresta(p,auteur){
+ const prenom=p.nom.split(' ')[0],ab=!auteur&&S.abonnes.has(p.id);
+ const photo=p.avatar?`<img class="pp-photo" src="${p.avatar}" alt="">`:`<span class="pp-photo" style="background:${p.couleur}">${esc(p.initiales||p.nom[0])}</span>`;
+ const note=p.note.toLocaleString('fr-FR',{minimumFractionDigits:1});
+ const photos=p.photos||[];
+ return `${auteur?`<div class="pp-auteur">${ic('moi')}<span>Voici votre page, telle que les clients la voient.</span><a href="#profil">Modifier</a></div>`:retour('trouver','Trouver')}
+ <section class="carte pp" style="--c:${p.couleur}">
+  <div class="pp-couv" aria-hidden="true"></div>
+  <div class="pp-corps">
+   ${photo}
+   <div class="pp-nom"><h1>${esc(p.nom)}</h1>${p.siret?`<span class="puce p-ok">${ic('bouclier')}SIRET vérifié</span>`:`<span class="puce p-accent">Particulier, non professionnel</span>`}</div>
+   <p class="pp-metier">${p.metiers||esc(p.metier)}</p>
+   <p class="doux">${ic('lieu')} ${esc(p.lieu)}</p>
+   <div class="pp-chiffres"><button data-act="vers-avis"><b>★ ${note}</b><small>${p.nb} avis</small></button><span><b>${p.prix} €</b><small>de l’heure</small></span><span><b>${p.abonnes}</b><small>abonnés</small></span></div>
+   ${auteur?'':`<div class="pp-btns"><button class="btn btn-1" data-act="ecrire" data-v="${p.id}">${ic('messages')}Écrire à ${esc(prenom)}</button><button class="btn ${ab?'btn-ok':'btn-2'}" data-act="suivre" data-v="${p.id}">${ic(ab?'ok':'coeur')}${ab?'Abonné':'S’abonner'}</button></div>`}
+  </div>
+ </section>
+ <section class="section"><h2>À propos</h2><div class="carte"><p class="pp-bio">${esc(p.bio)}</p></div></section>
+ ${photos.length?`<section class="section"><h2>Son travail en photos</h2><div class="photos pp-photos">${photos.map(f=>`<div class="ph" style="--c:${f.c}">${f.src?`<img src="${f.src}" alt="">`:''}${f.leg?`<span class="leg">${esc(f.leg)}</span>`:''}</div>`).join('')}</div></section>`:''}
+ <section class="section"><h2>Prochains créneaux libres</h2><div class="carte" style="display:flex;flex-direction:column;gap:14px"><div class="creneaux">${p.creneaux.map((c,i)=>`<button class="creneau${S.creneauChoisi===p.id+'-'+i?' on':''}" data-act="creneau" data-v="${p.id}-${i}">${c}</button>`).join('')}</div>
+  ${auteur?(S.creneauChoisi&&S.creneauChoisi.startsWith('0-')?`<div class="btns"><button class="btn btn-1" disabled title="C’est votre page">Demander ce rendez-vous</button></div><p class="doux petit">Un client cliquerait ici pour demander ce créneau. Vous ne pouvez pas réserver chez vous-même.</p>`:'<p class="doux petit">Les clients cliquent sur un créneau pour demander un rendez-vous. Ces créneaux viennent de votre agenda.</p>'):S.creneauChoisi&&S.creneauChoisi.startsWith(p.id+'-')?`<button class="btn btn-1" data-act="reserver" data-v="${p.id}" style="align-self:flex-start">Demander ce rendez-vous</button>`:`<p class="doux petit">Choisissez un créneau, puis envoyez la demande. ${esc(prenom)} confirme par message.</p>`}</div></section>
+ <section class="section" id="pp-avis"><h2>Avis</h2><div class="carte pp-avis">
+  <div class="pp-note"><b>${note}</b><span class="etoile">${etoiles(Math.round(p.note))}</span><small class="doux">${p.nb} avis</small></div>
+  <div class="pp-liste">${p.avis.map(a=>`<div class="avis"><span class="pp-qui">${av(a[0],'#8C9AA6')}<b>${esc(a[0])}</b><span class="etoile">${etoiles(a[1])}</span></span><p>${esc(a[2])}</p>${a[3]?`<span class="doux petit">${a[3]}</span>`:''}</div>`).join('')}</div>
+ </div></section>
+ <p class="pp-pied doux petit">${ic('bouclier')}Le téléphone et l’adresse sont donnés après une réservation.${auteur?'':`<button class="lien-discret" data-act="signaler" data-v="${p.id}">Signaler ce prestataire…</button>`}</p>`;}
+PAGES.prestataire=id=>{const p=presta(+id);if(!p)return PAGES.trouver();
+ return pagePresta({...p,lieu:`Part de ${p.ville}, à ${p.km} km de vous`,abonnes:8+p.id*3,photos:(PHOTOS_P[p.id]||[]).map(([a,b,leg])=>({c:`linear-gradient(140deg,${a},${b})`,leg}))},false);};
+
+PAGES.messages=()=>`${tete('Messages',nonLus()?`${nonLus()} conversation${nonLus()>1?'s':''} non lue${nonLus()>1?'s':''}.`:'Tout est lu.')}
+ <div class="liste">${S.convs.map(c=>{const d=c.msgs[c.msgs.length-1];return `<a class="ligne" href="#conversation-${c.id}">${av(c.avec,c.couleur)}<div class="txt"><b>${esc(c.avec)}</b><span>${d[0]==='moi'?'Vous : ':''}${esc(d[1])}</span></div><span class="fin petit">${c.nonLu?'<span class="point" aria-label="Non lu"></span>':''}${d[2].split(' ')[0]}</span></a>`;}).join('')}</div>`;
+
+PAGES.conversation=id=>{const c=S.convs.find(x=>x.id===+id);if(!c)return PAGES.messages();c.nonLu=false;
+ return `${retour('messages','Messages')}
+ <div style="display:flex;align-items:center;gap:12px">${av(c.avec,c.couleur)}<h2>${esc(c.avec)}</h2></div>
+ <div class="conv" id="fil">${c.msgs.map(m=>`<div class="bulle${m[0]==='moi'?' moi':''}">${esc(m[1])}<small>${m[2]}</small></div>`).join('')}</div>
+ <form class="ecrire" data-form="message" data-v="${c.id}"><input name="t" id="msg-${c.id}" placeholder="Écrire à ${esc(c.avec.split(' ')[0])}…" autocomplete="off" aria-label="Votre message"><button class="btn btn-1" type="submit" aria-label="Envoyer">${ic('envoyer')}</button></form>`;};
+
+const TUILES=[
+ ['Trouver des clients',[['demandes','demandes','Demandes près de chez moi','Les clients qui cherchent mon métier',()=>demandesNouv()],[null,'fusee','Être mis en avant','Apparaître en premier dans les résultats']]],
+ ['Gérer mon activité',[['agenda','agenda','Mon agenda','Mes rendez-vous et ma semaine type'],['devis','devis','Devis','Demandes de devis et devis envoyés',()=>1],['factures','devis','Factures','Toutes mes factures en PDF'],['paiements','euro','Paiements','Ce que j’ai encaissé, par carte et en espèces'],['clients','clients','Mes clients','Les personnes pour qui j’ai déjà travaillé']]],
+ ['Me faire connaître',[['avis','etoile','Mes avis','Ce que mes clients disent de moi'],['carte-visite','carte','Ma carte de visite','À imprimer, avec un carré à scanner'],[null,'site','Mon site','Une page à mon nom, visible sur Google']]],
+ ['Mes démarches',[['urssaf','batiment','Déclarer à l’URSSAF','Mes déclarations et leurs rappels'],['auto-entreprise','bouclier','Mon auto-entreprise','La créer et suivre mon dossier']]]
+];
+/* Les 4 chiffres du prestataire (accueil et Mon activité, lot 10.1) */
+function statsPro(){const n=demandesNouv(),r=rdvActifs().filter(x=>x.date>=CLE_AUJ&&x.date<='2026-11-15').length,d=DEVIS.filter(x=>x.etat==='En attente').length;
+ return `<div class="stats">
+  <a class="stat" href="#demandes"><b>${n}</b><span>demande${n>1?'s':''} près de chez vous</span></a>
+  <a class="stat" href="#agenda" data-act="vers-rdv"><b>${r}</b><span>rendez-vous d’ici dimanche</span></a>
+  <a class="stat" href="#devis"><b>${d}</b><span>devis en attente de réponse</span></a>
+  <a class="stat" href="#paiements"><b>${euros(S.encaisseMois)}</b><span>encaissés en novembre</span></a>
+ </div>`;}
+/* Carte « Encaissé en 2026 » et barre de la TVA (RM-MON-ACTIVITE.md § « La barre de la TVA ») */
+const SEUIL_TVA=37500;
+const totalAnnee=()=>S.encaisseRafals+S.ailleurs.reduce((t,a)=>t+a.m,0);
+function carteTva(){const tot=totalAnnee(),ail=tot-S.encaisseRafals,pc=Math.min(100,tot/SEUIL_TVA*100);
+ return `<section class="carte tva"><div class="tva-haut"><h2>Encaissé en 2026</h2><b class="tva-somme">${euros(tot)}</b></div>
+  ${ail?`<p class="doux petit">Dont ${euros(S.encaisseRafals)} sur rafals et ${euros(ail)} ailleurs.</p>`:''}
+  ${S.tvaActive?`<p class="tva-ok">${ic('ok')}TVA activée : vos devis et factures indiquent la TVA.</p>`
+  :`<div class="tva-barre" role="img" aria-label="${Math.round(pc)} % du seuil de TVA"><span style="width:${pc}%"></span></div>
+  <p class="petit">Il vous reste <b>${euros(SEUIL_TVA-tot)}</b> avant le seuil de TVA (${euros(SEUIL_TVA)}). Barre pleine : la TVA s’active toute seule.</p>
+  <button class="btn btn-2 btn-petit" style="align-self:flex-start" data-act="ailleurs-ouvrir">${ic('plus')}Ajouter ce que j’ai encaissé ailleurs</button>`}
+  ${S.ailleurs.length?`<div class="tva-liste">${S.ailleurs.map((a,i)=>`<div class="tva-ligne"><span>${euros(a.m)} encaissés ailleurs le ${dateCourte(a.d)}</span><button class="btn btn-2 btn-petit" data-act="ailleurs-retirer" data-v="${i}">Retirer</button></div>`).join('')}</div>`:''}
+ </section>`;}
+function fenetreAilleurs(){return `<h2 id="f-titre">Encaissé ailleurs</h2><p class="doux petit">Ce que vous avez encaissé hors de rafals cette année : il compte pour le seuil de TVA.</p>
+ <form class="form" data-form="ailleurs"><div class="champ"><label for="ai-m">Montant en euros</label><input id="ai-m" name="m" inputmode="decimal" required placeholder="Ex. 2000 ou 45,50"></div>
+ <div class="champ"><label for="ai-d">Encaissé le</label><input id="ai-d" name="d" type="date" required max="${CLE_AUJ}" min="2026-01-01" value="${CLE_AUJ}"></div>
+ <p class="erreur-champ" id="ai-err" hidden></p>
+ <div class="btns"><button class="btn btn-1" type="submit">Ajouter</button><button class="btn btn-2" type="button" data-act="fermer-fenetre">Annuler</button></div></form>`;}
+PAGES.activite=()=>`${tete('Mon activité','Tout ce qui fait tourner votre activité, au même endroit.')}
+ ${statsPro()}${carteTva()}
+ ${TUILES.map(([g,ts])=>`<section class="section"><h2>${g}</h2><div class="tuiles">${ts.map(([vers,i,t,d,n])=>{const c=n&&n();return vers?`<a class="tuile" href="#${vers}"><span class="ico-rond">${ic(i)}</span><div><b>${t}</b><span class="d">${d}</span></div>${c?`<span class="badge">${c}</span>`:''}</a>`:`<div class="tuile bientot" aria-disabled="true"><span class="ico-rond">${ic(i)}</span><div><b>${t}</b><span class="d">${d}</span></div><span class="puce p-neutre">Bientôt</span></div>`;}).join('')}</div></section>`).join('')}`;
+
+/* ================= Mes demandes (client) ================= */
+const ETAT_DMD={ouverte:['p-ok','Ouverte'],pourvue:['p-accent','Rendez-vous pris'],expiree:['p-neutre','Expirée'],fermee:['p-neutre','Fermée']};
+function carteDemande(d){const [cl,lib]=ETAT_DMD[d.etat],n=d.reponses.length,ouverte=d.etat==='ouverte';
+ const info=ouverte?`Ouverte jusqu’au ${d.fin}. Les ${esc(d.metier.toLowerCase())}s près de chez vous la voient.`:d.etat==='pourvue'?`Rendez-vous le ${d.rdv}.`:d.etat==='expiree'?`Expirée le ${d.fin} : les prestataires ne la voient plus.`:'Fermée : les prestataires ne la voient plus.';
+ const rep=n?`<div class="dmd-rep"><b>${n} prestataire${n>1?'s vous ont':' vous a'} répondu</b>${d.reponses.map((r,k)=>`<button class="ligne" data-act="dmd-ecrire" data-v="${d.id}-${k}">${av(r.nom,r.couleur)}<div class="txt"><b>${esc(r.nom)}</b><span>${esc(r.msg)}</span></div><span class="fin">${ic('messages')}<span class="cache-tel">Répondre</span></span></button>`).join('')}</div>`
+  :ouverte?`<p class="dmd-vide">Pas encore de réponse. Vous aurez un message dès qu’un prestataire répond.</p>`:'';
+ const btns=ouverte?`<button class="btn btn-2 btn-petit" data-act="dmd-modif" data-v="${d.id}">${n?'🔒 ':''}Modifier…</button><button class="btn btn-2 btn-petit" data-act="dmd-prolonger" data-v="${d.id}">Prolonger de 30 jours</button><button class="btn btn-danger-2 btn-petit" data-act="dmd-fermer" data-v="${d.id}">Fermer ma demande…</button>`
+  :d.etat==='pourvue'?`<a class="btn btn-2 btn-petit" href="#agenda" data-act="dmd-rdv">Voir le rendez-vous</a>`:`<button class="btn btn-1 btn-petit" data-act="dmd-rouvrir" data-v="${d.id}">Rouvrir pour 30 jours</button>`;
+ const ouv=S.dmdOuverte===d.id;
+ return `<article class="carte dmd dmd-perso${ouv?' ouvert':''}"><button class="dmd-tete" data-act="dmd-ouvrir" data-v="${d.id}" aria-expanded="${ouv}">
+  <div class="txt"><span class="puce ${cl}">${lib}</span><h3>${esc(d.titre)}</h3><span class="doux petit">${esc(d.metier)} · ${esc(d.ville)} · publiée le ${d.date}</span></div>
+  <span class="fin">${n?`<span class="puce p-ok">${n} réponse${n>1?'s':''}</span>`:''}<span class="chev">›</span></span></button>
+  ${ouv?`<div class="dmd-corps"><p>${esc(d.desc||'')}</p><p class="doux petit">Pour quand : ${esc(d.quand)}</p><p class="petit"><b>${info}</b></p>${rep}<div class="btns">${btns}</div></div>`:''}</article>`;}
+/* Une demande publique : tout le monde la voit ; seul un prestataire du bon métier et assez près peut répondre */
+function cartePublique(d){const moi=metiersNoms(),peut=S.connecte&&moi.includes(d.metier)&&d.km<=S.zone;
+ const b=d.mienne?'<span class="puce p-neutre" style="align-self:flex-start">C’est votre demande</span>'
+  :!S.connecte?''
+  :d.fait?`<a class="btn btn-2 btn-petit" href="#conversation-${2000+d.id}">${ic('messages')}Voir la conversation</a>`
+  :peut?`<button class="btn btn-1 btn-petit" data-act="pub-repondre" data-v="${d.id}">${ic('messages')}Répondre</button>`
+  :moi.length?`<button class="btn btn-verrou btn-petit" data-act="pub-verrou" data-v="${d.id}">🔒 Répondre</button>`:'';
+ return `<article class="carte dmd"><div class="dmd-haut"><span class="puce p-accent">${esc(d.metier)}</span><span class="doux petit">${d.date}</span></div>
+  <div><h3>${esc(d.titre)}</h3><p class="doux petit" style="margin-top:2px">${ic('lieu').replace('class="i"','class="i" style="width:15px;height:15px;vertical-align:-3px"')} ${esc(d.ville)}${d.km!=null?' · à '+d.km+' km':''} · ${esc(d.quand)}</p></div>
+  <p>${esc(d.desc)}</p>
+  <div class="dmd-pied"><span class="qui">${av(d.client,d.couleur)}<span><b>${esc(d.client)}</b><small class="doux">${d.mienne?'vous':'particulier'}</small></span></span>${b}</div></article>`;}
+function ongletsDemandes(o){return `<div class="onglets" role="tablist"><a role="tab" href="#demandes" aria-selected="${o==='pres'}">Près de chez moi</a><a role="tab" href="#${S.connecte?'mes-demandes':'connexion'}" aria-selected="${o==='miennes'}">Mes demandes${S.connecte?` <span class="nb">${S.mesDemandes.length}</span>`:''}</a></div>`;}
+function teteDemandes(){return `<div class="section-titre" style="align-items:center;flex-wrap:wrap">${tete('Demandes','Les besoins publiés près de chez vous. Tout le monde peut les voir.')}<a class="btn btn-1" href="#${S.connecte?'nouvelle-demande':'connexion'}">${ic('plus')}Publier une demande</a></div>`;}
+PAGES.demandes=()=>{const liste=[...S.demandesPres].sort((a,b)=>a.km-b.km);
+ return `${teteDemandes()}${ongletsDemandes('pres')}
+ <p class="doux petit">${liste.length} demande${liste.length>1?'s':''} autour de Nantes, de la plus proche à la plus loin.${S.connecte?' Vous pouvez répondre à celles de vos métiers ('+metiersNoms().join(', ')+'), jusqu’à '+S.zone+' km.':''}</p>
+ ${liste.map(cartePublique).join('')}`;};
+PAGES['demandes-pres']=PAGES.demandes;
+PAGES['mes-demandes']=()=>{const enCours=S.mesDemandes.filter(d=>d.etat==='ouverte'),fini=S.mesDemandes.filter(d=>d.etat!=='ouverte');
+ return `${teteDemandes()}${ongletsDemandes('miennes')}
+ <p class="doux petit">Ce que vous avez publié, et les réponses des prestataires.</p>
+ ${S.mesDemandes.length?'':`<div class="carte vide"><h3>Aucune demande pour l’instant</h3><p style="margin-top:6px">Une fuite, une prise, un meuble à monter ? Publiez une demande en 1 minute.</p></div>`}
+ ${enCours.length?`<section class="section"><h2 class="h-sec">En cours</h2>${enCours.map(carteDemande).join('')}</section>`:''}
+ ${fini.length?`<section class="section"><h2 class="h-sec">Terminées</h2>${fini.map(carteDemande).join('')}</section>`:''}`;};
+function trouveDmd(v){return S.mesDemandes.find(d=>d.id===+v);}
+function fenetreFermerDmd(f){const d=trouveDmd(f.id);return `<h2 id="f-titre">Fermer « ${esc(d.titre)} » ?</h2><p>Les prestataires ne la verront plus et ne pourront plus y répondre. Elle reste dans « Mes demandes ».</p><div class="btns f-btns"><button class="btn btn-danger" data-act="dmd-fermer-ok">Fermer ma demande</button><button class="btn btn-2" data-act="fermer-fenetre">Annuler</button></div>`;}
+function fenetreModifDmd(f){const d=trouveDmd(f.id);return `<h2 id="f-titre">Modifier ma demande</h2><p class="doux petit">${esc(d.metier)} · ${esc(d.ville)}. Pour changer le métier ou l’adresse, fermez cette demande et publiez-en une autre.</p>
+ <form class="form" data-form="modif-demande"><div class="champ"><label for="md-titre">Titre</label><input id="md-titre" name="titre" required value="${esc(d.titre)}"></div><div class="champ"><label for="md-desc">Décrivez votre besoin</label><textarea id="md-desc" name="desc" required>${esc(d.desc)}</textarea></div><div class="champ"><label for="md-quand">Pour quand ?</label><select id="md-quand" name="quand">${QUANDS.map(q=>`<option${q===d.quand?' selected':''}>${q}</option>`).join('')}</select></div><div class="btns"><button class="btn btn-1" type="submit">Enregistrer</button><button class="btn btn-2" type="button" data-act="fermer-fenetre">Annuler</button></div></form>`;}
+const QUANDS=['Dès que possible','Cette semaine','Ce mois-ci','Un jour précis'];
+function demandeClic(a,v){
+ if(a==='pub-repondre'||a==='pub-verrou'){const p=S.demandesPres.find(x=>x.id===+v);
+  if(a==='pub-verrou'){toast(metiersNoms().includes(p.metier)?`Cette demande est à ${p.km} km : vous vous déplacez jusqu’à ${S.zone} km. Vous pouvez agrandir cette distance dans « Mon profil ».`:`Cette demande est pour « ${p.metier} » : vous ne répondez qu’aux demandes de vos métiers (${metiersNoms().join(', ')}). Si vous exercez aussi ce métier, ajoutez-le dans « Mon profil ».`);return true;}
+  p.fait=true;const id=2000+p.id;if(!S.convs.find(c=>c.id===id))S.convs.unshift({id,avec:p.client,couleur:p.couleur,nonLu:false,msgs:[['eux','« '+p.titre+' » — '+p.desc,p.date]]});
+  aller('conversation-'+id);return true;}
+ const d=v&&trouveDmd(String(v).split('-')[0]);
+ switch(a){
+  case 'dmd-choix':S.dmdChoix=true;majZoneMetier();const c=document.getElementById('d-metier-choix');c&&c.focus();return true;
+  case 'dmd-ouvrir':S.dmdOuverte=S.dmdOuverte===d.id?null:d.id;rafraichir();return true;
+  case 'dmd-modif':if(d.reponses.length){toast('Un prestataire a déjà répondu : pour changer cette demande, fermez-la et publiez-en une autre.');return true;}S.fenetre={type:'modif-demande',id:d.id};dessineFenetre();return true;
+  case 'dmd-prolonger':d.fin='02/01/2027';toast('Demande prolongée de 30 jours.');rafraichir();return true;
+  case 'dmd-fermer':S.fenetre={type:'fermer-demande',id:d.id};dessineFenetre();return true;
+  case 'dmd-fermer-ok':trouveDmd(S.fenetre.id).etat='fermee';S.fenetre=null;dessineFenetre();toast('Demande fermée.');rafraichir();return true;
+  case 'dmd-rouvrir':d.etat='ouverte';d.fin='09/12/2026';toast('Demande rouverte pour 30 jours.');rafraichir();return true;
+  case 'dmd-rdv':S.calMetier='client';S.agendaOnglet='cal';S.agendaPret=true;S.jourClient='2026-11-14';return false;
+  case 'dmd-ecrire':{const r=d.reponses[+String(v).split('-')[1]],id=1000+d.id*10+(+String(v).split('-')[1]);
+   if(!S.convs.find(c=>c.id===id))S.convs.unshift({id,avec:r.nom,couleur:r.couleur,nonLu:false,msgs:[['eux',r.msg,r.quand]]});
+   aller('conversation-'+id);return true;}
+ }return false;}
+
+/* Le client écrit son besoin ; rafals devine le métier (liste de mots-clés ; dans le vrai site, l'IA prendrait le relais si aucun mot n'est reconnu) */
+const MOTS_METIERS=[
+ ['Masseur / Masseuse',['masser','massage','masse','dos bloque','detente','relaxation']],
+ ['Plombier',['fuite','evier','robinet','wc','toilette','chasse d eau','tuyau','canalisation','douche','chauffe-eau','chauffe eau','lavabo','bouche','plomb']],
+ ['Électricien',['prise','electri','lumiere','disjonct','interrupteur','spot','lampe','courant','tableau electrique','ampoule']],
+ ['Jardinage',['jardin','pelouse','tondre','tonte','haie','arbre','potager','herbe','tailler']],
+ ['Ménage',['menage','nettoy','repass','vitre','aspirat','poussiere','laver']],
+ ['Peintre',['peindre','peinture','repeindre','mur','plafond','tapisserie']],
+ ['Cours',['cours','maths','devoirs','soutien scolaire','anglais','lecon','reviser','francais','physique']],
+ ['Serrurier',['serrure','cle','clef','porte claquee','verrou','enferme']],
+ ['Garde d’animaux',['chat','chien','animal','animaux','promener']],
+ ['Bricolage',['monter','meuble','etagere','armoire','fixer','bricol','accrocher','repar','installer','percer','tringle','cadre']],
+ ['Chauffagiste',['chaudiere','chauffage','radiateur']],
+ ['Coiffeur / Coiffeuse',['coiff','cheveux','coupe de cheveux','brushing','barbe','tresse']],
+ ['Dépannage informatique',['pc','ordi','ordinateur','informatique','imprimante','wifi','box','internet','virus','windows','mac','portable','tablette','logiciel','mot de passe','telephone','smartphone','ecran','souris','clavier','imprimer']],
+ ['Déménagement',['demenag','carton','camion','porter','transporter']],
+ ['Garde d’enfants',['enfant','bebe','nounou','baby','sortie d ecole','garder ma fille','garder mon fils','garder les petits']],
+ ['Aide à domicile',['personne agee','grand-mere','grand-pere','courses','aide a domicile','toilette de','repas a domicile']],
+ ['Esthéticienne',['epil','ongle','manucure','pedicure','maquill','soin du visage','sourcil']],
+ ['Mécanique auto',['voiture','auto','moteur','pneu','vidange','frein','batterie','garage','scooter','moto']],
+ ['Réparation de vélo',['velo','crevaison','chaine de velo','derailleur']],
+ ['Couturière',['couture','ourlet','recoudre','retouche','ourlets','fermeture eclair','pantalon','robe']],
+ ['Photographe',['photo','photographe','shooting','mariage']],
+ ['Cuisinier / Traiteur',['cuisin','traiteur','repas pour','buffet','gateau','anniversaire']],
+ ['Vitrier',['vitre cassee','carreau','fenetre cassee','double vitrage']],
+ ['Couvreur',['toit','toiture','tuile','gouttiere','ardoise']],
+ ['Maçon',['macon','beton','muret','dalle','parpaing','fissure']],
+ ['Carreleur',['carrel','faience']],
+ ['Menuisier',['menuis','parquet','placard','porte qui ferme mal','bois']],
+ ['Climatisation',['clim','climatis']],
+ ['Coach sportif',['sport','muscu','courir','maigrir','perdre du poids','fitness','coach']],
+ ['Cours de musique',['piano','guitare','violon','chant','batterie de musique','solfege']]];
+const MOTS_VAGUES=['repar','cours','installer','monter','fixer','porter','laver','courses'];/* mots trop généraux : comptent pour moitié */
+const sansAccent=t=>t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9-]+/g,' ');
+function devineMetier(txt){const t=' '+sansAccent(txt)+' ';let meilleur=null,score=0;
+ for(const [m,mots] of MOTS_METIERS){const n=mots.filter(w=>t.includes(' '+w)).reduce((x,w)=>x+(MOTS_VAGUES.includes(w)?0.5:1),0);if(n>score){score=n;meilleur=m;}}
+ return meilleur;}
+const TOUS_METIERS_DMD=()=>[...new Set([...MOTS_METIERS.map(x=>x[0]),...METIERS_TOUS,...METIERS.slice(1)])].sort((a,b)=>a.localeCompare(b,'fr'));
+const metierDmd=()=>S.dmdForce||S.dmdDevine;
+function zoneMetier(){const m=metierDmd(),vide=!S.dmdTexte.trim();
+ if(S.dmdChoix)return `<label for="d-metier-choix" class="petit"><b>Choisissez le métier</b></label><select id="d-metier-choix"><option value="">— Choisir —</option>${TOUS_METIERS_DMD().map(x=>`<option${x===m?' selected':''}>${esc(x)}</option>`).join('')}</select>`;
+ if(m)return `<span class="trouve">${ic('ok')}Métier trouvé : <b>${esc(m)}</b></span><button type="button" class="lien" data-act="dmd-choix">Changer</button>`;
+ if(vide)return `<span class="doux petit">Écrivez votre besoin avec vos mots : rafals trouve tout seul le bon métier.</span>`;
+ return `<span class="pas-trouve">Nous n’avons pas reconnu le métier.</span><button type="button" class="lien" data-act="dmd-choix">Choisir le métier</button>`;}
+function majZoneMetier(){const z=document.getElementById('d-zone-metier');if(z)z.innerHTML=zoneMetier();}
+PAGES['nouvelle-demande']=()=>{S.dmdTexte='';S.dmdDevine=null;S.dmdForce=null;S.dmdChoix=false;
+ return `${retour('mes-demandes','Mes demandes')}${tete('Publier une demande','Dites ce dont vous avez besoin : les prestataires près de chez vous sont prévenus.')}
+ <form class="carte form" data-form="demande">
+  <div class="champ"><label for="d-titre">De quoi avez-vous besoin ?</label><input id="d-titre" name="titre" required autocomplete="off" placeholder="Ex. Je voudrais me faire masser"><div class="zone-metier" id="d-zone-metier" aria-live="polite">${zoneMetier()}</div></div>
+  <div class="champ"><label for="d-desc">Détails (facultatif)</label><textarea id="d-desc" name="desc" placeholder="Ex. J’ai mal au dos depuis une semaine."></textarea></div>
+  <div class="champ"><label for="d-quand">Pour quand ?</label><select id="d-quand" name="quand">${QUANDS.map(q=>`<option>${q}</option>`).join('')}</select></div>
+  <div class="champ"><label for="d-ville">Où ?</label><input id="d-ville" name="ville" value="Nantes" required><small>Votre adresse exacte n’est jamais montrée.</small></div>
+  <button class="btn btn-1" type="submit" style="align-self:flex-start">Publier ma demande</button></form>`;};
+
+/* ================= Mon agenda ================= */
+const AUJ=new Date(2026,10,8);
+const NOMS_J=['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+const NOMS_M=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const p2=n=>String(n).padStart(2,'0');
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+const cle=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+const deCle=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);};
+const CLE_AUJ=cle(AUJ);
+const jIdx=d=>(d.getDay()+6)%7;
+const fmtH=m=>`${Math.floor(m/60)} h ${p2(m%60)}`;
+const hC=m=>`${Math.floor(m/60)} h${m%60?' '+p2(m%60):''}`;
+const court=m=>m%60?`${Math.floor(m/60)}h${p2(m%60)}`:`${m/60}`;
+const plTxt=pl=>pl.map(p=>fmtH(p[0])+' – '+fmtH(p[1])).join(' · ');
+const plCourt=pl=>pl.map(p=>court(p[0])+'-'+court(p[1])).join(' · ');
+const dateLongue=k=>{const d=deCle(k);return `${NOMS_J[jIdx(d)]} ${d.getDate()} ${NOMS_M[d.getMonth()]}`;};
+const dateCourte=k=>{const d=deCle(k);return `${p2(d.getDate())}/${p2(d.getMonth()+1)}/${d.getFullYear()}`;};
+const de_=m=>/^[aeiouyéèêàâîôûAEIOUYÉÈÊ]/.test(m)?'d’'+m:'de '+m;
+const copie=x=>JSON.parse(JSON.stringify(x));
+const trie=pl=>[...pl].sort((a,b)=>a[0]-b[0]);
+const DEFAUT_SEM=[[[540,720],[840,1080]],[[540,720],[840,1080]],[[540,720],[840,1080]],[[540,720],[840,1080]],[[540,720],[840,1080]],[[540,720]],[]];
+const metiersNoms=()=>S.metiersMoi.map(m=>m[0]);
+function semaine(m){if(!S.semaines[m])S.semaines[m]=copie(DEFAUT_SEM);return S.semaines[m];}
+function exc(m){return S.exceptions[m]||(S.exceptions[m]={});}
+function heuresDuJour(m,k){return exc(m)[k]||semaine(m)[jIdx(deCle(k))];}
+const rdvActifs=()=>S.rdv.filter(r=>r.etat!=='Annulé'&&r.etat!=='Refusé');
+const prochainRdv=()=>rdvActifs().filter(r=>r.date>=CLE_AUJ).sort((a,b)=>a.date.localeCompare(b.date)||a.debut-b.debut)[0];
+const dehors=(r,pl)=>!pl.some(p=>r.debut>=p[0]&&r.fin<=p[1]);
+function valider(pl,jour){const t=trie(pl);for(const p of t)if(p[1]<=p[0])return jour?`Le ${jour} : chaque plage doit finir après son début.`:'Chaque plage doit finir après son début.';
+ for(let i=1;i<t.length;i++)if(t[i][0]<t[i-1][1])return jour?`Deux plages se chevauchent le ${jour} : ${fmtH(t[i-1][0])}-${fmtH(t[i-1][1])} et ${fmtH(t[i][0])}-${fmtH(t[i][1])}.`:'Deux plages se chevauchent : changez leurs heures.';return null;}
+function plageApres(pl,ecart,duree){if(!pl.length)return [540,720];const fin=Math.max(...pl.map(p=>p[1]));const d=Math.min(fin+ecart,1425);return [d,Math.min(d+duree,1440)];}
+const nouvellePlageJour=pl=>plageApres(pl,120,240);
+const nouvellePlageSem=pl=>pl.length===1&&pl[0][1]<=720?[840,1140]:plageApres(pl,60,180);
+function selHeure(val,champ,fin,label){let o='';for(let m=fin?15:0;m<=(fin?1440:1425);m+=15)o+=`<option value="${m}"${m===val?' selected':''}>${fmtH(m)}</option>`;return `<select data-champ="${champ}" aria-label="${label}">${o}</select>`;}
+function bandeauConflits(l,mode){const fin=mode==='f'?' et enregistrer':'';return `<div class="bandeau b-att"><b>${l.length>1?l.length+' rendez-vous tombent':'1 rendez-vous tombe'} en dehors de ces horaires :</b><ul>${l.map(r=>`<li>${dateCourte(r.date)} · ${fmtH(r.debut)} – ${fmtH(r.fin)} · ${r.quoi} · ${r.qui}</li>`).join('')}</ul><div class="btns"><button class="btn btn-danger btn-petit" data-act="${mode}-annuler-rdv">Annuler ces rendez-vous${fin}</button><button class="btn btn-2 btn-petit" data-act="${mode}-garder">Les garder${fin}</button></div></div>`;}
+
+/* Semaine type : l’éditeur sert au premier passage et au bouton « Changer les horaires ». */
+function editeurSemaine(ed){return `<div class="semaine">${NOMS_J.map((n,j)=>{const pl=ed.sem[j];return `<div class="sem-jour"><b class="sem-nom">${cap(n)}</b><div class="sem-plages">${pl.length?pl.map((p,k)=>`<div class="plage"><span>De</span>${selHeure(p[0],`s-${j}-${k}-0`,false,cap(n)+' : début')}<span>à</span>${selHeure(p[1],`s-${j}-${k}-1`,true,cap(n)+' : fin')}<button class="croix" data-act="s-retire" data-v="${j}-${k}" aria-label="Retirer cette plage">×</button></div>`).join(''):'<span class="puce p-neutre">Fermé</span>'}<button class="lien-plus" data-act="s-ajout" data-v="${j}">+ Ajouter une plage</button></div></div>`;}).join('')}</div>${ed.erreur?`<div class="bandeau b-err">${ed.erreur}</div>`:''}${ed.conflits?bandeauConflits(ed.conflits,'s'):''}`;}
+function enregistrerSemaine(force){const ed=S.edSem;
+ for(let j=0;j<7;j++){const e=valider(ed.sem[j],NOMS_J[j]);if(e){ed.erreur=e;ed.conflits=null;return false;}}
+ ed.erreur=null;const sem=ed.sem.map(trie);
+ if(!force){const c=rdvActifs().filter(r=>r.metier===ed.metier&&r.date>=CLE_AUJ&&!exc(ed.metier)[r.date]&&dehors(r,sem[jIdx(deCle(r.date))]));if(c.length){ed.conflits=c;return false;}}
+ if(force==='annuler')ed.conflits.forEach(r=>r.etat='Annulé');
+ S.semaines[ed.metier]=sem;ed.conflits=null;return true;}
+const metierSemaine=()=>{const ms=metiersNoms();return ms.includes(S.calMetier)?S.calMetier:ms[0];};
+
+function agendaAccueil(){const ms=metiersNoms();if(S.onboard>=ms.length)S.onboard=0;const m=ms[S.onboard];
+ if(!S.edSem||S.edSem.metier!==m||S.edSem.enTab)S.edSem={metier:m,sem:copie(S.onboard>0?semaine(ms[S.onboard-1]):DEFAUT_SEM),erreur:null,conflits:null};
+ const dernier=S.onboard>=ms.length-1;
+ return `${retour('activite','Mon activité')}
+ <section class="hero" style="padding:26px"><span class="forme f1"></span><span class="forme f2"></span><p style="font-weight:600;opacity:.9">Bienvenue dans votre agenda</p><h1 style="font-size:clamp(26px,4.5vw,34px)">Quand travaillez-vous d’habitude ?</h1><p>Choisissez les horaires d’une semaine normale. Les clients pourront réserver seulement pendant ces heures.</p></section>
+ <div class="carte form">${ms.length>1?`<p class="doux petit" style="font-weight:700">Étape ${S.onboard+1} sur ${ms.length}</p>`:''}<h2>Vos horaires ${de_(m)}</h2><p class="doux">Déjà rempli avec des horaires courants : changez ce qui ne va pas. Un jour sans plage est fermé.</p>
+ ${editeurSemaine(S.edSem)}
+ <div class="btns"><button class="btn btn-1" data-act="sem-enreg">${dernier?'Enregistrer et voir mon calendrier':'Enregistrer et continuer'}</button></div>
+ <p class="doux petit">Vous pourrez les changer quand vous voulez dans l’onglet « Semaine type ».</p></div>`;}
+
+/* Calendrier */
+function casePro(k,d){const m=S.calMetier,pl=heuresDuJour(m,k),passe=k<CLE_AUJ,n=rdvActifs().filter(r=>r.date===k&&r.metier===m).length;
+ return `<button class="jcase${passe?' passe':''}${k===CLE_AUJ?' auj':''}"${passe?' disabled':''} data-act="jour" data-v="${k}" aria-label="${dateLongue(k)} : ${pl.length?'ouvert '+plTxt(pl):'fermé'}${n?', '+n+' rendez-vous':''}"><span class="bandes">${pl.map(p=>`<i style="left:${p[0]/14.4}%;width:${(p[1]-p[0])/14.4}%"></i>`).join('')}</span><b>${d}</b>${pl.length?`<small class="h">${plCourt(pl)}</small>`:''}${n?`<span class="nrdv">${n} rdv</span>`:''}</button>`;}
+function caseClient(k,d){const l=S.rdvClient.filter(r=>r.date===k&&r.etat!=='Annulé');
+ return `<button class="jcase client${l.length?(k>=CLE_AUJ?' a-rdv':' rdv-passe'):''}${k===CLE_AUJ?' auj':''}${S.jourClient===k?' choisi':''}" data-act="jour-client" data-v="${k}" aria-label="${dateLongue(k)}${l.length?', '+l.length+' rendez-vous':''}"><b>${d}</b>${l.length?`<span class="nrdv">${l.length} rdv</span>`:''}</button>`;}
+function grilleMois(an,mo,client){const nb=new Date(an,mo+1,0).getDate(),dec=jIdx(new Date(an,mo,1));
+ let h=`<div class="mois"><p class="mois-nom">${cap(NOMS_M[mo])} ${an}</p><div class="sem-tete">${['lun','mar','mer','jeu','ven','sam','dim'].map(x=>`<span>${x}</span>`).join('')}</div><div class="grille-j">`;
+ for(let i=0;i<dec;i++)h+='<span></span>';
+ for(let d=1;d<=nb;d++){const k=cle(new Date(an,mo,d));h+=client?caseClient(k,d):casePro(k,d);}
+ return h+'</div></div>';}
+function ligneRdvClient(r){let fin;
+ if(r.etat==='Annulé')fin=puceEtat('Annulé');
+ else if(r.date>=CLE_AUJ)fin=`<button class="btn btn-2 btn-petit" data-act="rc-deplacer" data-v="${r.id}">Déplacer</button><button class="btn btn-2 btn-petit" data-act="rc-annuler" data-v="${r.id}">Annuler</button>`;
+ else fin=r.avis?'<span class="puce p-ok">Avis donné</span>':`<button class="btn btn-1 btn-petit" data-act="rc-avis" data-v="${r.id}">Donner mon avis</button>`;
+ return `<div class="ligne ligne-rdv"><span class="heure">${hC(r.debut)}</span><div class="txt"><b>${r.quoi}</b><span>Avec ${r.avec} · ${dateCourte(r.date)}</span></div><span class="fin">${fin}</span></div>`;}
+const triRdv=(a,b)=>a.date.localeCompare(b.date)||a.debut-b.debut;
+/* Le mois reste dans la page ; le jour cliqué s’affiche dans une bulle fixée en bas de l’écran. */
+function listeClient(an,mo){const pref=`${an}-${p2(mo+1)}`,k=S.jourClient;
+ const l=S.rdvClient.filter(r=>r.date.startsWith(pref)).sort(triRdv);
+ const mois=`<section class="section"><h2>Ce mois-ci</h2>${l.length?`<div class="liste">${l.map(ligneRdvClient).join('')}</div>`:'<div class="carte vide">Aucun rendez-vous ce mois-ci.</div>'}</section>`;
+ if(!k)return mois;
+ const j=S.rdvClient.filter(r=>r.date===k).sort(triRdv);
+ return mois+`<div class="bulle-espace" aria-hidden="true"></div><aside class="bulle-jour" aria-label="Rendez-vous du ${dateLongue(k)}"><div class="bulle-tete"><h3>${cap(dateLongue(k))}</h3><button class="croix" data-act="jour-client" data-v="" aria-label="Fermer">×</button></div>${j.length?`<div class="liste">${j.map(ligneRdvClient).join('')}</div>`:'<p class="doux">Aucun rendez-vous ce jour-là.</p>'}</aside>`;}
+function vueCalendrier(){const ms=metiersNoms();if(S.calMetier!=='client'&&!ms.includes(S.calMetier))S.calMetier=ms[0];
+ const client=S.calMetier==='client';
+ const choix=`<div class="cal-choix"><span class="doux petit" style="font-weight:700">Calendrier :</span><div class="seg seg-inline">${[...ms.map(m=>[m,m]),['client','Mes rendez-vous de client']].map(([v,t])=>`<button aria-pressed="${S.calMetier===v}" data-act="cal-metier" data-v="${esc(v)}">${esc(t)}</button>`).join('')}</div></div>`;
+ const base=new Date(2026,10+S.moisDecal,1),an=base.getFullYear(),mo=base.getMonth(),suiv=new Date(an,mo+1,1),prec=new Date(an,mo-1,1);
+ const pc=matchMedia('(min-width:1024px)').matches,deux=S.nbMois===2&&pc;
+ const titre=deux?(suiv.getFullYear()===an?`${NOMS_M[mo]} – ${NOMS_M[suiv.getMonth()]} ${an}`:`${NOMS_M[mo]} ${an} – ${NOMS_M[suiv.getMonth()]} ${suiv.getFullYear()}`):`${NOMS_M[mo]} ${an}`;
+ const barre=`<div class="cal-barre">${pc?`<div class="seg seg-inline">${[[1,'1 mois'],[2,'2 mois']].map(([v,t])=>`<button aria-pressed="${S.nbMois===v}" data-act="nb-mois" data-v="${v}">${t}</button>`).join('')}</div>`:''}${client?'':`<div class="btns" style="margin-left:auto"><button class="btn btn-2 btn-petit" data-act="agenda-onglet" data-v="semaine">${ic('agenda')}Semaine type</button><button class="btn btn-2 btn-petit" data-act="reglages-agenda">${ic('reglages')}Réglages</button></div>`}</div>`;
+ const nav=`<div class="mois-nav"><button class="btn btn-2 btn-petit" data-act="mois" data-v="-1" aria-label="Mois précédent">‹ ${NOMS_M[prec.getMonth()]}</button><h2>${cap(titre)}</h2><button class="btn btn-2 btn-petit" data-act="mois" data-v="1" aria-label="Mois suivant">${NOMS_M[suiv.getMonth()]} ›</button></div>`;
+ const grilles=`<div class="mois-liste${deux?' deux':''}">${grilleMois(an,mo,client)}${deux?grilleMois(suiv.getFullYear(),suiv.getMonth(),client):''}</div>`;
+ if(client)return `${choix}<div class="carte cal">${barre}${nav}<p class="doux petit">Les rendez-vous que vous avez pris chez des prestataires. Cliquez sur un jour pour ne voir que lui.</p>${grilles}<div class="legende"><span><i class="lg lg-ouvert"></i>rendez-vous à venir</span><span><i class="lg lg-gris"></i>rendez-vous passé</span><span><i class="lg lg-auj"></i>aujourd’hui</span></div></div>${listeClient(an,mo)}`;
+ return `${choix}<div class="carte cal">${barre}${nav}<p class="doux petit">Cliquez sur un jour pour dire quand vous êtes ouvert ce jour-là. Le reste du temps, vous êtes fermé (hachuré en rouge).</p>${grilles}<div class="legende"><span><i class="lg lg-ouvert"></i>ouvert</span><span><i class="lg lg-ferme"></i>fermé (hachuré sur les heures fermées, de 0 h à gauche à 24 h à droite)</span><span><span class="nrdv">2 rdv</span>rendez-vous</span><span><i class="lg lg-auj"></i>aujourd’hui</span></div></div>`;}
+
+/* Fenêtres */
+function ouvrirJour(k){const m=S.calMetier;S.fenetre={type:'jour',k,m,pl:copie(heuresDuJour(m,k)),erreur:null,conflits:null};dessineFenetre();}
+function fenetreJour(f){const hab=semaine(f.m)[jIdx(deCle(f.k))],change=!!exc(f.m)[f.k];
+ const resume=f.pl.length?`${dateCourte(f.k)}, ouvert ${plTxt(trie(f.pl))}`:`${dateCourte(f.k)}, fermé toute la journée`;
+ return `<h2 id="f-titre">Horaires du ${dateLongue(f.k)}</h2><p class="doux petit" style="margin-top:-6px">Calendrier ${esc(f.m)}</p>
+ <div class="bandeau b-vert">Indiquez vos heures d’OUVERTURE ce jour-là. En dehors, vous serez fermé.</div>
+ <p class="doux">D’habitude : ${hab.length?plTxt(hab):'fermé'}.</p>
+ ${f.pl.length?f.pl.map((p,i)=>`<div class="plage"><span>Ouvert de</span>${selHeure(p[0],'f-'+i+'-0',false,'Ouvert de')}<span>à</span>${selHeure(p[1],'f-'+i+'-1',true,'Jusqu’à')}<button class="croix" data-act="f-retire" data-v="${i}" aria-label="Retirer cette plage">×</button></div>`).join(''):'<div class="bandeau b-err">Fermé toute la journée.</div>'}
+ <button class="lien-plus" data-act="f-ajout">+ Ajouter une plage</button>
+ ${f.erreur?`<div class="bandeau b-err">${f.erreur}</div>`:''}${f.conflits?bandeauConflits(f.conflits,'f'):''}
+ <div class="btns f-btns"><button class="btn btn-1" data-act="f-enreg">Enregistrer : ${resume}</button>${change?'<button class="btn btn-2" data-act="f-habituel">Remettre les horaires habituels</button>':''}<button class="btn btn-2" data-act="fermer-fenetre">Annuler</button></div>`;}
+function enregJour(force){const f=S.fenetre,e=valider(f.pl);if(e){f.erreur=e;f.conflits=null;dessineFenetre();return;}
+ f.erreur=null;const pl=trie(f.pl);
+ if(!force){const c=rdvActifs().filter(r=>r.metier===f.m&&r.date===f.k&&dehors(r,pl));if(c.length){f.conflits=c;dessineFenetre();return;}}
+ if(force==='annuler')f.conflits.forEach(r=>r.etat='Annulé');
+ const hab=semaine(f.m)[jIdx(deCle(f.k))];
+ if(JSON.stringify(pl)===JSON.stringify(trie(hab)))delete exc(f.m)[f.k];else exc(f.m)[f.k]=pl;
+ S.fenetre=null;dessineFenetre();toast('Enregistré : '+(pl.length?`${dateCourte(f.k)}, ouvert ${plTxt(pl)}`:`${dateCourte(f.k)}, fermé toute la journée`));rafraichir();}
+function fenetreReglages(f){const r=f.r;const sel=(c,opts)=>`<select id="r-${c}" data-champ="r-${c}">${opts.map(([v,t])=>`<option value="${v}"${r[c]===v?' selected':''}>${t}</option>`).join('')}</select>`;
+ return `<h2 id="f-titre">Réglages</h2><div class="form">
+ <div class="champ"><label>Quand un client réserve</label>${seg([['auto','Confirmé aussitôt'],['moi','J’accepte chaque demande']],r.confirm,'r-confirm')}</div>
+ <div class="champ"><label for="r-annul">Annulation gratuite par le client jusqu’à</label>${sel('annul',[['2','2 h avant'],['12','12 h avant'],['24','24 h avant'],['48','48 h avant']])}</div>
+ <div class="champ"><label>Heures de début proposées aux clients</label>${seg([['15','Tous les ¼ d’heure'],['30','Toutes les ½ heures'],['60','Toutes les heures']],r.pas,'r-pas')}</div>
+ <div class="champ"><label for="r-pause">Pause après chaque rendez-vous</label>${sel('pause',[['0','Aucune'],['15','15 min'],['30','30 min'],['60','1 h']])}</div>
+ <div class="champ"><label for="r-tot">Réservation au plus tôt</label>${sel('tot',[['2h','2 h avant'],['veille','La veille'],['2j','2 jours avant']])}</div>
+ <div class="champ"><label for="r-tard">Réservation au plus tard</label>${sel('tard',[['1m','1 mois à l’avance'],['2m','2 mois à l’avance'],['3m','3 mois à l’avance']])}</div>
+ ${S.metiersMoi.length>1?`<div class="champ"><label>Un rendez-vous dans un métier bloque mes autres calendriers</label>${seg([['oui','Oui, jamais deux rendez-vous en même temps'],['non','Non, chaque calendrier est indépendant']],r.bloque,'r-bloque')}<p class="exemple">${r.bloque==='oui'?'Ex. un rendez-vous Électricien jeudi à 14 h 00 : jeudi 14 h 00 n’est plus proposé en Plombier.':'Ex. jeudi à 14 h 00, un client peut réserver en Électricien et un autre en Plombier.'}</p></div>`:''}
+ <p class="doux petit">Ces réglages valent pour tous vos métiers.</p>
+ <div class="btns"><button class="btn btn-1" data-act="r-enreg">Enregistrer les réglages</button><button class="btn btn-2" data-act="fermer-fenetre">Annuler</button></div></div>`;}
+function dessineFenetre(){const z=document.getElementById('modal'),f=S.fenetre;
+ if(!f){z.innerHTML='';document.body.classList.remove('bloque');return;}
+ const ancien=z.querySelector('.fenetre'),y=ancien?ancien.scrollTop:0,premier=!ancien;
+ z.innerHTML=`<div class="voile" data-voile="1"><div class="fenetre" role="dialog" aria-modal="true" aria-labelledby="f-titre">${({jour:fenetreJour,reglages:fenetreReglages,'ajout-metier':fenetreAjoutMetier,arret:fenetreArret,photo:fenetrePhoto,'modif-profil':fenetreModifProfil,'fermer-demande':fenetreFermerDmd,'modif-demande':fenetreModifDmd,ailleurs:fenetreAilleurs})[f.type](f)}</div></div>`;
+ const fe=z.querySelector('.fenetre');fe.scrollTop=y;document.body.classList.add('bloque');
+ if(premier){const b=fe.querySelector('select,button');b&&b.focus();}}
+
+/* Onglets Rendez-vous et Semaine type */
+function vueRdv(){const l=S.rdv.filter(r=>r.date>=CLE_AUJ).sort((a,b)=>a.date.localeCompare(b.date)||a.debut-b.debut);let jour='';
+ return l.length?`<div class="liste">${l.map(r=>{const t=r.date!==jour?`<p class="jour">${dateLongue(r.date)}</p>`:'';jour=r.date;
+  const fin=r.etat==='En attente'?`<button class="btn btn-1 btn-petit" data-act="rdv-accepter" data-v="${r.id}">Accepter</button><button class="btn btn-2 btn-petit" data-act="rdv-refuser" data-v="${r.id}">Refuser</button>`:puceEtat(r.etat);
+  return t+`<div class="ligne ligne-rdv"><span class="heure">${hC(r.debut)}</span><div class="txt"><b>${r.quoi}</b><span>${r.qui} · ${r.ville} · ${esc(r.metier)} · jusqu’à ${fmtH(r.fin)}</span></div><span class="fin">${fin}</span></div>`;}).join('')}</div>`:'<div class="carte vide">Aucun rendez-vous à venir.</div>';}
+function vueSemaine(){const ms=metiersNoms(),m=metierSemaine();
+ const choix=ms.length>1?`<div class="cal-choix"><span class="doux petit" style="font-weight:700">Semaine type :</span><div class="seg seg-inline">${ms.map(x=>`<button aria-pressed="${x===m}" data-act="sem-metier" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>`:'';
+ if(S.edSem&&S.edSem.enTab&&S.edSem.metier===m)return `${choix}<div class="carte form"><h2>Changer les horaires ${de_(m)}</h2><p class="doux">Vos horaires de chaque semaine. Un jour sans plage est fermé.</p>${editeurSemaine(S.edSem)}<div class="btns"><button class="btn btn-1" data-act="sem-enreg">Enregistrer la semaine</button><button class="btn btn-2" data-act="sem-annuler">Annuler</button></div></div>`;
+ return `${choix}<div class="carte"><h2 style="margin-bottom:6px">Mes horaires ${de_(m)}</h2>${semaine(m).map((pl,j)=>`<div class="reglage"><div class="rl"><b>${cap(NOMS_J[j])}</b>${pl.length?`<span style="text-align:right">${plTxt(pl)}</span>`:'<span class="puce p-neutre">Fermé</span>'}</div></div>`).join('')}<button class="btn btn-1" data-act="sem-changer" style="margin-top:8px">Changer les horaires</button></div>
+ <p class="doux petit">Pour changer un seul jour (congés, rendez-vous perso…), cliquez sur ce jour dans l’onglet Calendrier.</p>`;}
+
+PAGES.agenda=()=>{if(!S.agendaPret)return agendaAccueil();const o=S.agendaOnglet,att=S.rdv.filter(r=>r.etat==='En attente'&&r.date>=CLE_AUJ).length;
+ return `${retour('activite','Mon activité')}${tete('Mon agenda','Vos horaires et vos rendez-vous.')}
+ <div class="onglets" role="tablist">${[['cal','Calendrier'],['rdv','Rendez-vous'],['semaine','Semaine type']].map(([k,t])=>`<button role="tab" aria-selected="${k===o}" data-act="agenda-onglet" data-v="${k}">${t}${k==='rdv'&&att?` <span class="badge">${att}</span>`:''}</button>`).join('')}</div>
+ ${o==='cal'?vueCalendrier():o==='rdv'?vueRdv():vueSemaine()}
+ <p class="petit" style="text-align:center"><button class="lien-plus" style="align-self:center" data-act="agenda-reset">Maquette : revoir le premier passage dans l’agenda</button></p>`;};
+
+function agendaClic(a,v){
+ const rc=()=>S.rdvClient.find(x=>x.id===+v),rp=()=>S.rdv.find(x=>x.id===+v);
+ switch(a){
+  case 'agenda-onglet':S.agendaOnglet=v;if(S.edSem&&S.edSem.enTab)S.edSem=null;rafraichir();return true;
+  case 'cal-metier':S.calMetier=v;S.jourClient=null;rafraichir();return true;
+  case 'sem-metier':S.calMetier=v;S.edSem=null;rafraichir();return true;
+  case 'nb-mois':S.nbMois=+v;rafraichir();return true;
+  case 'mois':S.moisDecal+=+v;S.jourClient=null;rafraichir();return true;
+  case 'jour':ouvrirJour(v);return true;
+  case 'jour-client':S.jourClient=v&&S.jourClient!==v?v:null;rafraichir();return true;
+  case 'reglages-agenda':S.fenetre={type:'reglages',r:copie(S.regAgenda)};dessineFenetre();return true;
+  case 'fermer-fenetre':S.fenetre=null;dessineFenetre();return true;
+  case 'f-retire':S.fenetre.pl.splice(+v,1);S.fenetre.conflits=null;S.fenetre.erreur=null;dessineFenetre();return true;
+  case 'f-ajout':S.fenetre.pl.push(nouvellePlageJour(S.fenetre.pl));S.fenetre.conflits=null;dessineFenetre();return true;
+  case 'f-enreg':enregJour();return true;
+  case 'f-annuler-rdv':enregJour('annuler');return true;
+  case 'f-garder':enregJour('garder');return true;
+  case 'f-habituel':{const f=S.fenetre;delete exc(f.m)[f.k];S.fenetre=null;dessineFenetre();toast('Horaires habituels remis le '+dateCourte(f.k));rafraichir();return true;}
+  case 'r-confirm':case 'r-pas':case 'r-bloque':S.fenetre.r[a.slice(2)]=v;dessineFenetre();return true;
+  case 'r-enreg':S.regAgenda=S.fenetre.r;S.fenetre=null;dessineFenetre();toast('Réglages enregistrés.');return true;
+  case 's-ajout':{const pl=S.edSem.sem[+v];pl.push(nouvellePlageSem(pl));S.edSem.conflits=null;S.edSem.erreur=null;rafraichir();return true;}
+  case 's-retire':{const [j,k]=v.split('-').map(Number);S.edSem.sem[j].splice(k,1);S.edSem.conflits=null;S.edSem.erreur=null;rafraichir();return true;}
+  case 'sem-changer':{const m=metierSemaine();S.edSem={metier:m,sem:copie(semaine(m)),erreur:null,conflits:null,enTab:true};rafraichir();return true;}
+  case 'sem-annuler':S.edSem=null;rafraichir();return true;
+  case 'sem-enreg':case 's-annuler-rdv':case 's-garder':{
+   const ok=enregistrerSemaine(a==='s-annuler-rdv'?'annuler':a==='s-garder'?'garder':null);
+   if(!ok){rafraichir();return true;}
+   S.edSem=null;toast('Semaine type enregistrée.');
+   if(!S.agendaPret){const ms=metiersNoms();if(S.onboard<ms.length-1)S.onboard++;else{S.agendaPret=true;S.onboard=0;S.agendaOnglet='cal';S.calMetier=ms[0];}rendu();scrollTo({top:0,behavior:'instant'});}
+   else rafraichir();
+   return true;}
+  case 'agenda-reset':S.agendaPret=false;S.onboard=0;S.edSem=null;rendu();scrollTo({top:0,behavior:'instant'});return true;
+  case 'rdv-accepter':rp().etat='Confirmé';toast('Rendez-vous accepté : '+rp().qui+' est prévenu.');rafraichir();return true;
+  case 'rdv-refuser':rp().etat='Refusé';toast('Demande refusée : '+rp().qui+' est prévenu.');rafraichir();return true;
+  case 'rc-annuler':rc().etat='Annulé';toast('Rendez-vous annulé : '+rc().avec+' est prévenue.');rafraichir();return true;
+  case 'rc-avis':rc().avis=true;toast('Merci ! Votre avis est publié.');rafraichir();return true;
+  case 'rc-deplacer':aller('prestataire-'+rc().pid);return true;
+ }
+ return false;}
+
+PAGES.devis=()=>{const f=S.devisOnglet;const l=DEVIS.filter(d=>f==='tous'||(f==='attente'&&d.etat==='En attente')||(f==='acceptes'&&d.etat==='Accepté'));
+ return `${retour('activite','Mon activité')}${tete('Devis','Les devis que vous avez envoyés et leur réponse.')}
+ <div class="chips">${[['tous','Tous'],['attente','En attente'],['acceptes','Acceptés']].map(([k,t])=>`<button class="chip${k===f?' on':''}" data-act="devis-filtre" data-v="${k}">${t}</button>`).join('')}</div>
+ <div class="liste">${l.map(d=>`<div class="ligne"><span class="ico-rond">${ic('devis')}</span><div class="txt"><b>${d.quoi}</b><span>${d.qui} · ${d.ville} · ${d.n} · ${d.date}</span></div><span class="fin"><b style="color:var(--texte)">${euros(d.montant)}</b>${puceEtat(d.etat)}</span></div>`).join('')||'<div class="carte vide">Aucun devis ici.</div>'}</div>`;};
+
+PAGES.factures=()=>`${retour('activite','Mon activité')}${tete('Factures','Toutes vos factures, prêtes en PDF.')}
+ <div class="liste">${FACTURES.map(f=>`<div class="ligne"><span class="ico-rond">${ic('devis')}</span><div class="txt"><b>${f.n} · ${f.qui}</b><span>${f.date} · payée par ${f.paye.toLowerCase()}</span></div><span class="fin"><b style="color:var(--texte)">${euros(f.montant)}</b><button class="btn btn-2 btn-petit" data-act="pdf" data-v="${f.n}" aria-label="Télécharger ${f.n}">${ic('telecharger')}PDF</button></span></div>`).join('')}</div>`;
+
+PAGES.paiements=()=>`${retour('activite','Mon activité')}${tete('Paiements','Ce que vous avez encaissé, par carte et en espèces.')}
+ <div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))"><div class="stat"><b>640 €</b><span>en novembre</span></div><div class="stat"><b>555 €</b><span>par carte</span></div><div class="stat"><b>85 €</b><span>en espèces</span></div></div>
+ <div class="liste">${FACTURES.map(f=>`<div class="ligne"><span class="ico-rond">${ic('euro')}</span><div class="txt"><b>${f.qui}</b><span>${f.date} · ${f.n}</span></div><span class="fin"><span class="puce ${f.paye==='Carte'?'p-ok':'p-neutre'}">${f.paye}</span><b style="color:var(--texte)">${euros(f.montant)}</b></span></div>`).join('')}</div>`;
+
+PAGES.clients=()=>`${retour('activite','Mon activité')}${tete('Mes clients',CLIENTS.length+' personnes pour qui vous avez déjà travaillé.')}
+ <div class="liste">${CLIENTS.map(c=>`<div class="ligne">${av(c[0],c[4])}<div class="txt"><b>${c[0]}</b><span>${c[1]} · ${c[2]} rendez-vous · dernier le ${c[3]}</span></div><span class="fin"><button class="btn btn-2 btn-petit" data-act="ecrire-client" data-v="${c[0]}">${ic('messages')}Écrire</button></span></div>`).join('')}</div>`;
+
+PAGES.avis=()=>`${retour('activite','Mon activité')}${tete('Mes avis','Ce que vos clients disent de vous, visible sur votre page.')}
+ <div class="carte note-grande"><div><div class="n">4,8</div><div class="etoile">★★★★★</div><div class="doux petit">27 avis</div></div><div class="barres">${[[5,'78%'],[4,'18%'],[3,'4%'],[2,'0%'],[1,'0%']].map(([n,l])=>`<div><span>${n} ★</span><i style="--l:${l}"></i><span class="doux" style="width:36px">${l}</span></div>`).join('')}</div></div>
+ <div class="carte">${MES_AVIS.map(a=>`<div class="avis"><span><b>${a[0]}</b> <span class="etoile">${etoiles(a[1])}</span></span><p>${a[2]}</p><span class="doux petit">${a[3]}</span></div>`).join('')}</div>`;
+
+PAGES['carte-visite']=()=>`${retour('activite','Mon activité')}${tete('Ma carte de visite','Choisissez une couleur et une petite phrase. Le carré renvoie vers votre page.')}
+ <div class="cv" id="cv" style="background:${COULEURS[S.couleurCarte][1]}"><div><b>Karim B.</b><span>Électricien · Plombier · Nantes</span></div><div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px"><span id="cv-phrase" style="font-size:14px;opacity:.9">${esc(S.phraseCarte)}</span><span class="qr" aria-hidden="true">${'<i></i>'.repeat(25)}</span></div></div>
+ <div class="carte form"><div class="champ"><label>Couleur</label><div class="nuancier">${COULEURS.map((c,i)=>`<button class="nuance${i===S.couleurCarte?' on':''}" style="background:${c[1]}" data-act="couleur" data-v="${i}" aria-label="${c[0]}" aria-pressed="${i===S.couleurCarte}"></button>`).join('')}</div></div>
+ <div class="champ"><label for="phrase">Petite phrase</label><input id="phrase" maxlength="40" value="${esc(S.phraseCarte)}"><small>40 caractères au plus.</small></div>
+ <div class="btns"><button class="btn btn-1" data-act="pdf" data-v="carte">${ic('telecharger')}Planche A4 de 10 cartes</button><button class="btn btn-2" data-act="pdf" data-v="carte seule">Une carte pour l’imprimeur</button></div></div>`;
+
+PAGES.urssaf=()=>`${retour('activite','Mon activité')}${tete('Déclarer à l’URSSAF','Votre prochaine déclaration, déjà préparée.')}
+ <div class="carte" style="display:flex;flex-direction:column;gap:6px;background:var(--fonce);color:var(--fonce-texte);border:0"><span style="opacity:.8">Prochaine déclaration : 4ᵉ trimestre 2026</span><h2 style="font-size:28px">Avant le 31/01/2027</h2></div>
+ <div class="carte form"><div class="champ"><label for="ca">Chiffre d’affaires du trimestre</label><input id="ca" type="number" min="0" step="10" value="${S.ca}"><small>Rempli avec vos factures payées d’octobre à décembre. Vous pouvez le corriger.</small></div>
+ <div class="ligne" style="background:var(--surface2)"><div class="txt"><b>Cotisations estimées</b><span>Taux des prestations de services : 21,2 %</span></div><b id="cotis" style="font-family:var(--titre);font-size:24px;color:var(--primaire)">${euros(S.ca*0.212)}</b></div>
+ <p class="doux petit">C’est une estimation. La déclaration se fait sur autoentrepreneur.urssaf.fr ; rafals vous rappelle 7 jours avant.</p></div>`;
+
+PAGES['auto-entreprise']=()=>`${retour('activite','Mon activité')}${tete('Mon auto-entreprise','Votre dossier est complet.')}
+ <div class="carte etapes">${[['Compte créé sur le guichet unique','02/09/2026'],['Activité déclarée : Électricien, Plombier','03/09/2026'],['Numéro SIRET reçu','18/09/2026'],['SIRET vérifié par rafals','19/09/2026']].map(e=>`<div class="etape"><span class="rond">${ic('ok')}</span><div><b>${e[0]}</b><p class="doux petit">${e[1]}</p></div></div>`).join('')}</div>`;
+
+/* ================= Mon profil (présentation façon Instagram) ================= */
+const PROFIL={nom:'Karim Benali',initiales:'KB',siret:'852 147 963 00018',abonnes:12};
+const METIERS_TOUS=['Chauffagiste','Serrurier','Carreleur','Menuisier','Peintre','Bricolage','Jardinage','Ménage','Cours','Plaquiste','Climatisation'];
+const ouvert=k=>S.profilOuvert===k;
+function dep(k,i,coul,titre,resume,corps,badge,rouge){return `<div class="dep${ouvert(k)?' ouvert':''}"><button class="dep-tete" data-act="dep" data-v="${k}" aria-expanded="${ouvert(k)}"><span class="ico-rond" style="background:${coul[0]};color:${coul[1]}">${ic(i)}</span><span class="txt"><b${rouge?' style="color:var(--erreur)"':''}>${titre}</b><span>${resume}</span></span>${badge||''}<span class="chev" aria-hidden="true">›</span></button>${ouvert(k)?`<div class="dep-corps">${corps}</div>`:''}</div>`;}
+const C_VERT=['var(--primaire-doux)','var(--primaire)'],C_ORANGE=['var(--accent-doux)','var(--accent)'],C_ROUGE=['var(--erreur-doux)','var(--erreur)'],C_GRIS=['var(--surface2)','var(--doux)'];
+function ongletPhotos(){const n=S.photos.length;
+ return `<div class="photos">${S.photos.map((p,i)=>`<button class="ph" style="--c:${p.c||'#555'}" data-act="photo" data-v="${i}" aria-label="Ouvrir la photo ${i+1}">${p.src?`<img src="${p.src}" alt="">`:''}${i<2?'<span class="sur">Sur ma carte</span>':''}${p.leg?`<span class="leg">${esc(p.leg)}</span>`:''}</button>`).join('')}${n<10?`<label class="ph ajout">${ic('plus')}Ajouter une photo<input type="file" accept="image/png,image/jpeg" id="f-photo" hidden></label>`:''}</div>
+ <p class="doux petit">${n} photo${n>1?'s':''} sur 10 (JPG ou PNG, 5 Mo chacune). Les 2 premières sont sur votre carte dans « Trouver un prestataire ».</p>`;}
+function ongletActivite(){
+ const ms=S.metiersMoi;
+ const metiers=`<div class="liste">${ms.map((m,i)=>{const a=S.arrets[m[0]];return `<div class="ligne ligne-rdv"><div class="txt"><b>${esc(m[0])}${i===0?' <span class="puce p-ok">principal</span>':''}</b><span>${m[1]} € de l’heure${a?' · dernier jour le '+dateCourte(a):''}</span></div><span class="fin">${a?`<button class="btn btn-2 btn-petit" data-act="arret-retirer" data-v="${esc(m[0])}">Retirer la date d’arrêt</button>`:`<button class="btn btn-2 btn-petit" data-act="arret" data-v="${esc(m[0])}">Arrêter ce métier…</button>`}</span></div>`;}).join('')}</div><button class="btn btn-1 btn-petit" data-act="ajout-metier" style="align-self:flex-start">${ic('plus')}Ajouter un métier</button><p class="doux petit">Arrêter un métier : [Arrêter ce métier…], puis choisir son dernier jour.</p>`;
+ const zone=`<div class="champ"><label for="zone">Jusqu’où je me déplace : <span id="zone-val">${S.zone} km</span></label><input id="zone" type="range" min="5" max="50" step="5" value="${S.zone}"><small id="zone-ex">${S.zone<10?'Nantes seulement.':S.zone<20?'Ex. Rezé, Orvault, Saint-Herblain.':'Ex. jusqu’à Clisson ou Ancenis.'}</small></div>`;
+ return `<div class="liste">
+ ${dep('paiement','carte',C_VERT,'Paiement par carte',S.carteBancaire?'Les clients paient en réservant':'Les clients paient sur place',`<div class="rl"><p>Les clients paient par carte en réservant. L’argent arrive sur votre compte 48 h après le rendez-vous.</p>${sw(S.carteBancaire,'carte-bancaire','Paiement par carte')}</div>`,`<span class="puce ${S.carteBancaire?'p-ok':'p-neutre'}">${S.carteBancaire?'Activé':'Désactivé'}</span>`)}
+ ${dep('metiers','fusee',C_ORANGE,'Mes métiers',ms.map((m,i)=>esc(m[0])+(i===0?' (principal)':'')).join(' · '),metiers)}
+ ${dep('visibilite','site',C_VERT,'Visibilité',S.visible?'Actif : vous apparaissez dans les recherches':'En pause : votre page est cachée',`<div class="rl"><div><b>${S.visible?'Actif':'En pause'}</b><p class="doux petit">${S.visible?'Les clients vous trouvent dans « Trouver un prestataire ».':'Personne ne vous trouve. Vos rendez-vous déjà pris sont gardés.'}</p></div>${sw(S.visible,'visible','Apparaître dans les recherches')}</div>${zone}`)}
+ </div>`;}
+function ongletCompte(){
+ return `<div class="liste">
+ ${dep('infos','messages',C_VERT,'Mes informations',`${esc(S.infos.mail)} · ${esc(S.infos.tel)}`,`<form class="form" data-form="infos"><div class="champ"><label for="i-mail">Adresse mail</label><input id="i-mail" name="mail" type="email" value="${esc(S.infos.mail)}" required></div><div class="champ"><label for="i-tel">Téléphone</label><input id="i-tel" name="tel" value="${esc(S.infos.tel)}"><small>Montré à un client seulement après un rendez-vous confirmé.</small></div><button class="btn btn-1" type="submit" style="align-self:flex-start">Enregistrer</button></form>`)}
+ ${dep('adresse','lieu',C_ORANGE,'Mon adresse',esc(S.adresse),`<form class="form" data-form="adresse"><div class="champ"><label for="i-adr">Adresse</label><input id="i-adr" name="adr" value="${esc(S.adresse)}" required><small>Jamais montrée aux clients : ils voient seulement « Nantes ».</small></div><button class="btn btn-1" type="submit" style="align-self:flex-start">Enregistrer</button></form>`)}
+ ${dep('notif-app','cloche',C_VERT,'Notifications sur cet appareil',S.telephone?'Activées sur cet appareil':'Coupées sur cet appareil',`<div class="rl"><p>Le téléphone sonne même quand rafals est fermé. Jamais de nom complet, d’adresse ni le texte d’un message.</p>${sw(S.telephone,'telephone','Notifications sur cet appareil')}</div>`,`<span class="puce ${S.telephone?'p-ok':'p-neutre'}">${S.telephone?'activées':'coupées'}</span>`)}
+ ${dep('donnees','telecharger',C_GRIS,'Mes données','Tout ce que rafals garde sur vous','<p>Un fichier avec votre compte, vos rendez-vous, vos messages et vos factures.</p><button class="btn btn-2" data-act="pdf" data-v="données" style="align-self:flex-start">Télécharger mes données</button>')}
+ ${dep('fermer','sortir',C_ROUGE,'Fermer mon compte','Effacer définitivement votre compte',S.fermerConfirm?`<div class="bandeau b-err">Sûr ? Votre page, vos photos et vos messages seront effacés dans 30 jours. Vos factures sont gardées 10 ans, comme la loi le demande.</div><div class="btns"><button class="btn btn-danger" data-act="fermer-oui">Oui, fermer mon compte</button><button class="btn btn-2" data-act="fermer-non">Non, je reste</button></div>`:`<p>Vos rendez-vous à venir seront annulés et chaque client prévenu.</p><button class="btn btn-danger" data-act="fermer-demande" style="align-self:flex-start">Fermer mon compte…</button>`,'',true)}
+ </div>`;}
+PAGES.profil=()=>{const ms=S.metiersMoi,o=S.profilOnglet;
+ const photo=S.avatar?`<img class="ig-photo" src="${S.avatar}" alt="Ma photo">`:`<span class="ig-photo">${PROFIL.initiales}</span>`;
+ const chiffres=`<div class="ig-chiffres"><button class="c" data-act="profil-onglet" data-v="photos"><b>${S.photos.length}</b><small>photos</small></button><a href="#avis"><b>4,8 ★</b><small>27 avis</small></a><span class="c"><b>${S.visible?PROFIL.abonnes:'—'}</b><small>abonnés</small></span><a href="#abonnements"><b>${S.abonnes.size}</b><small>abonnements</small></a></div>`;
+ const bulles=`<div class="bulles-m">${ms.map((m,i)=>`<button class="bm${i===0?' principal':''}" data-act="bulle-metier"><span class="rond">${esc(m[0][0])}</span>${esc(m[0])}${i===0?'<small>principal</small>':''}</button>`).join('')}<button class="bm ajout" data-act="ajout-metier"><span class="rond">+</span>Ajouter</button></div>`;
+ return `<div class="carte insta">
+ <div class="ig-haut">${photo}${chiffres}</div>
+ <div class="ig-infos"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h1 class="ig-nom">${PROFIL.nom}</h1><span class="puce ${S.visible?'p-ok':'p-neutre'}">${S.visible?'actif':'en pause'}</span><span class="puce p-ok">SIRET vérifié</span></div>
+  <p><b>${esc(ms[0][0])}</b>${ms.length>1?' · aussi '+ms.slice(1).map(m=>esc(m[0])).join(', '):''}</p>
+  <p>${esc(S.bio)}</p>
+  <p class="doux">${ic('lieu').replace('class="i"','class="i" style="width:16px;height:16px;vertical-align:-3px"')} ${esc(S.ville)} · jusqu’à ${S.zone} km</p>
+  <p class="doux petit">SIRET ${PROFIL.siret}</p></div>
+ <div class="ig-btns"><button class="btn btn-1" data-act="modif-profil">Modifier mon profil</button><label class="btn btn-2">Changer ma photo<input type="file" accept="image/png,image/jpeg" id="f-avatar" hidden></label><a class="btn btn-2" href="#activite">Mon activité</a></div>
+ ${bulles}
+ <div class="ig-onglets" role="tablist">${[['photos','photo','Photos'],['activite','activite','Mon activité'],['compte','moi','Mon compte']].map(([k,i,t])=>`<button role="tab" aria-selected="${o===k}" data-act="profil-onglet" data-v="${k}">${ic(i)}<span>${t}</span></button>`).join('')}</div>
+ ${o==='photos'?ongletPhotos():o==='activite'?ongletActivite():ongletCompte()}
+ </div>
+ <a class="retour" href="#page-publique" style="margin:0 auto">Voir ma page publique ${ic('suite')}</a>`;};
+
+/* Fenêtres du profil */
+function fenetreAjoutMetier(f){const deja=S.metiersMoi.map(m=>m[0]);const props=METIERS_TOUS.filter(m=>!deja.includes(m));
+ if(S.metiersMoi.length>=6)return `<h2 id="f-titre">Ajouter un métier</h2><div class="bandeau b-att">Vous avez déjà 5 métiers secondaires : c’est le maximum. Arrêtez-en un d’abord (ligne « Mes métiers »).</div><div class="btns"><button class="btn btn-2" data-act="fermer-fenetre">Fermer</button></div>`;
+ return `<h2 id="f-titre">Ajouter un métier</h2><div class="champ"><label for="am-nom">Métier à ajouter</label><input id="am-nom" list="am-liste" autocomplete="off" placeholder="Ex. Chauffagiste" value="${esc(f.nom||'')}"><datalist id="am-liste">${props.map(m=>`<option value="${m}">`).join('')}</datalist><small>Des propositions apparaissent dès la 1re lettre.</small></div>
+ <div class="champ"><label for="am-prix">Votre prix de l’heure (€)</label><input id="am-prix" type="number" min="1" value="${f.prix||40}"></div>
+ ${f.erreur?`<div class="bandeau b-err">${f.erreur}</div>`:''}
+ <div class="btns"><button class="btn btn-1" data-act="am-ok" id="am-ok">${f.nom?'Ajouter '+esc(cap(f.nom)):'Ajouter'}</button><button class="btn btn-2" data-act="fermer-fenetre">Annuler</button></div>`;}
+function fenetreArret(f){const ms=S.metiersMoi.map(m=>m[0]),seul=ms.length===1,principal=ms[0]===f.m;
+ return `<h2 id="f-titre">Date d’arrêt — ${esc(f.m)}</h2><div class="champ"><label for="ar-date">Dernier jour de travail</label><input id="ar-date" type="date" min="${CLE_AUJ}" value="${f.date}"></div>
+ <p>À partir du lendemain, tous les jours du calendrier « ${esc(f.m)} » sont fermés. Les rendez-vous de ce métier pris après cette date sont annulés : chaque client est prévenu par mail.</p>
+ ${seul?'<p class="doux">C’est votre seul métier : après cette date, vous n’apparaîtrez plus dans les recherches.</p>':principal?`<p class="doux">Ensuite, ${esc(ms[1])} deviendra votre métier principal.</p>`:''}
+ <div class="btns f-btns"><button class="btn btn-danger" data-act="ar-ok" id="ar-ok">Arrêter ${esc(f.m)} après le ${dateCourte(f.date)}</button><button class="btn btn-2" data-act="fermer-fenetre">Annuler</button></div>`;}
+function fenetrePhoto(f){const p=S.photos[f.i];return `<h2 id="f-titre">Photo ${f.i+1} sur ${S.photos.length}</h2><div class="ph grande" style="--c:${p.c||'#555'}">${p.src?`<img src="${p.src}" alt="">`:''}${p.leg?`<span class="leg">${esc(p.leg)}</span>`:''}</div><div class="btns"><button class="btn btn-danger" data-act="photo-retirer">Retirer cette photo</button><button class="btn btn-2" data-act="fermer-fenetre">Fermer</button></div>`;}
+function fenetreModifProfil(){return `<h2 id="f-titre">Modifier mon profil</h2><form class="form" data-form="modif-profil"><div class="champ"><label for="mp-bio">Présentation</label><textarea id="mp-bio" name="bio" maxlength="300">${esc(S.bio)}</textarea><small>300 caractères au plus. Elle est sur votre page publique.</small></div><div class="champ"><label for="mp-ville">Ville affichée</label><input id="mp-ville" name="ville" value="${esc(S.ville)}" required></div><div class="btns"><button class="btn btn-1" type="submit">Enregistrer</button><button class="btn btn-2" type="button" data-act="fermer-fenetre">Annuler</button></div></form>`;}
+
+function profilClic(a,v){
+ switch(a){
+  case 'profil-onglet':S.profilOnglet=v;S.profilOuvert=null;rafraichir();return true;
+  case 'dep':S.profilOuvert=S.profilOuvert===v?null:v;S.fermerConfirm=false;rafraichir();return true;
+  case 'bulle-metier':S.profilOnglet='activite';S.profilOuvert='metiers';rafraichir();return true;
+  case 'ajout-metier':S.fenetre={type:'ajout-metier',nom:'',prix:40};dessineFenetre();return true;
+  case 'am-ok':{const f=S.fenetre,nom=(document.getElementById('am-nom').value||'').trim(),prix=Math.max(1,+document.getElementById('am-prix').value||40);f.nom=nom;f.prix=prix;
+   if(!nom){f.erreur='Écrivez le métier à ajouter.';dessineFenetre();return true;}
+   const n=cap(nom);if(S.metiersMoi.some(m=>m[0].toLowerCase()===n.toLowerCase())){f.erreur=`Vous avez déjà « ${esc(n)} ».`;dessineFenetre();return true;}
+   S.metiersMoi.push([n,prix]);S.alertes[n]=true;S.fenetre=null;dessineFenetre();toast(n+' ajouté à vos métiers.');rafraichir();return true;}
+  case 'arret':S.fenetre={type:'arret',m:v,date:CLE_AUJ};dessineFenetre();return true;
+  case 'ar-ok':{const f=S.fenetre;S.arrets[f.m]=f.date;S.fenetre=null;dessineFenetre();toast(f.m+' : dernier jour le '+dateCourte(f.date)+'.');rafraichir();return true;}
+  case 'arret-retirer':delete S.arrets[v];toast('Date d’arrêt retirée : '+v+' continue.');rafraichir();return true;
+  case 'photo':S.fenetre={type:'photo',i:+v};dessineFenetre();return true;
+  case 'photo-retirer':S.photos.splice(S.fenetre.i,1);S.fenetre=null;dessineFenetre();toast('Photo retirée.');rafraichir();return true;
+  case 'modif-profil':S.fenetre={type:'modif-profil'};dessineFenetre();return true;
+  case 'carte-bancaire':S.carteBancaire=!S.carteBancaire;toast(S.carteBancaire?'Paiement par carte activé.':'Paiement par carte désactivé.');rafraichir();return true;
+  case 'visible':S.visible=!S.visible;toast(S.visible?'Vous apparaissez de nouveau dans les recherches.':'Votre page est en pause.');rafraichir();return true;
+  case 'fermer-demande':S.fermerConfirm=true;rafraichir();return true;
+  case 'fermer-non':S.fermerConfirm=false;rafraichir();return true;
+  case 'fermer-oui':S.fermerConfirm=false;S.profilOuvert=null;toast('Maquette : rien n’est effacé.');rafraichir();return true;
+ }
+ return false;}
+
+PAGES['page-publique']=()=>{const ms=S.metiersMoi.map(m=>m[0]);
+ return pagePresta({id:0,nom:PROFIL.nom,initiales:PROFIL.initiales,avatar:S.avatar,metiers:`<b>${esc(ms[0])}</b>${ms.length>1?' · aussi '+esc(ms.slice(1).join(', ')):''}`,metier:ms[0],lieu:`Part de ${S.ville}, se déplace jusqu’à ${S.zone} km`,prix:S.metiersMoi[0]?S.metiersMoi[0][1]:45,note:4.8,nb:27,siret:true,couleur:MOI.couleur,bio:S.bio,abonnes:PROFIL.abonnes,photos:S.photos,creneaux:['Ven. 13/11 · 8 h 00','Lun. 16/11 · 14 h 00','Mar. 17/11 · 9 h 00'],avis:MES_AVIS},true);};
+
+PAGES.abonnements=()=>{const l=PRESTAS.filter(p=>S.abonnes.has(p.id));
+ return `${tete('Mes abonnements','Les prestataires que vous suivez. Vous êtes prévenu quand ils ont un créneau libre.')}
+ ${l.length?`<div class="liste">${l.map(p=>{const m=S.muets.has(p.id);return `<div class="ligne">${av(p.nom,p.couleur)}<div class="txt"><b>${p.nom}</b><span>${p.metier} · ${p.ville}${m?' · muet':''}</span></div><span class="fin"><button class="btn btn-2 btn-petit" data-act="muet" data-v="${p.id}">${m?'Réactiver':'Rendre muet'}</button><a class="btn btn-2 btn-petit" href="#prestataire-${p.id}" aria-label="Voir ${p.nom}">${ic('suite')}</a></span></div>`;}).join('')}</div>`:`<div class="carte vide"><h3>Vous ne suivez personne</h3><p style="margin-top:6px">Sur la page d’un prestataire, touchez « S’abonner ».</p><a class="btn btn-1" href="#trouver" style="margin-top:14px">Trouver un prestataire</a></div>`}
+ <p class="doux petit">Ce que vous recevez se règle dans <a href="#parametres">Paramètres</a>.</p>`;};
+
+PAGES.parametres=()=>`${tete('Paramètres','Réglez rafals comme vous le préférez.')}
+ <section class="section"><h2>Apparence</h2><div class="carte"><div class="reglage"><b>Thème</b>${seg([['auto','Automatique'],['light','Clair'],['dark','Sombre']],S.theme,'theme')}<p class="exemple">${S.theme==='auto'?'Comme votre téléphone ou votre ordinateur : clair le jour, sombre s’il est réglé en sombre.':S.theme==='light'?'Fond clair, toujours, sur toutes les pages.':'Fond sombre, plus doux le soir, sur toutes les pages.'}</p></div></div></section>
+ <section class="section"><h2>Mes abonnements : ce qui vous est envoyé</h2><div class="carte">${[['creneau','Créneau libre','« Julie est libre jeudi 12/11/2026 à 9 h 00 »'],['metier','Nouveau métier','« Léa propose maintenant : Paysagiste »'],['retour','Retour après une absence','« Julie reprend son activité ce lundi 16/11/2026 »']].map(([k,t,ex])=>`<div class="reglage"><div class="rl"><div><b>${t}</b><p class="doux petit">Ex. ${ex}</p></div>${sw(S.notif[k],'notif-'+k,t)}</div></div>`).join('')}</div></section>
+ <section class="section"><h2>Nouvelles demandes</h2><div class="carte">
+  ${S.metiersMoi.map(([m])=>{const on=S.alertes[m]!==false;return `<div class="reglage"><div class="rl"><div><b>Un client cherche « ${esc(m)} »</b><p class="doux petit">${on?`Vous êtes prévenu dans votre rayon de ${S.zone} km.`:`Vous ne recevez rien. Les demandes restent dans « Demandes près de chez moi ».`}</p></div>${sw(on,'alerte',m)}</div></div>`.replace('data-act="alerte"',`data-act="alerte" data-v="${esc(m)}"`);}).join('')}
+  <div class="reglage"><div class="rl"><div><b>Sur ce téléphone</b><p class="doux petit">Ex. « Nouvelle demande : Fuite sous l’évier, Nantes (3 km) »</p></div>${sw(S.telephone,'telephone','Sur ce téléphone')}</div></div>
+  <div class="reglage"><b>Par mail</b>${seg([['chaque','À chaque demande'],['soir','Un mail le soir à 18 h'],['aucun','Aucun mail']],S.mail,'mail')}<p class="exemple">${S.mail==='chaque'?'Un mail pour chaque nouvelle demande.':S.mail==='soir'?'15 demandes dans la journée : 1 mail au lieu de 15.':'Aucun mail. Les mails de vos conversations et rendez-vous, eux, continuent.'}</p></div>
+ </div></section>`;
+
+PAGES.moi=()=>`${tete('Mon compte','')}
+ <div class="carte fiche">${av('Karim',MOI.couleur,true)}<div class="infos"><h2>Karim B.</h2><span class="doux">Électricien · Plombier · Nantes</span></div></div>
+ <div class="liste">${[['profil','moi','Mon profil','Mes métiers, ma zone'],['abonnements','coeur','Mes abonnements','Les prestataires que je suis'],['parametres','reglages','Paramètres','Thème, notifications']].map(([v,i,t,d])=>`<a class="ligne" href="#${v}"><span class="ico-rond">${ic(i)}</span><div class="txt"><b>${t}</b><span>${d}</span></div><span class="fin">${ic('suite')}</span></a>`).join('')}
+ <button class="ligne" data-act="deconnexion"><span class="ico-rond" style="background:var(--erreur-doux);color:var(--erreur)">${ic('sortir')}</span><div class="txt"><b>Se déconnecter</b></div></button></div>`;
+
+PAGES.connexion=()=>`<div class="connexion page"><div class="tete" style="text-align:center"><h1>Bon retour !</h1><p>Connectez-vous pour retrouver vos messages et rendez-vous.</p></div>
+ <form class="carte form" data-form="connexion"><div class="champ"><label for="c-mail">Adresse mail</label><input id="c-mail" type="email" value="karim@example.com" required></div><div class="champ"><label for="c-mdp">Mot de passe</label><input id="c-mdp" type="password" value="123" required></div><button class="btn btn-1" type="submit">Se connecter</button><p class="doux petit" style="text-align:center">Exemple : les champs sont déjà remplis.</p></form></div>`;
+
+/* ================= Rendu ================= */
+const PUBLIQUES=['accueil','trouver','demandes','demandes-pres','prestataire','connexion'];
+const PARENT={prestataire:'trouver',conversation:'messages','demandes-pres':'demandes','mes-demandes':'demandes','nouvelle-demande':'demandes',agenda:'activite',devis:'activite',factures:'activite',paiements:'activite',clients:'activite',avis:'activite','carte-visite':'activite',urssaf:'activite','auto-entreprise':'activite',profil:'moi',abonnements:'moi',parametres:'moi','page-publique':'moi'};
+function route(){const h=(location.hash||'#accueil').slice(1);const m=h.match(/^(prestataire|conversation)-(\d+)$/);return m?{nom:m[1],arg:m[2]}:{nom:PAGES[h]?h:'accueil',arg:null};}
+function dessineEntete(r){
+ const sect=PARENT[r.nom]||r.nom;
+ const liens=[['accueil','accueil','Accueil'],['trouver','trouver','Trouver'],['demandes','demandes','Demandes'],['messages','messages','Messages',nonLus()],['activite','activite','Mon activité']];
+ document.getElementById('nav').innerHTML=S.connecte?liens.map(([v,i,t,n])=>`<a href="#${v}" class="${sect===v?'actif':''}">${ic(i)}${t}${n?`<span class="badge">${n}</span>`:''}</a>`).join(''):liens.slice(0,3).map(([v,i,t])=>`<a href="#${v}" class="${sect===v?'actif':''}">${ic(i)}${t}</a>`).join('');
+ document.getElementById('basbar').innerHTML=[...liens,['moi','moi','Moi']].map(([v,i,t,n])=>`<a href="#${S.connecte||PUBLIQUES.includes(v)?v:'connexion'}" class="${sect===v?'actif':''}">${ic(i)}${t==='Mon activité'?'Activité':t}${n&&S.connecte?`<span class="badge">${n}</span>`:''}</a>`).join('');
+ document.getElementById('compte').innerHTML=S.connecte?`<button class="compte-btn" data-act="menu" aria-expanded="${S.menu}">${av('Karim',MOI.couleur)}Karim</button>${S.menu?`<div class="menu"><a href="#profil">${ic('moi')}Mon profil</a><a href="#abonnements">${ic('coeur')}Mes abonnements</a><a href="#parametres">${ic('reglages')}Paramètres</a><hr><button data-act="deconnexion">${ic('sortir')}Se déconnecter</button></div>`:''}`:`<a class="btn btn-1 btn-petit" href="#connexion">Se connecter</a>`;
+}
+let derniere='';
+function rendu(){
+ let r=route();
+ if(!S.connecte&&!PUBLIQUES.includes(r.nom))r={nom:'connexion',arg:null};
+ S.menu=false;dessineEntete(r);
+ if(S.fenetre){S.fenetre=null;dessineFenetre();}
+ const app=document.getElementById('app');
+ app.classList.toggle('large',r.nom==='agenda');
+ app.classList.toggle('etroit',r.nom==='profil'||r.nom==='prestataire'||r.nom==='page-publique');
+ app.innerHTML=r.nom==='connexion'?PAGES.connexion():`<div class="page">${PAGES[r.nom](r.arg)}</div>`;
+ const cle=r.nom+(r.arg||'');if(cle!==derniere){scrollTo({top:0,behavior:'instant'});derniere=cle;}
+ if(r.nom==='conversation'){const f=document.getElementById('fil');f&&f.lastElementChild&&f.lastElementChild.scrollIntoView({block:'nearest'});}
+}
+function rafraichir(){const y=scrollY;rendu();scrollTo({top:y,behavior:'instant'});}
+function aller(h){if(location.hash==='#'+h)rendu();else location.hash=h;}
+
+/* Thème : « Automatique » rend la main au réglage de l’appareil (ou de l’hôte). */
+const themeHote=document.documentElement.getAttribute('data-theme');
+function appliqueTheme(){if(S.theme==='auto'){themeHote?document.documentElement.setAttribute('data-theme',themeHote):document.documentElement.removeAttribute('data-theme');}else document.documentElement.setAttribute('data-theme',S.theme);}
+try{const t=localStorage.getItem('rafals-theme');if(t==='light'||t==='dark'||t==='auto')S.theme=t;}catch(e){}
+appliqueTheme();
+
+/* ================= Actions ================= */
+document.addEventListener('click',e=>{
+ if(e.target.matches('[data-voile]')){S.fenetre=null;dessineFenetre();return;}
+ const b=e.target.closest('[data-act]');
+ if(!b){if(S.menu&&!e.target.closest('.compte')){S.menu=false;dessineEntete(route());}return;}
+ const a=b.dataset.act,v=b.dataset.v;
+ if(agendaClic(a,v)||profilClic(a,v)||demandeClic(a,v))return;
+ switch(a){
+  case 'menu':S.menu=!S.menu;dessineEntete(route());break;
+  case 'metier':S.metier=v;rafraichir();break;
+  case 'metier-accueil':S.metier=v;S.recherche='';aller('trouver');break;
+  case 'ailleurs-ouvrir':S.fenetre={type:'ailleurs'};dessineFenetre();break;
+  case 'ailleurs-retirer':{const a=S.ailleurs.splice(+v,1)[0];
+   /* Décision de Raphael du 09/11/2026 : la barre revient si le total redescend sous le seuil ET qu'aucun devis ni facture avec TVA n'a été envoyé depuis l'activation */
+   if(S.tvaActive&&totalAnnee()<SEUIL_TVA){if(S.tvaFactureEnvoyee)toast(euros(a.m)+' retirés. Vous avez déjà facturé la TVA : elle reste activée.');else{S.tvaActive=false;toast(euros(a.m)+' retirés. Vous êtes sous le seuil : la TVA est désactivée.');}}
+   else toast(euros(a.m)+' retirés.');
+   rafraichir();break;}
+  case 'vers-rdv':S.agendaOnglet='rdv';break;
+  case 'vers-avis':{const z=document.getElementById('pp-avis');z&&z.scrollIntoView({behavior:'smooth',block:'start'});break;}
+  case 'signaler':toast('Dans le vrai site, une fenêtre s’ouvre pour expliquer ce qui ne va pas. L’administrateur regarde.');break;
+  case 'suivre':{const id=+v;if(S.abonnes.has(id)){S.abonnes.delete(id);toast('Vous ne suivez plus '+presta(id).nom);}else{S.abonnes.add(id);toast('Abonné : vous serez prévenu des créneaux libres de '+presta(id).nom);}rafraichir();break;}
+  case 'ecrire':{const p=presta(+v);let c=S.convs.find(x=>x.avec===p.nom);if(!c){c={id:S.convs.length+1,avec:p.nom,couleur:p.couleur,nonLu:false,msgs:[]};S.convs.unshift(c);}aller('conversation-'+c.id);break;}
+  case 'ecrire-client':{let c=S.convs.find(x=>x.avec===v);if(!c){const cl=CLIENTS.find(x=>x[0]===v);c={id:S.convs.length+1,avec:v,couleur:cl?cl[4]:'#555',nonLu:false,msgs:[]};S.convs.unshift(c);}aller('conversation-'+c.id);break;}
+  case 'creneau':S.creneauChoisi=S.creneauChoisi===v?null:v;rafraichir();break;
+  case 'reserver':{const p=presta(+v);const c=p.creneaux[+S.creneauChoisi.split('-')[1]];S.creneauChoisi=null;toast('Demande envoyée à '+p.nom+' pour '+c);rafraichir();break;}
+  case 'devis-filtre':S.devisOnglet=v;rafraichir();break;
+  case 'pdf':toast(v==='carte'||v==='carte seule'?'Dans le vrai site, le PDF de la carte se télécharge ici.':'Dans le vrai site, la facture '+v+' se télécharge en PDF.');break;
+  case 'couleur':S.couleurCarte=+v;rafraichir();break;
+  case 'muet':{const id=+v;S.muets.has(id)?S.muets.delete(id):S.muets.add(id);toast(S.muets.has(id)?presta(id).nom+' est muet : vous ne recevez plus rien.':'Vous recevez de nouveau les nouvelles de '+presta(id).nom);rafraichir();break;}
+  case 'theme':S.theme=v;try{localStorage.setItem('rafals-theme',v);}catch(err){}appliqueTheme();toast('Enregistré');rafraichir();break;
+  case 'mail':S.mail=v;toast('Enregistré');rafraichir();break;
+  case 'telephone':S.telephone=!S.telephone;toast(S.telephone?'Notifications activées sur ce téléphone':'Notifications coupées sur ce téléphone');rafraichir();break;
+  case 'alerte':S.alertes[v]=S.alertes[v]===false;toast('Enregistré');rafraichir();break;
+  case 'retirer-metier':{if(S.metiersMoi.length<=1){toast('Gardez au moins un métier.');break;}const m=S.metiersMoi.splice(+v,1)[0];toast(m[0]+' retiré');rafraichir();break;}
+  case 'deconnexion':S.connecte=false;S.menu=false;aller('connexion');break;
+  default:
+   if(a.startsWith('notif-')){const k=a.slice(6);S.notif[k]=!S.notif[k];toast('Enregistré');rafraichir();}
+ }
+});
+document.addEventListener('submit',e=>{
+ const f=e.target;const t=f.dataset.form;if(!t)return;e.preventDefault();
+ if(t==='chercher'){S.recherche=f.q.value;S.metier='Tous';aller('trouver');}
+ else if(t==='message'){const txt=f.t.value.trim();if(!txt)return;const c=S.convs.find(x=>x.id===+f.dataset.v);c.msgs.push(['moi',txt,'À l’instant']);rafraichir();const input=document.getElementById('msg-'+c.id);input&&input.focus();
+  if(!c.repondu){c.repondu=true;setTimeout(()=>{c.msgs.push(['eux','Merci, je regarde et je vous réponds vite !','À l’instant']);if(route().nom==='conversation'&&route().arg==String(c.id)){rafraichir();const i=document.getElementById('msg-'+c.id);i&&i.focus();}else{c.nonLu=true;dessineEntete(route());}},1400);}}
+ else if(t==='demande'){if(!metierDmd()){S.dmdChoix=true;majZoneMetier();toast('Choisissez le métier : nous ne l’avons pas reconnu.');return;}S.mesDemandes.unshift({id:Date.now(),titre:f.titre.value.trim(),metier:metierDmd(),ville:f.ville.value.trim(),quand:f.quand.value,desc:f.desc.value.trim(),date:'08/11/2026',etat:'ouverte',fin:'08/12/2026',reponses:[]});toast('Demande publiée. Les prestataires près de chez vous sont prévenus.');aller('mes-demandes');}
+ else if(t==='infos'){S.infos={mail:f.mail.value.trim(),tel:f.tel.value.trim()};toast('Informations enregistrées.');rafraichir();}
+ else if(t==='adresse'){S.adresse=f.adr.value.trim();toast('Adresse enregistrée.');rafraichir();}
+ else if(t==='modif-profil'){S.bio=f.bio.value.trim();S.ville=f.ville.value.trim();S.fenetre=null;dessineFenetre();toast('Profil enregistré.');rafraichir();}
+ else if(t==='ailleurs'){const m=parseFloat(String(f.m.value).replace(/\s/g,'').replace(',','.'));const err=document.getElementById('ai-err');
+  if(!(m>0)){err.textContent='Écrivez un montant, ex. 2000 ou 45,50.';err.hidden=false;return;}
+  if(!f.d.value||f.d.value>CLE_AUJ){err.textContent='Choisissez une date de cette année, pas encore à venir.';err.hidden=false;return;}
+  S.ailleurs.push({m,d:f.d.value});S.ailleurs.sort((a,b)=>a.d<b.d?-1:1);S.fenetre=null;dessineFenetre();
+  if(!S.tvaActive&&totalAnnee()>=SEUIL_TVA){S.tvaActive=true;toast('Barre pleine : votre TVA est activée pour vos prochains devis et factures.');}else toast(euros(m)+' ajoutés.');
+  rafraichir();}
+ else if(t==='modif-demande'){const d=trouveDmd(S.fenetre.id);d.titre=f.titre.value.trim();d.desc=f.desc.value.trim();d.quand=f.quand.value;S.fenetre=null;dessineFenetre();toast('Demande modifiée.');rafraichir();}
+ else if(t==='connexion'){S.connecte=true;toast('Bonjour Karim !');aller('accueil');}
+ else if(t==='metier'){if(!f.nom.value){toast('Vous avez déjà tous les métiers.');return;}const p=Math.max(1,+f.prix.value||40);S.metiersMoi.push([f.nom.value,p]);toast(f.nom.value+' ajouté');rafraichir();}
+});
+document.addEventListener('input',e=>{
+ const t=e.target;
+ if(t.id==='d-titre'||t.id==='d-desc'){const f=t.form;S.dmdTexte=f.titre.value+' '+f.desc.value;S.dmdDevine=devineMetier(S.dmdTexte);majZoneMetier();}
+ else if(t.id==='q-trouver'){S.recherche=t.value;document.getElementById('resultats').innerHTML=resultats();}
+ else if(t.id==='phrase'){S.phraseCarte=t.value;document.getElementById('cv-phrase').textContent=t.value;}
+ else if(t.id==='ca'){S.ca=Math.max(0,+t.value||0);document.getElementById('cotis').textContent=euros(S.ca*0.212);}
+ else if(t.id==='am-nom'){const n=t.value.trim();document.getElementById('am-ok').textContent=n?'Ajouter '+cap(n):'Ajouter';}
+ else if(t.id==='zone'){S.zone=+t.value;document.getElementById('zone-val').textContent=S.zone+' km';document.getElementById('zone-ex').textContent=S.zone<10?'Nantes seulement.':S.zone<20?'Ex. Rezé, Orvault, Saint-Herblain.':'Ex. jusqu’à Clisson ou Ancenis.';}
+});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(S.fenetre){S.fenetre=null;dessineFenetre();}else if(S.menu){S.menu=false;dessineEntete(route());}});
+document.addEventListener('change',e=>{
+ const t=e.target;
+ if(t.id==='f-avatar'||t.id==='f-photo'){const fi=t.files&&t.files[0];if(!fi)return;
+  if(!/^image\/(png|jpeg)$/.test(fi.type)){toast('Choisissez une photo JPG ou PNG.');return;}
+  if(fi.size>5e6){toast('Cette photo dépasse 5 Mo : choisissez-en une plus légère.');return;}
+  const lr=new FileReader();lr.onload=()=>{if(t.id==='f-avatar'){S.avatar=lr.result;toast('Photo changée.');}else{S.photos.push({src:lr.result});toast('Photo ajoutée.');}rafraichir();};lr.readAsDataURL(fi);return;}
+ if(t.id==='d-metier-choix'){S.dmdForce=t.value||null;return;}
+ if(t.id==='ar-date'&&S.fenetre){if(t.value&&t.value>=CLE_AUJ){S.fenetre.date=t.value;document.getElementById('ar-ok').textContent='Arrêter '+S.fenetre.m+' après le '+dateCourte(t.value);}return;}
+ const c=t.dataset.champ;if(!c)return;
+ if(c.startsWith('f-')&&S.fenetre){const [,i,b]=c.split('-');S.fenetre.pl[+i][+b]=+e.target.value;S.fenetre.erreur=null;S.fenetre.conflits=null;dessineFenetre();}
+ else if(c.startsWith('s-')&&S.edSem){const [,j,k,b]=c.split('-');S.edSem.sem[+j][+k][+b]=+e.target.value;}
+ else if(c.startsWith('r-')&&S.fenetre){S.fenetre.r[c.slice(2)]=e.target.value;}
+});
+let largeurPc=matchMedia('(min-width:1024px)').matches;
+addEventListener('resize',()=>{const pc=matchMedia('(min-width:1024px)').matches;if(pc!==largeurPc){largeurPc=pc;if(route().nom==='agenda'&&S.agendaPret&&S.agendaOnglet==='cal'&&!S.fenetre)rafraichir();}});
+addEventListener('hashchange',rendu);
+rendu();
+</script>

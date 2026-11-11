@@ -13,11 +13,11 @@ function choisi(evenement: Event) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-1.5">
-    <label :for="id" class="text-[13px] font-semibold">{{ etiquette }}</label>
+  <div class="champ">
+    <label :for="id">{{ etiquette }}</label>
     <button
       type="button"
-      class="rounded-rafals border-2 border-dashed border-bord px-4 py-5 text-center text-texte-doux hover:border-primaire hover:bg-primaire-doux"
+      class="rounded-[14px] border-2 border-dashed border-bord px-4 py-5 text-center text-texte-doux hover:border-primaire hover:bg-primaire-doux"
       @click="champ?.click()"
     >
       <template v-if="fichier">

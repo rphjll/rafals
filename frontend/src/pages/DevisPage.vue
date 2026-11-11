@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Mes devis (.doc/ihm/RM-DEVIS-IHM.md ; RM-DEVIS.md) : « Mes demandes » (client), et « Devis reçus » pour un
 // prestataire. Retour de la page de paiement de Stripe (?devis=…&paiement=fait|annule) : arrhes ou solde.
+import EnteteActivite from '../components/EnteteActivite.vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
@@ -82,8 +83,8 @@ onUnmounted(() => clearTimeout(relecture))
     <AppBouton pleine-largeur @click="routeur.push({ path: '/connexion', query: { retour: '/devis' } })">Se connecter</AppBouton>
   </AppCarte>
 
-  <div v-else-if="compte" class="mx-auto flex w-full max-w-[760px] flex-col gap-4">
-    <h1 class="text-[28px] font-bold">Mes devis</h1>
+  <div v-else-if="compte" class="page">
+    <EnteteActivite titre="Devis" :texte="compte.prestataire_id ? 'Les devis que vous avez envoyés et leur réponse.' : 'Les devis que vous avez demandés et reçus.'" />
     <AppOnglets v-if="onglets.length > 1" v-model="onglet" :onglets="onglets" :compteurs="compteurs" />
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <AppAlerte v-if="retourPaiement" :etat="retourPaiement.etat">{{ retourPaiement.texte }}</AppAlerte>

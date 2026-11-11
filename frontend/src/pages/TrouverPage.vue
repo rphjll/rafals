@@ -1,104 +1,135 @@
 <script setup lang="ts">
-// Trouver un prestataire (.doc/ihm/RM-TROUVER-IHM.md ; RM-RECHERCHE.md) : la recherche en haut, puis
-// - sans ville : on la demande d'abord ;
-// - avec la ville seule (/trouver?ville=12768) : une rubrique par service, ses prestataires en rangée ;
-// - avec un métier et la ville (/trouver?metier=3&ville=12768) : les prestataires de ce métier, tri et filtres.
-import { computed, onMounted, ref } from 'vue'
+// Trouver un prestataire (.doc/ihm/RM-TROUVER-IHM.md ; RM-RECHERCHE.md), identique à la grande maquette depuis le
+// 10/11/2026 : le titre, un champ « Nom, métier ou ville… », les pastilles des services, puis les cartes, de la plus
+// proche à la plus loin.
+// - Sans ville connue : on la demande d'abord (rafals cherche toujours autour d'une ville).
+// - /trouver?ville=12768 : tous les services ; &dossier=3 : un seul service (pastille) ; &q=fuite : le texte tapé.
+// - /trouver?metier=3&ville=12768 (anciens liens) : les résultats d'un métier, avec tri et filtres.
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import dessinQuartier from '../assets/quartier.svg'
+import { appelerServeur, messageErreur } from '../api'
 import AppChoixCommune from '../components/AppChoixCommune.vue'
-import AppChoixMetier from '../components/AppChoixMetier.vue'
+import CarteResultat from '../components/recherche/CarteResultat.vue'
 import ResultatsRecherche from '../components/recherche/ResultatsRecherche.vue'
-import RubriquesPrestataires from '../components/recherche/RubriquesPrestataires.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
-import AppBouton from '../components/ui/AppBouton.vue'
-import AppSection from '../components/ui/AppSection.vue'
-import type { MetierVisible } from '../composables/useMetiers'
 import type { CommuneVisible } from '../outils/prestataires'
-import { type PageResultats, type PageRubriques, retenirVille, villeRetenue } from '../outils/recherche'
+import { type CarteResultat as Carte, type PageRubriques, retenirVille, villeRetenue } from '../outils/recherche'
 
 const route = useRoute()
 const routeur = useRouter()
 
-const metier = ref<MetierVisible | null>(null)
 const commune = ref<CommuneVisible | null>(null)
-const erreur = ref('')
+const changerVille = ref(false)
+const ville = computed(() => (typeof route.query.ville === 'string' ? route.query.ville : ''))
+const dossier = computed(() => (typeof route.query.dossier === 'string' ? Number(route.query.dossier) : null))
+const parMetier = computed(() => !!route.query.metier && !!ville.value)
 
-// Tout est dans l'adresse : un lien partagé montre la même chose, et le bouton « retour » revient en arrière
-const enRecherche = computed(() => !!route.query.metier && !!route.query.ville)
-const parService = computed(() => !route.query.metier && !!route.query.ville)
-const villeConnue = computed(() => enRecherche.value || parService.value)
-
-// Ville déjà donnée lors d'une visite précédente : les rubriques s'affichent sans la redemander
-onMounted(() => {
-  const ville = villeRetenue()
-  if (!ville) return
-  commune.value = ville
-  if (!route.query.ville) routeur.replace({ query: { ville: String(ville.id) } })
+// Ville déjà donnée lors d'une visite précédente : pas besoin de la redemander
+watch(
+  ville,
+  (v) => {
+    const retenue = villeRetenue()
+    if (!v && retenue) routeur.replace({ query: { ...route.query, ville: String(retenue.id) } })
+  },
+  { immediate: true },
+)
+watch(commune, (c) => {
+  if (!c) return
+  retenirVille(c)
+  changerVille.value = false
+  routeur.push({ query: { ville: String(c.id), ...(route.query.q ? { q: route.query.q } : {}) } })
 })
 
-function chercher() {
+// Tous les services d'une ville : les cartes de chaque rubrique, sans doublon (un prestataire a plusieurs métiers)
+const page = ref<PageRubriques | null>(null)
+const cartesDossier = ref<Carte[]>([])
+const pageDossier = ref({ page: 1, pages: 1 })
+const erreur = ref('')
+const chargement = ref(false)
+async function charger() {
+  if (!ville.value || parMetier.value) return
+  chargement.value = true
   erreur.value = ''
-  if (!commune.value) {
-    erreur.value = 'Indiquez votre ville.'
-    return
+  try {
+    page.value = await appelerServeur<PageRubriques>(`/api/recherche/rubriques?commune_id=${ville.value}`)
+    retenirVille(page.value.ville)
+    if (dossier.value) await chargerDossier(1)
+  } catch (e) {
+    page.value = null
+    erreur.value = messageErreur(e)
+  } finally {
+    chargement.value = false
   }
-  retenirVille(commune.value)
-  if (!metier.value) return routeur.push({ query: { ville: String(commune.value.id) } })
-  // Les filtres déjà choisis sont gardés ; on revient à la page 1
-  const { page: _page, dossier: _dossier, ...reste } = route.query
-  routeur.push({ query: { ...reste, metier: String(metier.value.id), ville: String(commune.value.id) } })
 }
+// Une pastille : toutes les cartes de ce service, page après page ([Voir plus])
+async function chargerDossier(numero: number) {
+  const r = await appelerServeur<PageRubriques>(`/api/recherche/rubriques/${dossier.value}?commune_id=${ville.value}&page=${numero}`)
+  const rubrique = r.rubriques[0]
+  cartesDossier.value = numero === 1 ? (rubrique?.resultats ?? []) : [...cartesDossier.value, ...(rubrique?.resultats ?? [])]
+  pageDossier.value = { page: rubrique?.page ?? 1, pages: rubrique?.pages ?? 1 }
+}
+watch(() => [ville.value, dossier.value, parMetier.value], charger, { immediate: true })
 
-// Lien ouvert directement, ou métier voisin choisi : on remet le métier et la ville dans les choix du haut
-function resultatsCharges(page: PageResultats) {
-  if (metier.value?.id !== page.metier.id) metier.value = { ...page.metier, code: '', categorie: '' }
-  if (commune.value?.id !== page.ville.id) commune.value = page.ville
-}
-function rubriquesChargees(page: PageRubriques) {
-  metier.value = null
-  if (commune.value?.id !== page.ville.id) commune.value = page.ville
+const cartes = computed<Carte[]>(() => {
+  if (dossier.value) return cartesDossier.value
+  const vues = new Map<number, Carte>()
+  for (const r of page.value?.rubriques ?? []) for (const c of r.resultats) if (!vues.has(c.prestataire_id) || c.principal) vues.set(c.prestataire_id, c)
+  return [...vues.values()].sort((a, b) => a.distance_km - b.distance_km)
+})
+// Le champ filtre les cartes sur le nom, le métier et la ville (« fuite » ne trouve que ce qui est écrit)
+const texte = ref(typeof route.query.q === 'string' ? route.query.q : '')
+const visibles = computed(() => {
+  const mot = texte.value.trim().toLowerCase()
+  return mot ? cartes.value.filter((c) => `${c.nom_affiche} ${c.metier} ${c.ville}`.toLowerCase().includes(mot)) : cartes.value
+})
+function choisirDossier(id: number | null) {
+  const { dossier: _d, page: _p, ...reste } = route.query
+  routeur.replace({ query: id ? { ...reste, dossier: String(id) } : reste })
 }
 </script>
 
 <template>
-  <div class="flex flex-col gap-10">
-    <!-- Dès que la ville est connue, le haut se réduit à la carte de recherche pour laisser la place aux prestataires -->
-    <section class="grid items-center gap-6" :class="villeConnue ? '' : 'md:grid-cols-[1.1fr_0.9fr]'">
-      <div class="flex min-w-0 flex-col gap-5">
-        <template v-if="!villeConnue">
-          <h1 class="text-[clamp(32px,5.4vw,56px)] leading-[1.05] font-black">
-            Le bon prestataire, <span class="text-primaire">près de chez vous.</span>
-          </h1>
-          <p class="max-w-[46ch] text-[18px] text-texte-doux">
-            Ménage, jardinage, plomberie, coiffure à domicile : indiquez votre ville pour voir les prestataires proches et
-            leurs avis.
-          </p>
-        </template>
-        <!-- Les deux champs s'alignent par le haut ; le bouton descend de la hauteur d'une étiquette -->
-        <form class="carte grid items-start gap-3 p-4 md:grid-cols-[1fr_1fr_auto]" @submit.prevent="chercher">
-          <AppChoixMetier v-model="metier" :avec-dossiers="false" etiquette="Quel service ?" />
-          <AppChoixCommune v-model="commune" etiquette="Où ?" />
-          <div class="md:pt-6"><AppBouton type="submit" variante="accent" pleine-largeur>Rechercher</AppBouton></div>
-          <AppAlerte v-if="erreur" class="md:col-span-3">{{ erreur }}</AppAlerte>
-        </form>
-      </div>
-      <img v-if="!villeConnue" :src="dessinQuartier" alt="" class="hidden w-full max-w-[440px] justify-self-center md:block" />
-    </section>
-
-    <template v-if="enRecherche">
-      <div>
-        <AppBouton variante="secondaire" @click="routeur.push({ query: { ville: String(route.query.ville) } })">← Tous les services</AppBouton>
-      </div>
-      <ResultatsRecherche @charge="resultatsCharges" />
-    </template>
-    <RubriquesPrestataires v-else-if="parService" @charge="rubriquesChargees" />
-    <AppSection v-else>
-      <h2 class="text-xl font-bold">Indiquez votre ville pour voir les prestataires près de chez vous.</h2>
-      <p class="text-texte-doux">
-        Tapez son nom ou son code postal dans « Où ? », puis [Rechercher]. Le service est facultatif : sans lui, vous voyez tous
-        les services, rangés par rubrique.
+  <div class="page">
+    <div class="tete">
+      <h1>Trouver un prestataire</h1>
+      <p v-if="page && !changerVille">
+        Autour de {{ page.ville.nom }}, triés du plus proche au plus loin.
+        <button type="button" class="lien" @click="changerVille = true">Changer de ville</button>
       </p>
-    </AppSection>
+      <p v-else-if="!parMetier">Indiquez votre ville : rafals vous montre les prestataires autour, du plus proche au plus loin.</p>
+    </div>
+
+    <!-- Pas encore de ville, ou [Changer de ville] -->
+    <div v-if="(!ville || changerVille) && !parMetier" class="carte form p-[18px]">
+      <AppChoixCommune v-model="commune" etiquette="Votre ville" />
+      <button v-if="changerVille" type="button" class="btn btn-2 btn-petit" style="align-self: flex-start" @click="changerVille = false">Annuler</button>
+    </div>
+
+    <ResultatsRecherche v-if="parMetier" />
+    <template v-else-if="ville">
+      <div class="champ"><input v-model="texte" placeholder="Nom, métier ou ville…" aria-label="Rechercher" /></div>
+      <div v-if="page?.rubriques.length" class="chips">
+        <button type="button" class="chip" :class="{ on: !dossier }" @click="choisirDossier(null)">Tous</button>
+        <button v-for="r in page.rubriques" :key="r.dossier_id" type="button" class="chip" :class="{ on: dossier === r.dossier_id }" @click="choisirDossier(r.dossier_id)">
+          {{ r.nom }}
+        </button>
+      </div>
+      <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
+      <div v-else-if="!chargement || cartes.length" class="section">
+        <template v-if="visibles.length">
+          <p class="doux petit">{{ visibles.length }} prestataire{{ visibles.length > 1 ? 's' : '' }}</p>
+          <div class="grille">
+            <CarteResultat v-for="c in visibles" :key="c.prestataire_id" :resultat="c" />
+          </div>
+          <button v-if="dossier && pageDossier.page < pageDossier.pages" type="button" class="btn btn-2" style="align-self: center" @click="chargerDossier(pageDossier.page + 1)">
+            Voir plus
+          </button>
+        </template>
+        <div v-else-if="page" class="carte vide">
+          <h3>Personne pour l’instant</h3>
+          <p style="margin-top: 6px">Essayez un autre métier, ou <RouterLink to="/demandes/nouvelle">publiez une demande</RouterLink> : les prestataires viendront à vous.</p>
+        </div>
+      </div>
+    </template>
   </div>
 </template>

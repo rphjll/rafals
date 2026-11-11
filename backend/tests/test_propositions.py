@@ -429,4 +429,4 @@ def test_pres_de_chez_moi_depuis_l_adresse_du_compte(fabrique_prestataire, fuite
     assert carte["peut_repondre"] is False and "Ajoutez votre adresse" in carte["raison_verrou"]
     assert liste == [] and refus.status_code == 403 and "Ajoutez votre adresse" in refus.json()["detail"]
     # Son profil dit Pessac, mais son adresse est à Libourne (40 km) : la fuite de Pessac est trop loin de chez lui
-    assert a_libourne["peut_repondre"] is False and a_libourne["raison_verrou"] is None
+    assert a_libourne["peut_repondre"] is False and "Cette demande est à 38 km de Libourne" in a_libourne["raison_verrou"]

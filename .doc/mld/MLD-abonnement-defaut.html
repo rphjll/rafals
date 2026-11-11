@@ -1,0 +1,109 @@
+<title>MLD notifications par défaut</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Fond blanc uni imposé par les règles du projet (format du MLD) : un seul thème, couleurs fixées */
+  :root { color-scheme: light; --fond:#ffffff; --texte:#1d2620; --doux:#58665c; --trait:#d8e1da; --vert:#2f6b4f; --pale:#f3f6f2; --orange:#b26a00; --orange-pale:#fcf0dc; }
+  body { background:var(--fond); color:var(--texte); font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:24px 48px; }
+  .page { max-width:1040px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:var(--doux); }
+  .schema { border:1px solid var(--trait); border-radius:10px; padding:16px; background:var(--fond); overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:16px; }
+  .carte { border:1px solid var(--trait); border-radius:10px; padding:14px 16px; min-width:0; display:flex; flex-direction:column; gap:8px; }
+  .carte h3 { margin:0; font-size:16px; font-family:Consolas, monospace; color:var(--vert); }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:var(--orange); background:var(--orange-pale); border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; white-space:nowrap; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:var(--pale); padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid var(--vert); padding:8px 12px; background:var(--pale); border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:var(--doux); }
+  ol { margin:0; padding-left:20px; font-size:14.5px; display:flex; flex-direction:column; gap:4px; }
+  .vide { color:var(--orange); font-weight:700; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD : notifications des abonnements, réglées dans Paramètres, et « muet »</h1>
+    <p class="sous">rafals · proposé le 21/10/2026 (2ᵉ version, plus simple) · aucune table nouvelle, aucune supprimée · 3 rubriques ajoutées à COMPTE · dans ABONNEMENT, 1 rubrique ajoutée et 3 supprimées.</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  COMPTE["<b>COMPTE</b><br/>id (PK)"]
+  ABONNEMENT["<b>ABONNEMENT</b><br/>id (PK)<br/>compte_id (FK)<br/>prestataire_id (FK)"]
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  COMPTE -- "s'abonne · (0,n) —— (1,1)" --- ABONNEMENT
+  ABONNEMENT -- "(1,1) —— (0,n) · est suivi" --- PRESTATAIRE
+  classDef changee fill:#fcf0dc,stroke:#b26a00,color:#1d2620;
+  class COMPTE,ABONNEMENT changee;
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>orange</b><span>table qui change (rubriques ajoutées ou supprimées). Les liens ne changent pas.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les rubriques</h2>
+    <div class="tables">
+      <div class="carte"><h3>COMPTE <span class="nouveau">3 ajoutées</span></h3>
+        <ul>
+          <li><code>abo_notif_creneau</code> : oui / non, prévenir quand un créneau se libère</li>
+          <li><code>abo_notif_nouveaute</code> : oui / non, prévenir d'un nouveau métier</li>
+          <li><code>abo_notif_retour</code> : oui / non, prévenir du retour après une absence</li>
+        </ul>
+        <p class="note">Les 3 cases de « Paramètres », valables pour <b>tous</b> mes abonnements. Oui au départ pour tous les comptes.</p>
+      </div>
+      <div class="carte"><h3>ABONNEMENT <span class="nouveau">1 ajoutée · 3 supprimées</span></h3>
+        <ul>
+          <li><code>muet</code> : oui / non (non au départ). Oui = plus aucune notification de ce prestataire, quelles que soient les cases de Paramètres.</li>
+          <li><s><code>notif_creneau</code>, <code>notif_nouveaute</code>, <code>notif_retour</code></s> : supprimées (le choix case par case, prestataire par prestataire, disparaît).</li>
+        </ul>
+        <p class="note">On reste abonné quand on est muet : le prestataire reste dans « Mes abonnements » et compte toujours dans ses abonnés.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ce que fera rafals</h2>
+    <ol>
+      <li>« Paramètres » : nouvelle partie « Mes abonnements » avec les 3 cases, pour tout compte connecté. Un clic enregistre tout de suite.</li>
+      <li>« Mes abonnements » : la cloche et ses 3 cases sont remplacées par un seul bouton <b>[🔕 Rendre muet]</b> sur chaque carte. Une fois muet : badge « Muet » et bouton [🔔 Réactiver les notifications]. On peut rendre muets autant de prestataires qu'on veut.</li>
+      <li>Une notification part seulement si l'abonnement n'est pas muet <b>et</b> que la case correspondante est cochée dans Paramètres.</li>
+      <li><b>Lignes déjà en base</b> (comptées le 21/10/2026) : vraie base, 1 abonnement (le compte de test <code>zztest.karim@example.com</code> suit « raphael », 3 cases cochées) → devient « pas muet », rien ne change pour lui. Base des tests : 10 lignes de test, refaites par les tests.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>COMPTE</code> Julie : créneau = oui, nouveauté = non, retour = oui.<br>
+      <code>ABONNEMENT</code> n° 1 : Julie → Karim, muet = <b>non</b>.
+      <p class="trad"><b>Traduction :</b> si un rendez-vous de Karim est annulé jeudi 23/10 à 14 h, Julie reçoit « Karim est libre jeudi 23/10 à 14 h ». Si Karim ajoute « Chauffagiste », elle n'est pas prévenue, car elle a décoché « Nouveau métier » dans Paramètres.</p>
+    </div>
+    <div class="exemple">
+      <code>ABONNEMENT</code> n° 2 : Julie → Sophie, muet = <b>oui</b>.
+      <p class="trad"><b>Traduction :</b> Julie suit toujours Sophie (elle la retrouve dans « Mes abonnements », Sophie garde son abonnée), mais ne reçoit plus rien d'elle : ni créneau libre, ni retour de vacances.</p>
+    </div>
+  </section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, securityLevel: "loose" });</script>

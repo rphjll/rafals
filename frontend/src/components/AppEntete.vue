@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// En-tête commun à toutes les pages (.doc/ihm/RM-ENTETE-IHM.md) : 4 entrées (5 une fois connecté, avec « Messages »),
-// puis le menu du compte.
-// Sous 768 px de large, les entrées passent dans la barre du bas (AppBarreBas) ; ☰ ne garde que le compte.
-import { computed, ref, watch } from 'vue'
+// En-tête commun (.doc/ihm/RM-ENTETE-IHM.md), identique à la grande maquette depuis le 10/11/2026 : logo, les entrées
+// (Accueil, Trouver, Demandes, Messages, Mon activité), puis le bouton du compte (rond + prénom) et sa liste.
+// Sous 760 px de large, les entrées et le compte passent dans la barre du bas (AppBarreBas, entrée « Moi »).
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { messageErreur } from '../api'
 import { useCompte } from '../composables/useCompte'
@@ -10,53 +10,48 @@ import { useInstallation } from '../composables/useInstallation'
 import { useMenu } from '../composables/useMenu'
 import { useMessage } from '../composables/useMessage'
 import { useNonLus } from '../composables/useNonLus'
+import { useRetour } from '../composables/useRetour'
 import AppBouton from './ui/AppBouton.vue'
 import AppFenetre from './ui/AppFenetre.vue'
+import AppIcone from './ui/AppIcone.vue'
+import AppInitiales from './ui/AppInitiales.vue'
+import FenetreRetour from './retours/FenetreRetour.vue'
 
 const menuOuvert = ref(false)
-const compteOuvert = ref(false)
 const zoneCompte = ref<HTMLElement | null>(null)
 const route = useRoute()
 const routeur = useRouter()
 const { compte, chargementFait, seDeconnecter } = useCompte()
-const { estSur, entrees: liens } = useMenu()
+const { entrees: liens } = useMenu()
 const { afficherMessage } = useMessage()
 const { actualiserNonLus } = useNonLus()
 watch(compte, actualiserNonLus, { immediate: true })
 watch(
   () => route.fullPath,
-  () => (menuOuvert.value = compteOuvert.value = false),
+  () => (menuOuvert.value = false),
 )
-
-// Les entrées principales (« liens ») viennent de useMenu : la barre du bas, sur téléphone, montre les mêmes
-const liensCompte = computed(() => [
-  { vers: '/profil', texte: 'Mon profil' },
-  { vers: '/mes-abonnements', texte: 'Mes abonnements' }, // prestataires suivis (21/10/2026)
-  { vers: '/parametres', texte: 'Paramètres' }, // thème clair ou sombre (17/10/2026)
-  // Visible seulement des administrateurs (lot 1.4)
-  ...(compte.value?.est_administrateur ? [{ vers: '/administration', texte: 'Administration' }] : []),
-])
+// « Un problème ? Une idée ? » (lot 13.1) : la même fenêtre s'ouvre d'ici et de la page « Moi » (téléphone)
+const { retourOuvert } = useRetour()
 // [Installer rafals] (RM-APPLICATION) : un clic installe (Android, ordinateur) ou explique les deux gestes (iPhone)
 const { facon: faconInstaller, installer } = useInstallation()
 const gestesApple = ref(false)
 async function installerRafals() {
+  menuOuvert.value = false
   if (faconInstaller.value === 'apple') gestesApple.value = true
   else if (await installer()) afficherMessage('rafals est installé sur cet appareil.')
 }
 
-const initiales = computed(() => `${compte.value?.prenom[0] ?? ''}${compte.value?.nom[0] ?? ''}`.toUpperCase())
-const surCompte = computed(() => liensCompte.value.some((lien) => estSur(lien.vers)))
-
-// Un clic ou une tabulation hors du menu du compte le referme
+// Un clic ou une tabulation hors de la liste du compte la referme
 function sortieCompte(evenement: FocusEvent) {
-  if (!zoneCompte.value?.contains(evenement.relatedTarget as Node | null)) compteOuvert.value = false
+  if (!zoneCompte.value?.contains(evenement.relatedTarget as Node | null)) menuOuvert.value = false
 }
 
 async function deconnexion() {
+  menuOuvert.value = false
   try {
     await seDeconnecter()
     afficherMessage('Vous êtes déconnecté.')
-    routeur.push('/')
+    routeur.push('/connexion')
   } catch (erreur) {
     afficherMessage(messageErreur(erreur), 'erreur')
   }
@@ -64,92 +59,41 @@ async function deconnexion() {
 </script>
 
 <template>
-  <header class="sticky top-[env(safe-area-inset-top,0px)] z-10 border-b border-bord bg-surface px-4">
-    <div class="relative mx-auto flex h-[60px] max-w-[1080px] items-center gap-4">
-      <RouterLink to="/" class="font-marque text-2xl font-bold tracking-tight text-primaire" aria-label="Accueil rafals">
-        rafals<span class="text-accent">.</span>
-      </RouterLink>
-      <button
-        type="button"
-        class="ml-auto h-[38px] w-[42px] rounded-rafals border border-bord text-xl text-texte md:hidden"
-        :aria-expanded="menuOuvert"
-        aria-controls="menu-principal"
-        :aria-label="menuOuvert ? 'Fermer le menu' : 'Ouvrir le menu'"
-        @click="menuOuvert = !menuOuvert"
-      >
-        ☰
-      </button>
-      <nav
-        id="menu-principal"
-        class="absolute top-[60px] right-[-16px] left-[-16px] flex-col border-b border-bord bg-surface px-4 pt-2 pb-3.5 md:static md:ml-auto md:flex md:flex-row md:items-center md:gap-1 md:border-0 md:p-0"
-        :class="menuOuvert ? 'flex' : 'hidden'"
-      >
-        <RouterLink
-          v-for="lien in liens"
-          :key="lien.vers"
-          :to="lien.vers"
-          class="rounded-bouton px-3 py-2.5 font-bold hover:bg-primaire-doux hover:text-primaire max-md:hidden md:py-2"
-          :class="lien.actif ? 'bg-primaire-doux text-primaire' : 'text-texte'"
-        >
-          {{ lien.texte }}
+  <header class="entete">
+    <div class="entete-in">
+      <RouterLink to="/" class="logo" aria-label="Accueil rafals">rafals<b>.</b></RouterLink>
+      <nav class="nav" aria-label="Menu principal">
+        <RouterLink v-for="lien in liens" :key="lien.vers" :to="lien.vers" :class="{ actif: lien.actif }" :aria-current="lien.actif ? 'page' : undefined">
+          <AppIcone :nom="lien.icone" />{{ lien.texte }}
           <span
             v-if="lien.compteur"
-            class="ml-1 rounded-full bg-erreur px-2 py-0.5 text-xs font-bold text-sur-etat"
+            class="badge"
             :aria-label="`${lien.compteur} conversation${lien.compteur > 1 ? 's' : ''} non lue${lien.compteur > 1 ? 's' : ''}`"
-          >
-            {{ lien.compteur }}
-          </span>
+          >{{ lien.compteur }}</span>
         </RouterLink>
-        <!-- Tant qu'on ne sait pas si quelqu'un est connecté, on n'affiche rien (évite un clignotement) -->
-        <div v-if="chargementFait" class="flex flex-col pt-2 md:pt-0 md:pl-2">
-          <div
-            v-if="compte"
-            ref="zoneCompte"
-            class="relative flex flex-col"
-            @focusout="sortieCompte"
-            @keydown.esc="compteOuvert = false"
-          >
-            <button
-              type="button"
-              class="hidden min-h-[42px] items-center gap-2 rounded-full border bg-surface py-1 pr-3 pl-1 font-semibold md:inline-flex"
-              :class="surCompte ? 'border-primaire text-primaire' : 'border-bord text-texte'"
-              :aria-expanded="compteOuvert"
-              aria-controls="menu-compte"
-              @click="compteOuvert = !compteOuvert"
-            >
-              <span
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-primaire-doux text-[13px] font-bold text-primaire"
-                aria-hidden="true"
-              >
-                {{ initiales }}
-              </span>
-              {{ compte.prenom }}
-              <span aria-hidden="true">▾</span>
-            </button>
-            <!-- Téléphone : la liste est toujours dépliée dans le menu ☰ ; ordinateur : elle s'ouvre sous le prénom -->
-            <div
-              id="menu-compte"
-              class="flex flex-col gap-1 border-t border-bord pt-2 md:absolute md:top-[calc(100%+8px)] md:right-0 md:w-56 md:rounded-rafals md:border md:bg-surface md:p-1.5"
-              :class="compteOuvert ? '' : 'md:hidden'"
-            >
-              <span class="px-3 text-[13px] text-texte-doux md:hidden">{{ compte.prenom }}</span>
-              <RouterLink
-                v-for="lien in liensCompte"
-                :key="lien.vers"
-                :to="lien.vers"
-                class="rounded-rafals px-3 py-2.5 font-semibold hover:bg-primaire-doux hover:text-primaire"
-                :class="estSur(lien.vers) ? 'bg-primaire-doux text-primaire' : 'text-texte'"
-              >
-                {{ lien.texte }}
-              </RouterLink>
-              <AppBouton v-if="faconInstaller" variante="secondaire" pleine-largeur @click="installerRafals">Installer rafals</AppBouton>
-              <AppBouton variante="secondaire" pleine-largeur @click="deconnexion">Se déconnecter</AppBouton>
-            </div>
-          </div>
-          <AppBouton v-else @click="routeur.push('/connexion')">Se connecter</AppBouton>
-        </div>
       </nav>
+      <!-- Tant qu'on ne sait pas si quelqu'un est connecté, on n'affiche rien (évite un clignotement) -->
+      <div v-if="chargementFait" ref="zoneCompte" class="compte" @focusout="sortieCompte" @keydown.esc="menuOuvert = false">
+        <template v-if="compte">
+          <button type="button" class="compte-btn" :aria-expanded="menuOuvert" aria-controls="menu-compte" @click="menuOuvert = !menuOuvert">
+            <AppInitiales :nom="compte.prenom" />{{ compte.prenom }}
+          </button>
+          <div v-if="menuOuvert" id="menu-compte" class="menu">
+            <RouterLink to="/profil"><AppIcone nom="moi" />Mon profil</RouterLink>
+            <RouterLink to="/mes-abonnements"><AppIcone nom="coeur" />Mes abonnements</RouterLink>
+            <RouterLink to="/parametres"><AppIcone nom="reglages" />Paramètres</RouterLink>
+            <!-- Visible seulement des administrateurs (lot 1.4) -->
+            <RouterLink v-if="compte.est_administrateur" to="/administration"><AppIcone nom="bouclier" />Administration</RouterLink>
+            <button type="button" @click="(menuOuvert = false), (retourOuvert = true)"><AppIcone nom="messages" />Un problème ? Une idée ?</button>
+            <button v-if="faconInstaller" type="button" @click="installerRafals"><AppIcone nom="telecharger" />Installer rafals</button>
+            <hr />
+            <button type="button" @click="deconnexion"><AppIcone nom="sortir" />Se déconnecter</button>
+          </div>
+        </template>
+        <RouterLink v-else class="btn btn-1 btn-petit" to="/connexion">Se connecter</RouterLink>
+      </div>
     </div>
+    <FenetreRetour :ouverte="retourOuvert" @fermer="retourOuvert = false" />
     <AppFenetre :ouverte="gestesApple" titre="Installer rafals sur votre iPhone" @fermer="gestesApple = false">
       <ol class="flex list-decimal flex-col gap-2 pl-5 text-texte">
         <li>En bas de l'écran de Safari, touchez le bouton <b>Partager</b> (un carré avec une flèche vers le haut).</li>

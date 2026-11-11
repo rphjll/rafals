@@ -11,9 +11,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import reglages
+from app.modeles.devis import DemandeDevis, Devis
 from app.modeles.factures import Facture
+from app.modeles.journal import JournalAction
 from app.modeles.comptes import Compte
-from app.modeles.prestataires import Prestataire
+from app.modeles.prestataires import EncaisseAilleurs, Prestataire
 from app.modeles.signalements import RappelDeclaration
 from app.modeles.urssaf import DeclarationUrssaf
 from app.services import factures, journal, mails, notifications, paiements
@@ -144,35 +146,123 @@ def envoyer_rappels(db: Session, maintenant: datetime) -> dict[str, int]:
     return compte
 
 
-# ---------- La barre de la TVA : prévenir à 80 % et au-delà du seuil (demande de Raphael du 17/10/2026) ----------
+# ---------- La barre de la TVA (demandes de Raphael du 17/10/2026) ----------
 
 
-def prevenir_seuil_tva(db: Session, prestataire: Prestataire, facture: Facture, maintenant: datetime) -> None:
-    """Appelé à chaque nouvelle facture de vente : une notification et un mail (accord de Raphael du 17/10/2026) si elle
-    fait passer 80 % du seuil, ou le seuil lui-même. Rien n'est enregistré : on compare le total de l'année avant et après cette facture.
-    Ex. 1 : seuil 37 500 € ; Karim passe de 29 800 € à 30 050 € → « Vous approchez du seuil de TVA ».
-    Ex. 2 : il passe de 37 400 € à 37 600 € → « Seuil de TVA dépassé ». Pas de barre pour qui facture déjà la TVA."""
-    if prestataire.facture_tva or facture.sorte != "vente":
-        return
-    annee = facture.emise_le.astimezone(PARIS).year
+def encaisse_ailleurs(db: Session, prestataire: Prestataire, annee: int) -> list[EncaisseAilleurs]:
+    """Les montants encaissés hors de rafals, datés dans cette année, le plus récent d'abord."""
+    return list(db.scalars(select(EncaisseAilleurs).where(
+        EncaisseAilleurs.prestataire_id == prestataire.id,
+        EncaisseAilleurs.encaisse_le >= date(annee, 1, 1), EncaisseAilleurs.encaisse_le <= date(annee, 12, 31),
+    ).order_by(EncaisseAilleurs.encaisse_le.desc(), EncaisseAilleurs.id.desc())))
+
+
+def total_barre_tva(db: Session, prestataire: Prestataire, annee: int, maintenant: datetime) -> int:
+    """Ce que compte la barre : encaissé sur rafals + encaissé ailleurs, dans l'année.
+    Ex. Karim : 5 320,00 € sur rafals + 2 000,00 € ailleurs = 7 320,00 €."""
     mois, _ = chiffre_d_affaires(db, prestataire, annee, maintenant)
-    apres = sum(m.encaisse_centimes for m in mois)
-    avant = apres - encaisse(db, facture)
+    return sum(m.encaisse_centimes for m in mois) + sum(e.montant_centimes for e in encaisse_ailleurs(db, prestataire, annee))
+
+
+def _franchir_seuils(db: Session, prestataire: Prestataire, avant: int, apres: int, annee: int, maintenant: datetime) -> None:
+    """Le total de la barre passe de « avant » à « apres ». Barre pleine (le seuil atteint) : la TVA s'active seule,
+    avec une notification et un mail. Passage de 80 % : une notification et un mail pour prévenir.
+    Ex. 1 : seuil 37 500 € ; Karim passe de 29 800 € à 30 050 € → « Vous approchez du seuil de TVA ».
+    Ex. 2 : il passe de 37 400 € à 37 600 € → « TVA activée », ses prochains devis et factures portent la TVA."""
+    if prestataire.facture_tva:
+        return
     seuil = reglages.SEUIL_TVA_SERVICES_CENTIMES
     alerte = seuil * reglages.SEUIL_TVA_PREVENIR_POUR_CENT // 100
     if avant < seuil <= apres:
-        titre = "Seuil de TVA dépassé"
-        texte = (f"Vous avez encaissé {paiements.euros(apres)} en {annee}, plus que le seuil de TVA ({paiements.euros(seuil)}) : "
-                 "parlez-en à votre comptable ou à votre service des impôts.")
+        prestataire.facture_tva = True
+        journal.noter(db, auteur_id=None, action="tva_activee_par_la_barre", table_cible="prestataire", ligne_id=prestataire.id,
+                      avant={"facture_tva": False}, apres={"facture_tva": True}, maintenant=maintenant)
+        titre, sujet = "TVA activée", "rafals : votre TVA est activée"
+        texte = (f"Vous avez encaissé {paiements.euros(apres)} en {annee} : le seuil de TVA ({paiements.euros(seuil)}) est atteint. "
+                 "Vos prochains devis et factures indiqueront la TVA. Parlez-en à votre comptable ou à votre service des impôts.")
     elif avant < alerte <= apres:
-        titre = "Vous approchez du seuil de TVA"
+        titre, sujet = "Vous approchez du seuil de TVA", "rafals : vous approchez du seuil de TVA"
         texte = (f"Vous avez encaissé {paiements.euros(apres)} en {annee} : {reglages.SEUIL_TVA_PREVENIR_POUR_CENT} % du seuil de "
-                 f"TVA ({paiements.euros(seuil)}). Il vous reste {paiements.euros(seuil - apres)}.")
+                 f"TVA ({paiements.euros(seuil)}). Il vous reste {paiements.euros(seuil - apres)}. "
+                 "Une fois le seuil atteint, la TVA s'activera toute seule.")
     else:
         return
     notifications.prevenir(db, prestataire.compte_id, titre, texte, "/mon-activite", maintenant)
     compte = db.get_one(Compte, prestataire.compte_id)
     if compte.ferme_le is None:
-        mails.envoyer_mail(compte.email, f"rafals : {titre[0].lower()}{titre[1:]}",
-                           f"{texte}\n\nLe détail est dans « Mon activité », sous « Encaissé en {annee} ». "
-                           "rafals ne change rien tout seul : c'est vous qui cochez « Je facture la TVA » le moment venu.")
+        mails.envoyer_mail(compte.email, sujet, f"{texte}\n\nLe détail est dans « Mon activité », sous « Encaissé en {annee} ».")
+
+
+def prevenir_seuil_tva(db: Session, prestataire: Prestataire, facture: Facture, maintenant: datetime) -> None:
+    """Appelé à chaque nouvelle facture de vente : compare le total de la barre avant et après cette facture.
+    Rien n'est enregistré pour s'en souvenir, donc chaque palier ne sonne qu'une fois."""
+    if prestataire.facture_tva or facture.sorte != "vente":
+        return
+    annee = facture.emise_le.astimezone(PARIS).year
+    apres = total_barre_tva(db, prestataire, annee, maintenant)
+    _franchir_seuils(db, prestataire, apres - encaisse(db, facture), apres, annee, maintenant)
+
+
+def ajouter_ailleurs(db: Session, prestataire: Prestataire, montant_centimes: int, jour: date, maintenant: datetime) -> EncaisseAilleurs:
+    """[Ajouter ce que j'ai encaissé ailleurs] : un montant et sa date. Ex. 2 000,00 € le 03/02/2026.
+    Refusé : 0 € ou moins, plus de 1 000 000 €, une date à venir."""
+    if not 0 < montant_centimes <= 100_000_000:
+        raise ErreurRegle("Indiquez un montant plus grand que 0 € (1 000 000 € au plus).")
+    aujourd_hui = maintenant.astimezone(PARIS).date()
+    if jour > aujourd_hui:
+        raise ErreurRegle("La date ne peut pas être à venir : indiquez le jour où vous avez été payé.")
+    avant = total_barre_tva(db, prestataire, jour.year, maintenant)
+    ligne = EncaisseAilleurs(prestataire_id=prestataire.id, montant_centimes=montant_centimes, encaisse_le=jour)
+    db.add(ligne)
+    db.flush()
+    journal.noter(db, auteur_id=prestataire.compte_id, action="ajouter_encaisse_ailleurs", table_cible="encaisse_ailleurs",
+                  ligne_id=ligne.id, avant=None, apres={"montant_centimes": montant_centimes, "encaisse_le": jour.isoformat()},
+                  maintenant=maintenant)
+    if jour.year == aujourd_hui.year:  # une année passée ne remplit pas la barre d'aujourd'hui
+        _franchir_seuils(db, prestataire, avant, avant + montant_centimes, jour.year, maintenant)
+    return ligne
+
+
+def _activee_par_la_barre_le(db: Session, prestataire: Prestataire) -> datetime | None:
+    """Le moment où la barre a activé la TVA (journal), ou None si elle a été activée autrement."""
+    return db.scalar(select(JournalAction.fait_le).where(
+        JournalAction.action == "tva_activee_par_la_barre", JournalAction.table_cible == "prestataire",
+        JournalAction.ligne_id == prestataire.id).order_by(JournalAction.fait_le.desc()).limit(1))
+
+
+def tva_deja_facturee(db: Session, prestataire: Prestataire, depuis: datetime) -> bool:
+    """Un devis ou une facture de vente avec TVA est-il parti depuis ce moment ?"""
+    facture = db.scalar(select(Facture.id).where(
+        Facture.prestataire_id == prestataire.id, Facture.sorte == "vente", Facture.mention_tva.is_(None),
+        Facture.emise_le >= depuis).limit(1))
+    devis = db.scalar(select(Devis.id).join(DemandeDevis, Devis.demande_devis_id == DemandeDevis.id).where(
+        DemandeDevis.prestataire_id == prestataire.id, Devis.facture_tva.is_(True), Devis.envoye_le >= depuis).limit(1))
+    return facture is not None or devis is not None
+
+
+def supprimer_ailleurs(db: Session, prestataire: Prestataire, ligne_id: int, maintenant: datetime) -> str:
+    """Un ajout fait par erreur disparaît. Rend le message à montrer.
+    Exception pour une erreur de saisie (décision de Raphael du 09/11/2026, RM-MON-ACTIVITE.md) : si la barre avait activé
+    la TVA, que le total de l'année repasse sous le seuil et qu'aucun devis ni facture avec TVA n'est parti depuis,
+    la TVA se désactive et la barre revient. Ex. Karim tape 40 000 au lieu de 4 000, puis retire la ligne."""
+    ligne = db.get(EncaisseAilleurs, ligne_id)
+    if ligne is None or ligne.prestataire_id != prestataire.id:
+        raise ErreurRegle("Ce montant n'existe pas.", 404)
+    journal.noter(db, auteur_id=prestataire.compte_id, action="supprimer_encaisse_ailleurs", table_cible="encaisse_ailleurs",
+                  ligne_id=ligne.id, avant={"montant_centimes": ligne.montant_centimes, "encaisse_le": ligne.encaisse_le.isoformat()},
+                  apres=None, maintenant=maintenant)
+    retire = f"{paiements.euros(ligne.montant_centimes)} retirés."
+    db.delete(ligne)
+    db.flush()
+    if not prestataire.facture_tva:
+        return retire
+    annee = maintenant.astimezone(PARIS).year
+    activee_le = _activee_par_la_barre_le(db, prestataire)
+    if activee_le is None or total_barre_tva(db, prestataire, annee, maintenant) >= reglages.SEUIL_TVA_SERVICES_CENTIMES:
+        return retire
+    if tva_deja_facturee(db, prestataire, activee_le):
+        return f"{retire} Vous avez déjà facturé la TVA : elle reste activée."
+    prestataire.facture_tva = False
+    journal.noter(db, auteur_id=prestataire.compte_id, action="tva_desactivee_erreur_saisie", table_cible="prestataire",
+                  ligne_id=prestataire.id, avant={"facture_tva": True}, apres={"facture_tva": False}, maintenant=maintenant)
+    return f"{retire} Vous êtes sous le seuil : la TVA est désactivée."

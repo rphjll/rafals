@@ -16,7 +16,7 @@ from app.db import moteur
 from app.routes import (
     abonnements, accords, activite, administration, agenda, avis, clients, comptes, creation_entreprise, demandes, devis, factures, messagerie, metiers,
     notifications, paiements, propositions,
-    prestataires, recherche, rendez_vous, services_en_plus, avis_clients, carte_visite,
+    prestataires, recherche, rendez_vous, services_en_plus, avis_clients, carte_visite, retours,
 )
 from app.services import abonnements as service_abonnements
 from app.services import alertes as service_alertes
@@ -154,6 +154,7 @@ app.include_router(activite.routeur)
 app.include_router(notifications.routeur)
 app.include_router(abonnements.routeur)
 app.include_router(carte_visite.routeur)
+app.include_router(retours.routeur)
 
 
 @app.exception_handler(ErreurRegle)

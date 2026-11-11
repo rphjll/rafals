@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Mes factures (.doc/ihm/RM-FACTURES-IHM.md ; RM-FACTURES.md) : pour un client, ses factures reçues ; pour un
 // prestataire, 3 onglets : « Reçues », « Émises » (faites par rafals à son nom) et « Commission de rafals ».
+import EnteteActivite from '../components/EnteteActivite.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
@@ -46,8 +47,8 @@ const commissions = computed(() => duPrestataire.value.filter((f) => f.sorte ===
     <AppBouton pleine-largeur @click="routeur.push({ path: '/connexion', query: { retour: '/factures' } })">Se connecter</AppBouton>
   </AppCarte>
 
-  <div v-else-if="compte" class="mx-auto flex w-full max-w-[760px] flex-col gap-4">
-    <h1 class="text-[28px] font-bold">Mes factures</h1>
+  <div v-else-if="compte" class="page">
+    <EnteteActivite titre="Factures" texte="Toutes vos factures, prêtes en PDF." />
     <AppOnglets v-if="compte.prestataire_id" v-model="onglet" :onglets="onglets" />
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
 

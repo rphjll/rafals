@@ -7,8 +7,10 @@ import { appelerServeur, messageErreur } from '../../api'
 import { type MetierVisible, useMetiers } from '../../composables/useMetiers'
 import { useMessage } from '../../composables/useMessage'
 import { type ProfilPrestataire, SECONDAIRES_MAX } from '../../outils/prestataires'
+import { versCentimes } from '../../outils/prix'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
+import AppChamp from '../ui/AppChamp.vue'
 import AppElementChoisi from '../ui/AppElementChoisi.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppRecherche from '../ui/AppRecherche.vue'
@@ -19,6 +21,8 @@ const { rechercherSauf } = useMetiers()
 const { afficherMessage } = useMessage()
 
 const choisi = ref<MetierVisible | null>(null)
+// Le prix de l'heure de ce métier (facultatif, schema_v35), ex. « 40 » ou « 45,50 »
+const prix = ref('')
 const erreur = ref('')
 const envoi = ref(false)
 
@@ -27,6 +31,7 @@ const chercher = (texte: string) =>
 
 function fermer() {
   choisi.value = null
+  prix.value = ''
   erreur.value = ''
   emit('fermer')
 }
@@ -35,6 +40,11 @@ async function ajouter() {
   if (!choisi.value) return
   const p = props.profil
   erreur.value = ''
+  const centimes = versCentimes(prix.value)
+  if (prix.value.trim() && (centimes === null || centimes < 100 || centimes > 100_000)) {
+    erreur.value = "Le prix de l'heure doit être entre 1 € et 1 000 € (ex. 40 ou 45,50), ou laissez la case vide."
+    return
+  }
   envoi.value = true
   try {
     // Le reste du profil est renvoyé tel quel (le SIRET n'est revérifié que s'il change)
@@ -48,8 +58,12 @@ async function ajouter() {
       presentation: p.presentation,
       siret: p.siret,
     })
+    const metierId = choisi.value.id
+    const avecPrix = centimes
+      ? await appelerServeur<ProfilPrestataire>('/api/moi/prestataire/prix', { metier_id: metierId, prix_centimes: centimes })
+      : nouveau
     afficherMessage(`${choisi.value.nom} ajouté à vos métiers.`)
-    emit('maj', nouveau)
+    emit('maj', avecPrix)
     fermer()
   } catch (e) {
     erreur.value = messageErreur(e)
@@ -77,6 +91,7 @@ async function ajouter() {
         aide="Vous apparaîtrez aussi dans les recherches de ce métier, après les spécialistes."
         @choisir="(m: MetierVisible) => (choisi = m)"
       />
+      <AppChamp v-model="prix" etiquette="Votre prix de l’heure (€), facultatif" inputmode="decimal" placeholder="Ex. 40" aide="Montré sur votre carte dans « Trouver » : « 40 €/h »." />
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     </template>
     <template #pied>

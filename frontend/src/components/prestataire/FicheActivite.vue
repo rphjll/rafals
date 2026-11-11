@@ -6,23 +6,22 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
-import { teinte } from '../../outils/pictos'
 import { type ProfilPrestataire, badgeSiret, badgeStatut, siretLisible } from '../../outils/prestataires'
+import { initialesDe } from '../../outils/noms'
 import { chiffre, chiffreNote, chiffreOuTiret, compterAbonnements } from '../../outils/profil'
 import EnteteProfil from '../profil/EnteteProfil.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
+import AppIcone from '../ui/AppIcone.vue'
 import AppListeLignes from '../ui/AppListeLignes.vue'
 import AppOnglets from '../ui/AppOnglets.vue'
 import AppSection from '../ui/AppSection.vue'
-import AvatarPrestataire from './AvatarPrestataire.vue'
 import CarteMetiers from './CarteMetiers.vue'
 import CarteParticulier from './CarteParticulier.vue'
 import CartePaiementCarte from './CartePaiementCarte.vue'
 import CartePhotosTravail from './CartePhotosTravail.vue'
-import CarteTva from './CarteTva.vue'
 import FenetreAjoutMetier from './FenetreAjoutMetier.vue'
 
 const props = defineProps<{ profil: ProfilPrestataire }>()
@@ -137,66 +136,41 @@ const resumes = computed(() => ({
       Votre activité est arrêtée : ce profil n'est plus visible ni modifiable.
     </AppAlerte>
 
-    <section class="carte overflow-hidden">
+    <section class="carte insta">
       <EnteteProfil :nom="profil.nom_affiche" :chiffres="chiffres">
         <template #photo>
-          <AvatarPrestataire
-            :id="profil.id"
-            :nom="profil.nom_affiche"
-            :a-une-photo="profil.a_une_photo"
-            taille="grande"
-            :version="versionPhoto"
-          />
+          <img v-if="profil.a_une_photo" class="ig-photo" :src="`/api/prestataires/${profil.id}/photo?v=${versionPhoto}`" :alt="`Photo de ${profil.nom_affiche}`" />
+          <span v-else class="ig-photo">{{ initialesDe(profil.nom_affiche) }}</span>
         </template>
         <template #badges>
           <AppBadge :etat="badgeStatut(profil.statut).etat">{{ badgeStatut(profil.statut).texte }}</AppBadge>
           <AppBadge :etat="badgeSiret(profil.siret_statut).etat">{{ badgeSiret(profil.siret_statut).texte }}</AppBadge>
         </template>
         <p>
-          <span class="font-extrabold text-primaire">{{ profil.metier_principal.nom }}</span>
-          <span v-if="profil.metiers_secondaires.length" class="text-texte-doux">
-            · aussi {{ profil.metiers_secondaires.map((m) => m.nom).join(', ') }}
-          </span>
+          <b>{{ profil.metier_principal.nom }}</b><template v-if="profil.metiers_secondaires.length"> · aussi {{ profil.metiers_secondaires.map((m) => m.nom).join(', ') }}</template>
         </p>
         <p v-if="profil.presentation" class="whitespace-pre-line">{{ profil.presentation }}</p>
-        <p class="text-[14px] text-texte-doux">
-          📍 {{ profil.commune.nom }} ({{ profil.commune.codes_postaux[0] }}) · jusqu'à {{ profil.distance_km }} km
-        </p>
-        <p class="text-[13px] text-texte-doux">
+        <p class="doux"><AppIcone nom="lieu" class="size-4" style="vertical-align: -3px" /> {{ profil.commune.nom }} ({{ profil.commune.codes_postaux[0] }}) · jusqu'à {{ profil.distance_km }} km</p>
+        <p class="doux petit">
           SIRET {{ siretLisible(profil.siret) }}
           <template v-if="profil.siret_statut !== 'verifie'">
             · espèces seulement<template v-if="profil.siret_statut === 'a_verifier'"> (nouvel essai automatique auprès de l'État)</template>
           </template>
         </p>
         <template v-if="profil.statut !== 'arrete'" #boutons>
-          <AppBouton @click="emit('modifier')">Modifier mon profil</AppBouton>
-          <AppBouton variante="secondaire" @click="champPhoto?.click()">Changer ma photo</AppBouton>
-          <AppBouton variante="secondaire" @click="routeur.push('/mon-activite')">Mon activité</AppBouton>
+          <button type="button" class="btn btn-1" @click="emit('modifier')">Modifier mon profil</button>
+          <button type="button" class="btn btn-2" @click="champPhoto?.click()">Changer ma photo</button>
+          <RouterLink class="btn btn-2" to="/mon-activite">Mon activité</RouterLink>
         </template>
       </EnteteProfil>
       <input ref="champPhoto" type="file" accept="image/jpeg,image/png" class="sr-only" @change="envoyerPhoto" />
 
       <!-- Les métiers en bulles rondes, comme les « stories à la une » -->
-      <div v-if="profil.statut !== 'arrete'" class="flex gap-4 overflow-x-auto px-5 pt-4 pb-5 max-sm:px-4">
-        <button
-          v-for="(m, rang) in metiers"
-          :key="m.id"
-          type="button"
-          class="flex w-[76px] shrink-0 flex-col items-center gap-1.5"
-          @click="ouvrirMetiers"
-        >
-          <span class="grid size-[66px] place-items-center rounded-full border-2 p-[3px]" :class="m.principal ? 'border-primaire' : 'border-bord'">
-            <span class="grid size-full place-items-center rounded-full text-2xl font-black" :class="teinte(rang + 3)">{{ m.nom[0] }}</span>
-          </span>
-          <span class="text-center text-[12px] leading-tight font-bold">
-            {{ m.nom }}
-            <span v-if="m.principal" class="block text-[11px] font-semibold text-texte-doux">principal</span>
-          </span>
+      <div v-if="profil.statut !== 'arrete'" class="bulles-m">
+        <button v-for="m in metiers" :key="m.id" type="button" class="bm" :class="{ principal: m.principal }" @click="ouvrirMetiers">
+          <span class="rond">{{ m.nom[0] }}</span>{{ m.nom }}<small v-if="m.principal">principal</small>
         </button>
-        <button type="button" class="flex w-[76px] shrink-0 flex-col items-center gap-1.5" @click="fenetreAjout = true">
-          <span class="grid size-[66px] place-items-center rounded-full border-2 border-dashed border-bord text-[26px] text-texte-doux">+</span>
-          <span class="text-[12px] font-bold">Ajouter</span>
-        </button>
+        <button type="button" class="bm ajout" @click="fenetreAjout = true"><span class="rond">+</span>Ajouter</button>
       </div>
 
       <AppOnglets v-model="onglet" :onglets="onglets" egaux />
@@ -209,7 +183,6 @@ const resumes = computed(() => ({
         <CarteParticulier :key="profil.siret_statut" />
         <CartePaiementCarte />
         <CarteMetiers :profil="profil" @maj="(p) => emit('maj', p)" />
-        <CarteTva :facture-tva="profil.facture_tva" @maj="(v) => emit('maj', { ...profil, facture_tva: v })" />
         <AppSection titre="Visibilité">
           <p class="text-[14.5px] text-texte-doux">
             Vous apparaissez dans les recherches tant que votre activité est active.

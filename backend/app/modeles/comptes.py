@@ -1,4 +1,4 @@
-"""Miroir exact des tables compte, session, jeton_mail (db/schema_v2.sql, v3, v6). Aucun calcul ici."""
+"""Miroir exact des tables compte, session, jeton_mail (db/schema_v2.sql, v3, v6, v32). Aucun calcul ici."""
 
 from datetime import date, datetime
 
@@ -27,6 +27,10 @@ class Compte(Base):
     ferme_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v6
     avis_recus_vus_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v27
     inactivite_prevenue_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # schema_v6
+    # Les 3 cases de « Paramètres », pour tous ses abonnements (schema_v32)
+    abo_notif_creneau: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    abo_notif_nouveaute: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    abo_notif_retour: Mapped[bool] = mapped_column(Boolean, server_default="true")
 
 
 class SessionConnexion(Base):

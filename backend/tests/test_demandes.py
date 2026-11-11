@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.services import demandes
-from tests.test_prestataires import metiers  # noqa: F401 (fixture)
+from tests.test_prestataires import fabrique_prestataire, metiers  # noqa: F401 (fixtures)
 from tests.test_prestataires import JPG, PDF
 
 AUJOURD_HUI = datetime.now(reglages.FUSEAU_AFFICHAGE).date()
@@ -283,3 +283,16 @@ def test_la_demande_d_un_compte_ferme_n_est_plus_montree(fabrique_compte, metier
     assert sur_l_accueil(client, demande["id"]) is None
     base.execute(text("UPDATE compte SET ferme_le = NULL WHERE id = :id"), {"id": dupont.id})
     base.commit()
+
+
+def test_repondre_verrouille_avec_la_raison(fabrique_prestataire, fabrique_compte, metiers, client) -> None:  # noqa: F811
+    # Demande de 21/10/2026 : [Répondre] grisé avec un cadenas et l'explication, même pour un autre métier
+    dupont = fabrique_compte()
+    coiffure = publier(dupont, pelouse(metiers["Coiffeur"], titre="Me coiffer")).json()["id"]
+    karim = fabrique_prestataire()  # plombier et électricien
+    vue = sur_l_accueil(karim.client, coiffure)
+    karim.client.post("/api/moi/prestataire/statut", json={"action": "pause"})
+    en_pause = sur_l_accueil(karim.client, coiffure)
+
+    assert vue["peut_repondre"] is False and "Coiffeur / Coiffeuse" in vue["raison_verrou"] and "Plombier" in vue["raison_verrou"]
+    assert "en pause" in en_pause["raison_verrou"]

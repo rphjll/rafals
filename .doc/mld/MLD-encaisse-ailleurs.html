@@ -1,0 +1,99 @@
+<title>MLD encaissé ailleurs</title>
+<style>
+  /* Fond blanc uni imposé par les règles du projet (format du MLD) : un seul thème, couleurs fixées */
+  :root { color-scheme: light; --fond:#ffffff; --texte:#1d2620; --doux:#58665c; --trait:#d8e1da; --vert:#2f6b4f; --pale:#f3f6f2; --orange:#b26a00; --orange-pale:#fcf0dc; }
+  body { background:var(--fond); color:var(--texte); font-family:"Segoe UI", system-ui, sans-serif; font-size:15px; line-height:1.5; margin:0; padding-inline:16px; padding-block:24px 48px; }
+  .page { max-width:1040px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+  h1 { font-size:26px; margin:0; letter-spacing:-.3px; text-wrap:balance; }
+  h2 { font-size:19px; margin:0 0 10px; }
+  p { margin:0; }
+  .sous { color:var(--doux); }
+  .schema { border:1px solid var(--trait); border-radius:10px; padding:16px; background:var(--fond); overflow-x:auto; }
+  .legende { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:14px; }
+  .legende b { font-family:Consolas, monospace; }
+  .tables { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:16px; }
+  .carte { border:1px solid var(--trait); border-radius:10px; padding:14px 16px; min-width:0; }
+  .carte h3 { margin:0 0 8px; font-size:16px; font-family:Consolas, monospace; color:var(--vert); }
+  .carte ul { margin:0; padding-left:18px; font-size:14px; }
+  .carte li { margin:3px 0; }
+  .nouveau { font-size:12px; font-weight:700; color:var(--orange); background:var(--orange-pale); border-radius:999px; padding:1px 7px; margin-left:6px; font-family:"Segoe UI",sans-serif; white-space:nowrap; }
+  code { font-family:Consolas, monospace; font-size:13.5px; background:var(--pale); padding:1px 4px; border-radius:4px; }
+  .exemple { border-left:3px solid var(--vert); padding:8px 12px; background:var(--pale); border-radius:0 8px 8px 0; font-size:14px; }
+  .exemple + .exemple { margin-top:10px; }
+  .trad { margin-top:4px; }
+  .note { font-size:14px; color:var(--doux); }
+  ol { margin:0; padding-left:20px; font-size:14.5px; display:flex; flex-direction:column; gap:4px; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>MLD : l'argent encaissé ailleurs, dans la barre de TVA</h1>
+    <p class="sous">rafals · proposé le 17/10/2026 · 1 table nouvelle, aucune table supprimée, aucune rubrique changée ailleurs.</p>
+  </header>
+
+  <section>
+    <h2>Schéma</h2>
+    <div class="schema">
+<pre class="mermaid">
+%%{init: {'theme':'base','themeVariables':{'background':'#ffffff','primaryColor':'#ffffff','primaryBorderColor':'#2f6b4f','primaryTextColor':'#1d2620','lineColor':'#58665c','fontFamily':'Segoe UI, sans-serif','fontSize':'15px'}}}%%
+flowchart LR
+  PRESTATAIRE["<b>PRESTATAIRE</b><br/>id (PK)"]
+  ENCAISSE_AILLEURS["<b>ENCAISSE_AILLEURS</b><br/>id (PK)<br/>prestataire_id (FK)"]
+  PRESTATAIRE -- "déclare · (0,n) —— (1,1)" --- ENCAISSE_AILLEURS
+  classDef nouvelle fill:#fcf0dc,stroke:#b26a00,color:#1d2620;
+  class ENCAISSE_AILLEURS nouvelle;
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Légende</h2>
+    <div class="legende">
+      <b>PK</b><span>identifiant unique de la ligne.</span>
+      <b>FK</b><span>numéro d'une ligne d'une autre table.</span>
+      <b>(1,1)</b><span>un et un seul.</span>
+      <b>(0,n)</b><span>zéro, un ou plusieurs.</span>
+      <b>lecture</b><span>un prestataire déclare zéro, un ou plusieurs montants encaissés ailleurs ; chaque montant appartient à un et un seul prestataire.</span>
+      <b>orange</b><span>table nouvelle.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Les rubriques</h2>
+    <div class="tables">
+      <div class="carte"><h3>ENCAISSE_AILLEURS <span class="nouveau">nouvelle</span></h3>
+        <ul>
+          <li><code>montant_centimes</code> : la somme, en centimes, toujours plus grande que 0 (2 000,00 € = 200000)</li>
+          <li><code>encaisse_le</code> : le jour où l'argent a été encaissé ; il range le montant dans son année</li>
+          <li><code>cree_le</code> : le moment de l'ajout dans rafals</li>
+        </ul>
+        <p class="note">Un ajout faux se supprime (la ligne disparaît). On ne le modifie pas : on le supprime et on le ressaisit.</p>
+      </div>
+      <div class="carte"><h3>PRESTATAIRE</h3>
+        <p class="note">Ne change pas. La rubrique <code>facture_tva</code> existe déjà. Elle passe à « oui » d'elle-même quand la barre est pleine, et le changement est noté dans le journal, comme aujourd'hui quand on coche la case.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ce que fera rafals avec cette table</h2>
+    <ol>
+      <li>Barre de « Mon activité » = encaissé sur rafals cette année + les montants encaissés ailleurs cette année.</li>
+      <li>Une facture ou un ajout qui fait atteindre 37 500,00 € : la TVA s'active seule, avec une notification et un mail.</li>
+      <li>Au 1er janvier, la barre repart de zéro, mais la TVA déjà activée reste activée.</li>
+      <li>La case « Je facture la TVA » disparaît de « Mon profil ».</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Exemples de vraies lignes</h2>
+    <div class="exemple">
+      <code>ENCAISSE_AILLEURS</code> n° 1 : prestataire = Karim, 200000, 03/02/2026.
+      <p class="trad"><b>Traduction :</b> Karim a encaissé 2 000,00 € en espèces chez des clients qu'il connaissait avant rafals. Avec 5 320,00 € encaissés sur rafals, sa barre affiche 7 320,00 € sur 37 500,00 €, remplie à 20 %. La TVA reste désactivée.</p>
+    </div>
+    <div class="exemple">
+      <code>ENCAISSE_AILLEURS</code> n° 2 : prestataire = Paul, 4000000, 15/01/2026.
+      <p class="trad"><b>Traduction :</b> la société de Paul a déjà encaissé 40 000,00 € cette année. Dès qu'il enregistre cet ajout, sa barre est pleine, sa TVA s'active toute seule et ses prochains devis montrent HT, TVA et TTC. L'admin n'a rien à faire.</p>
+    </div>
+  </section>
+</div>

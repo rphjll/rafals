@@ -120,6 +120,14 @@ Réponse de Raphael, mot pour mot : « oui mais plus loin que les plombiers il d
 **Pourquoi :** le client voit d'abord les spécialistes du métier qu'il cherche.
 Le détail du classement (prestataires sans avis, distance…) sera traité dans le sujet 07 « Recherche ».
 
+## Prix de l'heure de chaque métier (demande de Raphael du 10/11/2026 ; MLD validé le 11/11/2026, `schema_v35.sql`)
+- Chaque métier exercé peut avoir un **prix de l'heure** : ex. Karim, Électricien à 45,00 €, Plombier à 50,00 €.
+- **Facultatif** : sans prix, rien n'est écrit (les prestataires déjà inscrits n'en ont pas).
+- De **1 € à 1 000 €**, au centime près ; rangé en centimes (`prestataire.metier_principal_prix_centimes`, `metier_secondaire.prix_centimes`).
+- Le prix **suit son métier** : quand un métier secondaire devient principal (par le formulaire ou après la date d'arrêt du principal), il garde son prix ; l'ancien principal garde aussi le sien.
+- Où il se voit : la carte de « Trouver » et de l'accueil (« 45 €/h », prix du métier de la carte), la page publique (chiffre du milieu « 45 € de l'heure » pour le métier principal, « Plombier (50 €/h) » après « aussi »), « Mon profil › Mes métiers ».
+- C'est un prix indicatif : la proposition ou le devis envoyé au client garde son propre prix (confirmé par Raphael le 11/11/2026, « oui »).
+
 ## Zone d'intervention : une ville et une distance (décidé le 27/09/2026)
 Le prestataire indique sa ville de départ et la distance maximale, en kilomètres, jusqu'à laquelle il se déplace. Il apparaît dans les recherches des clients situés dans ce rayon. **Pour les demandes des clients**, le même rayon se mesure depuis l'adresse de son compte (décision du 15/10/2026, `RM-DEMANDES.md`).
 - Exemple 1 : Karim, « Pessac, jusqu'à 15 km ». Mme Dupont à Talence (7,4 km) → elle le trouve.

@@ -1,5 +1,12 @@
 # Connexion — Interface
 
+## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
+
+Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
+
+- « Bon retour ! », « Connectez-vous pour retrouver vos messages et rendez-vous. », le formulaire dans une carte de 420 px (comme toutes les pages courtes : inscription, mot de passe oublié…, `AppCarte`).
+
+
 > Fichier : `frontend/src/pages/ConnexionPage.vue`. Construit au lot 1.2 (28/09/2026). Règles : `RM-COMPTES.md`.
 
 ## Page « Se connecter » (`/connexion`)

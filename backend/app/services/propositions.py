@@ -93,14 +93,28 @@ def concerne(db: Session, prestataire: Prestataire, demande: Demande, maintenant
 
 
 def raison_verrou(db: Session, prestataire: Prestataire, demande: Demande, maintenant: datetime) -> str | None:
-    """Pourquoi [Répondre] est verrouillé : pas d'adresse dans son compte (pour une demande de ses métiers), ou une
-    limite des prestataires sans SIRET ; None sinon."""
-    exerce = (prestataire.statut == "actif" and prestataire.compte_id != demande.client_id and demande.metier_id in
-              service_prestataires.metiers_exerces(db, prestataire, maintenant.astimezone(PARIS).date()))
-    if exerce and commune_de_depart(db, prestataire) is None:
+    """Pourquoi [Répondre] est verrouillé, en clair (bouton grisé avec un cadenas, demande de Raphael du 21/10/2026) :
+    activité pas en cours, autre métier, pas d'adresse, trop loin, ou une limite des prestataires sans SIRET ; None sinon.
+    Ex. Karim, électricien à Pessac (15 km) : « me coiffer » → « Cette demande est pour Coiffeur / Coiffeuse… » ;
+    une prise à changer à Libourne (38 km) → « Cette demande est à 38 km de Pessac… »."""
+    if prestataire.compte_id == demande.client_id:
+        return None  # sa propre demande : pas de bouton
+    if prestataire.statut == "en_pause":
+        return "Votre activité est en pause : reprenez-la dans « Mon profil » pour répondre aux demandes."
+    if prestataire.statut != "actif":
+        return "Votre activité n'est pas en cours : vous ne pouvez pas répondre aux demandes."
+    exerces = service_prestataires.metiers_exerces(db, prestataire, maintenant.astimezone(PARIS).date())
+    if demande.metier_id not in exerces:
+        vos = ", ".join(db.get_one(Metier, m).nom for m in exerces)
+        return (f"Cette demande est pour « {db.get_one(Metier, demande.metier_id).nom} » : vous ne répondez qu'aux demandes "
+                f"de vos métiers ({vos}). Si vous exercez aussi ce métier, ajoutez-le dans « Mon profil ».")
+    depart = commune_de_depart(db, prestataire)
+    if depart is None:
         return SANS_ADRESSE
-    if not concerne(db, prestataire, demande, maintenant):
-        return None
+    distance = communes.distance_km(depart, db.get_one(Commune, demande.commune_id))
+    if distance > prestataire.distance_km:
+        return (f"Cette demande est à {round(distance)} km de {depart.nom} : vous vous déplacez jusqu'à "
+                f"{prestataire.distance_km} km. Vous pouvez agrandir cette distance dans « Mon profil ».")
     return particuliers.raison_de_ne_pas_repondre(db, prestataire, demande.metier_id, maintenant)
 
 

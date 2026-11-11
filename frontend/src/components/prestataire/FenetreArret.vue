@@ -1,22 +1,28 @@
 <script setup lang="ts">
-// Mon agenda › Calendrier › [Date d'arrêt] (.doc/ihm/RM-AGENDA-IHM.md ; RM-PRESTATAIRES.md) : le dernier jour de travail
-// du métier de ce calendrier. Tous les jours d'après sont fermés. Métier principal : on choisit lequel le remplacera.
+// Mon profil › Mes métiers › [Arrêter ce métier…] (.doc/ihm/RM-PROFIL-IHM.md ; RM-PRESTATAIRES.md) : le dernier jour de
+// travail d'un métier (avant le 17/10/2026 : bouton [Date d'arrêt] de « Mon agenda »). Tous les jours d'après sont
+// fermés. Métier principal : on choisit lequel le remplacera.
 import { computed, ref, watch } from 'vue'
 import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import { ajouterJours, jourCourt, jourLisible } from '../../outils/agenda'
+import { aujourdhuiIso } from '../../outils/dates'
 import type { MetierExerce, ProfilPrestataire } from '../../outils/prestataires'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
+import AppChamp from '../ui/AppChamp.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppSelection from '../ui/AppSelection.vue'
 
-const props = defineProps<{ ouverte: boolean; jour: string; metier: MetierExerce; profil: ProfilPrestataire }>()
+const props = defineProps<{ ouverte: boolean; metier: MetierExerce; profil: ProfilPrestataire }>()
 const emit = defineEmits<{ majProfil: [profil: ProfilPrestataire]; fermer: [] }>()
 const { afficherMessage } = useMessage()
 
 const estPrincipal = computed(() => props.metier.id === props.profil.metier_principal.id)
 const suivantId = ref<number | null>(null)
+// Le dernier jour de travail, choisi dans la fenêtre (aujourd'hui au départ)
+const aujourdhui = aujourdhuiIso()
+const jour = ref(aujourdhui)
 const erreur = ref('')
 const envoiEnCours = ref(false)
 
@@ -25,6 +31,7 @@ watch(
   (ouverte) => {
     if (!ouverte) return
     erreur.value = ''
+    jour.value = props.metier.fin_le ?? aujourdhui
     suivantId.value = props.profil.metier_principal_suivant?.id ?? props.profil.metiers_secondaires[0]?.id ?? null
   },
   { immediate: true },
@@ -36,11 +43,11 @@ async function arreter() {
   try {
     emit('majProfil', await appelerServeur<ProfilPrestataire>('/api/moi/prestataire/metiers/fin', {
       metier_id: props.metier.id,
-      fin_le: props.jour,
+      fin_le: jour.value,
       suivant_id: estPrincipal.value ? suivantId.value : null,
     }))
     emit('fermer')
-    afficherMessage(`${props.metier.nom} : dernier jour le ${jourCourt(props.jour)}.`)
+    afficherMessage(`${props.metier.nom} : dernier jour le ${jourCourt(jour.value)}.`)
   } catch (e) {
     erreur.value = messageErreur(e)
   } finally {
@@ -51,11 +58,11 @@ async function arreter() {
 
 <template>
   <AppFenetre :ouverte="ouverte" :titre="`Date d'arrêt — ${metier.nom}`" @fermer="emit('fermer')">
-    <div v-if="jour" class="flex flex-col gap-3 text-texte">
-      <p>Dernier jour de travail : <b>{{ jourLisible(jour) }}</b>.</p>
-      <p class="text-[13.5px] text-texte-doux">
-        À partir du {{ jourCourt(ajouterJours(jour, 1)) }}, tous les jours du calendrier « {{ metier.nom }} » sont fermés
-        . Les rendez-vous de ce métier pris après cette date sont annulés : chaque
+    <div class="flex flex-col gap-3 text-texte">
+      <AppChamp v-model="jour" type="date" etiquette="Dernier jour de travail" obligatoire :min="aujourdhui" />
+      <p v-if="jour">Dernier jour de travail : <b>{{ jourLisible(jour) }}</b>.</p>
+      <p v-if="jour" class="text-[13.5px] text-texte-doux">
+        À partir du {{ jourCourt(ajouterJours(jour, 1)) }}, tous les jours du calendrier « {{ metier.nom }} » sont fermés. Les rendez-vous de ce métier pris après cette date sont annulés : chaque
         client est prévenu par mail.
       </p>
       <AppSelection

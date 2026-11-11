@@ -52,17 +52,21 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
 <div class="page">
   <div>
     <h1>Suivi de rafals<i>.</i></h1>
-    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 22/10/2026. 67 lots, du niveau 0 au niveau 11, et 8 tâches hors lot.</p>
+    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 11/11/2026. 79 lots, du niveau 0 au niveau 14, et 10 tâches hors lot.</p>
   </div>
-  <div class="barre" role="img" aria-label="47 faits, 24 à vérifier, 1 en cours, 3 à faire">
-    <span class="fait" style="width:62.66666666666667%"></span><span class="verifier" style="width:32%"></span><span class="cours" style="width:1.3333333333333335%"></span><span class="faire" style="width:4%"></span>
+  <div class="barre" role="img" aria-label="47 faits, 34 à vérifier, 0 en cours, 8 à faire">
+    <span class="fait" style="width:52.80898876404494%"></span><span class="verifier" style="width:38.20224719101123%"></span><span class="cours" style="width:0%"></span><span class="faire" style="width:8.98876404494382%"></span>
   </div>
   <div class="filtres" role="group" aria-label="Montrer seulement un état">
-    <button type="button" data-f="tout" aria-pressed="true">Tout <b>75</b></button>
-    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>3</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>1</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>24</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>47</b></button>
+    <button type="button" data-f="tout" aria-pressed="true">Tout <b>89</b></button>
+    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>8</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>0</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>34</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>47</b></button>
   </div>
   <p class="doux" id="vide" hidden>Aucun lot dans cet état.</p>
-  <section><header><h2><span>Hors lot</span>Travail en cours</h2></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="fait">
+  <section><header><h2><span>Hors lot</span>Travail en cours</h2></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="verifier">
+  <td class="lot">—</td>
+  <td><span class="titre">Le site comme la maquette complète</span><span class="type">Écrans</span><p>Demande du 22/10/2026 : « fait en sort que le site resemble a ce que t'a fais dans la maquette ». Détails de présentation repris de la maquette https://claude.ai/artifact/Qix7D7jo4vJ9kpWotB59Q2 (initiales en couleur, cartes de « Trouver », Mon activité…). 8 retouches faites le 22/10/2026, à vérifier à l’écran par Raphael ; 4 questions restent (pied de page…).</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="fait">
   <td class="lot">—</td>
   <td><span class="titre">Mon profil façon Instagram</span><span class="type">Écrans</span><p>Demande du 21/10/2026 : « Mon profil » façon Instagram (photo et 4 chiffres en haut, métiers en bulles, onglets Photos · Mon activité · Mon compte, grille de photos). Validé par Raphael le 21/10/2026.</p></td>
   <td class="etat"><span class="badge fait">Fait</span></td>
@@ -72,12 +76,16 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr><tr data-etat="verifier">
   <td class="lot">—</td>
+  <td><span class="titre">TVA activée par la barre</span><span class="type">Base + Serveur + Écrans</span><p>Demande du 17/10/2026 : la case TVA quitte Mon profil ; ajouter dans Mon activité l'argent encaissé ailleurs ; barre pleine (37 500 €) = TVA activée toute seule. Fait le 18/10/2026 (schema_v30.sql, 444 tests). À vérifier à l'écran par Raphael.</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">—</td>
   <td><span class="titre">Thème sombre au choix (Paramètres)</span><span class="type">Écrans</span><p>Demande du 17/10/2026 : choisir Automatique, Clair ou Sombre dans une nouvelle page Paramètres, sous le prénom en haut à droite. Construit le 17/10/2026, à vérifier à l'écran par Raphael.</p></td>
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
-</tr><tr data-etat="cours">
+</tr><tr data-etat="verifier">
   <td class="lot">—</td>
-  <td><span class="titre">Simplifier « Mon agenda › Calendrier »</span><span class="type">Écrans</span><p>Maquette F retenue, en pause : à valider par Raphael avant de coder. Aucun fichier du site modifié.</p></td>
-  <td class="etat"><span class="badge cours">En cours</span></td>
+  <td><span class="titre">Simplifier « Mon agenda › Calendrier »</span><span class="type">Serveur + Écrans</span><p>Maquette validée le 17/10/2026 et construite le même jour : fermer ou ouvrir des jours en un clic, clic droit pour les horaires d'un jour, date d'arrêt dans Mon profil. À vérifier à l'écran par Raphael.</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr><tr data-etat="verifier">
   <td class="lot">—</td>
   <td><span class="titre">Nouvelle présentation du site (style chaleureux)</span><span class="type">Écrans</span><p>Demande du 04/10/2026. Plusieurs étapes faites, à vérifier à l'écran par Raphael.</p></td>
@@ -373,6 +381,57 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
 </tr><tr data-etat="verifier">
   <td class="lot">11.2</td>
   <td><span class="titre">Limites sans SIRET : écrans</span><span class="type">Écrans</span><p>Carte « Sans SIRET : vos limites » dans « Mon profil » (case à cocher, où il en est) ; [Répondre] verrouillé avec la raison ; étiquette « Particulier, non professionnel » sur la page publique et les propositions ; avertissement au client avant d'accepter</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 12</span>Le client écrit son besoin, rafals trouve le métier</h2><span class="avance">0 fait sur 2</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="faire">
+  <td class="lot">12.1</td>
+  <td><span class="titre">Métier trouvé par l’IA : serveur</span><span class="type">Règles + Serveur</span><p>Petite IA « du sens » (modèle libre <code>paraphrase-multilingual-MiniLM-L12-v2</code>, Apache 2.0, environ 500 Mo, sur le processeur), ajoutée au conteneur <code>moderation</code> comme 2ᵉ fonction : elle reçoit la phrase du client et renvoie le métier le plus proche (comparé aux noms et mots-clés des métiers du lot 2.1), ou « pas reconnu » sous un seuil. Ex. « mon écran reste tout noir » → Dépannage informatique ; « l'eau ne descend plus dans la douche » → Plombier. IA en panne → le client choisit lui-même, la publication n'est jamais bloquée. Aucun texte gardé par l'IA.</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">12.2</td>
+  <td><span class="titre">Métier trouvé par l’IA : écrans</span><span class="type">Écrans</span><p>« Publier une demande » : 1er champ « De quoi avez-vous besoin ? », sous lui « ✓ Métier trouvé : … · [Changer] » qui se met à jour pendant la saisie, « Nous n'avons pas reconnu le métier · [Choisir le métier] » sinon ; la liste des métiers ne s'ouvre plus d'office</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 13</span>Tri et corrections de la nuit</h2><span class="avance">0 fait sur 4</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="verifier">
+  <td class="lot">13.1</td>
+  <td><span class="titre">Un problème ? Une idée ?</span><span class="type">Base + Serveur + Écrans</span><p>« Un problème ? Une idée ? » : bouton pour tous les utilisateurs, texte + page où ça s'est passé + capture facultative</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">13.2</td>
+  <td><span class="titre">Routine du soir</span><span class="type">Serveur</span><p>Routine du soir : tri (modération laissée de côté), regroupement des doublons, correction des bugs (tests obligatoires, zones interdites vérifiées par programme), idées préparées dans une branche chacune, « en attente » si fin des jetons, compte rendu déposé dans la base par une adresse protégée par une clé secrète</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">13.3</td>
+  <td><span class="titre">Corrections et idées à valider</span><span class="type">Écrans + Serveur</span><p>Administration › « Corrections et idées » : corrections mises en ligne ([Annuler cette correction]), corrections en zone interdite et idées ([Accepter] / [Refuser]) ; mail de 8 h avec seulement le lien</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">13.4</td>
+  <td><span class="titre">Mise en ligne chez OVH</span><span class="type">Serveur</span><p>Mise en ligne chez OVH, quand le site sera fini ; la routine du soir tourne alors même PC éteint (VPS-1, environ 7,79 € / mois, <code>technique/HEBERGEMENT.md</code>), nom de domaine, sauvegardes</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 14</span>Le site comme la grande maquette</h2><span class="avance">0 fait sur 6</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="verifier">
+  <td class="lot">14.1</td>
+  <td><span class="titre">Style commun de la maquette</span><span class="type">Écrans</span><p>Style commun : polices de la maquette (Bricolage Grotesque titres, Figtree texte), formes qui flottent en fond, petites icônes dans l'en-tête, cartes ; toutes les pages</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">14.2</td>
+  <td><span class="titre">Onglet Demandes</span><span class="type">Écrans</span><p>Onglet « Demandes » (menu et barre du bas) : « Près de chez moi » et « Mes demandes » (repliées) en sous-onglets</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">14.3</td>
+  <td><span class="titre">Page publique refaite</span><span class="type">Écrans</span><p>Page publique refaite (bande de couleur, grande photo, 3 chiffres, photos, avis avec la note en grand), vrais boutons gardés</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">14.4</td>
+  <td><span class="titre">TVA après une erreur de saisie</span><span class="type">Serveur + Écrans</span><p>TVA désactivée après une erreur de saisie (règle du 09/11/2026, <code>RM-MON-ACTIVITE.md</code>)</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">14.5</td>
+  <td><span class="titre">Agenda de la maquette</span><span class="type">Écrans</span><p>Agenda comme la maquette (plus d'ancien style à part) : 4 onglets, onglet « Semaine type » + [Changer les horaires] sur place, semaine demandée au 1er passage, calendrier hachuré avec bandes vertes, bulle du jour du calendrier client</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">14.6</td>
+  <td><span class="titre">Toutes les pages comme la maquette</span><span class="type">Écrans</span><p>Toutes les pages identiques à la grande maquette : styles recopiés, en-tête + barre du bas + page « Moi », accueil, Trouver, Demandes, Publier une demande (métier trouvé tout seul), Messages, Mon activité et ses pages, page publique, profil, paramètres, abonnements, connexion</p></td>
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
 </tr></tbody></table></div></section>
 </div>

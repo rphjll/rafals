@@ -38,6 +38,8 @@
 | 22 | 10 — Faire ce que fait AlloVoisins | Mon activité | Les chiffres du haut de la page (demandes, rendez-vous, devis, argent encaissé), la barre de la TVA, et « Mes clients » (qui y figure, ce qu'on montre, coordonnées 3 mois) | rédigé le 07/10/2026, **à valider par Raphael** | `regles-metier/RM-MON-ACTIVITE.md` |
 | 23 | Hors lot | Abonnements | S'abonner à un prestataire, nombre d'abonnés visible par tous, 3 notifications choisies par prestataire | demandé et choisi par Raphael le 21/10/2026 ; décisions de Claude **à confirmer** | `regles-metier/RM-ABONNEMENTS.md` |
 | 24 | 10 — Faire ce que fait AlloVoisins | Ma carte de visite | Contenu de la carte, planche à découper et format imprimeur, téléphone au choix, réservée au SIRET vérifié, carré à scanner | questions posées à Raphael le 22/10/2026 (4 réponses) ; décisions de Claude à confirmer | `regles-metier/RM-CARTE-VISITE.md` |
+| 26 | 14 — Le site comme la grande maquette | Prix de l'heure | Un prix de l'heure facultatif par métier (1 € à 1 000 €), montré sur les cartes et la page publique ; il suit son métier | demandé par Raphael le 10/11/2026 (« oui »), MLD validé le 11/11/2026 ; prix indicatif confirmé par Raphael le 11/11/2026 (« oui ») ; validé et formalisé | `regles-metier/RM-PRESTATAIRES.md` (section « Prix de l'heure ») |
+| 25 | 13 — Tri et corrections de la nuit | Un problème ? Une idée ? | Les utilisateurs signalent un bug ou proposent une idée ; la routine du soir les lit | validé et formalisé (09/11/2026) | `regles-metier/RM-RETOURS.md` |
 
 ## Décisions en attente
 - ⚠️ Seuil de TVA de 37 500 € montré dans « Mon activité » : à confirmer par un comptable avant la mise en ligne (sujet 22).

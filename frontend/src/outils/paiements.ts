@@ -41,7 +41,9 @@ export interface EtatCarte {
 export function montant(centimes: number): string {
   const signe = centimes < 0 ? '−' : ''
   const absolu = Math.abs(centimes)
-  return `${signe}${Math.floor(absolu / 100)},${String(absolu % 100).padStart(2, '0')} €`
+  // Les milliers séparés par une espace, comme la maquette : « 37 500,00 € »
+  const euros = String(Math.floor(absolu / 100)).replace(/\B(?=(\d{3})+$)/g, ' ')
+  return `${signe}${euros},${String(absolu % 100).padStart(2, '0')} €`
 }
 
 /** « 13/10 » */

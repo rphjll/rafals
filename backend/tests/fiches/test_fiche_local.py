@@ -68,6 +68,8 @@ def decor(base: Session):
         "compte_id": compte.id, "metier_principal_id": plombier.id, "commune_id": pessac.id, "photo_id": None,
         "siret": None, "siret_statut": "absent", "statut": "actif", "metier_principal_suivant_id": None, "agenda_pas_minutes": 15, "annulation_delai_heures": 24,
         "declaration_periodicite": None, "lieu": "chez_client", "alerte_mail": "chaque_demande",
+        "carte_couleur": "vert", "carte_phrase": None,  # schema_v33 : une des 6 couleurs seulement
+        "metier_principal_prix_centimes": None,  # schema_v35 : vide ou de 1 € à 1 000 €
     }))
     base.add(prestataire)
     base.commit()

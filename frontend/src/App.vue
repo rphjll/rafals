@@ -1,34 +1,32 @@
 <script setup lang="ts">
-// Structure commune : l'en-tête en haut, la page en dessous, le message court par-dessus.
-import { onMounted, watchEffect } from 'vue'
+// Structure commune, comme la grande maquette : l'en-tête en haut, la page dans une colonne centrée de 880 px
+// (1100 px pour « Mon agenda », 680 px pour un profil ou une page publique), la barre du bas sur téléphone.
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AppBarreBas from './components/AppBarreBas.vue'
 import AppEntete from './components/AppEntete.vue'
-import AppSousMenu from './components/AppSousMenu.vue'
 import AppMessage from './components/ui/AppMessage.vue'
 import { useCompte } from './composables/useCompte'
 
-const { compte, chargerCompte } = useCompte()
+const { chargerCompte } = useCompte()
 onMounted(chargerCompte)
 
-// « Mon agenda » du prestataire garde les formes d'avant (coins de 10 px, bordures, Figtree) : voir style.css,
-// « style-classique ». Le calendrier d'un simple client, lui, est dans le style du reste du site.
 const route = useRoute()
-watchEffect(() =>
-  document.documentElement.classList.toggle('style-classique', route.name === 'mon-agenda' && !!compte.value?.prestataire_id),
-)
+const largeur = computed(() => {
+  if (route.name === 'mon-agenda' || route.name === 'administration') return 'large'
+  if (route.name === 'profil' || route.name === 'prestataire' || route.name === 'connexion') return 'etroit'
+  return ''
+})
 </script>
 
 <template>
-  <div class="min-h-screen bg-fond text-texte">
-    <AppEntete />
-    <AppSousMenu />
-    <main class="px-4 pt-7 pb-28 md:pb-16">
-      <div class="mx-auto max-w-[1080px]">
-        <RouterView />
-      </div>
-    </main>
-    <AppBarreBas />
-    <AppMessage />
-  </div>
+  <!-- Formes douces qui flottent derrière les pages (style dans style.css) -->
+  <div class="deco" aria-hidden="true"><span class="d1" /><span class="d2" /><span class="d3" /><span class="d4" /></div>
+  <AppEntete />
+  <main class="colonne" :class="largeur">
+    <!-- Chaque page pose elle-même la classe « page » (colonne de 22 px d'écart, petite entrée animée) -->
+    <RouterView :key="route.path" />
+  </main>
+  <AppBarreBas />
+  <AppMessage />
 </template>

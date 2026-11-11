@@ -50,7 +50,7 @@ def etat(donnees: AdresseAppareil, db: Base, compte: CompteConnecte) -> EtatAppa
 def activer(donnees: NouvelAppareil, db: Base, compte: CompteConnecte) -> Message:
     moment = maintenant()
     service.enregistrer(db, compte, donnees.adresse, donnees.cle_publique, donnees.cle_secrete, moment)
-    service.prevenir(db, compte.id, "rafals", "Les notifications sont activées sur cet appareil.", "/alertes", moment)
+    service.prevenir(db, compte.id, "rafals", "Les notifications sont activées sur cet appareil.", "/parametres#notifications", moment)
     db.commit()
     return Message(message="Notifications activées sur cet appareil.")
 

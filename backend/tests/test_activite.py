@@ -65,7 +65,7 @@ def test_rendez_vous_de_la_semaine_et_argent_encaisse(lea, dupont, base: Session
 
     assert vide["client"] is None and vide["prestataire"] == {
         "demandes_pres": 0, "rendez_vous_semaine": 0, "devis_en_attente": 0, "encaisse_mois_centimes": 0,
-        "encaisse_annee_centimes": 0, "annee": AUJOURD_HUI.year, "seuil_tva_centimes": SEUIL, "reste_avant_seuil_centimes": SEUIL}
+        "encaisse_annee_centimes": 0, "annee": AUJOURD_HUI.year, "ailleurs_annee_centimes": 0, "seuil_tva_centimes": SEUIL, "reste_avant_seuil_centimes": SEUIL}
     assert matin["statut"] == apres_midi["statut"] == "confirme"
     assert activite.du_prestataire(base, prestataire, lundi_8h).rendez_vous_semaine == 2  # les deux sont cette semaine-là
     assert activite.du_prestataire(base, prestataire, mardi_midi).rendez_vous_semaine == 1  # celui de 10 h est passé
@@ -179,10 +179,10 @@ def test_profil_d_un_client_avec_devis(paul, dupont, envoye) -> None:  # noqa: F
     assert avec_devis["les_devis"][0]["numero"].startswith("D-")
 
 
-def test_notification_a_80_pour_cent_puis_au_dela_du_seuil(lea, dupont, base: Session, notifications_envoyees, mails_envoyes,  # noqa: F811
+def test_notification_a_80_pour_cent_puis_tva_activee_au_seuil(lea, dupont, base: Session, notifications_envoyees, mails_envoyes,  # noqa: F811
                                                             monkeypatch) -> None:
-    """Demande de Raphael du 17/10/2026 : une notification quand la barre de la TVA passe 80 %, puis quand elle est
-    dépassée, avec le même texte par mail (accord du 17/10/2026). Seuil d'essai de 120,00 € : 80 % = 96,00 € ;
+    """Demandes de Raphael du 17/10/2026 : une notification quand la barre de la TVA passe 80 %, avec le même texte par
+    mail ; barre pleine : la TVA s'active toute seule. Seuil d'essai de 120,00 € : 80 % = 96,00 € ;
     trois rendez-vous de 50,00 € payés en espèces."""
     from tests.test_notifications import activer
 
@@ -199,8 +199,89 @@ def test_notification_a_80_pour_cent_puis_au_dela_du_seuil(lea, dupont, base: Se
 
     assert payer(0) == []  # 50,00 € : 42 %
     assert payer(1) == ["Vous approchez du seuil de TVA"]  # 100,00 € : 83 %
-    assert payer(2) == ["Vous approchez du seuil de TVA", "Seuil de TVA dépassé"]  # 150,00 €
+    assert payer(2) == ["Vous approchez du seuil de TVA", "TVA activée"]  # 150,00 €
+    assert base.get(Prestataire, id_prestataire(lea)).facture_tva is True
+    assert chiffres(lea)["prestataire"]["seuil_tva_centimes"] is None  # plus de barre : la TVA est activée
     approche = next(n for n in notifications_envoyees.envoyees if n["titre"] == "Vous approchez du seuil de TVA")
     assert "80 % du seuil de TVA (120,00 €). Il vous reste 20,00 €." in approche["texte"] and approche["lien"] == "/mon-activite"
     sujets = [m["sujet"] for m in mails_envoyes if m["a"] == lea.email and "TVA" in m["sujet"]]
-    assert sujets == ["rafals : vous approchez du seuil de TVA", "rafals : seuil de TVA dépassé"]
+    assert sujets == ["rafals : vous approchez du seuil de TVA", "rafals : votre TVA est activée"]
+
+
+# ---------- Encaissé ailleurs, dans la barre de la TVA (demande de Raphael du 17/10/2026, schema_v30) ----------
+
+
+def ajouter(compte, euros: int, jour) -> object:
+    return compte.client.post("/api/moi/prestataire/encaisse-ailleurs",
+                              json={"montant_centimes": euros * 100, "encaisse_le": jour.isoformat()})
+
+
+def test_encaisse_ailleurs_remplit_la_barre_et_se_retire(lea, base: Session) -> None:  # noqa: F811
+    """Ex. Léa : 2 000,00 € puis 1 500,00 € encaissés hors de rafals cette année ; une erreur se retire."""
+    siret_verifie(base, lea)
+    debut_annee = AUJOURD_HUI.replace(month=1, day=1)
+    premier, second = ajouter(lea, 2000, debut_annee), ajouter(lea, 1500, AUJOURD_HUI)
+    annee_passee = ajouter(lea, 900, debut_annee - timedelta(days=1))
+    avec = chiffres(lea)["prestataire"]
+    liste = lea.client.get("/api/moi/prestataire/encaisse-ailleurs").json()
+
+    assert (premier.status_code, second.status_code, annee_passee.status_code) == (201, 201, 201)
+    assert avec["ailleurs_annee_centimes"] == 350000  # l'année passée ne compte pas
+    assert avec["reste_avant_seuil_centimes"] == SEUIL - 350000
+    assert [e["montant_centimes"] for e in liste] == [150000, 200000]  # le plus récent d'abord
+
+    assert lea.client.post(f"/api/moi/prestataire/encaisse-ailleurs/{second.json()['id']}/retirer").status_code == 200
+    assert chiffres(lea)["prestataire"]["ailleurs_annee_centimes"] == 200000
+
+
+def test_encaisse_ailleurs_refuse(lea, paul, base: Session) -> None:  # noqa: F811
+    siret_verifie(base, lea)
+    a_moi = ajouter(lea, 100, AUJOURD_HUI).json()["id"]
+
+    assert ajouter(lea, 0, AUJOURD_HUI).status_code == 400
+    assert ajouter(lea, 100, AUJOURD_HUI + timedelta(days=1)).status_code == 400  # une date à venir
+    assert ajouter(lea, 1_000_001, AUJOURD_HUI).status_code == 400
+    assert paul.client.post(f"/api/moi/prestataire/encaisse-ailleurs/{a_moi}/retirer").status_code == 404  # pas le sien
+
+
+def test_barre_pleine_par_un_ajout_active_la_tva(lea, base: Session, notifications_envoyees, mails_envoyes) -> None:  # noqa: F811
+    """Ex. la société de Paul : 40 000,00 € encaissés avant rafals → la TVA s'active d'un coup. Retirer ce montant
+    (une erreur de saisie) la désactive, puisque rien n'a encore été facturé avec la TVA (décision de Raphael du 09/11/2026)."""
+    siret_verifie(base, lea)
+    from tests.test_notifications import activer
+
+    activer(lea)
+    reponse = ajouter(lea, 40_000, AUJOURD_HUI).json()
+    ajout = reponse["id"]
+    prestataire = base.get(Prestataire, id_prestataire(lea))
+    base.refresh(prestataire)
+    titres = [n["titre"] for n in notifications_envoyees.envoyees if n["compte_id"] == lea.id and "TVA" in n["titre"]]
+
+    assert prestataire.facture_tva is True and reponse["tva_activee"] is True
+    assert titres == ["TVA activée"]  # les deux paliers d'un coup : seulement « TVA activée »
+    assert [m["sujet"] for m in mails_envoyes if m["a"] == lea.email and "TVA" in m["sujet"]] == ["rafals : votre TVA est activée"]
+
+    retrait = lea.client.post(f"/api/moi/prestataire/encaisse-ailleurs/{ajout}/retirer")
+    base.refresh(prestataire)
+    assert retrait.status_code == 200 and prestataire.facture_tva is False and retrait.json()["tva_activee"] is False
+    assert retrait.json()["message"].endswith("retirés. Vous êtes sous le seuil : la TVA est désactivée.")
+    assert chiffres(lea)["prestataire"]["seuil_tva_centimes"] is not None  # la barre revient
+
+
+def test_tva_reste_activee_si_deja_facturee(lea, dupont, base: Session, monkeypatch) -> None:  # noqa: F811
+    """Décision de Raphael du 09/11/2026 : si une facture avec TVA est partie depuis l'activation, retirer le montant
+    qui a rempli la barre ne désactive plus la TVA. Seuil d'essai de 120,00 €."""
+    monkeypatch.setattr(reglages, "SEUIL_TVA_SERVICES_CENTIMES", 12000)
+    siret_verifie(base, lea)
+    ajout = ajouter(lea, 200, AUJOURD_HUI).json()["id"]  # 200,00 € : barre pleine, TVA activée
+    prestataire = base.get(Prestataire, id_prestataire(lea))
+    base.refresh(prestataire)
+    assert prestataire.facture_tva is True
+    rdv = reserver(dupont, lea, a(MARDI, 10)).json()["id"]
+    passe(base, rdv)
+    assert lea.client.post(f"/api/moi/prestataire/rendez-vous/{rdv}/paye", json={"moyen": "especes"}).status_code == 200  # facture avec TVA
+
+    retrait = lea.client.post(f"/api/moi/prestataire/encaisse-ailleurs/{ajout}/retirer")
+    base.refresh(prestataire)
+    assert retrait.json()["message"].endswith("Vous avez déjà facturé la TVA : elle reste activée.")
+    assert prestataire.facture_tva is True and retrait.json()["tva_activee"] is True

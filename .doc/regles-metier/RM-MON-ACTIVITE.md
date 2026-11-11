@@ -21,20 +21,26 @@ En haut de « Mon activité », quelques chiffres disent où on en est aujourd'h
 | Encaissé ce mois-ci | Le « chiffre à déclarer » du mois en cours, tel que défini dans `RM-DEMARCHES.md` : factures de vente moins avoirs, à la date de la facture ; hors taxe s'il facture la TVA | Octobre : 50,00 € + 1 190,00 € + 60,00 € − 50,00 € (un avoir) = 1 250,00 € | Paiements |
 | Encaissé cette année | La même somme, du 1er janvier à aujourd'hui | 5 320,00 € en 2026 | (pas de clic : c'est le bloc de la barre de la TVA) |
 
-**Seulement ce qui passe par rafals** : ce que le prestataire encaisse ailleurs n'est pas compté (l'écran le dit).
+**Seulement ce qui passe par rafals** pour ces chiffres ; « Encaissé cette année » de la barre de TVA ajoute ce que le prestataire a déclaré « encaissé ailleurs » (voir plus bas).
 
 ## La barre de la TVA
-- Elle n'existe que pour un prestataire qui **ne facture pas** la TVA (case « Je facture la TVA » non cochée, `RM-DEVIS.md` § « TVA »).
-- Elle compare « Encaissé cette année » au **seuil de 37 500 €** au-delà duquel un auto-entrepreneur de services doit facturer la TVA.
-  - Exemple : 5 320,00 € encaissés → « Il vous reste 32 180,00 € avant le seuil de TVA (37 500 €) », barre remplie à 14 %.
-  - Exemple : 38 000,00 € encaissés → « Vous avez dépassé le seuil de TVA (37 500 €) : parlez-en à votre comptable ou à votre service des impôts. », barre pleine, en orange.
-- **Deux notifications sur le téléphone** (demande de Raphael du 17/10/2026 : « une notif de la barre de TVA qnd elle est a 80% et quand elle est dépassée ») : au moment où une facture fait passer le total de l'année à 80 % du seuil, puis au-delà du seuil. Un clic ouvre « Mon activité ». Rien n'est enregistré : rafals compare le total avant et après la facture, donc chaque palier ne sonne qu'une fois.
-  - Exemple 1 : Karim passe de 29 800 € à 30 050 € → « Vous approchez du seuil de TVA : Vous avez encaissé 30 050,00 € en 2026 : 80 % du seuil de TVA (37 500,00 €). Il vous reste 7 450,00 €. »
-  - Exemple 2 : il passe de 37 400 € à 37 600 € → « Seuil de TVA dépassé : Vous avez encaissé 37 600,00 € en 2026, plus que le seuil de TVA (37 500,00 €) : parlez-en à votre comptable ou à votre service des impôts. »
-  - **Un mail aussi**, avec le même texte (accord de Raphael du 17/10/2026 : « oui pour le mail »), pour celui qui n'a pas activé les notifications. Objet : « rafals : vous approchez du seuil de TVA » ou « rafals : seuil de TVA dépassé ».
-  - Choix de Claude : une seule facture qui saute les deux paliers d'un coup donne seulement « Seuil de TVA dépassé » ; un avoir qui fait redescendre puis une nouvelle facture qui fait repasser le palier font sonner de nouveau.
-- rafals **ne change rien tout seul** : il ne coche pas la case TVA à la place du prestataire.
-- ⚠️ **À confirmer par un comptable avant la mise en ligne** : (1) le montant du seuil (37 500 € pour les services en 2026, 41 250 € pour le seuil dit « majoré », d'après des sites spécialisés lus le 07/10/2026 ; il change presque chaque année) ; (2) la vente de marchandises a un autre seuil, que rafals ne gère pas ; (3) le seuil se juge sur tout le chiffre d'affaires, y compris hors rafals.
+- **TVA activée par la barre** (demande de Raphael du 17/10/2026 : « au debut elle soit pas activé et quand la barre est pleine la tva s'active automatiquement »). Il n'y a plus de case « Je facture la TVA » dans « Mon profil ». Au départ, la TVA est désactivée pour tout le monde.
+- La barre n'existe que tant que la TVA n'est pas activée. Elle compare au **seuil de 37 500 €** le total de l'année : encaissé sur rafals + **encaissé ailleurs**.
+  - Exemple : 5 320,00 € sur rafals + 2 000,00 € ailleurs = 7 320,00 € → « Il vous reste 30 180,00 € avant le seuil de TVA (37 500,00 €). Barre pleine : la TVA s'active toute seule. », barre remplie à 20 %.
+  - Exemple : la TVA est activée → plus de barre, seulement « TVA activée : vos devis et factures indiquent la TVA. »
+- **Encaissé ailleurs** (table `ENCAISSE_AILLEURS`, `schema_v30.sql` ; forme choisie par Raphael le 17/10/2026 : « Plusieurs ajouts datés ») : [Ajouter ce que j'ai encaissé ailleurs] sous la barre, avec un montant et le jour où l'argent a été encaissé.
+  - Refusé : 0 € ou moins, plus de 1 000 000 €, une date à venir.
+  - Seuls les montants datés de l'année en cours comptent dans la barre ; au 1er janvier, elle repart de zéro.
+  - Un ajout faux se retire avec [Retirer] ; il ne se modifie pas.
+  - Exemple 1 : Karim ajoute 2 000,00 € le 03/02/2026 (des clients d'avant rafals) → sa barre passe de 5 320,00 € à 7 320,00 €.
+  - Exemple 2 : la société de Paul ajoute 40 000,00 € le 15/01/2026 → barre pleine d'un coup, TVA activée : ses prochains devis montrent HT, TVA et TTC, sans que l'administrateur ait rien à faire.
+- **Barre pleine = TVA activée** : la facture ou l'ajout qui fait atteindre 37 500 € coche la TVA tout seul, pour les prochains devis et factures (ceux déjà envoyés ne changent pas). Le changement est noté dans le journal (`tva_activee_par_la_barre`). La TVA **ne se désactive jamais toute seule** : ni au 1er janvier, ni en retirant un ajout.
+  - **Changé le 09/11/2026** (décision de Raphael, choix « Barre revient si rien envoyé », après l'essai de la maquette : « quand je retire les trucs que j'ai mis […] ca remet pas la barre de tva ») : **exception pour une erreur de saisie**. Quand un ajout « encaissé ailleurs » est retiré, si le total de l'année repasse sous le seuil **et** qu'aucun devis ni facture avec TVA n'a été envoyé depuis l'activation, la TVA se désactive et la barre revient : « 40 000,00 € retirés. Vous êtes sous le seuil : la TVA est désactivée. » (ex. Karim tape 40 000 au lieu de 4 000 puis retire la ligne). Si un devis ou une facture avec TVA est déjà parti : « 40 000,00 € retirés. Vous avez déjà facturé la TVA : elle reste activée. » Le 1er janvier ne change toujours rien. **Codé le 10/11/2026** (lot 14.4) : `services/demarches.py` (`supprimer_ailleurs`, `tva_deja_facturee`), journal `tva_desactivee_erreur_saisie` ; seule une TVA activée **par la barre** peut se désactiver ainsi.
+- **Notifications et mails** (demandes de Raphael du 17/10/2026) : rafals compare le total de la barre avant et après chaque facture de vente ou chaque ajout. Un clic sur la notification ouvre « Mon activité ».
+  - Passage de 80 % : « Vous approchez du seuil de TVA : Vous avez encaissé 30 050,00 € en 2026 : 80 % du seuil de TVA (37 500,00 €). Il vous reste 7 450,00 €. Une fois le seuil atteint, la TVA s'activera toute seule. » Objet du mail : « rafals : vous approchez du seuil de TVA ».
+  - Seuil atteint : « TVA activée : Vous avez encaissé 37 600,00 € en 2026 : le seuil de TVA (37 500,00 €) est atteint. Vos prochains devis et factures indiqueront la TVA. Parlez-en à votre comptable ou à votre service des impôts. » Objet du mail : « rafals : votre TVA est activée ».
+  - Choix de Claude : un seul montant qui saute les deux paliers d'un coup donne seulement « TVA activée ».
+- ⚠️ **À confirmer par un comptable avant la mise en ligne** : (1) le montant du seuil (37 500 € pour les services en 2026, 41 250 € pour le seuil dit « majoré », d'après des sites spécialisés lus le 07/10/2026 ; relu le 21/10/2026 : fixe depuis le 01/01/2025, il ne change plus tout seul tous les 3 ans, seulement si une loi le change ; la baisse à 25 000 € prévue en 2025 a été abandonnée) ; (2) la vente de marchandises a un autre seuil, que rafals ne gère pas ; (3) le seuil se juge sur tout le chiffre d'affaires, y compris hors rafals.
 
 ## Chiffres du client
 | Chiffre | Ce qu'il compte exactement | Exemple | Un clic ouvre |
