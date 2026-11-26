@@ -44,5 +44,5 @@
 ## Décisions en attente
 - ⚠️ Seuil de TVA de 37 500 € montré dans « Mon activité » : à confirmer par un comptable avant la mise en ligne (sujet 22).
 - ⚠️ Prestataires sans SIRET payés en espèces : à faire vérifier juridiquement (sujets 02, 05, 12).
-- ⚠️ Limites d'un prestataire sans SIRET (7 règles validées par Raphael le 09/10/2026, construites le 12/10/2026) et classement des 129 métiers (`RM-METIERS-SANS-SIRET.md`) : à montrer à un avocat, surtout l'absence de limite de durée.
+- ⚠️ Limites d'un prestataire sans SIRET (7 règles validées par Raphael le 09/10/2026, construites le 12/10/2026) et classement des 129 métiers (`RM-METIERS-SANS-SIRET.md`) : à montrer à un avocat, surtout l'absence de limite de durée. Changé par Raphael le 25/11/2026 : plafond de 2 000 € sur 12 mois (au lieu de 1 000 €), plus de limite de 2 rendez-vous par mois. Ces deux points sont aussi à faire valider par l'avocat.
 - Prix du site vitrine et pourcentage de la commission (sujets 12, 13).

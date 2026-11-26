@@ -14,6 +14,7 @@ import AppChamp from '../ui/AppChamp.vue'
 import AppElementChoisi from '../ui/AppElementChoisi.vue'
 import AppFenetre from '../ui/AppFenetre.vue'
 import AppRecherche from '../ui/AppRecherche.vue'
+import AlerteMetierSansSiret from './AlerteMetierSansSiret.vue'
 
 const props = defineProps<{ ouverte: boolean; profil: ProfilPrestataire }>()
 const emit = defineEmits<{ fermer: []; maj: [profil: ProfilPrestataire] }>()
@@ -91,6 +92,7 @@ async function ajouter() {
         aide="Vous apparaîtrez aussi dans les recherches de ce métier, après les spécialistes."
         @choisir="(m: MetierVisible) => (choisi = m)"
       />
+      <AlerteMetierSansSiret v-if="profil.siret_statut !== 'verifie'" :metier="choisi" @choisir="(m: MetierVisible) => (choisi = m)" />
       <AppChamp v-model="prix" etiquette="Votre prix de l’heure (€), facultatif" inputmode="decimal" placeholder="Ex. 40" aide="Montré sur votre carte dans « Trouver » : « 40 €/h »." />
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     </template>

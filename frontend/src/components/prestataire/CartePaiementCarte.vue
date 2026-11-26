@@ -1,6 +1,7 @@
 <script setup lang="ts">
-// Mon activité › Paiement par carte (.doc/ihm/RM-PROPOSER-IHM.md ; RM-PAIEMENTS.md, lot 5.2) : sans SIRET vérifié,
-// à activer (case du mandat de facturation, puis la page de Stripe), en vérification par Stripe, activé.
+// Mon activité › Paiement par carte (.doc/ihm/RM-PROPOSER-IHM.md ; RM-PAIEMENTS.md, lot 5.2) : à activer (case du
+// mandat de facturation, puis la page de Stripe), en vérification par Stripe, activé. Ouvert aussi sans SIRET depuis
+// le 25/11/2026 (demande de Raphael) : il suffit de relier son compte Stripe.
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
@@ -40,7 +41,7 @@ onMounted(async () => {
 
 const badge = computed(() => {
   const e = etat.value
-  if (!e || !e.siret_verifie) return { etat: 'neutre' as const, texte: 'espèces seulement' }
+  if (!e) return { etat: 'neutre' as const, texte: 'espèces seulement' }
   if (e.pret) return { etat: 'ok' as const, texte: 'activé' }
   if (e.compte_cree) return { etat: 'attente' as const, texte: 'vérification par Stripe' }
   return { etat: 'neutre' as const, texte: 'pas activé' }
@@ -66,18 +67,6 @@ async function allerChezStripe() {
 
     <p v-if="!etat.ouvert" class="text-[14px] text-texte-doux">Le paiement par carte arrivera bientôt sur rafals.</p>
 
-    <template v-else-if="!etat.siret_verifie">
-      <p class="text-[14px] text-texte-doux">Payé par carte, l'argent arrive sur votre compte en banque 48 h après chaque rendez-vous.</p>
-      <div>
-        <AppBouton variante="verrouille" raison-verrou="Il faut d'abord un SIRET vérifié par l'État : ajoutez-le avec [Modifier mon profil].">
-          Activer le paiement par carte
-        </AppBouton>
-      </div>
-      <div>
-        <AppBouton variante="secondaire" @click="routeur.push('/creer-mon-auto-entreprise')">Pas de SIRET ? Créer mon auto-entreprise</AppBouton>
-      </div>
-    </template>
-
     <template v-else-if="etat.pret">
       <p>Vous pouvez accepter la carte dans vos propositions.</p>
       <p class="text-[13.5px] text-texte-doux">
@@ -101,6 +90,9 @@ async function allerChezStripe() {
       <p class="text-[14px] text-texte-doux">
         Vos clients paient en réservant, sur la page sécurisée de Stripe. L'argent reste bloqué jusqu'au rendez-vous, puis
         arrive sur votre compte en banque 48 h après.
+      </p>
+      <p v-if="!etat.siret_verifie" class="text-[14px] text-texte-doux">
+        Sans SIRET aussi : Stripe vous demande seulement votre pièce d'identité et votre RIB. Sans SIRET, pas de facture.
       </p>
       <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-[14px]">
         <dt class="text-texte-doux">Exemple</dt>

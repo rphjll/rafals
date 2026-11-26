@@ -177,12 +177,17 @@ def _parties_du_devis(db: Session, devis: Devis) -> tuple[Prestataire, Compte, s
 
 def pour_paiement(db: Session, paiement: Paiement, maintenant: datetime) -> Facture | None:
     """Après un paiement par carte : la facture du rendez-vous, la facture d'arrhes ou la facture de solde d'un devis.
-    Ex. Paul paie 50 € à Léa → F-2026-0001 « Coupe femme — 50,00 € — TVA non applicable, art. 293 B du CGI »."""
+    Ex. Paul paie 50 € à Léa → F-2026-0001 « Coupe femme — 50,00 € — TVA non applicable, art. 293 B du CGI ».
+    Sans SIRET vérifié (carte ouverte aux particuliers le 25/11/2026) : pas de facture de vente, comme en espèces.
+    Ex. Paul paie 15 € par carte à Emma, sans SIRET → aucune facture ; la commission de 0,75 € compte quand même."""
     deja = db.scalar(select(Facture).where(Facture.paiement_id == paiement.id, Facture.sorte == "vente"))
     if deja is not None:
         return deja
     if paiement.rendez_vous_id is not None:
-        return _vente_rendez_vous(db, db.get_one(RendezVous, paiement.rendez_vous_id), "carte", maintenant, paiement.id)
+        rdv = db.get_one(RendezVous, paiement.rendez_vous_id)
+        if db.get_one(Prestataire, rdv.prestataire_id).siret_statut != "verifie":
+            return None
+        return _vente_rendez_vous(db, rdv, "carte", maintenant, paiement.id)
     devis = db.get_one(Devis, paiement.devis_id)
     prestataire, client, titre = _parties_du_devis(db, devis)
     communs_devis = {"sorte": "vente", "maintenant": maintenant, "client": client, "moyen": "carte",
@@ -212,6 +217,8 @@ def encaisser_rendez_vous(db: Session, prestataire: Prestataire, rdv: RendezVous
         raise ErreurRegle("Ce rendez-vous ne se paie pas en direct, ou il n'est pas confirmé.")
     if rdv.paye_direct_le is not None:
         raise ErreurRegle("Ce rendez-vous est déjà noté comme payé.")
+    if rdv.absent is not None:  # audit du 14/11/2026
+        raise ErreurRegle("Une absence est signalée sur ce rendez-vous : il ne peut pas être noté comme payé.")
     if maintenant < rdv.debut:
         raise ErreurRegle("Vous pourrez noter le paiement à partir de l'heure du rendez-vous.")
     if moyen not in reglages.FACTURE_MOYENS_DIRECTS:

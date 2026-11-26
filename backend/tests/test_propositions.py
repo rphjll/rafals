@@ -76,7 +76,7 @@ def test_qui_peut_repondre(fabrique_prestataire, fabrique_compte, metiers, fuite
     assert fuite.demande in pres_de_chez_moi and loin not in pres_de_chez_moi
     trop_loin = repondre(karim, loin)
     pas_son_metier = repondre(electricien, fuite.demande)
-    assert trop_loin.status_code == 403 and pas_son_metier.status_code == 403 and "trop loin" in trop_loin.json()["detail"]
+    assert trop_loin.status_code == 403 and pas_son_metier.status_code == 403 and "38 km" in trop_loin.json()["detail"]
     assert repondre(fuite, fuite.demande).status_code == 404  # « Vous ne proposez pas encore vos services »
 
 

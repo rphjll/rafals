@@ -118,3 +118,6 @@ Le prestataire peut annuler un rendez-vous à tout moment, avec un **motif oblig
 
 ## Références
 - `RM-AGENDA.md`, `archives/RM-ANNONCES.md`, `RM-CLIENTS.md`, `RM-COMPTES.md`, `RM-PRESTATAIRES.md`
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- [Payé] refusé si une absence est signalée sur le rendez-vous ; [Client absent] refusé si le rendez-vous est noté payé ; un rendez-vous noté payé ne s'annule plus (sa facture est faite).

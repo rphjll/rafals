@@ -4,6 +4,7 @@ Chaque fonction reçoit « maintenant » (UTC) pour que les tests puissent jouer
 Les routes valident (commit) ; seul un échec de connexion valide lui-même son compteur d'erreurs.
 """
 
+import re
 from datetime import date, datetime, timedelta
 
 from sqlalchemy import select, update
@@ -33,12 +34,46 @@ def age_le(date_naissance: date, jour: date) -> int:
     return jour.year - date_naissance.year - (0 if anniversaire_passe else 1)
 
 
+MAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s.]+$")
+TELEPHONE = re.compile(r"^\+?[0-9][0-9 .\-]{5,19}$")
+
+
+def verifier_identite(prenom: str, nom: str, telephone: str) -> None:
+    """Prénom et nom de 60 caractères au plus ; un vrai numéro de téléphone (audit du 14/11/2026).
+    Ex. « 06 12 34 56 78 » ou « +33612345678 » → acceptés ; « abc » ou « 1 » → refusés."""
+    for valeur, libelle in ((prenom, "prénom"), (nom, "nom")):
+        if len(valeur.strip()) > reglages.NOM_LONGUEUR_MAX or "<" in valeur or ">" in valeur:
+            raise ErreurRegle(f"Le {libelle} doit faire au plus {reglages.NOM_LONGUEUR_MAX} caractères, sans « < » ni « > ».")
+    numero = telephone.strip()
+    if not TELEPHONE.match(numero) or sum(c.isdigit() for c in numero) < 9:
+        raise ErreurRegle("Ce numéro de téléphone n'est pas valide (ex. 06 12 34 56 78).")
+
+
 def verifier_mot_de_passe_acceptable(mot_de_passe: str) -> None:
+    if len(mot_de_passe) > reglages.MOT_DE_PASSE_LONGUEUR_MAX:
+        raise ErreurRegle(f"Le mot de passe doit contenir au plus {reglages.MOT_DE_PASSE_LONGUEUR_MAX} caractères.")
     if len(mot_de_passe) < reglages.MOT_DE_PASSE_LONGUEUR_MIN:
         raise ErreurRegle(
             f"Le mot de passe doit contenir au moins {reglages.MOT_DE_PASSE_LONGUEUR_MIN} caractères "
             "(ex. MaisonBleue44)."
         )
+    if trop_simple(mot_de_passe):  # audit du 14/11/2026 (D1)
+        raise ErreurRegle("Ce mot de passe est trop facile à deviner : mélangez des mots et des chiffres (ex. MaisonBleue44).")
+
+
+TROP_COURANTS = {"motdepasse", "password", "azertyuiop", "qwertyuiop", "azertyuiop1", "motdepasse1", "bonjour123",
+                 "password123", "1234567890", "0123456789", "9876543210", "azerty1234", "qwerty1234"}
+
+
+def trop_simple(mot_de_passe: str) -> bool:
+    """Un seul caractère répété, une suite de chiffres, ou un mot de passe très courant.
+    Ex. trop simple : « aaaaaaaaaa », « 1234567890 », « Motdepasse1 » ; accepté : « MaisonBleue44 »."""
+    m = mot_de_passe.lower()
+    if len(set(m)) <= 2:
+        return True
+    if m.isdigit() and (m in "01234567890123456789" or m in "98765432109876543210"):
+        return True
+    return m in TROP_COURANTS
 
 
 # ---------- Inscription et vérification de l'adresse ----------
@@ -56,11 +91,14 @@ def inscrire(
     maintenant: datetime,
 ) -> Compte:
     email = normaliser_email(email)
-    if "@" not in email or "." not in email.split("@")[-1]:
+    if not MAIL.match(email) or len(email) > 254:
         raise ErreurRegle("Cette adresse mail n'est pas valide (ex. marie.dupont@gmail.com).")
     for valeur, libelle in ((prenom, "prénom"), (nom, "nom"), (telephone, "téléphone")):
         if not valeur.strip():
             raise ErreurRegle(f"Le {libelle} est obligatoire.")
+    verifier_identite(prenom, nom, telephone)
+    if age_le(date_naissance, maintenant.date()) > reglages.AGE_MAXIMUM:
+        raise ErreurRegle("Vérifiez votre date de naissance.")
     if age_le(date_naissance, maintenant.date()) < reglages.AGE_MINIMUM:
         raise ErreurRegle(f"Il faut avoir au moins {reglages.AGE_MINIMUM} ans pour créer un compte sur rafals.")
     verifier_mot_de_passe_acceptable(mot_de_passe)

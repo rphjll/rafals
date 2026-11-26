@@ -19,6 +19,15 @@
 - **Aucune commission sur les rendez-vous payés en espèces** (choix de Raphael le 02/10/2026) : l'argent ne passe ni par Stripe ni par rafals.
   - Exemple : Paul paie 50 € en liquide à Léa Martin → Léa garde 50 €, rafals ne touche rien.
 
+## La carte pour tous, même sans SIRET (demande de Raphael du 25/11/2026)
+Demande mot pour mot : « que ca soit une entreprise une auto entreprise ou un prestataire ils puissent tous payer avec stripe enfin par carte quoi mais uniquement si ils créent ou associent leur conte stripe comme ca les payements ne passent pas par moi ».
+- **Activer la carte ne demande plus de SIRET** : seulement la case du mandat de facturation, puis la page de Stripe (identité, RIB). Stripe décide seul s'il accepte le compte d'un particulier.
+- **Même commission de 5 %** (choix de Raphael : « A. Oui, 5 % comme tout le monde »), et même facture mensuelle des commissions (R-…).
+  - Exemple 1 : Emma, sans SIRET, compte Stripe relié, promenade à 15 € payée par carte → rafals garde 0,75 €, Stripe ses frais, Emma reçoit le reste.
+  - Exemple 2 : Emma, sans SIRET, sans compte Stripe → espèces seulement, comme avant.
+- **Sans SIRET vérifié, pas de facture de vente**, même payé par carte (choix de Claude : une facture demande un SIRET, règle déjà en place). Ex. Paul paie Emma 15 € par carte : aucune F-…, la commission compte quand même.
+- Ce qui ne change pas : 100 € par proposition, 2 000 € par an, métiers interdits, pas de devis sans SIRET.
+
 ## Paiement par carte : quand le client paie (choix de Raphael le 02/10/2026)
 - Le client paie **dès la réservation** : le prix complet est pris sur sa carte quand il réserve.
 - Si le prestataire refuse le rendez-vous, ou si le client annule dans le délai permis (`RM-RENDEZ-VOUS.md`), il est **remboursé automatiquement**.
@@ -61,7 +70,7 @@ Le client choisit le nombre d'heures en réservant et voit le total (`archives/R
 - Exemple : même annonce, 2 h → 80 € ; rafals garde 4,00 €.
 
 ## Mise en œuvre (lot 5.1, 02/10/2026)
-- **Activer la carte** (prestataire) : SIRET vérifié + case « J'accepte que rafals fasse mes factures à ma place » (mandat de facturation, date gardée) → page de Stripe (identité, RIB). Ses annonces proposent « carte » seulement une fois que Stripe a tout vérifié.
+- **Activer la carte** (prestataire) : ~~SIRET vérifié~~ (plus demandé depuis le 25/11/2026) + case « J'accepte que rafals fasse mes factures à ma place » (mandat de facturation, date gardée) → page de Stripe (identité, RIB). Ses annonces proposent « carte » seulement une fois que Stripe a tout vérifié.
 - **30 minutes pour payer** (réglage, proposé dans le MLD 5.1 et validé par Raphael) : la réservation par carte attend son paiement ; le prestataire ne la voit pas encore et aucun mail ne part. Sans paiement au bout de 30 minutes, elle est annulée (« Paiement non terminé ») et l'horaire se libère.
   - Exemple : Paul réserve à 14 h 00 et ferme la page de Stripe → à 14 h 30, la réservation est annulée : « Rien n'a été pris sur votre carte. »
   - Exemple : un paiement qui arrive quand même après l'annulation est remboursé en entier.

@@ -1,0 +1,326 @@
+<title>rafals Style Jeu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800;1,900&family=Barlow:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : barre d'icônes (les vraies pages de rafals) en haut ; à gauche les lignes (ligne choisie entourée) ; à droite l'aide et les choix ; boutons en bas à droite. Ambiance sombre unique, voulue. */
+:root{
+  color-scheme: dark;
+  --fond1:#1d5592; --fond2:#0b1e3d; --fond3:#06122a;
+  --texte:#eef3fb; --doux:#9fb3cc; --eteint:#6c7f99;
+  --trait:#5d6f88; --trait-on:#ffffff; --trait-bleu:#1d3f86;
+  --cadre:#f4f7d9; --barre:#0d1a33; --barre-icone:#c7d3e4;
+  --choisi-fond:#ffffff; --choisi-texte:#0b1e3d;
+  --bouton:#2a4b85; --bouton-bord:#5c7fbd; --vif:#ffd84a;
+  --forme:rgba(140,190,255,.10); --forme-bord:rgba(170,210,255,.22);
+  --rouge:#ff5a5a;
+  --titre:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --corps:"Barlow","Segoe UI",system-ui,sans-serif;
+}
+:root[data-ambiance="vert"]{ --fond1:#227552; --fond2:#0c2a1d; --fond3:#061710; --trait-bleu:#2F6B4F; --barre:#0b2018; --bouton:#2F6B4F; --bouton-bord:#79C49C; --doux:#a9c9b8; --vif:#F0955A; --forme:rgba(121,196,156,.11); --forme-bord:rgba(150,230,190,.24); }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--fond3);color:var(--texte);font-family:var(--corps);font-size:15px;overflow-x:hidden}
+
+/* ---------- Arrière-plan : dégradé + formes qui flottent ---------- */
+.fond{position:fixed;inset:0;z-index:0;overflow:hidden;background:radial-gradient(90% 80% at 30% 35%,var(--fond1) 0%,var(--fond2) 55%,var(--fond3) 100%);transition:background .6s}
+.forme{position:absolute;border:2px solid var(--forme-bord);background:var(--forme);animation:derive 22s ease-in-out infinite alternate;will-change:transform}
+.f1{width:300px;height:300px;border-radius:56px;left:-60px;top:52%;--r:18deg}
+.f2{width:200px;height:200px;border-radius:50%;right:10%;top:-40px;animation-duration:26s}
+.f3{width:150px;height:150px;border-radius:28px;right:-30px;bottom:14%;--r:45deg;animation-duration:19s}
+.f4{width:100px;height:100px;border-radius:22px;left:44%;bottom:6%;--r:30deg;animation-duration:24s}
+.f5{width:460px;height:460px;border-radius:50%;left:18%;top:-280px;background:none;animation-duration:34s}
+.f6{width:70px;height:70px;border-radius:16px;left:24%;top:30%;--r:12deg;animation-duration:17s}
+@keyframes derive{
+  0%{transform:translate(0,0) rotate(var(--r,0deg))}
+  50%{transform:translate(70px,-50px) rotate(calc(var(--r,0deg) + 25deg))}
+  100%{transform:translate(-40px,40px) rotate(calc(var(--r,0deg) - 15deg))}
+}
+.bulle{position:absolute;bottom:-40px;width:18px;height:18px;border-radius:5px;border:2px solid var(--forme-bord);background:var(--forme);animation:monte linear infinite}
+@keyframes monte{to{transform:translateY(-115vh) rotate(220deg)}}
+.lueur{position:absolute;left:50%;top:45%;width:70vmax;height:70vmax;margin:-35vmax 0 0 -35vmax;background:radial-gradient(circle,rgba(120,180,255,.16),transparent 60%);animation:respire 8s ease-in-out infinite}
+:root[data-ambiance="vert"] .lueur{background:radial-gradient(circle,rgba(121,196,156,.16),transparent 60%)}
+@keyframes respire{50%{transform:scale(1.15);opacity:.55}}
+.fond.arret *{animation-play-state:paused!important}
+
+/* ---------- Écran ---------- */
+.ecran{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 16px}
+.haut{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:12px}
+.logo{font-family:var(--titre);font-weight:900;font-style:italic;font-size:28px;line-height:32px}
+.logo i{color:#F0955A;font-style:normal}
+.centre{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.icones{display:flex;gap:2px;background:var(--barre);padding:4px;border-radius:4px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.ico{all:unset;cursor:pointer;position:relative;width:46px;height:32px;flex:none;display:grid;place-items:center;border-radius:3px;color:var(--barre-icone);transition:background .15s,color .15s}
+.ico svg{width:20px;height:20px}
+.ico:hover{background:rgba(255,255,255,.1);color:#fff}
+.ico[aria-selected="true"]{background:#d8e2ef;color:var(--fond2)}
+.ico:focus-visible{outline:2px solid var(--cadre);outline-offset:2px}
+.pastille{position:absolute;top:1px;right:3px;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:var(--rouge);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center}
+.nom-onglet{font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase}
+.compte{justify-self:end;display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--vif);color:#1a1500;display:grid;place-items:center;font-weight:700}
+
+.corps{flex:1;display:grid;grid-template-columns:28px minmax(0,1fr) 10px minmax(0,380px);gap:24px;margin-top:22px}
+.repere{background:rgba(255,255,255,.07);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:14px 0;align-self:start;height:240px;margin-top:20px}
+.repere span{width:3px;height:3px;background:var(--doux);border-radius:2px;transition:height .3s,background .3s}
+.repere span.on{height:22px;background:#fff}
+
+.liste{display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 190px);overflow-y:auto;scrollbar-width:none;padding:4px 6px 4px 4px;min-width:0}
+.liste::-webkit-scrollbar{display:none}
+.vue{animation:entre .3s ease-out}
+@keyframes entre{from{opacity:0;transform:translateX(-18px)}}
+.groupe{font-family:var(--titre);font-weight:900;font-style:italic;font-size:26px;text-transform:uppercase;letter-spacing:.5px;margin:18px 0 6px 6px;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.groupe:first-child{margin-top:0}
+.ligne{display:grid;grid-template-columns:minmax(0,1fr) 210px;align-items:center;gap:12px;padding:9px 14px;border:2px solid transparent;border-radius:12px;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+.ligne:hover{background:rgba(255,255,255,.05)}
+.ligne.active{border-color:var(--cadre);background:rgba(4,12,30,.55);box-shadow:0 0 18px rgba(244,247,217,.18)}
+.ligne:focus-visible{outline:none;border-color:var(--cadre)}
+.ligne .nom{font-weight:600;min-width:0}
+.ligne .nom small{display:block;font-weight:500;font-size:13px;color:var(--doux)}
+.ligne.grise .nom,.ligne.grise .val{color:var(--eteint)}
+.val-zone{display:grid;grid-template-columns:20px 1fr 20px;align-items:center}
+.fleche{all:unset;cursor:pointer;visibility:hidden;font-weight:700;font-size:18px;text-align:center}
+.ligne.active .fleche{visibility:visible}
+.fleche:hover{color:var(--cadre)}
+.val{text-align:center;font-weight:500}
+.val.chiffre{font-family:var(--titre);font-style:italic;font-weight:900;font-size:22px;color:var(--vif)}
+.val.nouveau{color:var(--vif);font-weight:700}
+.traits{grid-column:1/-1;display:flex;gap:6px;justify-content:center;margin-top:5px}
+.traits span{flex:1;max-width:44px;height:3px;background:var(--trait)}
+.traits span.on{background:var(--trait-on)}
+.traits.deux span{max-width:66px}
+.traits.deux span.bleu{background:var(--trait-bleu)}
+.ouvrir{text-align:center;font-weight:700;color:var(--doux)}
+
+.ascenseur{background:rgba(255,255,255,.08);border-radius:4px;position:relative;margin:8px 0}
+.ascenseur span{position:absolute;left:0;right:0;top:var(--haut,0%);height:var(--taille,40%);background:#c9d4e4;border-radius:4px;transition:top .25s}
+
+.aide{padding-top:4px;min-width:0}
+.aide h2{margin:0 0 10px;font-size:17px;font-weight:700}
+.aide p{margin:0 0 10px;color:var(--doux);line-height:1.45;font-weight:500}
+.exemple{font-size:14px;border-left:2px solid var(--doux);padding:4px 0 4px 10px;margin:14px 0 22px}
+.options{display:flex;flex-direction:column;gap:2px;max-width:260px}
+.opt{all:unset;cursor:pointer;font-weight:700;font-size:14px;text-transform:uppercase;padding:3px 10px 3px 16px;position:relative}
+.opt:hover{background:rgba(255,255,255,.1)}
+.opt.on{background:var(--choisi-fond);color:var(--choisi-texte)}
+.opt.on::before{content:"";position:absolute;left:5px;top:50%;margin-top:-4px;border:4px solid transparent;border-left-color:var(--choisi-texte)}
+.opt:focus-visible{outline:2px solid var(--cadre)}
+.gros{all:unset;cursor:pointer;display:inline-block;font-family:var(--titre);font-weight:900;font-style:italic;font-size:22px;text-transform:uppercase;background:var(--vif);color:#1a1500;padding:6px 22px;transform:skewX(-10deg);box-shadow:0 4px 0 rgba(0,0,0,.35);transition:transform .1s}
+.gros:hover{transform:skewX(-10deg) translateY(-2px)}
+.gros:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.note{margin-top:14px;font-size:13px;color:#8fe0b4;font-weight:600;opacity:0;transition:opacity .2s}
+.note.vu{opacity:1}
+
+.bas{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap}
+.signe{font-size:11px;color:var(--doux)}
+.boutons{display:flex;gap:10px;flex-wrap:wrap}
+.btn{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;background:var(--bouton);border:1px solid var(--bouton-bord);padding:7px 16px 7px 8px;border-radius:5px;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.5px;transition:filter .15s}
+.btn:hover{filter:brightness(1.2)}
+.btn:focus-visible{outline:2px solid var(--cadre);outline-offset:2px}
+.touche{display:inline-grid;place-items:center;min-width:22px;height:20px;padding:0 4px;border-radius:4px;background:#c9d4e4;color:var(--fond2);font-size:11px;font-weight:700}
+
+@media (max-width:900px){
+  .haut{grid-template-columns:1fr auto}
+  .centre{grid-column:1/-1;grid-row:2}
+  .corps{grid-template-columns:minmax(0,1fr);gap:16px}
+  .repere,.ascenseur{display:none}
+  .liste{max-height:none;overflow:visible}
+  .aide{background:rgba(4,12,30,.55);border-radius:10px;padding:16px}
+}
+@media (max-width:480px){
+  .ligne{grid-template-columns:minmax(0,1fr) 140px;padding:8px 10px}
+  .groupe{font-size:22px}
+  .ico{width:40px}
+}
+</style>
+
+<div class="fond" id="fond" aria-hidden="true">
+  <div class="lueur"></div>
+  <div class="forme f1"></div><div class="forme f2"></div><div class="forme f3"></div><div class="forme f4"></div><div class="forme f5"></div><div class="forme f6"></div>
+</div>
+
+<div class="ecran">
+  <div class="haut">
+    <div class="logo">rafals<i>.</i></div>
+    <div class="centre">
+      <nav class="icones" role="tablist" aria-label="Pages de rafals" id="icones"></nav>
+      <div class="nom-onglet" id="nom-onglet"></div>
+    </div>
+    <div class="compte"><span class="avatar">K</span>Karim</div>
+  </div>
+
+  <div class="corps">
+    <div class="repere" id="repere" aria-hidden="true"></div>
+    <div class="liste" id="liste"></div>
+    <div class="ascenseur" aria-hidden="true"><span id="curseur"></span></div>
+    <aside class="aide" id="aide" aria-live="polite"></aside>
+  </div>
+
+  <div class="bas">
+    <span class="signe">Maquette · compte d'exemple : Karim, Électricien et Plombier, Nantes</span>
+    <div class="boutons">
+      <button class="btn" id="defaut"><span class="touche">R</span>Remettre par défaut</button>
+      <button class="btn" id="retour"><span class="touche">Échap</span>Retour</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Petits carrés qui montent ---------- */
+(function(){const f=document.getElementById('fond');for(let i=0;i<10;i++){const b=document.createElement('div');b.className='bulle';const t=10+Math.random()*16;b.style.left=(Math.random()*100)+'%';b.style.width=b.style.height=(10+Math.random()*16)+'px';b.style.animationDuration=t+'s';b.style.animationDelay=(-Math.random()*t)+'s';f.appendChild(b);}})();
+
+const SVG={
+  accueil:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg>',
+  trouver:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5" stroke-linecap="round"/></svg>',
+  messages:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v12H9l-5 4v-4H3z"/></svg>',
+  activite:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"/></svg>',
+  profil:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg>',
+  abonnements:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>',
+  parametres:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4l.6 2.6 2.3 1 2.3-1.4 2.8 2.8-1.4 2.3 1 2.3L24 12v0l-2.6.6-1 2.3 1.4 2.3-2.8 2.8-2.3-1.4-2.3 1L14 22h-4l-.6-2.6-2.3-1-2.3 1.4L2 17l1.4-2.3-1-2.3L0 12l2.4-.6 1-2.3L2 6.8 4.8 4l2.3 1.4 2.3-1zM12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/></svg>'
+};
+
+/* Types de lignes : "r" = réglage (flèches + petits traits), "l" = lien vers une page (bouton Ouvrir à droite) */
+const OUI_NON=['Non','Oui'];
+const PAGES=[
+ {k:'accueil',nom:'Accueil',lignes:[
+  {g:'Aujourd\'hui'},
+  {t:'l',nom:'Demandes près de chez moi',sous:'Électricien et Plombier, 15 km autour de Nantes',v:'3',chiffre:1,aide:'Des clients cherchent votre métier près de chez vous.',ex:'« Fuite sous l\'évier, Rezé (5 km) »',bouton:'Voir les demandes'},
+  {t:'l',nom:'Rendez-vous d\'ici dimanche',sous:'Mon agenda, onglet Rendez-vous',v:'2',chiffre:1,aide:'Vos prochains rendez-vous confirmés.',ex:'Jeudi 12/11 à 14 h 00 : prise à changer chez Julie, Rezé.',bouton:'Ouvrir mon agenda'},
+  {t:'l',nom:'Devis en attente de réponse',sous:'Devis',v:'1',chiffre:1,aide:'Un client n\'a pas encore répondu à votre devis.',ex:'Devis ZZ-0042 : tableau électrique, Orvault, 1 240,00 €.',bouton:'Ouvrir les devis'},
+  {t:'l',nom:'Encaissé en novembre',sous:'Par carte et en espèces',v:'640,00 €',chiffre:1,aide:'Ce que vous avez encaissé ce mois-ci.',ex:'4 rendez-vous payés, dont 1 en espèces.',bouton:'Voir les paiements'}
+ ]},
+ {k:'trouver',nom:'Trouver un prestataire',lignes:[
+  {g:'Autour de Nantes'},
+  {t:'l',nom:'Julie M. · Ménage',sous:'Rezé · 5 km · SIRET vérifié',v:'★ 4,9',aide:'Ménage, repassage. Disponible en semaine.',ex:'« Très sérieuse, je recommande » · 23 avis',bouton:'Voir sa fiche'},
+  {t:'l',nom:'Sofiane T. · Plombier',sous:'Saint-Herblain · 7 km',v:'★ 4,7',aide:'Fuites, chauffe-eau, salle de bain.',ex:'Libre jeudi 12/11 à 9 h 00.',bouton:'Voir sa fiche'},
+  {t:'l',nom:'Léa P. · Jardinage',sous:'Orvault · 9 km',v:'★ 5,0',aide:'Tonte, taille de haies, potager.',ex:'Espèces ou carte.',bouton:'Voir sa fiche'},
+  {g:'Ma recherche'},
+  {t:'r',id:'tri',nom:'Trier par',vals:['Plus proches','Mieux notés','Prix'],d:0,aide:'L\'ordre de la liste.',ex:'« Plus proches » : Julie (5 km) avant Léa (9 km).'},
+  {t:'r',id:'rayon',nom:'Distance',vals:['5 km','10 km','20 km','30 km'],d:1,aide:'Jusqu\'où chercher autour de vous.',ex:'« 10 km » autour de Nantes : Rezé oui, Clisson non.'}
+ ]},
+ {k:'messages',nom:'Messages',pastille:2,lignes:[
+  {g:'Conversations'},
+  {t:'l',nom:'Julie M.',sous:'« Bonjour, vous êtes libre jeudi ? »',v:'Nouveau',nouveau:1,aide:'Conversation avec Julie M., Rezé.',ex:'Hier 18 h 12 : « Bonjour, vous êtes libre jeudi ? »',bouton:'Répondre'},
+  {t:'l',nom:'Thomas L.',sous:'Devis tableau électrique',v:'Nouveau',nouveau:1,aide:'Conversation avec Thomas L., Orvault.',ex:'« Je regarde votre devis ce soir. »',bouton:'Répondre'},
+  {t:'l',nom:'Nadia K.',sous:'« Merci, à jeudi ! »',v:'Lu',aide:'Conversation avec Nadia K., Nantes.',ex:'Rendez-vous jeudi 12/11 à 16 h 00.',bouton:'Ouvrir'}
+ ]},
+ {k:'activite',nom:'Mon activité',lignes:[
+  {g:'Trouver des clients'},
+  {t:'l',nom:'Demandes près de chez moi',sous:'Les clients qui cherchent mon métier',v:'3',chiffre:1,aide:'Les clients qui cherchent votre métier, dans votre rayon.',ex:'« Fuite sous l\'évier, Rezé (5 km) »',bouton:'Ouvrir'},
+  {t:'l',nom:'Être mis en avant',sous:'Apparaître en premier dans les résultats',v:'Bientôt',grise:1,aide:'Pas encore disponible.',ex:'À construire.'},
+  {g:'Gérer mon activité'},
+  {t:'l',nom:'Mes demandes',sous:'Ce que j\'ai publié, et les réponses',v:'›',aide:'Ce que vous avez publié et les réponses reçues.',ex:'« Cherche un peintre pour un salon » · 2 réponses',bouton:'Ouvrir'},
+  {t:'l',nom:'Mon agenda',sous:'Mes rendez-vous, mes horaires, mes jours fermés',v:'2',chiffre:1,aide:'Vos rendez-vous, vos horaires et vos jours fermés.',ex:'Fermé le 11/11 (jour férié).',bouton:'Ouvrir'},
+  {t:'l',nom:'Devis',sous:'Demandes de devis et devis envoyés',v:'1',chiffre:1,aide:'Demandes de devis reçues et devis envoyés.',ex:'Devis ZZ-0042 : en attente.',bouton:'Ouvrir'},
+  {t:'l',nom:'Factures',sous:'Toutes mes factures en PDF',v:'›',aide:'Toutes vos factures, à télécharger en PDF.',ex:'Facture du 05/11/2026 : 85,00 €.',bouton:'Ouvrir'},
+  {t:'l',nom:'Paiements',sous:'Ce que j\'ai encaissé, par carte et en espèces',v:'640,00 €',aide:'Ce que vous avez encaissé.',ex:'Novembre : 640,00 €.',bouton:'Ouvrir'},
+  {t:'l',nom:'Mes clients',sous:'Les personnes pour qui j\'ai déjà travaillé',v:'12',chiffre:1,aide:'Les personnes pour qui vous avez déjà travaillé.',ex:'Julie M. · 3 rendez-vous.',bouton:'Ouvrir'},
+  {g:'Me faire connaître'},
+  {t:'l',nom:'Mes avis',sous:'Ce que mes clients disent de moi',v:'★ 4,8',aide:'Ce que vos clients disent de vous, sur votre page publique.',ex:'« Rapide et soigneux, merci ! »',bouton:'Ouvrir'},
+  {t:'l',nom:'Ma carte de visite',sous:'À imprimer, avec un carré à scanner',v:'›',aide:'Votre carte de visite, chez un imprimeur ou sur une planche A4.',ex:'10 cartes par feuille A4.',bouton:'Ouvrir'},
+  {t:'l',nom:'Mon site',sous:'Une page à mon nom, visible sur Google',v:'Bientôt',grise:1,aide:'Pas encore disponible.',ex:'À construire.'},
+  {g:'Mes démarches'},
+  {t:'l',nom:'Déclarer à l\'URSSAF',sous:'Mes déclarations et leurs rappels',v:'›',aide:'Vos déclarations et leurs rappels.',ex:'Prochaine déclaration : avant le 31/01/2027.',bouton:'Ouvrir'},
+  {t:'l',nom:'Mon auto-entreprise',sous:'La créer et suivre mon dossier',v:'›',aide:'Créer votre auto-entreprise et suivre le dossier.',ex:'Dossier : SIRET reçu.',bouton:'Ouvrir'}
+ ]},
+ {k:'profil',nom:'Mon profil',lignes:[
+  {g:'Mes services'},
+  {t:'l',nom:'Mes métiers',sous:'Électricien, Plombier',v:'2',chiffre:1,aide:'Les métiers que vous proposez.',ex:'Électricien · 45 €/h ; Plombier · 50 €/h',bouton:'Modifier'},
+  {t:'l',nom:'Ma zone',sous:'Autour de Nantes',v:'15 km',aide:'Jusqu\'où vous vous déplacez.',ex:'Rezé, Orvault, Saint-Herblain : oui.',bouton:'Modifier'},
+  {t:'l',nom:'SIRET',sous:'Vérifié',v:'✓',aide:'Votre numéro SIRET est vérifié : un badge apparaît sur votre fiche.',ex:'« SIRET vérifié »',bouton:'Voir'},
+  {g:'Ma fiche'},
+  {t:'l',nom:'Voir ma page publique',sous:'Ce que les clients voient',v:'›',aide:'Votre page, telle que les clients la voient.',ex:'Karim B. · Électricien, Plombier · ★ 4,8',bouton:'Ouvrir'}
+ ]},
+ {k:'abonnements',nom:'Mes abonnements',lignes:[
+  {g:'Prestataires suivis'},
+  {t:'r',id:'ab1',nom:'Julie M. · Ménage',vals:['Actif','Muet'],d:0,aide:'Muet : vous ne recevez plus rien de Julie, mais vous la suivez toujours.',ex:'« Julie est libre jeudi 23/10/2026 à 14 h 00 »'},
+  {t:'r',id:'ab2',nom:'Léa P. · Jardinage',vals:['Actif','Muet'],d:1,aide:'Muet : vous ne recevez plus rien de Léa, mais vous la suivez toujours.',ex:'« Léa propose maintenant : Paysagiste »'},
+  {t:'l',nom:'Ce qui m\'est envoyé',sous:'Créneau libre, nouveau métier, retour',v:'›',aide:'Les 3 choix se règlent dans Paramètres.',ex:'Paramètres › Mes abonnements',bouton:'Ouvrir',va:'parametres'}
+ ]},
+ {k:'parametres',nom:'Paramètres',lignes:[
+  {g:'Apparence'},
+  {t:'r',id:'theme',nom:'Thème',vals:['Automatique','Clair','Sombre'],d:0,aide:'Comme votre téléphone ou votre ordinateur, toujours clair, ou toujours sombre.',ex:'Le choix est gardé sur cet appareil. Sur un autre téléphone, vous le refaites une fois.'},
+  {t:'r',id:'ambiance',nom:'Couleur du menu',sous:'(seulement dans cette maquette)',vals:['Bleu nuit','Vert rafals'],d:0,aide:'Pour comparer : tout l\'écran change tout de suite.',ex:'« Vert rafals » reprend le vert sauge et l\'orange du logo.'},
+  {t:'r',id:'anim',nom:'Formes du fond',sous:'(seulement dans cette maquette)',vals:['Arrêtées','En mouvement'],d:1,aide:'Les formes qui flottent derrière.',ex:'Pour voir l\'écran sans elles.'},
+  {g:'Mes abonnements'},
+  {t:'r',id:'creneau',nom:'Créneau libre',vals:OUI_NON,d:1,oui:1,aide:'Pour tous les prestataires que vous suivez, sur votre téléphone.',ex:'« Karim est libre jeudi 23/10/2026 à 14 h 00 »'},
+  {t:'r',id:'metier',nom:'Nouveau métier',vals:OUI_NON,d:1,oui:1,aide:'Pour tous les prestataires que vous suivez, sur votre téléphone.',ex:'« Karim propose maintenant : Chauffagiste »'},
+  {t:'r',id:'retour',nom:'Retour après une absence',vals:OUI_NON,d:1,oui:1,aide:'Pour tous les prestataires que vous suivez, sur votre téléphone.',ex:'« Karim reprend son activité ce lundi 03/11/2026 »'},
+  {g:'Notifications'},
+  {t:'r',id:'elec',nom:'Demandes « Électricien »',vals:['Me prévenir','Ne pas me prévenir'],d:0,aide:'Un client cherche « Électricien » près de chez vous.',ex:'Vous êtes prévenu de chaque demande « Électricien » dans votre rayon de 15 km autour de Nantes.'},
+  {t:'r',id:'plomb',nom:'Demandes « Plombier »',vals:['Me prévenir','Ne pas me prévenir'],d:0,aide:'Un client cherche « Plombier » près de chez vous.',ex:'Vous êtes prévenu de chaque demande « Plombier » dans votre rayon de 15 km autour de Nantes.'},
+  {t:'r',id:'tel',nom:'Sur ce téléphone',vals:['Coupées','Activées'],d:1,aide:'Le téléphone sonne même quand rafals est fermé. Jamais de nom complet, d\'adresse ni le texte d\'un message.',ex:'« Nouvelle demande : Fuite sous l\'évier, Rezé (5 km) »'},
+  {t:'r',id:'mail',nom:'Par mail',vals:['À chaque demande','Un mail le soir à 18 h','Aucun mail'],d:0,aide:'Les mails de vos conversations, propositions et rendez-vous ne se coupent pas.',ex:'« Un mail le soir à 18 h » : 15 demandes dans la journée, 1 mail au lieu de 15.'}
+ ]}
+];
+const etat={};PAGES.forEach(p=>p.lignes.forEach(l=>{if(l.id)etat[l.id]=l.d;}));
+let page=PAGES.findIndex(p=>p.k==='parametres'),act=0;
+const $=s=>document.querySelector(s);
+const vraies=()=>PAGES[page].lignes.filter(l=>!l.g);
+
+function traits(l){
+  const v=etat[l.id];
+  if(l.vals.length===2)return `<div class="traits deux"><span class="${v?'bleu':'on'}"></span><span class="${v?'on':''}"></span></div>`;
+  return `<div class="traits">${l.vals.map((_,i)=>`<span class="${i===v?'on':''}"></span>`).join('')}</div>`;
+}
+function dessineIcones(){
+  $('#icones').innerHTML=PAGES.map((p,i)=>`<button class="ico" role="tab" aria-selected="${i===page}" aria-label="${p.nom}" data-p="${i}">${SVG[p.k]}${p.pastille?`<span class="pastille">${p.pastille}</span>`:''}</button>`).join('');
+  $('#nom-onglet').textContent=PAGES[page].nom;
+}
+function dessineListe(anime){
+  let n=0;
+  const L=$('#liste');
+  L.classList.toggle('vue',!!anime);
+  L.innerHTML=PAGES[page].lignes.map(l=>{
+    if(l.g)return `<div class="groupe">${l.g}</div>`;
+    const i=n++;const cls=`ligne${i===act?' active':''}${l.grise?' grise':''}`;
+    const nom=`<span class="nom">${l.nom}${l.sous?`<small>${l.sous}</small>`:''}</span>`;
+    if(l.t==='l')return `<div class="${cls}" tabindex="0" data-i="${i}">${nom}<div class="val-zone"><span></span><span class="val${l.chiffre?' chiffre':''}${l.nouveau?' nouveau':''}">${l.v}</span><span class="ouvrir">›</span></div></div>`;
+    return `<div class="${cls}" tabindex="0" data-i="${i}">${nom}<div class="val-zone"><button class="fleche" data-pas="-1" aria-label="Précédent">‹</button><span class="val">${l.vals[etat[l.id]]}</span><button class="fleche" data-pas="1" aria-label="Suivant">›</button>${traits(l)}</div></div>`;
+  }).join('');
+  if(anime)setTimeout(()=>L.classList.remove('vue'),320);
+  const total=vraies().length,part=Math.max(18,Math.min(100,400/total));
+  $('#repere').innerHTML=Array.from({length:4},(_,k)=>`<span class="${Math.min(3,Math.floor(act/total*4))===k?'on':''}"></span>`).join('');
+  const c=$('#curseur');c.style.setProperty('--taille',part+'%');c.style.setProperty('--haut',(act/Math.max(1,total-1))*(100-part)+'%');
+  const a=L.querySelector('.ligne.active');if(a)a.scrollIntoView({block:'nearest'});
+  dessineAide();
+}
+function dessineAide(){
+  const l=vraies()[act];
+  let bas='';
+  if(l.t==='r')bas=`<div class="options">${l.vals.map((v,i)=>`<button class="opt${i===etat[l.id]?' on':''}" data-o="${i}">${v}</button>`).join('')}</div><div class="note" id="note">✓ Enregistré</div>`;
+  else if(l.bouton)bas=`<button class="gros" data-ouvre="1">${l.bouton}</button><div class="note" id="note">Dans le vrai site, cette page s'ouvrirait.</div>`;
+  $('#aide').innerHTML=`<h2>${l.nom}</h2><p>${l.aide}</p><div class="exemple">${l.ex}</div>${bas}`;
+}
+function montre(){const e=$('#note');if(!e)return;e.classList.add('vu');clearTimeout(montre.t);montre.t=setTimeout(()=>e.classList.remove('vu'),1400);}
+function applique(){
+  document.documentElement.dataset.ambiance=etat.ambiance?'vert':'';
+  $('#fond').classList.toggle('arret',!etat.anim);
+}
+function choisit(v){
+  const l=vraies()[act];if(l.t!=='r')return;
+  etat[l.id]=(v+l.vals.length)%l.vals.length;applique();dessineListe();montre();
+}
+function allerA(i){page=i;act=0;dessineIcones();dessineListe(true);}
+
+document.addEventListener('click',e=>{
+  const ic=e.target.closest('.ico');if(ic){allerA(+ic.dataset.p);return;}
+  const ligne=e.target.closest('.ligne');
+  const f=e.target.closest('.fleche');if(f&&ligne){act=+ligne.dataset.i;choisit(etat[vraies()[act].id]+ +f.dataset.pas);return;}
+  if(ligne){act=+ligne.dataset.i;dessineListe();return;}
+  const o=e.target.closest('.opt');if(o){choisit(+o.dataset.o);return;}
+  if(e.target.closest('[data-ouvre]')){const l=vraies()[act];if(l.va)allerA(PAGES.findIndex(p=>p.k===l.va));else montre();return;}
+  if(e.target.closest('#defaut')){PAGES[page].lignes.forEach(l=>{if(l.id)etat[l.id]=l.d;});applique();dessineListe();return;}
+  if(e.target.closest('#retour')){allerA(0);}
+});
+document.addEventListener('keydown',e=>{
+  const k=e.key,n=vraies().length;
+  if(k==='ArrowDown'){e.preventDefault();act=(act+1)%n;dessineListe();}
+  else if(k==='ArrowUp'){e.preventDefault();act=(act-1+n)%n;dessineListe();}
+  else if(k==='ArrowRight'||k==='ArrowLeft'){const l=vraies()[act];if(l.t==='r'){e.preventDefault();choisit(etat[l.id]+(k==='ArrowRight'?1:-1));}}
+  else if(k==='q'||k==='Q'||k==='e'||k==='E'){allerA((page+(k.toLowerCase()==='e'?1:-1)+PAGES.length)%PAGES.length);}
+  else if(k==='r'||k==='R'){$('#defaut').click();}
+  else if(k==='Escape'){allerA(0);}
+});
+applique();dessineIcones();dessineListe(true);
+</script>

@@ -112,8 +112,6 @@ class LimitesVisibles(BaseModel):
     adresse_remplie: bool
     case_cochee_le: datetime | None
     prix_max_centimes: int
-    rendez_vous_ce_mois: int
-    rendez_vous_par_mois: int
     total_12_mois_centimes: int
     total_max_centimes: int
     plafond_atteint: bool

@@ -4,15 +4,15 @@ Règles : .doc/regles-metier/RM-PRESTATAIRES.md § « Limites d'un prestataire s
 
 1. Métiers interdits sans SIRET (METIER.siret_obligatoire).
 2. 100 € au plus par proposition.
-3. 2 rendez-vous par mois du calendrier (confirmés, à venir ou passés ; un rendez-vous annulé ne compte pas).
-4. 1 000 € de rendez-vous qui ont eu lieu sur les 12 derniers mois ; atteints : ses propositions en attente sont
+3. (Retirée le 25/11/2026 par Raphael : il n'y a plus de limite de 2 rendez-vous par mois.)
+4. 2 000 € de rendez-vous qui ont eu lieu sur les 12 derniers mois ; atteints : ses propositions en attente sont
    retirées et il est prévenu.
 7. Avant sa première réponse : son adresse, et la case « Mon activité est occasionnelle et je déclare mes revenus
    aux impôts ».
 (Règles 5 et 6 : pas de limite de durée ; étiquette et avertissement, affichés par les écrans.)"""
 
 from dataclasses import dataclass
-from datetime import datetime, time, timedelta
+from datetime import datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -28,7 +28,6 @@ from app.services import clients, journal, mails, messagerie
 from app.services import paiements as service_paiements
 from app.services.erreurs import ErreurRegle
 
-PARIS = reglages.FUSEAU_AFFICHAGE
 ETIQUETTE = "Particulier, non professionnel"
 AVERTISSEMENT = "Pas de facture, pas de garantie, pas d'assurance professionnelle."
 CASE = "Mon activité est occasionnelle et je déclare mes revenus aux impôts."
@@ -47,16 +46,46 @@ def est_particulier(prestataire: Prestataire) -> bool:
 
 # ---------- Règle 1 : les métiers ----------
 
+# Équivalent autorisé sans SIRET d'un métier qui en demande un (demande de Raphael du 25/11/2026 : « pour plombier ca
+# serai bricoleur » ; choix « A » : proposé à la place, il ne voit jamais les demandes du métier interdit).
+# Codes de metiers.json. Un métier absent d'ici n'a pas d'équivalent (santé, conduite, coiffure… : diplôme ou
+# assurance obligatoire). Liste choisie par Claude, à relire par Raphael et par l'avocat (RM-METIERS-SANS-SIRET.md).
+EQUIVALENTS_SANS_SIRET = {
+    "plombier": "multiservices", "electricien": "multiservices", "peintre": "multiservices",
+    "plaquiste": "multiservices", "carreleur": "multiservices", "poseur-sols": "multiservices",
+    "storiste": "multiservices", "cloture": "multiservices",
+    "menuisier": "montage-meubles", "cuisiniste": "montage-meubles",
+    "paysagiste": "jardinier", "elagueur": "taille-haies",
+    "demenageur": "debarras", "coursier": "courses", "aide-domicile": "courses",
+    "assistante-maternelle": "garde-enfants", "educateur-canin": "promeneur-chiens",
+    "chef-domicile": "cours-cuisine", "traiteur": "cours-cuisine", "patissier-evenements": "cours-cuisine",
+    "maquillage": "relooking", "comptable": "secretariat",
+}
+
+
+def equivalent_sans_siret(db: Session, metier: Metier) -> Metier | None:
+    """Le métier à choisir à la place, sans SIRET. Ex. « Plombier » → « Homme toutes mains / Multiservices » ;
+    « Infirmier » → None (pas d'équivalent) ; « Jardinier » → None (déjà autorisé)."""
+    code = EQUIVALENTS_SANS_SIRET.get(metier.code) if metier.siret_obligatoire else None
+    if code is None:
+        return None
+    return db.scalar(select(Metier).where(Metier.code == code, Metier.est_active.is_(True), Metier.siret_obligatoire.is_(False)))
+
 
 def metier_interdit(db: Session, prestataire: Prestataire, metier_id: int) -> str | None:
     """La raison si ce métier demande un SIRET qu'il n'a pas ; None s'il peut l'exercer.
-    Ex. Karim sans SIRET, « Plombier » → « Plombier demande un SIRET… » ; Emma, « Promeneur de chiens » → None."""
+    Ex. Karim sans SIRET, « Plombier » → « Plombier demande un SIRET. Sans SIRET, choisissez plutôt « Homme toutes
+    mains / Multiservices »… » ; Emma, « Promeneur de chiens » → None."""
     if not est_particulier(prestataire):
         return None
     metier = db.get_one(Metier, metier_id)
     if not metier.siret_obligatoire:
         return None
-    return f"« {metier.nom} » demande un SIRET : {CREER}."
+    equivalent = equivalent_sans_siret(db, metier)
+    if equivalent is None:
+        return f"« {metier.nom} » demande un SIRET : {CREER}."
+    return (f"« {metier.nom} » demande un SIRET. Sans SIRET, choisissez plutôt « {equivalent.nom} » dans « Mon profil », "
+            f"ou {CREER}.")
 
 
 # ---------- Règle 7 : l'adresse et la case ----------
@@ -86,23 +115,7 @@ def cocher_la_case(db: Session, prestataire: Prestataire, maintenant: datetime) 
     return prestataire
 
 
-# ---------- Règles 3 et 4 : compter ----------
-
-
-def _mois(jour: datetime) -> tuple[datetime, datetime]:
-    """Le mois du calendrier (heure de Paris) où tombe ce moment. Ex. le 28/10/2026 → du 01/10 à 0 h au 01/11 à 0 h."""
-    local = jour.astimezone(PARIS)
-    debut = datetime.combine(local.date().replace(day=1), time(0), tzinfo=PARIS)
-    fin = datetime.combine((debut.date() + timedelta(days=32)).replace(day=1), time(0), tzinfo=PARIS)
-    return debut, fin
-
-
-def rendez_vous_du_mois(db: Session, prestataire: Prestataire, jour: datetime) -> int:
-    """Rendez-vous confirmés (à venir ou passés) dont le jour tombe dans ce mois ; un rendez-vous annulé ne compte pas."""
-    debut, fin = _mois(jour)
-    return db.scalar(select(func.count()).select_from(RendezVous).where(
-        RendezVous.prestataire_id == prestataire.id, RendezVous.statut == "confirme",
-        RendezVous.debut >= debut, RendezVous.debut < fin)) or 0
+# ---------- Règle 4 : compter ----------
 
 
 def total_des_12_mois(db: Session, prestataire: Prestataire, maintenant: datetime) -> int:
@@ -125,8 +138,6 @@ class Limites:
     adresse_remplie: bool
     case_cochee_le: datetime | None
     prix_max_centimes: int
-    rendez_vous_ce_mois: int
-    rendez_vous_par_mois: int
     total_12_mois_centimes: int
     total_max_centimes: int
     plafond_atteint: bool
@@ -139,8 +150,6 @@ def limites_de(db: Session, prestataire: Prestataire, maintenant: datetime) -> L
         adresse_remplie=clients.adresse_de(db, db.get_one(Compte, prestataire.compte_id)) is not None,
         case_cochee_le=prestataire.activite_occasionnelle_le,
         prix_max_centimes=reglages.PARTICULIER_PRIX_MAX_CENTIMES,
-        rendez_vous_ce_mois=rendez_vous_du_mois(db, prestataire, maintenant),
-        rendez_vous_par_mois=reglages.PARTICULIER_RENDEZ_VOUS_PAR_MOIS,
         total_12_mois_centimes=total, total_max_centimes=reglages.PARTICULIER_TOTAL_CENTIMES,
         plafond_atteint=total >= reglages.PARTICULIER_TOTAL_CENTIMES,
     )
@@ -179,22 +188,18 @@ def verifier_proposition(db: Session, prestataire: Prestataire, metier_id: int, 
 
 
 def verifier_acceptation(db: Session, prestataire: Prestataire, proposition: Proposition, maintenant: datetime) -> None:
-    """Le client ne peut pas accepter si ce particulier a déjà ses 2 rendez-vous du mois, ou atteint ses 1 000 €."""
+    """Le client ne peut pas accepter si ce particulier a atteint ses 2 000 € sur 12 mois."""
     if not est_particulier(prestataire):
         return
     if total_des_12_mois(db, prestataire, maintenant) >= reglages.PARTICULIER_TOTAL_CENTIMES:
         raise ErreurRegle(f"{prestataire.nom_affiche} a atteint la limite des particuliers : cette proposition ne peut plus être acceptée.")
-    maxi = reglages.PARTICULIER_RENDEZ_VOUS_PAR_MOIS
-    if rendez_vous_du_mois(db, prestataire, proposition.debut) >= maxi:
-        raise ErreurRegle(f"{prestataire.nom_affiche} a atteint sa limite du mois ({maxi} rendez-vous sans SIRET) : "
-                          "choisissez un jour du mois suivant, ou un autre prestataire.")
 
 
 # ---------- Tâche de fond : le plafond de l'année ----------
 
 
 def retirer_au_plafond(db: Session, maintenant: datetime) -> int:
-    """Un particulier vient d'atteindre 1 000 € sur 12 mois : ses propositions encore en attente sont retirées, une ligne
+    """Un particulier vient d'atteindre 2 000 € sur 12 mois : ses propositions encore en attente sont retirées, une ligne
     le dit dans chaque conversation, et il reçoit un mail. Un rendez-vous déjà confirmé n'est jamais annulé pour ça.
     Rend le nombre de propositions retirées."""
     en_attente = db.scalars(

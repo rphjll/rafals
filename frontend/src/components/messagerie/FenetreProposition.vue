@@ -42,11 +42,10 @@ const optionsMetiers = computed(() =>
   profil.value ? [profil.value.metier_principal, ...profil.value.metiers_secondaires].map((m) => ({ valeur: m.id, texte: m.nom })) : [],
 )
 const sansDemande = computed(() => props.demandes.length === 0)
-// La case « Carte » : verrouillée sans SIRET vérifié, ou tant que le paiement par carte n'est pas activé
-const etatCarte = ref<{ siret_verifie: boolean; pret: boolean } | null>(null)
+// La case « Carte » : verrouillée tant que le paiement par carte n'est pas activé (avec ou sans SIRET depuis le 25/11/2026)
+const etatCarte = ref<{ pret: boolean } | null>(null)
 const verrouCarte = computed(() => {
   if (!etatCarte.value) return undefined
-  if (!etatCarte.value.siret_verifie) return VERROU_SIRET.carte
   return etatCarte.value.pret ? undefined : VERROU_SIRET.carteInactive
 })
 
@@ -56,7 +55,7 @@ watch(
     if (!ouverte) return
     erreur.value = ''
     demandeId.value = props.demandes[0]?.id ?? null
-    etatCarte.value = await appelerServeur<{ siret_verifie: boolean; pret: boolean }>('/api/moi/prestataire/paiement-carte').catch(() => null)
+    etatCarte.value = await appelerServeur<{ pret: boolean }>('/api/moi/prestataire/paiement-carte').catch(() => null)
     if (verrouCarte.value) carte.value = false
     if (sansDemande.value && !profil.value) {
       profil.value = await appelerServeur<ProfilPrestataire>('/api/moi/prestataire').catch(() => null)

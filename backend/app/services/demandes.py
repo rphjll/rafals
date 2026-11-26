@@ -74,12 +74,17 @@ def _controler(db: Session, saisie: Saisie, maintenant: datetime) -> tuple[Saisi
     if saisie.quand == "jour_precis":
         if jour is None:
             raise ErreurRegle("Indiquez le jour voulu.")
-        if jour < maintenant.astimezone(reglages.FUSEAU_AFFICHAGE).date():
+        aujourd_hui = maintenant.astimezone(reglages.FUSEAU_AFFICHAGE).date()
+        if jour < aujourd_hui:
             raise ErreurRegle("Le jour voulu est déjà passé.")
+        if jour > aujourd_hui + reglages.DEMANDE_JOUR_AVANCE_MAX:
+            raise ErreurRegle("Le jour voulu est trop loin : choisissez un jour dans l'année qui vient.")
     if saisie.lieu not in LIEUX:
         raise ErreurRegle("Indiquez où : chez vous ou chez le prestataire.")
     if saisie.budget_centimes is not None and saisie.budget_centimes <= 0:
         raise ErreurRegle("Le budget doit être un montant positif (ou laissez-le vide).")
+    if saisie.budget_centimes is not None and saisie.budget_centimes > reglages.DEMANDE_BUDGET_MAX_CENTIMES:
+        raise ErreurRegle(f"Le budget ne peut pas dépasser {reglages.DEMANDE_BUDGET_MAX_CENTIMES // 100:_} €.".replace("_", " "))
     commune = _commune(db, saisie)
     ligne = " ".join((saisie.adresse_ligne or "").split()) or None
     mini, maxi = reglages.ADRESSE_LIGNE_LONGUEUR
@@ -139,6 +144,11 @@ def publier(db: Session, client: Compte, saisie: Saisie, photos: list[Photo], ma
     _verifier_droit(db, client, maintenant)
     verifier_place(db, client)
     propre, commune = _controler(db, saisie, maintenant)
+    # La même demande déjà ouverte (même titre, même métier) : pas de doublon (audit du 14/11/2026)
+    if db.scalar(select(Demande.id).where(Demande.client_id == client.id, Demande.statut == "ouverte",
+                                          Demande.metier_id == propre.metier_id,
+                                          func.lower(Demande.titre) == propre.titre.lower()).limit(1)) is not None:
+        raise ErreurRegle("Vous avez déjà une demande ouverte avec ce titre : modifiez-la ou fermez-la d'abord.")
     if len(photos) > reglages.DEMANDE_PHOTOS_MAX:
         raise ErreurRegle(f"Au plus {reglages.DEMANDE_PHOTOS_MAX} photos par demande.")
     for photo in photos:
@@ -156,7 +166,7 @@ def publier(db: Session, client: Compte, saisie: Saisie, photos: list[Photo], ma
     db.flush()
     for ordre, photo in enumerate(photos, start=1):
         fichier = fichiers.enregistrer(db, client, nom_fichier=photo.nom_fichier, type_mime=photo.type_mime,
-                                       contenu=photo.contenu, maintenant=maintenant)
+                                       contenu=photo.contenu, maintenant=maintenant, photo=True)
         db.add(PhotoDemandePubliee(demande_id=demande.id, fichier_id=fichier.id, ordre=ordre))
     journal.noter(db, auteur_id=client.id, action="publier_demande", table_cible="demande", ligne_id=demande.id,
                   apres={"titre": demande.titre, "metier_id": demande.metier_id, "commune_id": demande.commune_id},

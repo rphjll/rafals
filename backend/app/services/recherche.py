@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from app import reglages
 from app.modeles.metiers import CategorieMetier, Metier
 from app.modeles.prestataires import Commune, Prestataire
-from app.services import avis, communes, stripe_api
+from app.services import avis, communes, particuliers, stripe_api
 from app.services.erreurs import ErreurRegle
 from app.services.prestataires import aujourd_hui, en_cours, metiers_exerces
 
@@ -77,14 +77,21 @@ def vient_chez_le_client(r: Resultat) -> bool:
 
 
 def carte_acceptee(prestataire: Prestataire) -> bool:
-    """SIRET vérifié et paiement par carte activé : il peut proposer la carte dans ses propositions."""
-    return prestataire.siret_statut == "verifie" and prestataire.stripe_pret and stripe_api.disponible()
+    """Paiement par carte activé (compte Stripe relié et prêt) : il peut proposer la carte dans ses propositions.
+    Avec ou sans SIRET depuis le 25/11/2026 (demande de Raphael). Ex. Emma, sans SIRET, Stripe prêt : oui."""
+    return bool(prestataire.stripe_pret) and stripe_api.disponible()
 
 
 def _garder(r: Resultat, filtres: Filtres) -> bool:
     if filtres.vient_chez_moi and not vient_chez_le_client(r):
         return False
     return not (filtres.carte and not carte_acceptee(r.prestataire))
+
+
+def metiers_montres(db: Session, prestataire: Prestataire, jour: date) -> list[int]:
+    """Ses métiers exercés, sans ceux qui demandent un SIRET qu'il n'a pas : il ne pourrait rien y proposer
+    (audit du 14/11/2026). Ex. Karim sans SIRET, « Plombier » et « Montage de meubles » → seulement Montage de meubles."""
+    return [m for m in metiers_exerces(db, prestataire, jour) if particuliers.metier_interdit(db, prestataire, m) is None]
 
 
 def _dans_le_rayon(db: Session, client: Commune, jour: date) -> list[tuple[Prestataire, Commune, float, list[int]]]:
@@ -95,7 +102,7 @@ def _dans_le_rayon(db: Session, client: Commune, jour: date) -> list[tuple[Prest
         depart = db.get_one(Commune, prestataire.commune_id)
         distance = communes.distance_km(depart, client)
         if distance <= prestataire.distance_km:
-            trouves.append((prestataire, depart, distance, metiers_exerces(db, prestataire, jour)))
+            trouves.append((prestataire, depart, distance, metiers_montres(db, prestataire, jour)))
     return trouves
 
 

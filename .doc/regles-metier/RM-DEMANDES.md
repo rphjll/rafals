@@ -49,7 +49,7 @@ Réponse de Raphael, mot pour mot : « faut que on pussie metre l'adresse et que
   - Exemple 1 : Mme Dupont tape « 8 allée des Pins, Pessac », choisit « 8 Allée des Pins 33600 Pessac » : le plan s'affiche avec un repère sur sa rue.
   - Exemple 2 : M. Petit se trompe de ville, le voit sur le plan, clique [Changer] et corrige.
 - **Ce qui ne change pas** (choix de Claude) : **la rue n'est montrée qu'au prestataire choisi**, après acceptation d'une proposition. Sur l'accueil et pour les prestataires qui répondent, on ne voit que la ville (« Pessac »). La ville de la demande est celle de l'adresse.
-- **Photos** : inchangé, 5 au plus, JPG ou PNG, 5 Mo chacune ; elles se choisissent dans la même carte.
+- **Photos** : inchangé, 5 au plus, JPG ou PNG, 5 Mo chacune ; elles se choisissent dans la même carte. Réduites à 1600 pixels à l'envoi (25/11/2026, détail dans RM-PRESTATAIRES).
 - **Plan OpenStreetMap et non Google Maps** (choix de Claude, à confirmer par Raphael) : Google Maps demande un compte Google avec une carte bancaire et une clé, et envoie l'adresse des visiteurs à Google ; OpenStreetMap marche tout de suite, sans compte. Détail : `.doc/technique/API-EXTERNES.md` § 3.
 
 ## Précisions prises au lot 8.3, première partie (choix de Claude le 06/10/2026, en mode « sans question » ; à relire par Raphael)
@@ -90,10 +90,10 @@ Construit : qui peut répondre, répondre, propositions, négociation du prix, r
 ## Prestataire sans SIRET : des limites pour répondre et proposer (validé par Raphael le 09/10/2026, construit le 12/10/2026)
 La règle complète est dans `RM-PRESTATAIRES.md` § « Limites d'un prestataire sans SIRET ». Ce qu'elle change ici :
 - **Répondre** : bouton [Répondre] verrouillé 🔒, avec la raison, sur une demande d'un métier interdit sans SIRET ; avant sa première réponse, son adresse doit être remplie et la case « Mon activité est occasionnelle et je déclare mes revenus aux impôts » cochée.
-- **Proposer** : 100 € au plus ; espèces seulement (déjà en place).
-- **Accepter** : refusé si le prestataire a déjà 2 rendez-vous confirmés dans le mois du rendez-vous, ou s'il a atteint 1 000 € de rendez-vous qui ont eu lieu sur les 12 derniers mois (ses propositions en attente sont alors retirées et il est prévenu) ; le client lit l'avertissement « Pas de facture, pas de garantie, pas d'assurance professionnelle. » avant de confirmer.
+- **Proposer** : 100 € au plus ; espèces, ou carte s'il a relié son compte Stripe (depuis le 25/11/2026).
+- **Accepter** : refusé si le prestataire a atteint 2 000 € de rendez-vous (1 000 € et 2 rendez-vous par mois au plus jusqu'au 25/11/2026, changé par Raphael) qui ont eu lieu sur les 12 derniers mois (ses propositions en attente sont alors retirées et il est prévenu) ; le client lit l'avertissement « Pas de facture, pas de garantie, pas d'assurance professionnelle. » avant de confirmer.
   - Exemple 1 : Emma, sans SIRET, propose 40 € pour une pelouse → acceptée par Mme Dupont après l'avertissement.
-  - Exemple 2 : Emma a déjà 2 rendez-vous en octobre → Mme Dupont ne peut pas accepter sa proposition pour le 28/10.
+  - Exemple 2 : Emma a déjà fait 2 000 € sur les 12 derniers mois → Mme Dupont ne peut pas accepter sa proposition pour le 28/10. Si Emma a seulement 3 rendez-vous en octobre, Mme Dupont peut accepter.
 
 ## Répondre : une conversation, puis une proposition
 - [Répondre] ouvre la conversation entre ce prestataire et ce client (`RM-MESSAGERIE.md`), avec la demande rappelée en haut.
@@ -164,3 +164,14 @@ Réponses par demande : 10 · demandes ouvertes par client : 5 · durée : 30 jo
 ## Références
 - `RM-MESSAGERIE.md`, `RM-ALERTES.md`, `RM-RENDEZ-VOUS.md`, `RM-PAIEMENTS.md`, `RM-AVIS.md`, `RM-CLIENTS.md`, `RM-RECHERCHE.md`
 - AlloVoisins : https://support.allovoisins.com/hc/fr/articles/360013305880 (répondre aux demandes), https://support.allovoisins.com/hc/fr/articles/4411371579410 (payer et se faire payer)
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- Budget d'une demande : 50 000 € au plus. « Un jour précis » : dans l'année qui vient.
+- Pas deux demandes ouvertes avec le même titre et le même métier pour un même client.
+- Une proposition : de 1 € à 50 000 €, au plus 1 an à l'avance.
+- Conversation bloquée : la proposition en attente ne peut plus être négociée ni acceptée.
+- Au moment d'accepter, la proposition est revérifiée : le prestataire exerce toujours ce métier, et s'il n'a plus de SIRET vérifié, le métier et le prix respectent les limites des particuliers. Sinon : « … ne peut plus tenir cette proposition ».
+- Un client ne peut pas accepter deux rendez-vous à la même heure.
+- [Répondre] est verrouillé quand le lieu ne va pas : demande « chez le prestataire » et prestataire « chez le client » seulement, ou l'inverse.
+- [Répondre] refusé : le message donne la vraie raison (en pause, trop loin, autre métier…).
+- Le métier deviné dans « Publier une demande » (`frontend/src/outils/devineMetier.ts`) : mots entiers seulement ; à égalité entre deux métiers, rien n'est deviné et le client choisit.

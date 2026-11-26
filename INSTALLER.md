@@ -36,8 +36,8 @@ Si une étape échoue, lis le message, corrige (par exemple : lance Docker Deskt
 
 - **Créer ton compte** sur le site. Le mail de vérification arrive dans la page des mails de test : **http://localhost:8025**.
 - **Devenir administrateur** : double-clique sur `nommer-premier-administrateur.bat` et tape l'adresse mail de ton compte.
-- **Les fois suivantes** : `demarrer.bat` pour lancer rafals, `arreter.bat` pour l'arrêter.
-- **Recevoir les nouveautés** : dans `cmd`, tape `cd C:\rafals` puis `git pull`, puis double-clique sur `demarrer.bat`. Si une nouveauté ajoute un fichier `db\schema_vXX.sql`, il faut l'exécuter une fois (la commande est écrite en haut du fichier).
+- **Les fois suivantes** : `demarrer.bat` pour lancer rafals (il ouvre Docker Desktop tout seul ; environ 1 minute), `arreter.bat` pour l'arrêter.
+- **Recevoir les nouveautés** : dans `cmd`, tape `cd C:\rafals` puis `git pull`, puis double-clique sur `installer.bat` (il reconstruit les boîtes Docker ; `demarrer.bat` ne le fait plus, pour aller vite). Si une nouveauté ajoute un fichier `db\schema_vXX.sql`, il faut l'exécuter une fois (la commande est écrite en haut du fichier).
 
 ## Les services extérieurs (facultatif)
 

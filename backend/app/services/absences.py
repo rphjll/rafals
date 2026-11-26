@@ -87,6 +87,8 @@ def _apres_le_debut(rdv: RendezVous, maintenant: datetime) -> None:
 def signaler_client_absent(db: Session, prestataire: Prestataire, rdv: RendezVous, maintenant: datetime) -> RendezVous:
     """[Client absent], par le prestataire, après l'heure. Le client est prévenu et a 7 jours pour contester."""
     _apres_le_debut(rdv, maintenant)
+    if rdv.paye_direct_le is not None:  # audit du 14/11/2026
+        raise ErreurRegle("Vous avez noté ce rendez-vous comme payé : le client ne peut pas être marqué absent.")
     rdv.absent, rdv.absence_signalee_le = "client", maintenant
     communs.noter(db, prestataire.compte_id, "signaler_client_absent", rdv, maintenant)
     communs.prevenir(db, rdv, sujet="rafals : absence signalée",

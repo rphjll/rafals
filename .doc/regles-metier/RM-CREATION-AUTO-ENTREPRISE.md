@@ -72,3 +72,6 @@ Le numéro de sécurité sociale et les papiers sont effacés dès que le dossie
 
 ### Avant la mise en ligne (à la charge de Raphael, rien avant)
 Compte INPI au nom de l'entreprise rafals ; vérification des frais et des textes par un professionnel.
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- Un métier de la liste des métiers réglementés part toujours au guichet comme « artisanale réglementée », quel que soit son dossier (ex. Terrassier, Maréchal-ferrant).

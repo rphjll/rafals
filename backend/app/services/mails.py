@@ -8,6 +8,8 @@ from app import config
 
 
 def envoyer_mail(destinataire: str, sujet: str, texte: str) -> None:
+    if destinataire.startswith("compte-ferme-"):  # adresse inventée à la fermeture d'un compte : rien à envoyer
+        return
     message = EmailMessage()
     message["From"] = config.MAIL_EXPEDITEUR
     message["To"] = destinataire

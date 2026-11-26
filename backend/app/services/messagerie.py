@@ -112,6 +112,13 @@ def commencer_par_le_client(db: Session, client: Compte, prestataire_id: int, ma
     if prestataire is None:
         raise ErreurRegle("Ce prestataire n'existe pas.", 404)
     existante = _conversation(db, client.id, prestataire.id)
+    if existante is None and client.email_verifie_le is None:  # audit du 14/11/2026
+        raise ErreurRegle("Vérifiez d'abord votre adresse mail (lien reçu par mail) pour écrire à un prestataire.", 403)
+    if existante is None:  # audit du 14/11/2026 (D3) : 16 ou 17 ans, il faut l'accord des parents, comme pour réserver
+        from app.services import droits  # ici : droits charge comptes, qui charge ce fichier
+        if droits.accord_parental_necessaire(client, maintenant) and not droits.accord_parental_accepte(db, client):
+            raise ErreurRegle("Avant d'écrire à un prestataire, l'accord de vos parents doit être accepté "
+                              "(ligne « Accord de tes parents » dans votre profil).", 403)
     if existante is None and prestataire.statut != "actif":
         raise ErreurRegle("Ce prestataire n'est pas joignable en ce moment.")
     return existante or creer(db, client.id, prestataire, maintenant)
@@ -166,7 +173,7 @@ def envoyer(db: Session, compte: Compte, conversation: Conversation, texte: str,
     db.flush()
     for ordre, photo in enumerate(photos, start=1):
         fichier = fichiers.enregistrer(db, compte, nom_fichier=photo.nom_fichier, type_mime=photo.type_mime,
-                                       contenu=photo.contenu, maintenant=maintenant)
+                                       contenu=photo.contenu, maintenant=maintenant, photo=True)
         db.add(PhotoMessage(message_id=message.id, fichier_id=fichier.id, ordre=ordre))
     conversation.dernier_message_le = maintenant
     _marquer_lu(db, compte, conversation, maintenant)  # celui qui écrit a forcément lu ce qui précède

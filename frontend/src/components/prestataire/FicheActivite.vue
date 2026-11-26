@@ -115,7 +115,7 @@ async function ouvrirMetiers() {
   lignesActivite.value?.ouvrir('Mes métiers')
 }
 const resumes = computed(() => ({
-  'Sans SIRET : vos limites': 'Petits services payés en espèces, 100 € au plus par proposition',
+  'Sans SIRET : vos limites': 'Petits services, 100 € au plus par proposition',
   'Mes métiers': [`${props.profil.metier_principal.nom} (principal)`, ...props.profil.metiers_secondaires.map((m) => m.nom)].join(' · '),
   Visibilité:
     props.profil.statut === 'en_pause'
@@ -154,7 +154,7 @@ const resumes = computed(() => ({
         <p class="doux petit">
           SIRET {{ siretLisible(profil.siret) }}
           <template v-if="profil.siret_statut !== 'verifie'">
-            · espèces seulement<template v-if="profil.siret_statut === 'a_verifier'"> (nouvel essai automatique auprès de l'État)</template>
+            · pas de facture ni de devis<template v-if="profil.siret_statut === 'a_verifier'"> (nouvel essai automatique auprès de l'État)</template>
           </template>
         </p>
         <template v-if="profil.statut !== 'arrete'" #boutons>

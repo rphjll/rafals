@@ -47,10 +47,18 @@ def test_prix_sur_la_carte_et_la_page_publique(fabrique_prestataire, client, met
     prix(karim, metiers["Plombier"], 4500)
     karim_id = karim.client.get("/api/moi/prestataire").json()["id"]
     pessac = id_commune(client, "33600", "Pessac")
-    carte_plombier = next(c for c in client.get("/api/recherche", params={"metier_id": metiers["Plombier"], "commune_id": pessac})
-                          .json()["resultats"] if c["prestataire_id"] == karim_id)
-    carte_electricien = next(c for c in client.get("/api/recherche", params={"metier_id": metiers["Électricien"], "commune_id": pessac})
-                             .json()["resultats"] if c["prestataire_id"] == karim_id)
+    def carte_de(metier: str) -> dict:
+        # Toutes les pages : la base de test garde les plombiers des tests d'avant (30 cartes par page)
+        page = 1
+        while True:
+            reponse = client.get("/api/recherche", params={"metier_id": metiers[metier], "commune_id": pessac, "page": page}).json()
+            trouvee = next((c for c in reponse["resultats"] if c["prestataire_id"] == karim_id), None)
+            if trouvee is not None or page >= reponse["pages"]:
+                assert trouvee is not None, f"Karim n'est pas dans la recherche « {metier} »"
+                return trouvee
+            page += 1
+
+    carte_plombier, carte_electricien = carte_de("Plombier"), carte_de("Électricien")
     publique = client.get(f"/api/prestataires/{karim_id}").json()
 
     assert carte_plombier["prix_centimes"] == 4500  # « 45 €/h »

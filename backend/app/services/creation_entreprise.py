@@ -111,7 +111,7 @@ def metier_reglemente(metier: Metier) -> bool:
 def forme_exercice(db: Session, metier: Metier) -> str:
     """Ex. plombier → ARTISANALE_REGLEMENTEE ; cours de langues → INDEPENDANTE (libérale non réglementée)."""
     forme = reglages.CREATION_FORME_PAR_CATEGORIE.get(_categorie(db, metier), "COMMERCIALE")
-    return "ARTISANALE_REGLEMENTEE" if forme == "ARTISANALE" and metier_reglemente(metier) else forme
+    return "ARTISANALE_REGLEMENTEE" if metier_reglemente(metier) else forme  # ex. Terrassier, Maréchal-ferrant (audit du 14/11/2026)
 
 
 def regles_des_metiers(db: Session) -> tuple[list[int], list[int]]:

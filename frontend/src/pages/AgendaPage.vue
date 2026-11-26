@@ -164,7 +164,7 @@ watch(compte, charger)
           <span class="forme f1" /><span class="forme f2" />
           <p style="font-weight: 600; opacity: 0.9">Bienvenue dans votre agenda</p>
           <h1 style="font-size: clamp(26px, 4.5vw, 34px)">Quand travaillez-vous d’habitude ?</h1>
-          <p>Choisissez les horaires d’une semaine normale. Les clients pourront réserver seulement pendant ces heures.</p>
+          <p>Choisissez les horaires d’une semaine normale. Votre agenda les affiche pour vous aider à choisir l’heure de vos rendez-vous.</p>
         </section>
         <div class="carte form p-[18px]">
           <p v-if="sansHoraires.length > 1" class="doux petit" style="font-weight: 700">Étape {{ metiers.length - sansHoraires.length + 1 }} sur {{ metiers.length }}</p>

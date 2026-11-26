@@ -1,6 +1,6 @@
 """Limites d'un prestataire sans SIRET vérifié (RM-PRESTATAIRES.md § « Limites d'un prestataire sans SIRET »,
-RM-METIERS-SANS-SIRET.md) : métiers interdits, adresse et case, 100 € par proposition, 2 rendez-vous par mois,
-1 000 € sur 12 mois, propositions retirées au plafond. Avec un SIRET vérifié, aucune limite."""
+RM-METIERS-SANS-SIRET.md) : métiers interdits, adresse et case, 100 € par proposition, plus de limite par mois (retirée le 25/11/2026),
+2 000 € sur 12 mois, propositions retirées au plafond. Avec un SIRET vérifié, aucune limite."""
 
 from datetime import UTC, datetime, time, timedelta
 
@@ -133,6 +133,35 @@ def test_sans_siret_pas_de_reponse_a_un_metier_interdit(fabrique_emma, fabrique_
     assert sur_l_accueil(emma.client, fuite.demande)["peut_repondre"] is True and repondre(emma, fuite.demande).status_code == 201
 
 
+# ---------- Règle 1 bis : le métier à prendre à la place (25/11/2026) ----------
+
+
+def test_chaque_equivalent_existe_et_est_autorise_sans_siret(base: Session) -> None:
+    """Liste lue dans le code : chaque métier interdit a un équivalent qui existe, est actif et autorisé sans SIRET."""
+    metiers = {code: (oblige, actif) for code, oblige, actif in base.execute(text("SELECT code, siret_obligatoire, est_active FROM metier"))}
+    for interdit, equivalent in particuliers.EQUIVALENTS_SANS_SIRET.items():
+        assert metiers[interdit][0] is True, interdit
+        assert metiers[equivalent] == (False, True), equivalent
+
+
+def test_plombier_propose_homme_toutes_mains(client, metiers, fabrique_emma, fabrique_demande) -> None:
+    infirmier = id_metier(client, "Infirmier / Infirmière")
+
+    plombier = client.get(f"/api/metiers/{metiers['Plombier']}/sans-siret").json()
+    sans_equivalent = client.get(f"/api/metiers/{infirmier}/sans-siret").json()
+    autorise = client.get(f"/api/metiers/{metiers['Jardinier']}/sans-siret").json()
+
+    assert plombier["siret_obligatoire"] is True and plombier["equivalent"]["nom"] == "Homme toutes mains / Multiservices"
+    assert sans_equivalent == {"siret_obligatoire": True, "equivalent": None}
+    assert autorise == {"siret_obligatoire": False, "equivalent": None}
+    assert client.get("/api/metiers/999999999/sans-siret").status_code == 404
+    # Le bouton [Répondre] verrouillé le dit aussi ; la demande « Plombier » reste fermée à Emma
+    emma, fuite = fabrique_emma(), fabrique_demande("Plombier", "Fuite sous l'évier")
+    raison = sur_l_accueil(emma.client, fuite.demande)["raison_verrou"]
+    assert "choisissez plutôt « Homme toutes mains / Multiservices » dans « Mon profil »" in raison
+    assert repondre(emma, fuite.demande).status_code == 403
+
+
 # ---------- Règle 7 : l'adresse et la case ----------
 
 
@@ -172,38 +201,31 @@ def test_cent_euros_au_plus_par_proposition(fabrique_emma, fabrique_demande, bas
     assert proposer(emma, garage, a(4), prix=25000).status_code == 201
 
 
-# ---------- Règle 3 : 2 rendez-vous par mois ----------
+# ---------- Plus de limite par mois (retirée par Raphael le 25/11/2026) ----------
 
 
-def test_deux_rendez_vous_par_mois(fabrique_emma, fabrique_demande, base: Session) -> None:
-    """Autant de propositions qu'elle veut ; bloquée quand 2 sont acceptées pour le même mois (le jour du rendez-vous)."""
+def test_plus_de_limite_de_rendez_vous_par_mois(fabrique_emma, fabrique_demande) -> None:
+    """Avant : 2 rendez-vous par mois au plus. Désormais, 4 rendez-vous dans le même mois sont tous acceptés."""
     emma = fabrique_emma()
-    dans_ce_mois = [fabrique_demande(titre=f"Promener mon chien n° {n}") for n in (1, 2, 3)]
-    mois_suivant = fabrique_demande(titre="Promener mon chien en fin de mois")
-    # Trois jours du même mois, tous à venir : le mois d'après-demain, à partir de son 20
+    clientes = [fabrique_demande(titre=f"Promener mon chien n° {n}") for n in (1, 2, 3, 4)]
     reference = AUJOURD_HUI + timedelta(days=40)
     jour = lambda n: datetime.combine(reference.replace(day=20 + n), time(12), tzinfo=PARIS)  # noqa: E731
-    apres = datetime.combine((reference.replace(day=28) + timedelta(days=10)).replace(day=5), time(12), tzinfo=PARIS)
-    propositions = [proposer(emma, cliente, jour(n)).json()["id"] for n, cliente in enumerate(dans_ce_mois)]
-    autre_mois = proposer(emma, mois_suivant, apres).json()["id"]
 
-    premier, deuxieme = accepter(dans_ce_mois[0], propositions[0]), accepter(dans_ce_mois[1], propositions[1])
-    troisieme = accepter(dans_ce_mois[2], propositions[2])
+    reponses = [accepter(c, proposer(emma, c, jour(n)).json()["id"]) for n, c in enumerate(clientes)]
 
-    assert premier.status_code == 201 and deuxieme.status_code == 201
-    assert troisieme.status_code == 400 and "limite du mois (2 rendez-vous sans SIRET)" in troisieme.json()["detail"]
-    assert accepter(mois_suivant, autre_mois).status_code == 201  # un autre mois : accepté
-    # Un rendez-vous annulé ne compte plus : la 3e peut alors être acceptée
-    annule = emma.client.post(f"/api/moi/prestataire/rendez-vous/{premier.json()['rendez_vous_id']}/annuler", json={"motif": "Je suis malade."})
-    assert annule.status_code == 200, annule.text
-    assert accepter(dans_ce_mois[2], propositions[2]).status_code == 201
+    assert [r.status_code for r in reponses] == [201, 201, 201, 201]
+    assert "rendez_vous_par_mois" not in limites(emma)
 
 
-# ---------- Règle 4 : 1 000 € sur 12 mois ----------
+# ---------- Règle 4 : 2 000 € sur 12 mois ----------
+
+
+def test_le_plafond_est_de_2000_euros() -> None:
+    assert reglages.PARTICULIER_TOTAL_CENTIMES == 2000_00
 
 
 def test_total_des_12_mois_et_propositions_retirees(fabrique_emma, fabrique_demande, base: Session, mails_envoyes, monkeypatch) -> None:
-    monkeypatch.setattr(reglages, "PARTICULIER_TOTAL_CENTIMES", 3000)  # 1 000 € dans la règle ; 30 € ici
+    monkeypatch.setattr(reglages, "PARTICULIER_TOTAL_CENTIMES", 3000)  # 2 000 € dans la règle ; 30 € ici
     emma = fabrique_emma()
     clientes = [fabrique_demande(titre=f"Promener mon chien n° {n}") for n in (1, 2, 3, 4)]
     acceptees = [accepter(c, proposer(emma, c, a(40 + 31 * n)).json()["id"]).json()["rendez_vous_id"] for n, c in enumerate(clientes[:3])]

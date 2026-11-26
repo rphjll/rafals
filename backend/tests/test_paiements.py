@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app import reglages
 from app.modeles.paiements import Paiement
-from app.services import paiements
+from app.services import factures, paiements
 from tests.test_absences import passe, vieillir_signalement
 from tests.test_agenda import MARDI, heures, lea  # noqa: F401 (fixtures)
 from tests.test_prestataires import fabrique_prestataire, metiers, siret_verifie  # noqa: F401 (fixtures)
@@ -65,16 +65,14 @@ def test_commission_de_5_pourcent_arrondie() -> None:
     assert (paiements.commission(5000), paiements.commission(12000), paiements.commission(3333)) == (250, 600, 167)
 
 
-def test_activer_demande_un_siret_verifie_puis_le_mandat(lea, base: Session, faux_stripe, client) -> None:  # noqa: F811
-    sans_siret = lea.client.post("/api/moi/prestataire/paiement-carte", json={"mandat": True})
-    siret_verifie(base, lea)
+def test_activer_demande_le_mandat(lea, base: Session, faux_stripe, client) -> None:  # noqa: F811
+    """Depuis le 25/11/2026, le SIRET n'est plus demandé pour activer la carte (demande de Raphael)."""
     sans_mandat = lea.client.post("/api/moi/prestataire/paiement-carte", json={"mandat": False})
     active = lea.client.post("/api/moi/prestataire/paiement-carte", json={"mandat": True})
     avant_verification = lea.client.get("/api/moi/prestataire/paiement-carte").json()
     faux_stripe.envoyer(client, faux_stripe.compte_verifie(list(faux_stripe.comptes)[-1]))
     apres_verification = lea.client.get("/api/moi/prestataire/paiement-carte").json()
 
-    assert sans_siret.status_code == 400 and "SIRET vérifié" in sans_siret.json()["detail"]
     assert sans_mandat.status_code == 400 and "factures" in sans_mandat.json()["detail"]
     assert active.status_code == 200 and active.json()["adresse"].startswith("https://connect.stripe.com/")
     assert avant_verification["compte_cree"] is True and avant_verification["pret"] is False
@@ -93,6 +91,23 @@ def test_la_carte_n_est_proposee_qu_une_fois_stripe_verifie(lea, dupont, base: S
     reponse = reserver(dupont, lea, a(MARDI, 10), mode_paiement="carte")
 
     assert reponse.status_code == 400 and "paiement par carte activé" in reponse.json()["detail"]
+
+
+def test_sans_siret_carte_possible_avec_stripe_5_pourcent_et_pas_de_facture(
+        lea, dupont, base: Session, faux_stripe, client) -> None:  # noqa: F811
+    """Demande de Raphael du 25/11/2026 : sans SIRET, la carte s'ouvre en reliant son compte Stripe ; rafals prend ses
+    5 % comme pour tout le monde (choix « A ») ; pas de facture de vente sans SIRET."""
+    assert lea.client.post("/api/moi/prestataire/paiement-carte", json={"mandat": True}).status_code == 200
+    faux_stripe.envoyer(client, faux_stripe.compte_verifie(list(faux_stripe.comptes)[-1]))
+    etat = lea.client.get("/api/moi/prestataire/paiement-carte").json()
+
+    rdv = reserver(dupont, lea, a(MARDI, 10), mode_paiement="carte").json()
+    faux_stripe.envoyer(client, faux_stripe.payer())
+    p = paiement(base, rdv["id"])
+
+    assert etat["siret_verifie"] is False and etat["pret"] is True
+    assert p.statut == "paye" and p.commission_centimes == 250
+    assert factures.du_rendez_vous(base, rdv["id"]) is None
 
 
 # ---------- Payer en réservant ----------

@@ -36,7 +36,7 @@ function confirmer() {
         </AppBouton>
         <AppBouton
           variante="verrouille"
-          raison-verrou="Karim n'a pas encore de SIRET : il ne peut être payé qu'en espèces, le jour du rendez-vous. Réservez, puis payez-le sur place."
+          raison-verrou="Karim n'a pas encore activé le paiement par carte : il ne peut être payé qu'en espèces, le jour du rendez-vous. Réservez, puis payez-le sur place."
         >
           Payer par carte
         </AppBouton>

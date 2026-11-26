@@ -138,3 +138,7 @@ Pas entre deux heures de début : 15 min · pause entre deux rendez-vous : 0 min
 
 ## Références
 - `GLOSSAIRE-METIER.md`, `archives/RM-ANNONCES.md`, `RM-PRESTATAIRES.md`
+
+## Après l'audit du 14/11/2026 (accord de Raphael le 15/11/2026)
+- [Réglages] ne montre plus que « Annulation gratuite jusqu'à » : les 5 autres réglages et « chaque calendrier est indépendant » n'avaient plus d'effet depuis que le prestataire propose lui-même l'heure (leurs valeurs restent en base).
+- Une proposition est refusée si elle tombe pendant une fermeture du calendrier de ce métier (congés, jours fermés, jours de travaux d'un devis). Ex. Léa ferme Jardinier du 16 au 22/11 « Congés » puis propose le 18/11 à 10 h : « À cette heure-là, votre agenda est fermé (Congés) jusqu'au 22/11 : proposez une autre date, ou rouvrez ce jour dans « Mon agenda » ». Le même contrôle est refait quand le client accepte.

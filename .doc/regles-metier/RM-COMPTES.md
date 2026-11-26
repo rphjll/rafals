@@ -77,3 +77,7 @@ Aucune pour ce sujet.
 
 ## Références
 - `GLOSSAIRE-METIER.md`, `PRESENTATION.md`
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- Inscription et « Mes informations » : adresse mail bien formée, téléphone avec au moins 9 chiffres, prénom et nom de 60 caractères au plus sans « < » ni « > », 120 ans au plus, mot de passe de 200 caractères au plus.
+- Mot de passe trop facile refusé : un ou deux caractères répétés (« aaaaaaaaaa »), une suite de chiffres (« 1234567890 »), ou un mot de passe très courant (« Motdepasse1 », « azertyuiop »).

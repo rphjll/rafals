@@ -45,15 +45,13 @@
       ["cloture", "Clôtures / Portails", "cloture, portail, grillage, palissade"]
     ]},
     {"code": "beaute-bien-etre", "nom": "Beauté & bien-être", "metiers": [
-      ["coiffure", "Coiffeur / Coiffeuse", "coiffure, coupe, couleur, brushing, salon"],
-      ["coiffure-domicile", "Coiffeur / Coiffeuse à domicile", "coiffure a domicile, coupe a domicile"],
+      ["coiffure", "Coiffeur / Coiffeuse", "coiffure, coupe, couleur, brushing, salon, coiffure a domicile, coupe a domicile"],
       ["barbier", "Barbier", "barbe, rasage, coupe homme"],
       ["estheticienne", "Esthéticienne", "institut, epilation, soin visage, beaute"],
       ["onglerie", "Onglerie / Prothésiste ongulaire", "ongles, manucure, pose gel, vernis semi permanent, nail art"],
       ["maquillage", "Maquilleur / Maquilleuse", "maquillage, mariage, make up"],
       ["cils", "Extensions de cils / Regard", "cils, rehaussement, sourcils, microblading"],
       ["massage", "Masseur / Masseuse bien-être", "massage, relaxation, spa, modelage"],
-      ["sophrologue", "Sophrologue", "sophrologie, stress, relaxation, sommeil"],
       ["tatoueur", "Tatoueur / Pierceur", "tatouage, tattoo, piercing"],
       ["relooking", "Conseil en image / Relooking", "relooking, style, colorimetrie, garde robe"]
     ]},
@@ -67,6 +65,7 @@
       ["dieteticien", "Diététicien / Nutritionniste", "dietetique, nutrition, regime, alimentation"],
       ["sage-femme", "Sage-femme", "grossesse, accouchement, suivi, reeducation perineale"],
       ["naturopathe", "Naturopathe / Médecines douces", "naturopathie, medecine douce, plantes"],
+      ["sophrologue", "Sophrologue", "sophrologie, stress, relaxation, sommeil"],
       ["ergotherapeute", "Ergothérapeute", "ergo, handicap, autonomie, amenagement"],
       ["psychomotricien", "Psychomotricien", "psychomotricite, enfant, motricite"]
     ]},
@@ -121,8 +120,7 @@
       ["marechal-ferrant", "Maréchal-ferrant", "ferrage, cheval, sabots"]
     ]},
     {"code": "auto-transport", "nom": "Auto & transport", "metiers": [
-      ["mecanicien", "Mécanicien", "garage, reparation voiture, vidange, entretien, freins"],
-      ["mecanicien-domicile", "Mécanicien à domicile", "mecanique a domicile, vidange a domicile"],
+      ["mecanicien", "Mécanicien", "garage, reparation voiture, vidange, entretien, freins, mecanique a domicile, vidange a domicile"],
       ["carrossier", "Carrossier", "carrosserie, rayure, bosse, peinture auto"],
       ["lavage-auto", "Lavage / Nettoyage auto", "lavage voiture, nettoyage interieur, detailing"],
       ["depannage-auto", "Dépannage / Remorquage", "depanneuse, remorquage, panne, batterie"],

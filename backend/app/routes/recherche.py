@@ -170,7 +170,7 @@ def page_publique(prestataire_id: int, db: Base, compte: CompteOuPersonne) -> Pr
     """Profil, note et photos du travail d'un prestataire."""
     prestataire = prestataire_visible_ou_404(db, prestataire_id, compte)
     maintenant_ = maintenant()
-    metiers = [db.get_one(Metier, i) for i in metiers_exerces(db, prestataire, aujourd_hui(maintenant_))]
+    metiers = [db.get_one(Metier, i) for i in service.metiers_montres(db, prestataire, aujourd_hui(maintenant_))]
     somme, nombre = service_avis.notes(db, [prestataire.id]).get(prestataire.id, (0, 0))
     note = somme / nombre if nombre else None
     return PrestatairePublic(

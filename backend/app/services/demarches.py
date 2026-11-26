@@ -205,7 +205,11 @@ def prevenir_seuil_tva(db: Session, prestataire: Prestataire, facture: Facture, 
 
 def ajouter_ailleurs(db: Session, prestataire: Prestataire, montant_centimes: int, jour: date, maintenant: datetime) -> EncaisseAilleurs:
     """[Ajouter ce que j'ai encaissé ailleurs] : un montant et sa date. Ex. 2 000,00 € le 03/02/2026.
-    Refusé : 0 € ou moins, plus de 1 000 000 €, une date à venir."""
+    Refusé : sans SIRET vérifié, 0 € ou moins, plus de 1 000 000 €, une date à venir."""
+    from app.services import particuliers  # ici : évite une boucle d'imports
+    if particuliers.est_particulier(prestataire):  # audit du 14/11/2026 (D5) : la TVA ne concerne qu'une entreprise
+        raise ErreurRegle("Sans SIRET vérifié, il n'y a pas de seuil de TVA à suivre : "
+                          "ajoutez d'abord votre SIRET dans « Mon activité ».", 403)
     if not 0 < montant_centimes <= 100_000_000:
         raise ErreurRegle("Indiquez un montant plus grand que 0 € (1 000 000 € au plus).")
     aujourd_hui = maintenant.astimezone(PARIS).date()

@@ -12,6 +12,8 @@ from app.modeles.comptes import Compte
 from app.modeles.metiers import CategorieMetier, Metier, PropositionMetier
 from app.routes.dependances import Administrateur, Base, CompteConnecte, maintenant
 from app.services import metiers as service
+from app.services import particuliers
+from app.services.erreurs import ErreurRegle
 
 routeur = APIRouter(prefix="/api")
 
@@ -93,6 +95,26 @@ def dossiers(db: Base) -> list[Dossier]:
         )
         for c, metiers in service.categories_avec_metiers(db)
     ]
+
+
+class SansSiret(BaseModel):
+    """Ce métier demande-t-il un SIRET, et lequel choisir à la place sans SIRET (RM-METIERS-SANS-SIRET.md, 25/11/2026)."""
+
+    siret_obligatoire: bool
+    equivalent: MetierVisible | None  # ex. Plombier → Homme toutes mains / Multiservices ; Infirmier → aucun
+
+
+@routeur.get("/metiers/{metier_id}/sans-siret")
+def sans_siret(metier_id: int, db: Base) -> SansSiret:
+    metier = db.get(Metier, metier_id)
+    if metier is None:
+        raise ErreurRegle("Ce métier n'existe pas.", 404)
+    equivalent = particuliers.equivalent_sans_siret(db, metier)
+    visible = None
+    if equivalent is not None:
+        visible = MetierVisible(id=equivalent.id, code=equivalent.code, nom=equivalent.nom,
+                                categorie=db.get_one(CategorieMetier, equivalent.categorie_id).nom)
+    return SansSiret(siret_obligatoire=metier.siret_obligatoire, equivalent=visible)
 
 
 # ---------- Personne connectée ----------

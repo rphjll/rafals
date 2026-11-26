@@ -135,11 +135,11 @@ def _stripe(appel: Any) -> Any:
 
 def activer(db: Session, prestataire: Prestataire, compte: Compte, mandat: bool, maintenant: datetime) -> str:
     """Crée son compte Stripe (la première fois) et renvoie l'adresse de la page de Stripe où il donne son identité et
-    son RIB. Il faut un SIRET vérifié, et son accord pour que rafals fasse ses factures (mandat de facturation)."""
+    son RIB, et son accord pour que rafals fasse ses factures (mandat de facturation). Depuis le 25/11/2026 (demande de
+    Raphael), le SIRET n'est plus demandé : un particulier peut aussi relier son compte Stripe ; il n'a pas de facture
+    de vente tant qu'il n'a pas de SIRET vérifié, et rafals prend ses 5 % comme pour tout le monde (choix « A »)."""
     if not stripe_api.disponible():
         raise ErreurRegle("Le paiement par carte n'est pas encore ouvert sur rafals.")
-    if prestataire.siret_statut != "verifie":
-        raise ErreurRegle("Le paiement par carte demande un SIRET vérifié.")
     if prestataire.mandat_facturation_le is None:
         if not mandat:
             raise ErreurRegle("Cochez la case : vous acceptez que rafals fasse vos factures à votre place.")

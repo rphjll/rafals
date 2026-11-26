@@ -89,7 +89,7 @@ export function siretLisible(siret: string | null): string {
 // Ce qu'il ne peut pas faire reste visible, avec 🔒 et la raison, au lieu de disparaître.
 
 export const VERROU_SIRET = {
-  carte: 'Le paiement par carte demande un SIRET vérifié : créez votre auto-entreprise depuis « Mes démarches ».',
+  // (« carte » retiré le 25/11/2026 : la carte s'ouvre aussi sans SIRET, avec un compte Stripe relié)
   carteInactive: 'Activez d’abord le paiement par carte dans « Mon profil ».',
   facture: 'Une facture demande un SIRET vérifié : créez votre auto-entreprise depuis « Mes démarches ».',
   urssaf: 'Déclarer à l’URSSAF concerne les auto-entrepreneurs : il faut un SIRET vérifié.',

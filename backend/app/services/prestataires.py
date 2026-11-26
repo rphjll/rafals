@@ -12,10 +12,11 @@ from app.modeles.clients import Adresse
 from app.modeles.comptes import Compte
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune, MetierSecondaire, PhotoPrestataire, Prestataire
-from app.services import abonnements, droits, fichiers, journal
+from app.services import abonnements, avis, droits, fichiers, journal
 from app.services import rendez_vous_communs as communs
 from app.services import siret as service_siret
 from app.services.erreurs import ErreurRegle
+from app.services.messagerie import COORDONNEES
 
 
 @dataclass
@@ -60,6 +61,18 @@ def siret_valide(siret: str) -> bool:
     return total % 10 == 0
 
 
+def _verifier_siret_libre(db: Session, siret: str | None, compte: Compte) -> None:
+    """Un SIRET ne sert qu'à un seul profil en activité (audit du 14/11/2026). Ex. refusé : le frère de Karim donne
+    le SIRET de Karim."""
+    if siret is None:
+        return
+    autre = db.scalar(select(Prestataire.id).where(Prestataire.siret == siret, Prestataire.compte_id != compte.id,
+                                                   Prestataire.statut != "arrete").limit(1))
+    if autre is not None:
+        raise ErreurRegle("Ce SIRET est déjà utilisé par un autre profil sur rafals. Si c'est une erreur, contactez "
+                          "l'administrateur de rafals.")
+
+
 def _controler_siret(siret: str | None, compte: Compte, maintenant: datetime) -> tuple[str, datetime | None]:
     """Renvoie (état du SIRET, date de vérification). Un SIRET refusé par l'État n'est pas enregistré :
     la personne voit tout de suite la raison. Service de l'État en panne : « à vérifier » (nouvel essai plus tard)."""
@@ -81,6 +94,7 @@ def ajouter_siret(db: Session, compte: Compte, prestataire: Prestataire, siret: 
     propre = normaliser_siret(siret)
     if propre is None or not siret_valide(propre):
         raise ErreurRegle(SIRET_NON_VALIDE)
+    _verifier_siret_libre(db, propre, compte)
     prestataire.siret_statut, prestataire.siret_verifie_le = _controler_siret(propre, compte, maintenant)
     prestataire.siret = propre
     journal.noter(
@@ -171,6 +185,11 @@ def fixer_prix(db: Session, prestataire: Prestataire, metier_id: int, prix_centi
     mini, maxi = reglages.PRIX_HEURE_CENTIMES
     if prix_centimes is not None and not mini <= prix_centimes <= maxi:
         raise ErreurRegle(f"Le prix de l'heure doit être entre {mini // 100:_} € et {maxi // 100:_} €.".replace("_", " "))
+    from app.services import particuliers  # ici : particuliers dépend déjà de modules qui chargent celui-ci
+    plafond = reglages.PARTICULIER_PRIX_MAX_CENTIMES
+    if prix_centimes is not None and prix_centimes > plafond and particuliers.est_particulier(prestataire):
+        # audit du 14/11/2026 (D5) : sans SIRET, une proposition est limitée à 100 €, le prix affiché aussi
+        raise ErreurRegle(f"Sans SIRET, le prix de l'heure ne peut pas dépasser {plafond // 100} € : {particuliers.CREER}.")
     if metier_id == prestataire.metier_principal_id:
         avant = prestataire.metier_principal_prix_centimes
         prestataire.metier_principal_prix_centimes = prix_centimes
@@ -196,7 +215,10 @@ def metiers_exerces(db: Session, prestataire: Prestataire, jour: date) -> list[i
     return principal + metiers_secondaires(db, prestataire, jour)
 
 
-def _verifier(db: Session, profil: Profil, compte: Compte) -> Profil:
+def _verifier(db: Session, profil: Profil, compte: Compte, deja: set[int] | None = None) -> Profil:
+    """deja : les métiers déjà dans son profil. Un métier désactivé depuis par l'administrateur y reste permis
+    (sinon il ne pourrait plus rien modifier, audit du 14/11/2026)."""
+    deja = deja or set()
     nom = " ".join(profil.nom_affiche.split())
     mini, maxi = reglages.PRESTATAIRE_NOM_LONGUEUR
     if not mini <= len(nom) <= maxi:
@@ -204,8 +226,15 @@ def _verifier(db: Session, profil: Profil, compte: Compte) -> Profil:
     presentation = (profil.presentation or "").strip() or None
     if presentation and len(presentation) > reglages.PRESTATAIRE_PRESENTATION_MAX:
         raise ErreurRegle(f"La présentation doit faire au plus {reglages.PRESTATAIRE_PRESENTATION_MAX} caractères.")
+    # Même filtre que les demandes : ni téléphone, ni mail, ni mot interdit dans ce que tout le monde lit (audit du 14/11/2026)
+    public = f"{nom} {presentation or ''}"
+    if COORDONNEES.search(public):
+        raise ErreurRegle("Ne mettez ni téléphone ni adresse mail dans votre nom ou votre présentation : "
+                          "vos clients les reçoivent après la réservation.")
+    if avis.mot_interdit_dans(db, public):
+        raise ErreurRegle("Votre nom ou votre présentation contient un mot interdit : reformulez, s'il vous plaît.")
     principal = db.get(Metier, profil.metier_principal_id)
-    if principal is None or not principal.est_active:
+    if principal is None or not (principal.est_active or principal.id in deja):
         raise ErreurRegle("Choisissez votre métier principal dans la liste.")
     if db.get(Commune, profil.commune_id) is None:
         raise ErreurRegle("Choisissez votre ville dans la liste.")
@@ -219,7 +248,7 @@ def _verifier(db: Session, profil: Profil, compte: Compte) -> Profil:
         raise ErreurRegle(f"Au plus {reglages.PRESTATAIRE_METIERS_SECONDAIRES_MAX} métiers secondaires.")
     for metier_id in secondaires:
         metier = db.get(Metier, metier_id)
-        if metier is None or not metier.est_active:
+        if metier is None or not (metier.est_active or metier.id in deja):
             raise ErreurRegle("Un des métiers secondaires n'existe plus : choisissez-le à nouveau.")
 
     siret = normaliser_siret(profil.siret)
@@ -302,6 +331,7 @@ def devenir_prestataire(db: Session, compte: Compte, profil: Profil, maintenant:
         raise ErreurRegle("Vous proposez déjà vos services : modifiez votre profil de prestataire.", 409)
 
     p = _verifier(db, profil, compte)
+    _verifier_siret_libre(db, p.siret, compte)
     siret_statut, siret_verifie_le = _controler_siret(p.siret, compte, maintenant)
     prestataire = Prestataire(
         compte_id=compte.id,
@@ -335,8 +365,10 @@ def modifier_profil(db: Session, prestataire: Prestataire, profil: Profil, maint
     avant = _etat(prestataire, metiers_secondaires(db, prestataire, jour))
     exerces_avant = metiers_exerces(db, prestataire, jour)
     compte = db.get_one(Compte, prestataire.compte_id)
-    p = _verifier(db, profil, compte)
+    deja = {prestataire.metier_principal_id, *(ligne.metier_id for ligne in lignes_secondaires(db, prestataire))}
+    p = _verifier(db, profil, compte, deja)
     if p.siret != prestataire.siret:
+        _verifier_siret_libre(db, p.siret, compte)
         # Un SIRET nouveau ou changé est vérifié tout de suite auprès de l'État ; le retirer = « absent »
         prestataire.siret_statut, prestataire.siret_verifie_le = _controler_siret(p.siret, compte, maintenant)
         prestataire.siret = p.siret
@@ -366,7 +398,7 @@ def deposer_photo(
     fichiers.verifier(
         contenu, type_mime, types_acceptes=reglages.PHOTO_TYPES_ACCEPTES, taille_max_octets=reglages.PHOTO_TAILLE_MAX_OCTETS
     )
-    fichier = fichiers.enregistrer(db, compte, nom_fichier=nom_fichier, type_mime=type_mime, contenu=contenu, maintenant=maintenant)
+    fichier = fichiers.enregistrer(db, compte, nom_fichier=nom_fichier, type_mime=type_mime, contenu=contenu, maintenant=maintenant, photo=True)
     ancienne = prestataire.photo_id
     prestataire.photo_id = fichier.id
     journal.noter(
@@ -397,7 +429,7 @@ def ajouter_photo_travail(
     fichiers.verifier(
         contenu, type_mime, types_acceptes=reglages.PHOTO_TYPES_ACCEPTES, taille_max_octets=reglages.PHOTO_TAILLE_MAX_OCTETS
     )
-    fichier = fichiers.enregistrer(db, compte, nom_fichier=nom_fichier, type_mime=type_mime, contenu=contenu, maintenant=maintenant)
+    fichier = fichiers.enregistrer(db, compte, nom_fichier=nom_fichier, type_mime=type_mime, contenu=contenu, maintenant=maintenant, photo=True)
     photo = PhotoPrestataire(prestataire_id=prestataire.id, fichier_id=fichier.id, ordre=len(deja) + 1)
     db.add(photo)
     db.flush()
@@ -551,6 +583,13 @@ def changer_statut(db: Session, prestataire: Prestataire, action: str, maintenan
     if action == "arreter" and communs.actifs_a_venir(db, prestataire, maintenant):
         raise ErreurRegle("Vous avez des rendez-vous à venir : annulez-les d'abord (« Mon agenda › Rendez-vous »), "
                           "puis arrêtez votre activité.")
+    if action == "arreter":
+        from app.services import devis as service_devis  # (import ici : devis importe ce module)
+
+        en_cours = service_devis.en_cours_du_prestataire(db, prestataire.id)
+        if en_cours is not None:
+            raise ErreurRegle(f"Le devis {service_devis.numero(en_cours)} est accepté et pas encore terminé ou payé : "
+                              "terminez-le ou annulez-le (« Devis »), puis arrêtez votre activité.")
     departs, arrivee = _TRANSITIONS_PRESTATAIRE[action]
     if prestataire.statut not in departs:
         messages = {"pause": "Votre profil est déjà en pause.", "reprendre": "Votre profil est déjà actif."}

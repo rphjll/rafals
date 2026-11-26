@@ -22,8 +22,6 @@ interface Limites {
   adresse_remplie: boolean
   case_cochee_le: string | null
   prix_max_centimes: number
-  rendez_vous_ce_mois: number
-  rendez_vous_par_mois: number
   total_12_mois_centimes: number
   total_max_centimes: number
   plafond_atteint: boolean
@@ -58,16 +56,14 @@ async function declarer() {
     <div class="flex flex-col gap-3">
       <div><AppBadge etat="attente">{{ limites.etiquette }}</AppBadge></div>
       <p class="text-texte-doux">
-        Sans SIRET vérifié, vous rendez de petits services, payés en espèces. Vos clients lisent cette étiquette sur votre
+        Sans SIRET vérifié, vous rendez de petits services, payés en espèces, ou par carte si vous reliez votre compte
+        Stripe (« Paiement par carte »). Vos clients lisent cette étiquette sur votre
         profil et sur vos propositions, avec l'avertissement « {{ limites.avertissement }} »
       </p>
       <ul class="flex flex-col gap-1.5">
         <li>Seulement les métiers autorisés sans SIRET (ex. promener un chien, repasser, tondre une pelouse).</li>
         <li>
           <b>{{ montant(limites.prix_max_centimes) }}</b> au plus par proposition.
-        </li>
-        <li>
-          <b>{{ limites.rendez_vous_ce_mois }} sur {{ limites.rendez_vous_par_mois }}</b> rendez-vous ce mois-ci.
         </li>
         <li>
           <b>{{ montant(limites.total_12_mois_centimes) }} sur {{ montant(limites.total_max_centimes) }}</b> de rendez-vous

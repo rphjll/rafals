@@ -134,6 +134,17 @@ def fabrique_compte(mails_envoyes, base: Session) -> Callable[..., CompteEssai]:
 
 
 @pytest.fixture(autouse=True)
+def sirets_des_tests_d_avant_liberes() -> None:
+    """Un SIRET ne sert qu'à un profil (audit du 14/11/2026), et la base de test garde les prestataires des tests
+    d'avant, qui ont tous le même SIRET d'essai : on le leur retire avant chaque test."""
+    from app.db import moteur
+
+    with Session(moteur) as db:
+        db.execute(text("UPDATE prestataire SET siret = NULL, siret_statut = 'absent', siret_verifie_le = NULL WHERE siret IS NOT NULL"))
+        db.commit()
+
+
+@pytest.fixture(autouse=True)
 def repertoire_de_l_etat(monkeypatch: pytest.MonkeyPatch) -> dict[str, list]:
     """Les tests n'appellent jamais le vrai service de l'État (internet) : par défaut il est « en panne » ;
     un test y met la réponse voulue : repertoire_de_l_etat["reponse"] = [ {entreprise…} ]."""

@@ -92,6 +92,9 @@ def modifier_informations(db: Session, compte: Compte, *, prenom: str, nom: str,
     for libelle, valeur in valeurs.items():
         if not valeur:
             raise ErreurRegle(f"Le {libelle} est obligatoire.")
+    from app.services import comptes  # mêmes contrôles qu'à l'inscription (audit du 14/11/2026)
+
+    comptes.verifier_identite(valeurs["prénom"], valeurs["nom"], valeurs["téléphone"])
     avant = {"prenom": compte.prenom, "nom": compte.nom, "telephone": compte.telephone}
     compte.prenom, compte.nom, compte.telephone = valeurs["prénom"], valeurs["nom"], valeurs["téléphone"]
     journal.noter(
@@ -239,6 +242,10 @@ def _effacer_donnees_personnelles(db: Session, compte: Compte, maintenant: datet
     compte.ferme_le = maintenant
     notifications.couper_tout(db, compte.id)
     abonnements.fermer_compte(db, compte.id)
+    from app.modeles.demandes import Demande  # ses demandes encore ouvertes sont fermées (audit du 14/11/2026)
+
+    db.execute(update(Demande).where(Demande.client_id == compte.id, Demande.statut == "ouverte")
+               .values(statut="fermee", statut_change_le=maintenant))
     db.execute(
         update(SessionConnexion)
         .where(SessionConnexion.compte_id == compte.id, SessionConnexion.fermee_le.is_(None))
@@ -261,6 +268,12 @@ def _verifier_fermeture_possible(db: Session, compte: Compte, maintenant: dateti
     if prochain is not None:
         jour = prochain.debut.astimezone(reglages.FUSEAU_AFFICHAGE)
         raise ErreurRegle(f"Annulez d'abord votre rendez-vous du {jour:%d/%m/%Y} (page « Mes rendez-vous »).")
+    from app.services import devis as service_devis  # (import ici : devis importe ce module)
+
+    en_cours = service_devis.en_cours_du_client(db, compte.id)
+    if en_cours is not None:  # audit du 14/11/2026
+        raise ErreurRegle(f"Le devis {service_devis.numero(en_cours)} est accepté et pas encore payé : annulez-le ou "
+                          "attendez la fin des travaux (page « Devis »), puis fermez votre compte.")
 
 
 def fermer(db: Session, compte: Compte, mot_de_passe: str, maintenant: datetime) -> None:

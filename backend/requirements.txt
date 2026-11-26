@@ -12,6 +12,8 @@ python-multipart
 pywebpush>=2,<3
 # Carré à scanner des cartes de visite (QR code, lot 10.4)
 segno>=1.6,<2
+# Photos réduites à l'envoi : 1600 pixels au plus, pour que les pages chargent vite (25/11/2026)
+pillow>=11,<13
 
 # Tests automatiques
 pytest>=8,<10

@@ -27,6 +27,10 @@ PRESTATAIRE_NOM_LONGUEUR = (2, 80)
 PRESTATAIRE_PRESENTATION_MAX = 1000
 PHOTO_TYPES_ACCEPTES = {"image/jpeg", "image/png"}
 PHOTO_TAILLE_MAX_OCTETS = 5 * 1024 * 1024
+# Photo réduite à l'envoi (25/11/2026) : 1600 pixels au plus sur le grand côté, JPEG qualité 85.
+# Ex. photo de téléphone 4000 × 3000, 2,7 Mo → 1600 × 1200, environ 250 Ko ; à l'écran, la différence ne se voit pas.
+PHOTO_COTE_MAX_PIXELS = 1600
+PHOTO_QUALITE_JPEG = 85
 # Photos de son travail sur le profil (RM-PRESTATAIRES § « Sans annonces »)
 PRESTATAIRE_PHOTOS_MAX = 10
 
@@ -190,11 +194,22 @@ DEMANDE_LISTE_MAX = 100  # demandes montrées sur l'accueil
 TACHE_DEMANDES_MINUTES = 15
 DEMANDE_REPONSES_MAX = 10  # prestataires qui peuvent répondre à une même demande
 PROPOSITION_DUREE_MINUTES = (15, 12 * 60)  # durée d'un service proposé
+# Bornes ajoutées après l'audit du 14/11/2026 (choix de Claude, à confirmer par Raphael)
+PROPOSITION_PRIX_CENTIMES = (100, 50_000_00)  # une proposition : de 1 € à 50 000 € (au-delà : un devis)
+PROPOSITION_AVANCE_MAX = timedelta(days=365)  # un rendez-vous se propose au plus 1 an à l'avance
+DEMANDE_BUDGET_MAX_CENTIMES = 50_000_00  # budget d'une demande : 50 000 € au plus
+DEMANDE_JOUR_AVANCE_MAX = timedelta(days=365)  # « un jour précis » : dans l'année qui vient
+DEVIS_TOTAL_MAX_CENTIMES = 1_000_000_00  # total d'un devis : 1 000 000 € au plus
+DEVIS_TRAVAUX_AVANCE_MAX = timedelta(days=2 * 365)  # les travaux commencent au plus tard dans 2 ans
+# Inscription (audit du 14/11/2026)
+AGE_MAXIMUM = 120
+NOM_LONGUEUR_MAX = 60
+MOT_DE_PASSE_LONGUEUR_MAX = 200
 
 # Limites d'un prestataire sans SIRET vérifié (RM-PRESTATAIRES.md § « Limites d'un prestataire sans SIRET », 09/10/2026)
 PARTICULIER_PRIX_MAX_CENTIMES = 100_00  # 100 € au plus par proposition
-PARTICULIER_RENDEZ_VOUS_PAR_MOIS = 2  # rendez-vous confirmés dans un même mois du calendrier
-PARTICULIER_TOTAL_CENTIMES = 1000_00  # 1 000 € de rendez-vous qui ont eu lieu…
+# (Plus de limite de 2 rendez-vous par mois : retirée par Raphael le 25/11/2026)
+PARTICULIER_TOTAL_CENTIMES = 2000_00  # 2 000 € de rendez-vous qui ont eu lieu (1 000 € jusqu'au 25/11/2026)…
 PARTICULIER_TOTAL_SUR = timedelta(days=365)  # … sur les 12 derniers mois
 
 # Avis d'un prestataire sur un client (RM-AVIS.md § « Notation dans les deux sens », validé le 04/10/2026)

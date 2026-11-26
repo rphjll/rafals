@@ -70,3 +70,6 @@ Le nom et l'adresse du client sont recopiés sur la facture au moment où elle e
 
 ## Références
 - `GLOSSAIRE-METIER.md`, `RM-COMPTES.md`, `RM-PRESTATAIRES.md`
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- Fermer son compte ferme aussi ses demandes encore ouvertes. Plus aucun mail n'est envoyé à un compte fermé.

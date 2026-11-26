@@ -25,7 +25,7 @@ defineProps<{ resultat: CarteResultat }>()
       <span v-if="resultat.prix_centimes" class="prix">{{ euros(resultat.prix_centimes) }}/h</span>
       <span v-else-if="resultat.abonnes" class="doux petit">{{ resultat.abonnes }} abonné{{ resultat.abonnes > 1 ? 's' : '' }}</span>
     </div>
-    <span v-if="resultat.siret_verifie" class="puce p-ok" style="align-self: flex-start"><AppIcone nom="bouclier" class="size-4" />SIRET vérifié</span>
-    <span v-else class="puce p-neutre" style="align-self: flex-start">Sans SIRET</span>
+    <span v-if="resultat.siret_verifie" class="puce p-ok" style="align-self: flex-start"><AppIcone nom="bouclier" class="size-4" />Professionnel</span>
+    <span v-else class="puce p-neutre" style="align-self: flex-start">Particulier, non professionnel</span>
   </RouterLink>
 </template>

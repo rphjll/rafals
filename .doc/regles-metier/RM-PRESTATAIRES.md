@@ -8,7 +8,7 @@ Ce qu'un prestataire renseigne sur rafals (métiers, zone, SIRET) et quand les c
 ## Principes
 - On devient prestataire depuis son compte, par « Proposer mes services » (voir `RM-COMPTES.md`).
 - Un calendrier par métier du prestataire, jamais un par salarié, même pour une société (voir `GLOSSAIRE-METIER.md` ; « un calendrier par métier » décidé le 03/10/2026, `RM-AGENDA.md`).
-- Sans SIRET : payé en espèces seulement ; rafals lui conseille de se déclarer (voir `GLOSSAIRE-METIER.md`, ⚠️ à vérifier juridiquement).
+- Sans SIRET : payé en espèces, ou par carte s'il relie son compte Stripe (depuis le 25/11/2026) ; rafals lui conseille de se déclarer (voir `GLOSSAIRE-METIER.md`, ⚠️ à vérifier juridiquement).
 
 ## Sans annonces : le prestataire se présente (décision de Raphael du 04/10/2026)
 Réponse de Raphael, mot pour mot : « je vais enlever le sistème d'annonce car c trop dur je vais plutot faire en sorte que ca soit les comptes qui se présentent et les clients qui postes des demandes et les prestataires qui acceptent ou non ou ne font rien ». Puis choix « b » : enlever vraiment les annonces. MLD validé par Raphael le 04/10/2026 (« oui ») : `.doc/mld/MLD-retrait-annonces.html`. Les lignes « (choix de Claude) » ont été proposées avec le MLD.
@@ -61,8 +61,14 @@ Ces limites valent pour tout prestataire dont le SIRET n'est pas « vérifié »
 |---|---|---|
 | 1 | Métiers interdits sans SIRET | Plomberie, électricité, gaz, bâtiment, coiffure, esthétique, réparation auto, santé, garde d'enfants de moins de 3 ans, transport de personnes, alimentation (« A » : la liste proposée) |
 | 2 | Prix d'une proposition | 100 € au plus (« A ») |
-| 3 | Rendez-vous par mois | 2 au plus (« C 2 par mois » ; la proposition était 4) |
-| 4 | Total des rendez-vous par an | 1 000 € au plus (« A ») |
+| 3 | Rendez-vous par mois | ~~2 au plus~~ **Plus de limite** (retirée par Raphael le 25/11/2026 : « enleve les 2 rdv pr mois ») |
+| 4 | Total des rendez-vous par an | **2 000 € au plus** (1 000 € jusqu'au 25/11/2026 ; Raphael : « met le seuille a 2000/ans ») |
+
+**Changement du 25/11/2026** (demande de Raphael, mot pour mot : « ok enleve les 2 rdv pr mois et met le seuille a 2000/ans »). Les règles 3 et 4 ci-dessous sont remplacées par ce qui suit ; le reste ne change pas.
+- Plus aucune limite du nombre de rendez-vous dans un mois. Ex. 1 : Emma a 4 promenades à 15 € en décembre, toutes acceptées. Ex. 2 : Mme Martin accepte la proposition d'Emma pour le 28/10 même si Emma a déjà 2 rendez-vous en octobre.
+- Le plafond passe à **2 000 € sur les 12 derniers mois**, compté comme avant (rendez-vous qui ont eu lieu). Ex. 1 : Emma a fait 1 200 € : elle peut encore répondre (avant, elle était bloquée à 1 000 €). Ex. 2 : un rendez-vous porte Emma à 2 010 € : ses propositions en attente sont retirées et elle reçoit le mail.
+- Avec 100 € au plus par proposition, il faut au moins 20 rendez-vous pour atteindre 2 000 €.
+- ⚠️ À faire confirmer par l'avocat : 2 000 € par an, et l'absence de limite par mois. Dans les exemples plus bas, « 1 000 € » et « 2 rendez-vous par mois » sont l'ancienne règle.
 | 5 | Durée sans SIRET | Pas de limite (« b pas de durés » ; la proposition était 6 mois) |
 | 6 | Affichage | Étiquette « Particulier, non professionnel » sur le profil et sur chaque proposition ; avertissement au client avant d'accepter : « Pas de facture, pas de garantie, pas d'assurance professionnelle. » (« A ») |
 | 7 | À fournir avant la première réponse | Vrai nom, vraie adresse (cachés du public, gardés par rafals), et la case « Mon activité est occasionnelle et je déclare mes revenus aux impôts », avec sa date (« bien comme ca ») |
@@ -73,7 +79,7 @@ Ces limites valent pour tout prestataire dont le SIRET n'est pas « vérifié »
 - Emma propose « Débarrasser un garage, 250 € » : refusé, « Sans SIRET, une proposition ne peut pas dépasser 100 € ».
 - Emma a déjà fait 980 € cette année : une proposition de 40 € ne peut pas être acceptée ; elle lit « Vous avez atteint la limite des particuliers : créez votre auto-entreprise ».
 
-**Ce qui ne change pas** (règles déjà en place) : espèces seulement, pas de devis, pas de facture, pas de commission pour rafals.
+**Ce qui ne change pas** (règles déjà en place) : pas de devis, pas de facture. **Changé le 25/11/2026** (demande de Raphael) : la carte est possible sans SIRET une fois le compte Stripe relié, avec la commission de 5 % de rafals (`RM-PAIEMENTS.md` § « La carte pour tous ») ; sans compte Stripe, espèces seulement.
 
 **Précisions données par Raphael le 09/10/2026** (réponses mot pour mot entre guillemets) :
 1. **Les métiers interdits sont rangés automatiquement, sans écran d'administration** (« non je ne veux pas m'ochuper de ca dans l'amin commande faut que ca soit automatique »). Claude range une fois pour toutes chaque métier de la liste en « SIRET obligatoire » ou « autorisé sans SIRET » ; un métier ajouté plus tard est « SIRET obligatoire » d'office (choix de Claude, par prudence).
@@ -95,9 +101,9 @@ Ces limites valent pour tout prestataire dont le SIRET n'est pas « vérifié »
 - **Les 12 derniers mois** : 365 jours, comptés à partir de la fin de chaque rendez-vous.
 - **Au plafond de 1 000 €** : il ne peut plus répondre ni proposer, et aucun client ne peut plus accepter une proposition déjà envoyée ; une tâche de fond (toutes les 15 minutes) retire ses propositions en attente, écrit une ligne dans chaque conversation et lui envoie un seul mail.
 - **Bouton [Répondre] verrouillé 🔒 avec la raison**, au lieu d'un bouton absent, quand la demande est dans ses métiers et son rayon mais qu'une limite l'arrête : « « Plombier » demande un SIRET… », « Ajoutez votre adresse dans « Mon profil »… » (sans adresse, depuis le 15/10/2026, pour tous les prestataires), « Sans SIRET, avant de répondre : … cochez… », « Vous avez atteint la limite des particuliers… ». Ex. Karim, sans SIRET, voit « Fuite sous l'évier » dans « Demandes près de chez moi » avec le bouton verrouillé.
-- **La case se coche dans « Mon profil »**, carte « Sans SIRET : vos limites », qui montre aussi où il en est (« 1 sur 2 rendez-vous ce mois-ci », « 230,00 € sur 1 000,00 € »).
+- **La case se coche dans « Mon profil »**, carte « Sans SIRET : vos limites », qui montre aussi où il en est (« 230,00 € sur 2 000,00 € » ; la ligne « 1 sur 2 rendez-vous ce mois-ci » est retirée le 25/11/2026).
 - **L'étiquette** est écrite en entier sur la page publique et sur chaque proposition ; sur les petites cartes de « Trouver un prestataire », le coin dit seulement « Particulier » (la place manque).
-- **Les 4 plafonds sont des réglages** (`backend/app/reglages.py`) : 100 €, 2 par mois, 1 000 €, 365 jours.
+- **Les plafonds sont des réglages** (`backend/app/reglages.py`) : 100 €, 2 000 € (depuis le 25/11/2026), 365 jours. La limite de 2 par mois est retirée.
 - **Dans les tests automatiques**, les prestataires d'essai n'ont pas de SIRET ; pour ne pas tous les bloquer, les limites sont coupées partout sauf dans `tests/test_particuliers.py`, qui les vérifie une par une.
 
 **Pourquoi la règle 5 est à signaler à l'avocat** : sans limite de durée, un particulier peut rester sans SIRET indéfiniment ; la règle des 6 mois était celle qui poussait à se déclarer (remarque de Claude du 09/10/2026, Raphael a maintenu son choix).
@@ -166,6 +172,7 @@ Un prestataire sans annonce publiée n'apparaît dans aucune recherche (ex. Kari
 - **Nom affiché** : 2 à 80 caractères. **Présentation** : 1 000 caractères au plus (validé par Raphael le 29/09/2026).
 - **SIRET** : on peut le taper avec des espaces ; rafals vérifie tout de suite qu'il a 14 chiffres **et la bonne clé de contrôle** (le dernier chiffre se calcule à partir des autres). Un SIRET nouveau ou changé passe « à vérifier » (vérification auprès de l'État au lot 2.4) ; le retirer = « absent ». ⚠️ L'exemple de Julie (912 345 678 00014) est inventé et ne passe pas la clé : il reste un exemple de lecture, pas un vrai numéro.
 - **Photo** : JPG ou PNG, 5 Mo au plus (même vérification que l'accord des parents). Elle est visible de tous (elle sera montrée sur les annonces) (validé par Raphael le 29/09/2026).
+- **Photos réduites à l'envoi** (accord de Raphael le 25/11/2026, « si ça ne change presque rien ») : toute photo (profil, photos du travail, demandes, demandes de devis, messages) plus grande que **1600 pixels** sur son grand côté est ramenée à 1600, en JPEG qualité 85, remise à l'endroit, sans ses informations cachées (lieu GPS). Ex. photo de téléphone 4080 × 3060 et 2,6 Mo → 1200 × 1600 et 173 Ko ; une photo de 800 × 600 reste telle quelle. Les documents (accord des parents, pièces de l'auto-entreprise) et les captures d'écran de « Un problème ? » gardent leur taille pour rester lisibles. Les photos déjà envoyées ne changent pas. Code : `services/fichiers.py`, `reduire_photo`.
 - **Statuts** : pause ↔ reprise par le prestataire ; arrêt (définitif : plus aucune modification) ; blocage et déblocage par l'administrateur seulement. Un prestataire bloqué ne peut ni reprendre ni se mettre en pause ; seul l'administrateur le débloque, ce qui le remet « actif » (validé par Raphael le 29/09/2026 : pas de déblocage automatique). Un prestataire arrêté ne peut plus être bloqué ni débloqué.
 - **Devenir prestataire** exige l'adresse vérifiée et, avant 18 ans, l'accord des parents accepté (règle de `RM-COMPTES.md`), sinon message clair.
 - Toute création, modification, photo et changement de statut est écrit au journal des actions.
@@ -232,3 +239,10 @@ Réponse de Raphael, mot pour mot : « au lieux d'un bouton suprimer ce metier j
 - Exemple : le 01/11, Karim met la date de fin « 15/11 » sur Chauffagiste. Le rendez-vous « Entretien chaudière » de Mme Dupont le 10/11 reste ; celui de M. Petit le 20/11 est annulé.
 - **Métier principal arrêté : un métier secondaire devient principal automatiquement.** Ex. Karim (principal Plombier, secondaire Chauffagiste) met la date de fin « 15/11 » sur Plombier → « Après le 15/11, Chauffagiste deviendra votre métier principal » ; le 16/11, c'est fait. S'il a plusieurs métiers secondaires, il choisit lequel, le 1er ajouté étant proposé.
 - **Seul métier arrêté : le profil reste affiché**, ni en pause ni arrêté ; il n'apparaît plus dans les recherches de ce métier.
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- Ni téléphone, ni adresse mail, ni mot interdit dans le nom affiché et la présentation.
+- Un SIRET ne sert qu'à un seul profil en activité (un profil arrêté le libère).
+- Un métier désactivé par l'administrateur reste permis dans les profils qui l'ont déjà : le prestataire peut toujours modifier son profil.
+- Sans SIRET vérifié, le prix de l'heure affiché est de 100 € au plus (la même limite que les propositions).
+- [S'abonner] à un prestataire et « Proposer un métier » demandent une adresse mail vérifiée.

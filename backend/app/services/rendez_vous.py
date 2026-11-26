@@ -101,6 +101,8 @@ def annuler_par_prestataire(db: Session, prestataire: Prestataire, rdv: RendezVo
         raise ErreurRegle("Ce rendez-vous n'est plus actif.")
     if rdv.fin <= maintenant:
         raise ErreurRegle("Ce rendez-vous est déjà passé.")
+    if rdv.paye_direct_le is not None:  # la facture est déjà faite (audit du 14/11/2026)
+        raise ErreurRegle("Ce rendez-vous est déjà noté comme payé : il ne peut plus être annulé.")
     _changer(rdv, "annule_prestataire", maintenant, motif)
     _journal(db, prestataire.compte_id, "annuler_rendez_vous_prestataire", rdv, maintenant,
              moins_de_24_h=rdv.debut - maintenant < timedelta(hours=24))

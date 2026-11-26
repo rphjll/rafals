@@ -16,6 +16,7 @@ import AppChoix from '../ui/AppChoix.vue'
 import AppRecherche from '../ui/AppRecherche.vue'
 import AppZoneTexte from '../ui/AppZoneTexte.vue'
 import AppSection from '../ui/AppSection.vue'
+import AlerteMetierSansSiret from './AlerteMetierSansSiret.vue'
 
 const PRESENTATION_MAX = 1000
 
@@ -43,6 +44,14 @@ const envoiEnCours = ref(false)
 const chercherSecondaire = (texte: string) =>
   rechercherSauf(texte, [principal.value?.id, ...secondaires.value.map((m) => m.id)])
 const plein = computed(() => secondaires.value.length >= SECONDAIRES_MAX)
+
+// Sans SIRET vérifié (création, ou profil dont le SIRET n'est pas « vérifié ») : métiers interdits signalés
+const sansSiret = computed(() => e?.siret_statut !== 'verifie')
+/** Ex. « Plombier » remplacé par « Homme toutes mains / Multiservices » ; s'il est déjà dans la liste, Plombier est juste retiré */
+function remplacerSecondaire(rang: number, m: MetierVisible) {
+  const deja = principal.value?.id === m.id || secondaires.value.some((s) => s.id === m.id)
+  secondaires.value.splice(rang, 1, ...(deja ? [] : [{ id: m.id, nom: m.nom }]))
+}
 
 async function enregistrer() {
   erreur.value = ''
@@ -81,6 +90,8 @@ async function enregistrer() {
         aide="Ce que les clients verront, ex. « Julie Martin — Ménage » ou « Net & Clair »."
       />
       <AppChoixMetier v-model="principal" :avec-dossiers="false" etiquette="Métier principal" obligatoire />
+      <!-- Sans SIRET vérifié : un métier qui en demande un est signalé, avec le métier à prendre à la place -->
+      <AlerteMetierSansSiret v-if="sansSiret" :metier="principal" @choisir="(m: MetierVisible) => (principal = m)" />
       <div class="flex flex-col gap-2">
         <div v-if="secondaires.length" class="flex flex-wrap gap-2">
           <span
@@ -111,6 +122,14 @@ async function enregistrer() {
           @choisir="(m: MetierVisible) => secondaires.push({ id: m.id, nom: m.nom })"
         />
         <p v-else class="text-[13px] text-texte-doux">{{ SECONDAIRES_MAX }} métiers secondaires : c'est le maximum.</p>
+        <template v-if="sansSiret">
+          <AlerteMetierSansSiret
+            v-for="(metier, rang) in secondaires"
+            :key="metier.id"
+            :metier="metier"
+            @choisir="(m: MetierVisible) => remplacerSecondaire(rang, m)"
+          />
+        </template>
       </div>
     </AppSection>
 
@@ -140,7 +159,7 @@ async function enregistrer() {
         etiquette="SIRET (facultatif)"
         inputmode="numeric"
         placeholder="14 chiffres, ex. 443 061 841 00047"
-        aide="Sans SIRET, vos clients ne pourront vous payer qu'en espèces. Avec un SIRET vérifié par l'État, la carte bancaire devient possible."
+        aide="Sans SIRET : pas de facture ni de devis. La carte bancaire reste possible : reliez votre compte Stripe dans « Paiement par carte »."
       />
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
       <div class="flex flex-wrap gap-2.5">

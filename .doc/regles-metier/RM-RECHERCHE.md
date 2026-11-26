@@ -98,3 +98,6 @@ Cases à cocher au-dessus des résultats ; chacune cache ceux qui ne conviennent
 
 ## Références
 - `RM-PRESTATAIRES.md`, `RM-METIERS.md`, `archives/RM-ANNONCES.md`, `RM-AVIS.md` (à écrire)
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- Un prestataire sans SIRET vérifié n'est montré ni dans la recherche ni sur sa page publique sous un métier « SIRET obligatoire ». Ex. Karim sans SIRET, Plombier et Montage de meubles : montré seulement en Montage de meubles.

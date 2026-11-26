@@ -106,3 +106,6 @@ Le client vu le plus récemment en premier : on regarde la date de son rendez-vo
 ## Ce qui n'est pas fait
 - Pas de client saisi à la main, pas d'import d'un fichier (choix de Raphael).
 - Pas de note personnelle sur un client, pas d'export.
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- « Encaissé ailleurs » : refusé sans SIRET vérifié (le seuil de TVA ne concerne qu'une entreprise).

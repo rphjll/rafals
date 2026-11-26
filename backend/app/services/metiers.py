@@ -74,6 +74,8 @@ def _metier_du_meme_nom(db: Session, nom: str) -> Metier | None:
 
 
 def proposer(db: Session, compte: Compte, nom_propose: str, maintenant: datetime) -> PropositionMetier:
+    if compte.email_verifie_le is None:  # audit du 14/11/2026 (D3)
+        raise ErreurRegle("Vérifiez d'abord votre adresse mail (lien reçu par mail) pour proposer un métier.", 403)
     nom = " ".join(nom_propose.split())
     if not NOM_LONGUEUR_MIN <= len(nom) <= NOM_LONGUEUR_MAX:
         raise ErreurRegle(f"Le nom du métier doit faire entre {NOM_LONGUEUR_MIN} et {NOM_LONGUEUR_MAX} caractères.")

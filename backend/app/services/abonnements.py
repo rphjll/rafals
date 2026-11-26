@@ -41,6 +41,8 @@ def abonner(db: Session, compte: Compte, prestataire_id: int, maintenant: dateti
         raise ErreurRegle("Ce prestataire n'existe pas.", 404)
     if prestataire.compte_id == compte.id:
         raise ErreurRegle("Vous ne pouvez pas vous abonner à votre propre profil.")
+    if compte.email_verifie_le is None:  # audit du 14/11/2026 (D3) : pas de mails vers une adresse jamais vérifiée
+        raise ErreurRegle("Vérifiez d'abord votre adresse mail (lien reçu par mail) pour vous abonner.", 403)
     abonnement = abonnement_de(db, compte.id, prestataire_id)
     if abonnement is None:
         abonnement = Abonnement(compte_id=compte.id, prestataire_id=prestataire_id, muet=False, cree_le=maintenant)

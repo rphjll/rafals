@@ -77,3 +77,7 @@ Texte : 2000 caractères · photos par message : 5 · mail après : 15 minutes s
 
 ## Références
 - `RM-DEMANDES.md`, `RM-ALERTES.md`, `RM-CLIENTS.md`, `RM-AVIS.md`, `RM-ADMINISTRATION.md`
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- Ouvrir une conversation avec un prestataire demande une adresse mail vérifiée.
+- À 16 ou 17 ans, écrire pour la première fois à un prestataire demande l'accord des parents accepté (comme réserver ou publier).
