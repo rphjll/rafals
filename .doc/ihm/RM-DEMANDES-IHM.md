@@ -1,5 +1,10 @@
 # Demandes — Interface (carte d'une demande, « Mes demandes », « Demandes près de chez moi »)
 
+> **Changé le 25/11/2026** (demande de Raphael « faciliter les prestataires », maquette validée) :
+> - **[Répondre] s'appelle [Faire une proposition]** partout sur une demande (aussi verrouillé 🔒 avec sa raison). Raphael : « c'est pas une demande personnel c'est une demande publique ». Le clic ouvre la conversation avec la fenêtre « Faire une proposition » **déjà ouverte** (`/messages/12?proposition=1`). Dans ce fichier, « [Répondre] » plus bas veut dire ce bouton.
+> - **« ou un devis »** : petit lien souligné à côté, seulement pour un prestataire qui peut faire une proposition **et** a un SIRET vérifié, une fois par demande (`peut_devis`). Il ouvre la fenêtre de devis habituelle (« Devis pour Anne P. ») ; le devis part sur la demande publiée (`RM-DEVIS.md`). Le bouton principal reste la proposition (Raphael : « y'a pleins de demandes qui ne nécésitent aucun devis »).
+> - **Onglet « Demandes »** : un prestataire (sans SIRET, auto-entrepreneur ou entreprise) qui n'a **jamais publié** de demande ne voit pas les sous-onglets « Près de chez moi » / « Mes demandes » : directement la liste. Ils reviennent dès sa première demande. Un client les voit toujours.
+
 ## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
 
 Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
@@ -34,7 +39,7 @@ Remplace les pages « Mes demandes » et « Demandes près de chez moi » décri
    - prestataire qui peut répondre (son métier, son rayon, pas complète) : **[Répondre]** → ouvre la conversation avec le client (`RM-MESSAGES-IHM.md`) ;
    - prestataire qui a déjà répondu : [Voir la conversation] ;
    - prestataire **sans adresse** dans son compte, pour une demande de ses métiers (15/10/2026) : [Répondre] verrouillé 🔒 « Ajoutez votre adresse dans « Mon profil » : les demandes près de chez vous se calculent depuis elle. » ;
-   - prestataire **sans SIRET** que la demande concerne mais qu'une limite arrête (ajouté le 12/10/2026) : [Répondre] verrouillé 🔒 avec la raison, ex. « « Plombier » demande un SIRET : créez votre auto-entreprise… », « Sans SIRET, avant de répondre : indiquez votre adresse et cochez « Mon activité est occasionnelle… » dans « Mon profil ». », « Vous avez atteint la limite des particuliers (1 000,00 € sur 12 mois)… » ;
+   - prestataire **sans SIRET** que la demande concerne mais qu'une limite arrête (ajouté le 12/10/2026) : [Répondre] verrouillé 🔒 avec la raison, ex. « « Plombier » demande un SIRET : créez votre auto-entreprise… », « Sans SIRET, avant de répondre : indiquez votre adresse et cochez « Mon activité est occasionnelle… » dans « Mon profil ». », « Vous avez atteint la limite des particuliers (2 000,00 € sur 12 mois)… » (1 000 € jusqu'au 25/11/2026) ;
    - prestataire, demande complète : [Répondre] verrouillé 🔒 « Cette demande est complète : 10 prestataires ont déjà répondu. » ;
    - les autres (clients, prestataires d'un autre métier ou trop loin) : aucun bouton ;
    - puis les boutons propres à la page (« Mes demandes »).

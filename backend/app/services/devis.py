@@ -199,7 +199,7 @@ def ajouter_photo(db: Session, client: Compte, demande: DemandeDevis, *, nom_fic
         raise ErreurRegle(f"Au plus {reglages.DEMANDE_DEVIS_PHOTOS_MAX} photos par demande.")
     fichiers.verifier(contenu, type_mime, types_acceptes=reglages.PHOTO_TYPES_ACCEPTES,
                       taille_max_octets=reglages.PHOTO_TAILLE_MAX_OCTETS)
-    fichier = fichiers.enregistrer(db, client, nom_fichier=nom_fichier, type_mime=type_mime, contenu=contenu, maintenant=maintenant)
+    fichier = fichiers.enregistrer(db, client, nom_fichier=nom_fichier, type_mime=type_mime, contenu=contenu, maintenant=maintenant, photo=True)
     photo = PhotoDemande(demande_devis_id=demande.id, fichier_id=fichier.id, ordre=len(deja) + 1)
     db.add(photo)
     db.flush()
@@ -247,6 +247,8 @@ def _verifier_lignes(prestataire: Prestataire, lignes: list[Ligne]) -> list[Lign
             raise ErreurRegle(f"Ligne {rang} : la quantité doit être plus grande que 0.")
         if ligne.prix_unitaire_centimes < 0:
             raise ErreurRegle(f"Ligne {rang} : le prix ne peut pas être négatif.")
+        if ligne.quantite_centiemes > 10_000_000 or ligne.prix_unitaire_centimes > reglages.DEVIS_TOTAL_MAX_CENTIMES:
+            raise ErreurRegle(f"Ligne {rang} : la quantité ou le prix est trop grand.")
         taux = ligne.tva_pour_mille
         if prestataire.facture_tva and taux not in reglages.DEVIS_TAUX_TVA_POUR_MILLE:
             raise ErreurRegle(f"Ligne {rang} : choisissez le taux de TVA (5,5 %, 10 % ou 20 %).")
@@ -267,6 +269,8 @@ def _verifier_dates(db: Session, prestataire: Prestataire, debut: date, fin: dat
         raise ErreurRegle("Les travaux ne peuvent pas commencer dans le passé.")
     if fin < debut:
         raise ErreurRegle("Le dernier jour des travaux doit être après le premier.")
+    if debut > aujourd_hui(maintenant) + reglages.DEVIS_TRAVAUX_AVANCE_MAX or (fin - debut).days > 365:
+        raise ErreurRegle("Ces dates sont trop loin : les travaux commencent dans les 2 ans et durent 1 an au plus.")
     de, a = _limites(debut, fin)
     rdv = db.scalar(select(RendezVous).where(RendezVous.prestataire_id == prestataire.id, RendezVous.statut.in_(communs.ACTIFS),
                                              RendezVous.debut < a, RendezVous.fin > de).order_by(RendezVous.debut).limit(1))
@@ -291,6 +295,8 @@ def envoyer(db: Session, prestataire: Prestataire, demande: DemandeDevis, lignes
         raise ErreurRegle("Les arrhes vont de 0 à 100 % du total.")
     if totaux(propres, arrhes_pourcent).ttc <= 0:
         raise ErreurRegle("Le total du devis doit être plus grand que 0 €.")
+    if totaux(propres, arrhes_pourcent).ttc > reglages.DEVIS_TOTAL_MAX_CENTIMES:
+        raise ErreurRegle(f"Le total d'un devis ne peut pas dépasser {euros(reglages.DEVIS_TOTAL_MAX_CENTIMES)}.")
     if valable_jusqu_au < aujourd_hui(maintenant):
         raise ErreurRegle("La date « Valable jusqu'au » est déjà passée.")
     # Verrou sur le prestataire : deux devis envoyés en même temps n'ont jamais le même numéro
@@ -316,6 +322,51 @@ def envoyer(db: Session, prestataire: Prestataire, demande: DemandeDevis, lignes
                      f"{euros(t.ttc)}, travaux du {jour(travaux_debut)} au {jour(travaux_fin)}. Valable jusqu'au "
                      f"{jour(valable_jusqu_au)} : acceptez-le ou refusez-le sur rafals (« Mes devis »).")
     return devis
+
+
+def sur_une_demande(db: Session, prestataire: Prestataire, demande_id: int, lignes: list[Ligne], *, arrhes_pourcent: int,
+                    travaux_debut: date, travaux_fin: date, valable_jusqu_au: date, maintenant: datetime) -> Devis:
+    """[ou un devis] sur une demande publiée (demande de Raphael du 25/11/2026, RM-DEVIS.md). Ex. Anne P. publie « Ballon
+    d'eau chaude qui fuit » ; Karim, plombier au SIRET vérifié, lui envoie le devis D-2026-0015 de 450 €. En une fois :
+    réponse à la demande (mêmes règles que [Faire une proposition] : métier, rayon, 10 réponses au plus), demande de
+    devis rattachée à la demande (`demande_id`), puis envoi. Si un contrôle échoue, rien n'est gardé."""
+    from app.modeles.demandes import Demande
+    from app.services import propositions
+
+    if prestataire.siret_statut != "verifie":
+        raise ErreurRegle("Il faut un SIRET vérifié pour envoyer un devis. Vous pouvez faire une proposition à la place.")
+    deja = db.scalar(select(DemandeDevis.id).where(DemandeDevis.demande_id == demande_id,
+                                                   DemandeDevis.prestataire_id == prestataire.id).limit(1))
+    if deja is not None:
+        raise ErreurRegle("Vous avez déjà envoyé un devis pour cette demande : il est dans « Devis et factures ».")
+    # Les contrôles du devis d'abord : la réponse prévient le client par mail aussitôt, elle ne doit partir que pour un
+    # devis valable (envoyer() les refait ensuite, sans rien changer)
+    locaux.verifier_modifiable(prestataire)
+    propres = _verifier_lignes(prestataire, lignes)
+    if not 0 <= arrhes_pourcent <= 100:
+        raise ErreurRegle("Les arrhes vont de 0 à 100 % du total.")
+    if not 0 < totaux(propres, arrhes_pourcent).ttc <= reglages.DEVIS_TOTAL_MAX_CENTIMES:
+        raise ErreurRegle(f"Le total du devis va de 0,01 € à {euros(reglages.DEVIS_TOTAL_MAX_CENTIMES)}.")
+    if valable_jusqu_au < aujourd_hui(maintenant):
+        raise ErreurRegle("La date « Valable jusqu'au » est déjà passée.")
+    _verifier_dates(db, prestataire, travaux_debut, travaux_fin, maintenant)
+    propositions.repondre(db, prestataire, demande_id, maintenant)
+    publiee = db.get_one(Demande, demande_id)
+    _, maxi = reglages.DEMANDE_DEVIS_TEXTE
+    demande = DemandeDevis(
+        client_id=publiee.client_id, prestataire_id=prestataire.id, metier_id=publiee.metier_id, demande_id=publiee.id,
+        texte=f"{publiee.titre} : {publiee.description}"[:maxi], statut="envoyee",
+        commune_id=publiee.commune_id if publiee.lieu != "chez_prestataire" else None,
+        adresse_ligne=publiee.adresse_ligne if publiee.lieu != "chez_prestataire" else None,
+        adresse_complement=publiee.adresse_complement if publiee.lieu != "chez_prestataire" else None,
+        code_postal=publiee.code_postal if publiee.lieu != "chez_prestataire" else None,
+        cree_le=maintenant, statut_change_le=maintenant,
+    )
+    db.add(demande)
+    db.flush()
+    _noter(db, prestataire.compte_id, "devis_sur_demande", "demande_devis", demande.id, maintenant, demande_id=publiee.id)
+    return envoyer(db, prestataire, demande, lignes, arrhes_pourcent=arrhes_pourcent, travaux_debut=travaux_debut,
+                   travaux_fin=travaux_fin, valable_jusqu_au=valable_jusqu_au, maintenant=maintenant)
 
 
 # ---------- Le client répond ----------
@@ -389,6 +440,8 @@ def accepter(db: Session, client: Compte, devis: Devis, mode_paiement: str, main
     if mode_paiement not in modes_possibles(db, devis):
         raise ErreurRegle("Ce mode de paiement n'est pas accepté par ce prestataire.")
     demande = demande_de(db, devis)
+    if db.get_one(Prestataire, demande.prestataire_id).statut != "actif":  # en pause, bloqué ou arrêté (audit du 14/11/2026)
+        raise ErreurRegle("Ce prestataire n'est pas disponible en ce moment : ce devis ne peut pas être accepté.")
     _verifier_dates(db, db.get_one(Prestataire, demande.prestataire_id), devis.travaux_debut, devis.travaux_fin, maintenant)
     t = totaux_du_devis(db, devis)
     if mode_paiement == "carte" and t.arrhes > 0:
@@ -501,6 +554,17 @@ def signaler_probleme(db: Session, client: Compte, devis: Devis, texte: str, mai
     return devis
 
 
+def en_cours_du_prestataire(db: Session, prestataire_id: int) -> Devis | None:
+    """Un devis accepté dont les travaux ne sont pas finis ou pas payés (il empêche d'arrêter son activité)."""
+    return db.scalar(select(Devis).join(DemandeDevis, DemandeDevis.id == Devis.demande_devis_id).where(
+        DemandeDevis.prestataire_id == prestataire_id, Devis.statut.in_(("accepte", "termine"))).limit(1))
+
+
+def en_cours_du_client(db: Session, client_id: int) -> Devis | None:
+    return db.scalar(select(Devis).join(DemandeDevis, DemandeDevis.id == Devis.demande_devis_id).where(
+        DemandeDevis.client_id == client_id, Devis.statut.in_(("accepte", "termine"))).limit(1))
+
+
 def problemes_a_traiter(db: Session) -> list[Devis]:
     return list(db.scalars(select(Devis).where(Devis.probleme_le.is_not(None), Devis.probleme_traite_le.is_(None))
                            .order_by(Devis.probleme_le)))
@@ -537,8 +601,9 @@ def annuler_par_client(db: Session, client: Compte, devis: Devis, maintenant: da
     _liberer_jours(db, devis)
     _noter(db, client.id, "annuler_devis_client", "devis", devis.id, maintenant)
     _prevenir(db, demande_de(db, devis), objet=f"rafals : devis {numero(devis)} annulé par le client",
-              prestataire=f"Le client a annulé le devis {numero(devis)}. Vous gardez les arrhes ; les jours des travaux "
-                          "sont de nouveau libres.")
+              prestataire=f"Le client a annulé le devis {numero(devis)}. "
+                          + ("Vous gardez les arrhes. " if devis.mode_paiement == "carte" and totaux_du_devis(db, devis).arrhes else "")
+                          + "Les jours des travaux sont de nouveau libres.")
     return devis
 
 

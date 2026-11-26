@@ -1,5 +1,7 @@
 # Messages — Interface
 
+> **Changé le 25/11/2026** : venu de [Faire une proposition] sur une demande (`?proposition=1`), le prestataire arrive dans la conversation avec la fenêtre « Faire une proposition » déjà ouverte ; l'adresse se nettoie aussitôt (un rechargement ne la rouvre pas).
+
 ## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
 
 Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.
@@ -82,7 +84,7 @@ Bord vert tant qu'elle attend une réponse, grisée ensuite. De haut en bas :
 ## Proposition d'un prestataire sans SIRET (ajouté le 12/10/2026, lot 11.2)
 - Sous la première ligne de la carte : badge orange « Particulier, non professionnel », chez le client comme chez le prestataire.
 - Dans la fenêtre « Confirmer le rendez-vous », au-dessus de « Comment payez-vous ? » : bandeau orange « Emma Leroy est un particulier, pas un professionnel. Pas de facture, pas de garantie, pas d'assurance professionnelle. »
-- Refus à l'acceptation, en bandeau rouge dans la fenêtre : « Emma Leroy a atteint sa limite du mois (2 rendez-vous sans SIRET) : choisissez un jour du mois suivant, ou un autre prestataire. » ou « Emma Leroy a atteint la limite des particuliers : cette proposition ne peut plus être acceptée. »
+- Refus à l'acceptation, en bandeau rouge dans la fenêtre : « Emma Leroy a atteint la limite des particuliers : cette proposition ne peut plus être acceptée. » (Le message « limite du mois (2 rendez-vous sans SIRET) » n'existe plus depuis le 25/11/2026.)
 - Refus à l'envoi d'une proposition, dans la fenêtre « Faire une proposition » : « Sans SIRET, une proposition ne peut pas dépasser 100,00 €… ».
 
 ## Notes et carte « Rendez-vous passé » (ajoutées le 12/10/2026, lot 8.6)

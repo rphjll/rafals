@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // Onglet « Demandes » (lot 14.2 ; .doc/ihm/RM-DEMANDES-IHM.md), identique à la grande maquette depuis le 10/11/2026 :
 // le titre et [+ Publier une demande], puis 2 sous-onglets.
-// « Près de chez moi » : les demandes des autres, lues par tous, avec [Répondre] ou 🔒 et sa raison.
+// « Près de chez moi » : les demandes des autres, lues par tous, avec [Faire une proposition] ou 🔒 et sa raison.
+// Prestataire sans aucune demande publiée : pas de sous-onglets (25/11/2026).
 // « Mes demandes » : les miennes, « En cours » puis « Terminées », repliées en une ligne ; un clic ouvre le détail.
 import { computed, onMounted, ref } from 'vue'
 import { appelerServeur, messageErreur } from '../api'
@@ -25,13 +26,19 @@ const toutes = ref<DemandeVisible[] | null>(null)
 const erreur = ref('')
 // Ma propre demande n'est que dans « Mes demandes » (demande de Raphael du 09/11/2026, sur la maquette)
 const autres = computed(() => (toutes.value ?? []).filter((d) => !d.a_moi))
-onMounted(async () => {
+async function charger() {
   try {
     toutes.value = await appelerServeur<DemandeVisible[]>('/api/demandes')
   } catch (e) {
     erreur.value = messageErreur(e)
   }
-})
+}
+onMounted(charger)
+
+// Un prestataire qui n'a jamais publié de demande (sans SIRET, auto-entrepreneur ou entreprise) ne voit pas les
+// sous-onglets : directement la liste (demande de Raphael du 25/11/2026). Ils reviennent dès sa première demande.
+const sansOnglets = computed(() => !!compte.value?.prestataire_id && nombreMiennes.value === 0)
+const vue = computed(() => (sansOnglets.value ? 'pres' : onglet.value))
 </script>
 
 <template>
@@ -43,16 +50,16 @@ onMounted(async () => {
       </div>
       <RouterLink class="btn btn-1" :to="compte ? '/demandes/nouvelle' : '/connexion'"><AppIcone nom="plus" />Publier une demande</RouterLink>
     </div>
-    <AppOnglets v-model="onglet" :onglets="onglets" />
+    <AppOnglets v-if="!sansOnglets" v-model="onglet" :onglets="onglets" />
 
-    <template v-if="onglet === 'pres'">
+    <template v-if="vue === 'pres'">
       <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
       <template v-else-if="toutes">
         <p class="doux petit">
           {{ autres.length }} demande{{ autres.length > 1 ? 's' : '' }} en ligne, de la plus récente à la plus ancienne.
-          <template v-if="compte?.prestataire_id"> Vous pouvez répondre à celles de vos métiers, dans votre zone.</template>
+          <template v-if="compte?.prestataire_id"> Vous pouvez faire une proposition à celles de vos métiers, dans votre zone.</template>
         </p>
-        <CarteDemande v-for="demande in autres" :key="demande.id" :demande="demande" />
+        <CarteDemande v-for="demande in autres" :key="demande.id" :demande="demande" @maj="charger" />
         <div v-if="!autres.length" class="carte vide">Aucune demande en ligne pour l’instant. Revenez bientôt, ou publiez la vôtre.</div>
       </template>
     </template>
@@ -67,7 +74,7 @@ onMounted(async () => {
       <p v-else class="doux petit">Ce que vous avez publié, et les réponses des prestataires.</p>
     </template>
     <!-- Toujours chargée (même cachée) pour que le nombre de l'onglet soit juste -->
-    <div v-if="compte" v-show="onglet === 'miennes'" class="contents">
+    <div v-if="compte" v-show="vue === 'miennes'" class="contents">
       <ListeMesDemandes @nombre="(n) => (nombreMiennes = n)" />
     </div>
   </div>

@@ -1,34 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router'
+// L'accueil est chargé tout de suite ; les autres pages seulement quand on y va (chargement « à la demande »,
+// 25/11/2026) : avant, les 30 pages et leurs 180 fichiers partaient tous à l'ouverture du site.
 import AccueilPage from './pages/AccueilPage.vue'
-import AdministrationPage from './pages/AdministrationPage.vue'
-import AgendaPage from './pages/AgendaPage.vue'
-import AvisClientPage from './pages/AvisClientPage.vue'
-import ClientPage from './pages/ClientPage.vue'
-import BientotPage from './pages/BientotPage.vue'
-import CataloguePage from './pages/CataloguePage.vue'
-import CreerAutoEntreprisePage from './pages/CreerAutoEntreprisePage.vue'
-import GuideAutoEntreprisePage from './pages/GuideAutoEntreprisePage.vue'
-import DemandesPage from './pages/DemandesPage.vue'
-import DemarchesPage from './pages/DemarchesPage.vue'
-import DevisPage from './pages/DevisPage.vue'
-import FacturesPage from './pages/FacturesPage.vue'
-import ConnexionPage from './pages/ConnexionPage.vue'
-import InscriptionPage from './pages/InscriptionPage.vue'
-import MesAbonnementsPage from './pages/MesAbonnementsPage.vue'
-import MaCarteVisitePage from './pages/MaCarteVisitePage.vue'
-import MesClientsPage from './pages/MesClientsPage.vue'
-import MesAvisRecusPage from './pages/MesAvisRecusPage.vue'
-import MessagesPage from './pages/MessagesPage.vue'
-import MoiPage from './pages/MoiPage.vue'
-import NouvelleDemandePage from './pages/NouvelleDemandePage.vue'
-import MonActivitePage from './pages/MonActivitePage.vue'
-import MotDePasseOubliePage from './pages/MotDePasseOubliePage.vue'
-import NouveauMotDePassePage from './pages/NouveauMotDePassePage.vue'
-import ParametresPage from './pages/ParametresPage.vue'
-import PrestatairePage from './pages/PrestatairePage.vue'
-import ProfilPage from './pages/ProfilPage.vue'
-import TrouverPage from './pages/TrouverPage.vue'
-import VerifierAdressePage from './pages/VerifierAdressePage.vue'
+const AdministrationPage = () => import('./pages/AdministrationPage.vue')
+const AgendaPage = () => import('./pages/AgendaPage.vue')
+const AvisClientPage = () => import('./pages/AvisClientPage.vue')
+const ClientPage = () => import('./pages/ClientPage.vue')
+const BientotPage = () => import('./pages/BientotPage.vue')
+const CataloguePage = () => import('./pages/CataloguePage.vue')
+const CreerAutoEntreprisePage = () => import('./pages/CreerAutoEntreprisePage.vue')
+const GuideAutoEntreprisePage = () => import('./pages/GuideAutoEntreprisePage.vue')
+const DemandesPage = () => import('./pages/DemandesPage.vue')
+const DemarchesPage = () => import('./pages/DemarchesPage.vue')
+const DevisPage = () => import('./pages/DevisPage.vue')
+const ConnexionPage = () => import('./pages/ConnexionPage.vue')
+const InscriptionPage = () => import('./pages/InscriptionPage.vue')
+const MesAbonnementsPage = () => import('./pages/MesAbonnementsPage.vue')
+const MaCarteVisitePage = () => import('./pages/MaCarteVisitePage.vue')
+const MesClientsPage = () => import('./pages/MesClientsPage.vue')
+const MesAvisRecusPage = () => import('./pages/MesAvisRecusPage.vue')
+const MessagesPage = () => import('./pages/MessagesPage.vue')
+const MoiPage = () => import('./pages/MoiPage.vue')
+const NouvelleDemandePage = () => import('./pages/NouvelleDemandePage.vue')
+const MonActivitePage = () => import('./pages/MonActivitePage.vue')
+const MotDePasseOubliePage = () => import('./pages/MotDePasseOubliePage.vue')
+const NouveauMotDePassePage = () => import('./pages/NouveauMotDePassePage.vue')
+const ParametresPage = () => import('./pages/ParametresPage.vue')
+const PrestatairePage = () => import('./pages/PrestatairePage.vue')
+const ProfilPage = () => import('./pages/ProfilPage.vue')
+const TrouverPage = () => import('./pages/TrouverPage.vue')
+const VerifierAdressePage = () => import('./pages/VerifierAdressePage.vue')
 
 // Les entrées du menu pas encore construites mènent à « Bientôt disponible » :
 // un clic produit toujours quelque chose de visible (CONVENTIONS-IHM).
@@ -79,13 +80,22 @@ export const routeur = createRouter({
     // Les anciens liens et le retour du paiement par carte (?rdv=12&paiement=fait) y arrivent avec leurs réglages.
     { path: '/rendez-vous', redirect: (vers) => ({ path: '/mon-agenda', query: { ...vers.query, onglet: undefined, calendrier: 'client' } }) },
     { path: '/devis', name: 'devis', component: DevisPage },
-    { path: '/factures', name: 'factures', component: FacturesPage },
+    // « Mes factures » est l'onglet « Factures » de « Devis et factures » depuis le 25/11/2026 (demande de Raphael)
+    { path: '/factures', redirect: { path: '/devis', query: { onglet: 'factures' } } },
     { path: '/demarches', name: 'demarches', component: DemarchesPage },
     { path: '/creer-mon-auto-entreprise', name: 'creer-auto-entreprise', component: CreerAutoEntreprisePage },
     { path: '/creer-mon-auto-entreprise/guide', name: 'guide-auto-entreprise', component: GuideAutoEntreprisePage },
     { path: '/administration', name: 'administration', component: AdministrationPage },
     { path: '/:chemin(.*)*', name: 'introuvable', ...bientot('Page introuvable', '') },
   ],
-  // Une adresse avec « # » descend à la partie visée (ex. /parametres#abonnements), sinon haut de page
-  scrollBehavior: (vers) => (vers.hash ? { el: vers.hash, top: 90, behavior: 'smooth' } : { top: 0 }),
+  // Une adresse avec « # » descend à la partie visée (ex. /parametres#abonnements).
+  // Bouton « retour » du navigateur : on retrouve l'endroit où on était.
+  // Même page, seul le réglage change (ex. /profil → /profil?onglet=activite, un clic sur un onglet) : on ne bouge pas.
+  // Sinon (une autre page) : haut de page.
+  scrollBehavior: (vers, depuis, positionGardee) => {
+    if (vers.hash) return { el: vers.hash, top: 90, behavior: 'smooth' }
+    if (positionGardee) return positionGardee
+    if (vers.path === depuis.path) return false
+    return { top: 0 }
+  },
 })

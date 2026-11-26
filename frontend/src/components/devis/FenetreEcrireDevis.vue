@@ -6,6 +6,7 @@ import { appelerServeur, messageErreur } from '../../api'
 import { useMessage } from '../../composables/useMessage'
 import { ajouterJours, aParis } from '../../outils/agenda'
 import { versCentimes } from '../../outils/prix'
+import type { DemandeVisible as DemandePublique } from '../../outils/demandes'
 import { type AvecPaiement, type DemandeVisible, TAUX_TVA, versCentiemes } from '../../outils/devis'
 import { montant } from '../../outils/paiements'
 import AppAlerte from '../ui/AppAlerte.vue'
@@ -15,7 +16,20 @@ import AppFenetre from '../ui/AppFenetre.vue'
 import AppSelection from '../ui/AppSelection.vue'
 
 const LIGNES_MAX = 20
-const props = defineProps<{ demande: DemandeVisible | null; factureTva: boolean }>()
+// « publiee » : une demande publiée (Demandes › « ou un devis », 25/11/2026) ; le devis part sans demande de devis du client
+const props = defineProps<{ demande: DemandeVisible | null; factureTva: boolean; publiee?: DemandePublique | null }>()
+// Ce que la fenêtre montre et l'adresse où le devis part, pour les deux cas
+const cible = computed(() => {
+  if (props.publiee) {
+    const p = props.publiee
+    return { nom: p.client, titre: p.titre, texte: p.description, chemin: `/api/moi/prestataire/demandes/${p.id}/devis` }
+  }
+  if (props.demande) {
+    const d = props.demande
+    return { nom: d.autre.nom, titre: d.titre, texte: d.texte, chemin: `/api/moi/prestataire/demandes-devis/${d.id}/devis` }
+  }
+  return null
+})
 const emit = defineEmits<{ fermer: []; envoye: [] }>()
 const { afficherMessage } = useMessage()
 
@@ -35,7 +49,7 @@ const erreur = ref('')
 const envoiEnCours = ref(false)
 const nouvelleLigne = (): LigneSaisie => ({ libelle: '', quantite: '1', prix: '', tva: 200 })
 watch(
-  () => props.demande,
+  cible,
   () => {
     lignes.value = [nouvelleLigne()]
     debut.value = fin.value = ajouterJours(aujourdhui, 7)
@@ -62,11 +76,12 @@ const total = computed(() => {
 })
 
 async function envoyer() {
-  if (!props.demande) return
+  const c = cible.value
+  if (!c) return
   erreur.value = ''
   envoiEnCours.value = true
   try {
-    await appelerServeur<AvecPaiement>(`/api/moi/prestataire/demandes-devis/${props.demande.id}/devis`, {
+    await appelerServeur<AvecPaiement>(c.chemin, {
       lignes: lignes.value.map((l) => ({
         libelle: l.libelle,
         quantite_centiemes: versCentiemes(l.quantite) ?? 0,
@@ -78,7 +93,7 @@ async function envoyer() {
       travaux_fin: fin.value,
       valable_jusqu_au: valable.value,
     })
-    afficherMessage(`Devis envoyé à ${props.demande.autre.nom}.`)
+    afficherMessage(`Devis envoyé à ${c.nom}.`)
     emit('envoye')
   } catch (e) {
     erreur.value = messageErreur(e) // ex. « Le 19/10/2026 n'est pas libre dans votre agenda… »
@@ -89,9 +104,9 @@ async function envoyer() {
 </script>
 
 <template>
-  <AppFenetre :ouverte="demande !== null" :titre="`Devis pour ${demande?.autre.nom ?? ''}`" @fermer="emit('fermer')">
-    <div v-if="demande" class="flex flex-col gap-3 text-texte">
-      <p class="text-[14px] text-texte-doux">{{ demande.titre }} · « {{ demande.texte }} »</p>
+  <AppFenetre :ouverte="cible !== null" :titre="`Devis pour ${cible?.nom ?? ''}`" @fermer="emit('fermer')">
+    <div v-if="cible" class="flex flex-col gap-3 text-texte">
+      <p class="text-[14px] text-texte-doux">{{ cible.titre }} · « {{ cible.texte }} »</p>
       <span class="text-[13px] font-semibold">Lignes<span class="text-erreur"> *</span> ({{ LIGNES_MAX }} au plus)</span>
       <div v-for="(ligne, rang) in lignes" :key="rang" class="flex flex-wrap items-end gap-1.5 border-b border-bord pb-2">
         <div class="min-w-[160px] flex-1"><AppChamp v-model="ligne.libelle" etiquette="Désignation" placeholder="ex. Parpaings" /></div>

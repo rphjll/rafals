@@ -5,9 +5,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Form, Response, UploadFile
 from pydantic import BaseModel
+from sqlalchemy import select
 
 from app.modeles.comptes import Compte
 from app.modeles.demandes import Demande
+from app.modeles.devis import DemandeDevis
 from app.modeles.fichiers import Fichier
 from app.modeles.metiers import Metier
 from app.modeles.prestataires import Commune
@@ -49,6 +51,7 @@ class DemandeVisible(BaseModel):
     peut_repondre: bool  # pour un prestataire connecté : son métier, son rayon, pas complète (ou déjà répondu)
     conversation_id: int | None  # pour un prestataire qui a déjà répondu : sa conversation avec le client
     raison_verrou: str | None  # prestataire sans SIRET : pourquoi [Répondre] est verrouillé (métier, adresse, case, plafond)
+    peut_devis: bool = False  # lien « ou un devis » : il peut répondre, SIRET vérifié, pas encore de devis pour elle
 
 
 class MaDemande(DemandeVisible):
@@ -91,9 +94,11 @@ def _visible(db: Base, compte: Compte | None, demande: Demande) -> DemandeVisibl
     if prestataire is not None and ma_reponse is None and not peut and service_propositions.demande_sur_l_accueil(demande, maintenant()):
         verrou = service_propositions.raison_verrou(db, prestataire, demande, maintenant())
     note, nombre_avis = avis_clients.note_de(db, demande.client_id)
+    peut_devis = peut and prestataire.siret_statut == "verifie" and db.scalar(
+        select(DemandeDevis.id).where(DemandeDevis.demande_id == demande.id, DemandeDevis.prestataire_id == prestataire.id).limit(1)) is None
     return DemandeVisible(
         client_id=demande.client_id, client_note=note, client_avis=nombre_avis,
-        nombre_reponses=reponses, complete=complete, peut_repondre=peut, raison_verrou=verrou,
+        nombre_reponses=reponses, complete=complete, peut_repondre=peut, raison_verrou=verrou, peut_devis=peut_devis,
         conversation_id=ma_reponse.conversation_id if ma_reponse is not None else None,
         id=demande.id, titre=demande.titre, description=demande.description, metier_id=demande.metier_id,
         metier=db.get_one(Metier, demande.metier_id).nom, ville=db.get_one(Commune, demande.commune_id).nom,

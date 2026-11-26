@@ -28,6 +28,8 @@ export interface DemandeVisible {
   peut_repondre: boolean
   /** Pour un prestataire qui a déjà répondu : sa conversation avec le client */
   conversation_id: number | null
+  /** Lien « ou un devis » (25/11/2026) : il peut répondre, SIRET vérifié, pas encore de devis pour cette demande */
+  peut_devis: boolean
   /** Prestataire sans SIRET : pourquoi [Répondre] est verrouillé (métier, adresse, case, plafond) */
   raison_verrou: string | null
 }

@@ -1,0 +1,411 @@
+<title>Maquette prestataires facilités</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;600;700&display=swap">
+<style>
+/* Mise en page : la grande maquette (en-tête collant sur ordinateur, barre du bas sur téléphone, colonne de 880 px) ; les nouveautés portent une étiquette orange avec leur numéro (A4, B7, B8, C10, C11, C12). */
+:root{
+  --fond:#F2F6F1; --surface:#FFFFFF; --surface2:#F7FAF6; --texte:#16211A; --doux:#5A6A5F; --bord:#DCE6DE;
+  --primaire:#2F6B4F; --primaire-texte:#FFFFFF; --primaire-doux:#E2EFE6; --fonce:#1E4B37; --fonce-texte:#F2FFF6;
+  --accent:#E0773A; --accent-doux:#FCEBDD;
+  --ok:#2E7D4F; --ok-doux:#E1F2E7; --attente:#A86300; --attente-doux:#FBEFD9;
+  --ombre:0 1px 2px rgba(22,33,26,.06),0 6px 20px rgba(22,33,26,.06);
+  --voile:rgba(14,20,16,.45);
+  --titre:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --corps:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#0E1410; --surface:#172019; --surface2:#1B251E; --texte:#E7EEE9; --doux:#9EB0A4; --bord:#29362D;
+  --primaire:#7CC7A0; --primaire-texte:#0E1A13; --primaire-doux:#1B3125; --fonce:#163828; --fonce-texte:#E8F7EE;
+  --accent:#F0955A; --accent-doux:#3A2414;
+  --ok:#6CC592; --ok-doux:#17301F; --attente:#F0B35A; --attente-doux:#33260F;
+  --ombre:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --voile:rgba(0,0,0,.6); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --fond:#0E1410; --surface:#172019; --surface2:#1B251E; --texte:#E7EEE9; --doux:#9EB0A4; --bord:#29362D;
+  --primaire:#7CC7A0; --primaire-texte:#0E1A13; --primaire-doux:#1B3125; --fonce:#163828; --fonce-texte:#E8F7EE;
+  --accent:#F0955A; --accent-doux:#3A2414;
+  --ok:#6CC592; --ok-doux:#17301F; --attente:#F0B35A; --attente-doux:#33260F;
+  --ombre:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --voile:rgba(0,0,0,.6); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:var(--corps);font-size:16px;line-height:1.5}
+h1,h2,h3{font-family:var(--titre);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(26px,5vw,34px);font-weight:800;letter-spacing:-.5px}
+h2{font-size:20px;font-weight:700}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.doux{color:var(--doux)} .petit{font-size:14px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* Bandeau d'explication de la maquette */
+.note{background:var(--fonce);color:var(--fonce-texte)}
+.note-in{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.note b{font-family:var(--titre);font-size:16px}
+
+/* En-tête */
+.entete{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--bord)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--surface)}
+.entete-in{max-width:1100px;margin:0 auto;height:64px;display:flex;align-items:center;gap:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.logo{font-family:var(--titre);font-weight:800;font-size:28px;letter-spacing:-1px;color:var(--primaire)}
+.logo b{color:var(--accent)}
+.nav{display:flex;gap:4px;flex:1}
+.nav button,.basbar button{background:none;border:0;cursor:pointer;font-weight:600;color:var(--doux)}
+.nav button{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px}
+.nav button:hover{background:var(--surface2);color:var(--texte)}
+.nav button.actif{background:var(--primaire-doux);color:var(--primaire)}
+.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;background:#2F6B4F;flex:none}
+.basbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--bord);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.basbar nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
+.basbar button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:11px}
+.basbar button.actif{color:var(--primaire)}
+@media (max-width:760px){.nav,.entete .av{display:none}.basbar{display:block}main{padding-bottom:110px!important}}
+
+/* Page */
+main{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:26px 64px}
+.page{display:flex;flex-direction:column;gap:22px}
+.retour{background:none;border:0;padding:4px 0;font-weight:600;color:var(--primaire);cursor:pointer;align-self:flex-start;margin-bottom:-12px}
+.tete{display:flex;flex-direction:column;gap:6px}
+.tete p{color:var(--doux);font-size:17px}
+.section{display:flex;flex-direction:column;gap:12px}
+.carte{background:var(--surface);border:1px solid var(--bord);border-radius:18px;padding:18px;box-shadow:var(--ombre)}
+.puce{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.p-ok{background:var(--ok-doux);color:var(--ok)} .p-att{background:var(--attente-doux);color:var(--attente)}
+.p-neutre{background:var(--surface2);color:var(--doux);border:1px solid var(--bord)}
+.nouveau{background:var(--accent-doux);color:var(--accent);border:1px dashed var(--accent)}
+.badge{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:inline-grid;place-items:center}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:14px;border:1px solid transparent;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-1{background:var(--primaire);color:var(--primaire-texte)}
+.btn-2{background:var(--surface);border-color:var(--bord);color:var(--texte)}
+.btn-2:hover{border-color:var(--primaire);color:var(--primaire)}
+.btn-petit{min-height:38px;padding:0 14px;font-size:14px;border-radius:12px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Chiffres */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.stat{display:flex;flex-direction:column;gap:2px;padding:14px;background:var(--surface);border:1px solid var(--bord);border-radius:18px}
+.stat b{font-family:var(--titre);font-size:26px;font-weight:800;color:var(--primaire);line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--doux);font-weight:600}
+@media (max-width:620px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Carte Aujourd'hui (C10) */
+.jour{display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden}
+.jour-tete{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 18px;background:var(--primaire-doux);flex-wrap:wrap}
+.jour-tete h2{color:var(--primaire)}
+.rdv{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;padding:16px 18px;border-top:1px solid var(--bord)}
+.heure{font-family:var(--titre);font-weight:800;font-size:20px;font-variant-numeric:tabular-nums;line-height:1.2}
+.heure small{display:block;font-family:var(--corps);font-weight:600;font-size:12px;color:var(--doux)}
+.rdv-txt{display:flex;flex-direction:column;gap:6px;min-width:0}
+.rdv-txt .l1{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tel{font-variant-numeric:tabular-nums;user-select:all}
+.rdv.passe .heure{color:var(--doux)}
+.jl{display:flex;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid var(--bord)}
+.jl .h{font-family:var(--titre);font-weight:800;font-variant-numeric:tabular-nums;width:58px;flex:none}
+.jl .txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn.rond{width:38px;padding:0}
+.jl-plus{background:none;border:0;border-top:1px solid var(--bord);padding:10px 18px;text-align:left;font-weight:600;color:var(--primaire);cursor:pointer}
+.lien{background:none;border:0;padding:0 4px;font-weight:600;color:var(--primaire);text-decoration:underline;cursor:pointer;font-size:14px}
+
+/* Tuiles */
+.tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.tuile{display:flex;gap:14px;align-items:flex-start;padding:16px;background:var(--surface);border:1px solid var(--bord);border-radius:18px;position:relative;text-align:left;cursor:pointer;width:100%}
+.tuile:hover{border-color:var(--primaire)}
+.tuile b{display:block}
+.tuile .d{color:var(--doux);font-size:14px}
+.tuile.bientot{opacity:.6;cursor:default}
+.tuile .coin{position:absolute;top:10px;right:10px}
+.ico{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--primaire-doux);color:var(--primaire);flex:none}
+.retire{display:flex;gap:10px;align-items:center;padding:12px 14px;border:1px dashed var(--bord);border-radius:14px;color:var(--doux);font-size:14px}
+.retire s{color:var(--doux)}
+
+/* Onglets */
+.onglets{display:flex;gap:6px;border-bottom:1px solid var(--bord);overflow-x:auto}
+.onglets button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;font-weight:700;color:var(--doux);cursor:pointer;white-space:nowrap}
+.onglets button.on{color:var(--primaire);border-color:var(--primaire)}
+
+/* Demandes */
+.demande{display:flex;flex-direction:column;gap:10px}
+.demande .haut{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.demande .haut div{min-width:0}
+.ligne{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--bord);border-radius:14px;background:var(--surface)}
+.ligne .txt{flex:1;min-width:0}
+.ligne .txt b{display:block}
+.ligne .txt span{display:block;color:var(--doux);font-size:14px}
+.ligne .mt{font-weight:700;font-variant-numeric:tabular-nums}
+.liste{display:flex;flex-direction:column;gap:10px}
+
+/* Fenêtre */
+.voile{position:fixed;inset:0;z-index:40;background:var(--voile);display:grid;place-items:center;padding:16px}
+.fen{background:var(--surface);border-radius:20px;width:min(520px,100%);max-height:90vh;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--ombre)}
+.choix{display:flex;gap:6px;flex-wrap:wrap}
+.choix button{flex:1;min-width:90px;min-height:42px;border:1px solid var(--bord);border-radius:12px;background:var(--surface2);font-weight:600;cursor:pointer}
+.choix button[aria-pressed="true"]{background:var(--primaire);color:var(--primaire-texte);border-color:var(--primaire)}
+.champ{display:flex;flex-direction:column;gap:6px}
+.champ label{font-weight:700}
+.champ input,.champ textarea{min-height:44px;border-radius:12px;border:1px solid var(--bord);background:var(--surface);padding:10px 12px;width:100%}
+.lignes-devis{display:grid;grid-template-columns:minmax(0,1fr) 70px 100px;gap:8px}
+.total{display:flex;justify-content:space-between;font-weight:700;font-variant-numeric:tabular-nums;padding-top:8px;border-top:1px solid var(--bord)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--fonce);color:var(--fonce-texte);padding:12px 18px;border-radius:14px;font-weight:600;box-shadow:var(--ombre);max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:no-preference){.page{animation:entre .2s ease-out}@keyframes entre{from{opacity:.4;transform:translateY(6px)}}}
+</style>
+
+<div class="note"><div class="note-in">
+  <b>Maquette : rendre rafals plus simple pour les prestataires</b>
+  <span>On est connecté comme Karim B., plombier à Nantes (auto-entrepreneur, SIRET vérifié). Les étiquettes orange en pointillé montrent les changements, avec leur numéro de ta liste. Tout se clique. L'agenda et la barre de menu ne changent pas.</span>
+</div></div>
+
+<header class="entete"><div class="entete-in">
+  <span class="logo">rafals<b>.</b></span>
+  <nav class="nav" aria-label="Menu">
+    <button type="button" data-aller="accueil">Accueil</button>
+    <button type="button" data-aller="accueil">Trouver</button>
+    <button type="button" data-aller="demandes">Demandes</button>
+    <button type="button" data-aller="accueil">Messages</button>
+    <button type="button" data-aller="activite">Mon activité</button>
+  </nav>
+  <span class="av" aria-hidden="true">K</span>
+</div></header>
+
+<main>
+  <!-- ===== MON ACTIVITÉ ===== -->
+  <section class="page" data-vue="activite">
+    <div class="tete"><h1>Mon activité</h1><p>Bonjour Karim, voici votre journée.</p></div>
+
+    <!-- C10 + C11 -->
+    <div class="carte jour">
+      <div class="jour-tete">
+        <h2>Aujourd'hui · 3 rendez-vous</h2>
+        <span class="puce nouveau">C10</span>
+      </div>
+      <div class="jl">
+        <span class="h">14 h 00</span>
+        <div class="txt"><b>Marc D.</b> <span class="doux">· Rezé · prochain</span></div>
+        <a class="btn btn-2 btn-petit rond" href="https://www.google.com/maps/dir/?api=1&destination=3+allee+des+Pins+Reze" target="_blank" rel="noopener" aria-label="Itinéraire" title="Itinéraire">
+          <svg class="i" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
+        <button type="button" class="btn btn-2 btn-petit rond" aria-label="Appeler" title="Appeler" data-toast="Sur téléphone, lance l'appel vers le 06 12 34 56 78.">
+          <svg class="i" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></button>
+      </div>
+      <div class="jl" id="rdv-julie">
+        <span class="h doux">9 h 00</span>
+        <div class="txt"><b>Julie M.</b> <span class="doux" id="etat-julie">· 85,00 € à encaisser</span></div>
+        <span id="btns-julie"><button type="button" class="btn btn-1 btn-petit" data-ouvrir="fen-paye">Payé…</button></span>
+        <span class="puce nouveau">C11</span>
+      </div>
+      <button type="button" class="jl-plus" data-toast="Ouvre l'agenda, onglet Rendez-vous (il ne change pas).">+ 1 autre aujourd'hui (17 h 30, Sophie L.) ›</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b>3</b><span>demandes près de chez vous</span></div>
+      <div class="stat"><b>5</b><span>rendez-vous d'ici dimanche</span></div>
+      <div class="stat"><b>2</b><span>devis en attente de réponse</span></div>
+      <div class="stat"><b>640,00 €</b><span>encaissés en novembre</span></div>
+    </div>
+
+    <div class="section">
+      <h2>Trouver des clients</h2>
+      <div class="tuiles">
+        <div class="tuile bientot"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-6 4 2 8-6-4-6 4 2-8-6-4h7z"/></svg></span><div><b>Être mis en avant</b><span class="d">Bientôt</span></div></div>
+      </div>
+      <div class="retire"><span class="puce nouveau">Retiré</span><span>Avant : aussi <s>Demandes près de chez moi</s>. Elle faisait doublon avec l'onglet « Demandes » du menu, qui reste.</span></div>
+    </div>
+
+    <div class="section">
+      <h2>Gérer mon activité</h2>
+      <div class="tuiles">
+        <button type="button" class="tuile" data-toast="L'agenda ne change pas."><span class="ico"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><div><b>Mon agenda</b><span class="d">Mes rendez-vous, mes horaires, mes jours fermés</span></div></button>
+        <button type="button" class="tuile" data-aller="devis"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7"/></svg></span><div><b>Devis et factures</b><span class="d">Mes devis, et toutes mes factures en PDF</span></div><span class="puce nouveau coin">B8</span></button>
+        <button type="button" class="tuile" data-toast="Ne change pas."><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span><div><b>Paiements</b><span class="d">Ce que j'ai encaissé, par carte et en espèces</span></div></button>
+        <button type="button" class="tuile" data-toast="Ne change pas."><span class="ico"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 11a3 3 0 1 0 0-6M22 21a6 6 0 0 0-4-5.6"/></svg></span><div><b>Mes clients</b><span class="d">Les personnes pour qui j'ai déjà travaillé</span></div></button>
+      </div>
+      <div class="retire"><span class="puce nouveau">B8</span><span>Avant : 2 tuiles, <s>Devis</s> et <s>Factures</s>.</span></div>
+    </div>
+
+    <div class="section">
+      <h2>Me faire connaître</h2>
+      <div class="tuiles">
+        <button type="button" class="tuile" data-aller="avis"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-6 4 2 8-6-4-6 4 2-8-6-4h7z"/></svg></span><div><b>Mes avis</b><span class="d">Ce que mes clients disent de moi · 4,8 sur 5</span></div><span class="puce nouveau coin">B7</span></button>
+        <button type="button" class="tuile" data-toast="Ne change pas."><span class="ico"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h6M7 14h4"/></svg></span><div><b>Ma carte de visite</b><span class="d">À imprimer, avec un carré à scanner</span></div></button>
+        <div class="tuile bientot"><span class="ico"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><div><b>Mon site</b><span class="d">Bientôt</span></div></div>
+      </div>
+      <div class="retire"><span class="puce nouveau">B7</span><span>Avant : aussi <s>Mes avis reçus</s> (ce que les prestataires disent de moi comme client). Karim n'en a reçu aucun : la tuile est cachée. Elle revient dès qu'il en reçoit un.</span></div>
+    </div>
+
+    <div class="section">
+      <h2>Mes démarches</h2>
+      <div class="tuiles">
+        <button type="button" class="tuile" data-toast="Ne change pas."><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg></span><div><b>Déclarer à l'URSSAF</b><span class="d">Mes déclarations et leurs rappels</span></div></button>
+        <button type="button" class="tuile" data-toast="Ne change pas (point A6 : on garde)."><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span><div><b>Mon auto-entreprise</b><span class="d">La créer et suivre mon dossier</span></div></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DEMANDES ===== -->
+  <section class="page" data-vue="demandes" hidden>
+    <div class="tete" style="flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <h1>Demandes</h1>
+      <button type="button" class="btn btn-2 btn-petit" data-toast="Ne change pas.">+ Publier une demande</button>
+    </div>
+    <div class="retire"><span class="puce nouveau">A4</span><span>Plus de sous-onglets <s>Près de chez moi</s> / <s>Mes demandes</s> : Karim n'a jamais publié de demande, il voit directement la liste. Dès qu'il en publie une, les 2 sous-onglets reviennent. Pareil pour un prestataire sans SIRET, un auto-entrepreneur ou une entreprise.</span></div>
+
+    <div class="liste">
+      <div class="carte demande">
+        <div class="haut">
+          <div><b>Ballon d'eau chaude qui fuit</b><div class="doux petit">Anne P. · Saint-Herblain, à 6 km · il y a 2 h · budget 200 €</div></div>
+          <span class="puce p-att">Urgent</span>
+        </div>
+        <p>Le ballon de 150 L goutte par le bas depuis hier soir. Je voudrais savoir s'il faut le changer.</p>
+        <div class="btns">
+          <button type="button" class="btn btn-1 btn-petit" data-toast="Ouvre la conversation avec Anne P., la fenêtre « Faire une proposition » déjà ouverte (prix, jour, heure).">Faire une proposition</button>
+          <button type="button" class="lien" data-ouvrir="fen-devis">ou un devis</button>
+          <span class="puce nouveau" style="align-self:center">C12</span>
+        </div>
+      </div>
+      <div class="carte demande">
+        <div class="haut">
+          <div><b>Poser un mitigeur de douche</b><div class="doux petit">Thomas G. · Nantes, à 2 km · hier · budget non précisé</div></div>
+        </div>
+        <p>J'ai déjà acheté le mitigeur, il faut juste le poser.</p>
+        <div class="btns">
+          <button type="button" class="btn btn-1 btn-petit" data-toast="Ouvre la conversation avec Thomas G., la fenêtre « Faire une proposition » déjà ouverte (prix, jour, heure).">Faire une proposition</button>
+          <button type="button" class="lien" data-ouvrir="fen-devis" data-client="Thomas G.">ou un devis</button>
+        </div>
+      </div>
+    </div>
+    <p class="doux petit">Avant, le bouton s'appelait [Répondre]. Il devient [Faire une proposition], car la demande est publique : le prestataire fait une offre, il n'écrit pas un message privé. Il arrive directement sur la fenêtre de proposition (prix, jour, heure), au lieu d'une conversation vide. Le petit lien « ou un devis » sert aux gros travaux. Le devis arrive dans la conversation avec le client et dans « Devis et factures ».</p>
+  </section>
+
+  <!-- ===== DEVIS ET FACTURES (B8) ===== -->
+  <section class="page" data-vue="devis" hidden>
+    <button type="button" class="retour" data-aller="activite">‹ Mon activité</button>
+    <div class="tete"><h1>Devis et factures</h1><p>Vos devis et toutes vos factures, au même endroit.</p></div>
+    <div class="onglets" role="tablist">
+      <button type="button" class="on" data-onglet="o-recus">Devis reçus <span class="badge">1</span></button>
+      <button type="button" data-onglet="o-mes">Mes demandes de devis</button>
+      <button type="button" data-onglet="o-fact">Factures</button>
+    </div>
+    <div class="liste" data-o="o-recus">
+      <div class="ligne"><div class="txt"><b>Anne P. · Ballon d'eau chaude</b><span>Demande reçue hier · à écrire</span></div><span class="puce p-att">À faire</span></div>
+      <div class="ligne"><div class="txt"><b>Louis V. · Salle de bain complète</b><span>Devis n° 2026-014 envoyé le 20/11</span></div><span class="mt">3 480,00 €</span></div>
+    </div>
+    <div class="liste" data-o="o-mes" hidden>
+      <p class="doux">Aucune demande de devis faite à un autre prestataire.</p>
+    </div>
+    <div class="liste" data-o="o-fact" hidden>
+      <div class="onglets" style="border:0;gap:4px">
+        <span class="puce p-ok">Émises</span><span class="puce p-neutre">Reçues</span><span class="puce p-neutre">Commission de rafals</span>
+      </div>
+      <div class="ligne" id="facture-julie" hidden><div class="txt"><b>F-2026-031 · Julie M.</b><span>Aujourd'hui · Espèces</span></div><span class="mt">85,00 €</span><button type="button" class="btn btn-2 btn-petit" data-toast="Ouvre le PDF de la facture.">PDF</button></div>
+      <div class="ligne"><div class="txt"><b>F-2026-030 · Marc D.</b><span>22/11 · Carte</span></div><span class="mt">120,00 €</span><button type="button" class="btn btn-2 btn-petit" data-toast="Ouvre le PDF de la facture.">PDF</button></div>
+      <div class="ligne"><div class="txt"><b>F-2026-029 · Paul R.</b><span>18/11 · Chèque</span></div><span class="mt">65,00 €</span><button type="button" class="btn btn-2 btn-petit" data-toast="Ouvre le PDF de la facture.">PDF</button></div>
+    </div>
+    <p class="doux petit">Les 3 onglets de l'ancienne page « Factures » (Émises, Reçues, Commission de rafals) restent, rangés dans l'onglet « Factures ». Les anciennes adresses /devis et /factures mènent toutes les deux ici.</p>
+  </section>
+
+  <!-- ===== AVIS (B7) ===== -->
+  <section class="page" data-vue="avis" hidden>
+    <button type="button" class="retour" data-aller="activite">‹ Mon activité</button>
+    <div class="tete"><h1>Mes avis</h1><p>Ce que vos clients disent de vous · 4,8 sur 5 (12 avis)</p></div>
+    <div class="carte liste">
+      <div><b>Julie M.</b> <span style="color:var(--accent)">★★★★★</span><p class="doux petit">« Rapide, propre, et il a expliqué ce qu'il faisait. »</p></div>
+      <div><b>Paul R.</b> <span style="color:var(--accent)">★★★★☆</span><p class="doux petit">« Très bon travail, un peu en retard. »</p></div>
+    </div>
+    <p class="doux petit">La tuile mène à la page publique de Karim, comme aujourd'hui. Seule la tuile en double disparaît.</p>
+  </section>
+
+  <section class="page" data-vue="accueil" hidden>
+    <div class="carte"><p>Cette page ne change pas. <button type="button" class="btn btn-2 btn-petit" data-aller="activite">Retour à Mon activité</button></p></div>
+  </section>
+</main>
+
+<div class="basbar"><nav aria-label="Menu">
+  <button type="button" data-aller="accueil">Accueil</button>
+  <button type="button" data-aller="accueil">Trouver</button>
+  <button type="button" data-aller="demandes">Demandes</button>
+  <button type="button" data-aller="accueil">Messages</button>
+  <button type="button" data-aller="activite">Activité</button>
+  <button type="button" data-aller="accueil">Moi</button>
+</nav></div>
+
+<!-- Fenêtre C11 : la fenêtre « Payé en direct ? » qui existe déjà -->
+<div class="voile" id="fen-paye" hidden>
+  <div class="fen" role="dialog" aria-labelledby="t-paye">
+    <h2 id="t-paye">Payé en direct ?</h2>
+    <p class="doux">Julie M. vous a payé 85,00 € hors de rafals. rafals crée la facture à votre nom.</p>
+    <b>Comment ?</b>
+    <div class="choix" id="choix-moyen">
+      <button type="button" aria-pressed="true">Espèces</button><button type="button" aria-pressed="false">Chèque</button><button type="button" aria-pressed="false">Virement</button>
+    </div>
+    <div class="btns"><button type="button" class="btn btn-1" id="confirmer-paye">Confirmer</button><button type="button" class="btn btn-2" data-fermer>Annuler</button></div>
+  </div>
+</div>
+
+<!-- Fenêtre C12 : la fenêtre de devis qui existe déjà, ouverte depuis une demande -->
+<div class="voile" id="fen-devis" hidden>
+  <div class="fen" role="dialog" aria-labelledby="t-devis">
+    <h2 id="t-devis">Devis pour Anne P.</h2>
+    <p class="doux petit">Pour sa demande « Ballon d'eau chaude qui fuit ». Même fenêtre que pour une demande de devis reçue.</p>
+    <div class="lignes-devis">
+      <b class="petit">Désignation</b><b class="petit">Qté</b><b class="petit">Prix</b>
+      <input id="d1" value="Chauffe-eau 150 L posé"><input id="q1" value="1"><input id="p1" value="420,00">
+      <input id="d2" value="Déplacement"><input id="q2" value="1"><input id="p2" value="30,00">
+    </div>
+    <div class="total"><span>Total</span><span>450,00 €</span></div>
+    <div class="champ"><label for="jours">Jour des travaux</label><input id="jours" value="vendredi 28 novembre"></div>
+    <div class="btns"><button type="button" class="btn btn-1" id="envoyer-devis">Envoyer le devis</button><button type="button" class="btn btn-2" data-fermer>Annuler</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const vues = document.querySelectorAll('[data-vue]');
+const navs = document.querySelectorAll('[data-aller]');
+function aller(nom){
+  vues.forEach(v => v.hidden = v.dataset.vue !== nom);
+  document.querySelectorAll('.nav button, .basbar button').forEach(b => {
+    const cible = b.dataset.aller;
+    b.classList.toggle('actif', cible === nom || (nom === 'devis' || nom === 'avis') && cible === 'activite');
+  });
+  window.scrollTo(0, 0);
+}
+navs.forEach(b => b.addEventListener('click', () => aller(b.dataset.aller)));
+let minuteur;
+function dire(texte){
+  const t = document.getElementById('toast');
+  t.textContent = texte; t.hidden = false;
+  clearTimeout(minuteur); minuteur = setTimeout(() => t.hidden = true, 3200);
+}
+document.querySelectorAll('[data-toast]').forEach(b => b.addEventListener('click', () => dire(b.dataset.toast)));
+document.querySelectorAll('[data-ouvrir]').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.ouvrir === 'fen-devis') document.getElementById('t-devis').textContent = 'Devis pour ' + (b.dataset.client || 'Anne P.');
+  document.getElementById(b.dataset.ouvrir).hidden = false;
+}));
+document.querySelectorAll('[data-fermer]').forEach(b => b.addEventListener('click', () => b.closest('.voile').hidden = true));
+document.querySelectorAll('.voile').forEach(v => v.addEventListener('click', e => { if (e.target === v) v.hidden = true; }));
+let moyen = 'Espèces';
+document.querySelectorAll('#choix-moyen button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#choix-moyen button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  moyen = b.textContent;
+}));
+document.getElementById('confirmer-paye').addEventListener('click', () => {
+  document.getElementById('fen-paye').hidden = true;
+  const etat = document.getElementById('etat-julie');
+  etat.textContent = '· payé, facture F-2026-031';
+  document.getElementById('btns-julie').innerHTML = '<button type="button" class="btn btn-2 btn-petit" id="voir-facture">Facture</button>';
+  document.getElementById('voir-facture').addEventListener('click', () => { aller('devis'); ouvrirOnglet('o-fact'); });
+  const f = document.getElementById('facture-julie');
+  f.hidden = false; f.querySelector('span').textContent = 'Aujourd’hui · ' + moyen;
+  dire('Facture F-2026-031 créée et envoyée à Julie M.');
+});
+document.getElementById('envoyer-devis').addEventListener('click', () => {
+  document.getElementById('fen-devis').hidden = true;
+  dire('Devis envoyé. Le client le reçoit dans votre conversation.');
+});
+function ouvrirOnglet(id){
+  document.querySelectorAll('[data-onglet]').forEach(b => b.classList.toggle('on', b.dataset.onglet === id));
+  document.querySelectorAll('[data-o]').forEach(l => l.hidden = l.dataset.o !== id);
+}
+document.querySelectorAll('[data-onglet]').forEach(b => b.addEventListener('click', () => ouvrirOnglet(b.dataset.onglet)));
+aller('activite');
+</script>

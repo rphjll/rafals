@@ -1,5 +1,11 @@
 # Mon activité — Interface
 
+> **Changé le 25/11/2026** (demande de Raphael « faciliter les prestataires », maquette `maquette-faciliter-prestataires.html` validée par « ok ») :
+> - **Carte « Aujourd'hui »** tout en haut, pour un prestataire (`components/prestataire/CarteAujourdhui.vue`), 3 lignes au plus (Raphael : « le récap du jours est beaucoup trop long ») : « Aujourd'hui · 3 rendez-vous » ; le prochain rendez-vous du jour « 14 h 00  Marc D. · Rezé · prochain » avec deux ronds [Itinéraire] (Google Maps, chez le client seulement) et [Appeler] (si le téléphone est visible) ; celui qui reste à encaisser « 9 h 00  Julie M. · 85,00 € à encaisser » avec [Payé…] (SIRET vérifié, la fenêtre « Payé en direct ? » de l'agenda → rafals crée la facture) ; puis « + 1 autre aujourd'hui (17 h 30, Sophie L.) › » vers l'agenda, onglet Rendez-vous. Sans rendez-vous aujourd'hui : « Rien de prévu aujourd'hui » et « Prochain rendez-vous : jeudi 27 novembre à 10 h 00, Paul R. › ». Sans aucun rendez-vous à venir : pas de carte. L'agenda ne change pas.
+> - Tuile **« Demandes près de chez moi »** retirée (Raphael : « y'a deja l'onglet demandes ») ; le chiffre « 3 demandes près de chez vous » du haut reste.
+> - **« Devis »** et **« Factures »** réunis en une tuile **« Devis et factures »** (« Mes devis, et toutes mes factures en PDF ») → `/devis` ; voir `RM-DEVIS-IHM.md`.
+> - **« Mes avis reçus »** (avis laissés sur moi comme client) : cachée pour un prestataire qui n'en a reçu aucun ; « Mes avis » (ce que ses clients disent de lui) reste. Un client la voit toujours.
+
 ## Depuis le 10/11/2026 : identique à la grande maquette (lots 14.5 et 14.6)
 
 Demande de Raphael, mot pour mot : « je veux que ca soit exactement pareil que la maquette et tu fais l'agenda pareil que la maquette ». Maquette : `.doc/ihm/maquette-site-complet.html`. Les styles de la maquette sont recopiés dans `frontend/src/style.css` ; les sections plus bas décrivent le fonctionnement, qui ne change pas sauf mention ici.

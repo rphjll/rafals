@@ -47,6 +47,6 @@ const date = (iso: string) => jourCourt(aParis(iso).jour)
         </tbody>
       </table>
     </div>
-    <div><AppBouton variante="secondaire" @click="routeur.push('/factures')">Voir mes factures</AppBouton></div>
+    <div><AppBouton variante="secondaire" @click="routeur.push('/devis?onglet=factures')">Voir mes factures</AppBouton></div>
   </AppSection>
 </template>

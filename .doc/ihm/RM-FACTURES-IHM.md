@@ -1,5 +1,7 @@
 # Factures — Interface
 
+> **Changé le 25/11/2026** (demande de Raphael) : plus de page à part. « Mes factures » est l'onglet **« Factures »** de « Devis et factures » (`/devis?onglet=factures` ; `/factures` y mène). Contenu : `components/factures/ListeFactures.vue` (`pages/FacturesPage.vue` supprimée). Un prestataire choisit **Émises · Reçues · Commission de rafals** avec des cases collées (`AppSegment`), Émises d'abord ; un client voit ses factures reçues. Textes et tableaux inchangés. Nouveau : [Payé…] aussi dans la carte « Aujourd'hui » de « Mon activité » (`RM-MON-ACTIVITE-IHM.md`).
+
 > Fichiers : `frontend/src/pages/FacturesPage.vue` (« Mes factures »), `frontend/src/components/factures/TableauFactures.vue`, `frontend/src/components/FenetrePayeDirect.vue` (commune aux rendez-vous et aux devis), `frontend/src/outils/factures.ts`. Construit au lot 5.6 (03/10/2026). Règles : `RM-FACTURES.md`. Maquette : `maquette-lot-5.6-factures.html`.
 
 ## Page « Mes factures » (`/factures`, menu « Mes factures »)

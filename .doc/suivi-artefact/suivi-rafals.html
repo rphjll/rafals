@@ -52,17 +52,29 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
 <div class="page">
   <div>
     <h1>Suivi de rafals<i>.</i></h1>
-    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 11/11/2026. 79 lots, du niveau 0 au niveau 14, et 10 tâches hors lot.</p>
+    <p class="doux">D'après <code>.doc/SUIVI-DEV.md</code>, au 26/11/2026. 81 lots, du niveau 0 au niveau 15, et 13 tâches hors lot.</p>
   </div>
-  <div class="barre" role="img" aria-label="53 faits, 28 à vérifier, 0 en cours, 8 à faire">
-    <span class="fait" style="width:59.55056179775281%"></span><span class="verifier" style="width:31.46067415730337%"></span><span class="cours" style="width:0%"></span><span class="faire" style="width:8.98876404494382%"></span>
+  <div class="barre" role="img" aria-label="53 faits, 30 à vérifier, 1 en cours, 10 à faire">
+    <span class="fait" style="width:56.38297872340425%"></span><span class="verifier" style="width:31.914893617021278%"></span><span class="cours" style="width:1.0638297872340425%"></span><span class="faire" style="width:10.638297872340425%"></span>
   </div>
   <div class="filtres" role="group" aria-label="Montrer seulement un état">
-    <button type="button" data-f="tout" aria-pressed="true">Tout <b>89</b></button>
-    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>8</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>0</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>28</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>53</b></button>
+    <button type="button" data-f="tout" aria-pressed="true">Tout <b>94</b></button>
+    <button type="button" data-f="faire" aria-pressed="false"><span class="point faire"></span>À faire <b>10</b></button><button type="button" data-f="cours" aria-pressed="false"><span class="point cours"></span>En cours <b>1</b></button><button type="button" data-f="verifier" aria-pressed="false"><span class="point verifier"></span>À vérifier <b>30</b></button><button type="button" data-f="fait" aria-pressed="false"><span class="point fait"></span>Fait <b>53</b></button>
   </div>
   <p class="doux" id="vide" hidden>Aucun lot dans cet état.</p>
   <section><header><h2><span>Hors lot</span>Travail en cours</h2></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="verifier">
+  <td class="lot">—</td>
+  <td><span class="titre">Faciliter la vie des prestataires</span><span class="type">Écrans + Serveur</span><p>Demande du 25/11/2026 : « quesque je pourrais faire pour faciliter les prestataires ». Maquette https://claude.ai/artifact/3xjX22CmW2Xi4rGhNQnspV validée, construite le 25/11/2026 : carte « Aujourd’hui » de 3 lignes en haut de Mon activité ([Payé…] → facture), tuile Demandes retirée, « Devis et factures » réunis, une seule tuile d’avis, [Répondre] devenu [Faire une proposition] avec le petit lien « ou un devis », sous-onglets de Demandes cachés tant qu’on n’en a pas publié. Types sans erreur, 3 nouveaux tests. À vérifier à l’écran par Raphael.</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="cours">
+  <td class="lot">—</td>
+  <td><span class="titre">Limites sans SIRET : 2 000 € par an</span><span class="type">Serveur + Écrans</span><p>Demande du 25/11/2026 : « enleve les 2 rdv pr mois et met le seuille a 2000/ans ». Plafond passé de 1 000 € à 2 000 € sur 12 mois, plus de limite de 2 rendez-vous par mois (100 € par proposition et métiers interdits gardés). Puis le métier à prendre à la place, sans SIRET (ex. Plombier → Homme toutes mains / Multiservices, 22 métiers ; liste à relire). 51 tests passent. Puis la carte pour tous, même sans SIRET, avec un compte Stripe relié (5 % pour rafals, pas de facture sans SIRET) : tests pas encore passés, Docker Desktop arrêté.</p></td>
+  <td class="etat"><span class="badge cours">En cours</span></td>
+</tr><tr data-etat="verifier">
+  <td class="lot">—</td>
+  <td><span class="titre">Audit du site</span><span class="type">Contrôle</span><p>Demande du 14/11/2026 : analyser tout le site et le tester comme client, prestataire et administrateur. 31 scénarios joués sur la base de test, 27 points trouvés (9 graves, 7 sur les métiers), écrits dans .doc/AUDIT-2026-11-14.md. 18 points corrigés le 14/11/2026 (510 tests passent) ; 15 décisions restent à Raphael (§ G du fichier). À vérifier à l’écran.</p></td>
+  <td class="etat"><span class="badge verifier">À vérifier</span></td>
+</tr><tr data-etat="verifier">
   <td class="lot">—</td>
   <td><span class="titre">Le site comme la maquette complète</span><span class="type">Écrans</span><p>Demande du 22/10/2026 : « fait en sort que le site resemble a ce que t'a fais dans la maquette ». Détails de présentation repris de la maquette https://claude.ai/artifact/Qix7D7jo4vJ9kpWotB59Q2 (initiales en couleur, cartes de « Trouver », Mon activité…). 8 retouches faites le 22/10/2026, à vérifier à l’écran par Raphael ; 4 questions restent (pied de page…).</p></td>
   <td class="etat"><span class="badge verifier">À vérifier</span></td>
@@ -433,6 +445,15 @@ code{font-size:.92em;background:var(--fond);border-radius:5px;padding:0 4px;over
   <td class="lot">14.6</td>
   <td><span class="titre">Toutes les pages comme la maquette</span><span class="type">Écrans</span><p>Toutes les pages identiques à la grande maquette : styles recopiés, en-tête + barre du bas + page « Moi », accueil, Trouver, Demandes, Publier une demande (métier trouvé tout seul), Messages, Mon activité et ses pages, page publique, profil, paramètres, abonnements, connexion</p></td>
   <td class="etat"><span class="badge fait">Fait</span></td>
+</tr></tbody></table></div></section>
+  <section><header><h2><span>Niveau 15</span>Prestataires sans SIRET : reçu et CESU</h2><span class="avance">0 fait sur 2</span></header><div class="defile"><table><thead><tr><th>Lot</th><th>Titre</th><th>État</th></tr></thead><tbody><tr data-etat="faire">
+  <td class="lot">15.1</td>
+  <td><span class="titre">Reçu sans SIRET</span><span class="type">Écrans + Serveur</span><p><b>Reçu</b> pour un prestataire sans SIRET (preuve de paiement, pas une facture : ni numéro de facture ni SIRET). Ex. « Reçu — Emma Leroy a reçu 15,00 € en espèces de Paul Petit le 26/11/2026, pour : promener le chien (1 h) ». [Payé…] crée un reçu PDF au lieu d'une facture ; un paiement par carte crée un reçu tout seul ; dans « Devis et factures », « Émises » devient « Reçus » sans SIRET (« Reçues » et « Commission de rafals » restent : à vérifier si la facture de commission existe sans SIRET)</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
+</tr><tr data-etat="faire">
+  <td class="lot">15.2</td>
+  <td><span class="titre">CESU avec abonnement</span><span class="type">Base + Serveur + Écrans</span><p><b>CESU avec abonnement</b> : pour 5 € par mois ou moins (prix à choisir par Raphael, 3 € envisagé), un prestataire sans SIRET payé en CESU n'a plus la limite des 2 000 € par an, seulement dans les métiers de services à la personne (ménage, jardinage, garde d'enfants, aide aux devoirs, petit bricolage…), croisés avec les métiers autorisés sans SIRET. Le client coche « Je déclare Emma au CESU » à chaque rendez-vous ; le client paie par cesu.urssaf.fr (pas de commission de 5 % pour rafals, d'où l'abonnement payé par Stripe)</p></td>
+  <td class="etat"><span class="badge faire">À faire</span></td>
 </tr></tbody></table></div></section>
 </div>
 

@@ -5,21 +5,27 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur } from '../api'
+import CarteAujourdhui from '../components/prestataire/CarteAujourdhui.vue'
 import CarteBarreTva from '../components/prestataire/CarteBarreTva.vue'
 import ChiffresActivite from '../components/prestataire/ChiffresActivite.vue'
 import AppIcone from '../components/ui/AppIcone.vue'
 import { useCompte } from '../composables/useCompte'
 import { type ActiviteChiffree, GROUPES_ACTIVITE, adresseDe, fonctionsPour } from '../outils/activite'
+import type { ProfilPrestataire } from '../outils/prestataires'
 
 const routeur = useRouter()
 const { compte, chargementFait } = useCompte()
 
 const prestataireId = computed(() => compte.value?.prestataire_id ?? null)
+// « Mes avis reçus » (avis laissés sur moi comme client) : cachée chez un prestataire qui n'en a aucun (25/11/2026)
+const sansAvisRecus = ref(true)
+// Carte « Aujourd'hui » : [Payé…] seulement avec un SIRET vérifié, comme dans l'agenda
+const siretVerifie = ref(false)
 const groupes = computed(() =>
   GROUPES_ACTIVITE.map((groupe) => ({
     cle: groupe.cle,
     titre: prestataireId.value === null ? (groupe.titreClient ?? groupe.titre) : groupe.titre,
-    tuiles: fonctionsPour(prestataireId.value)
+    tuiles: fonctionsPour(prestataireId.value, sansAvisRecus.value)
       .filter((f) => f.groupe === groupe.cle)
       .map((f) => ({ fonction: f, adresse: adresseDe(f, prestataireId.value) })),
   })).filter((groupe) => groupe.tuiles.length),
@@ -41,11 +47,16 @@ watch(
     chiffres.value = null
     if (!connecte) return
     await chargerChiffres()
-    // Pastilles (RM-ALERTES) : nouvelles demandes près de chez moi, nouveaux avis reçus
+    // Pastille (RM-ALERTES) : nouveaux avis reçus
     const nombre = (chemin: string) => appelerServeur<{ nombre: number }>(chemin).then((r) => r.nombre).catch(() => 0)
-    pastilles.value = {
-      'demandes-pres': connecte.prestataire_id ? await nombre('/api/moi/prestataire/demandes/nouvelles') : 0,
-      'mes-avis-recus': await nombre('/api/moi/avis-recus/non-vus'),
+    pastilles.value = { 'mes-avis-recus': await nombre('/api/moi/avis-recus/non-vus') }
+    if (connecte.prestataire_id) {
+      const [avis, profil] = await Promise.all([
+        appelerServeur<unknown[]>('/api/moi/avis-recus').catch(() => []),
+        appelerServeur<ProfilPrestataire>('/api/moi/prestataire').catch(() => null),
+      ])
+      sansAvisRecus.value = avis.length === 0
+      siretVerifie.value = profil?.siret_statut === 'verifie'
     }
   },
   { immediate: true },
@@ -62,6 +73,8 @@ watch([chargementFait, compte], () => {
       <p>Tout ce qui fait tourner votre activité, au même endroit.</p>
     </div>
     <template v-if="compte">
+      <!-- Carte « Aujourd'hui » (prestataire, 25/11/2026) : ses rendez-vous du jour en 3 lignes au plus -->
+      <CarteAujourdhui v-if="prestataireId !== null" :siret-verifie="siretVerifie" @maj="chargerChiffres" />
       <ChiffresActivite v-if="chiffres" :chiffres="chiffres" />
       <!-- Encaissé dans l'année et barre de la TVA -->
       <CarteBarreTva v-if="chiffres?.prestataire" :chiffres="chiffres.prestataire" @maj="chargerChiffres" />

@@ -60,6 +60,15 @@ const envoiEnCours = ref(false)
 const basDuFil = ref<HTMLElement | null>(null)
 
 const fenetreProposition = ref(false)
+// Venu de [Faire une proposition] sur une demande (?proposition=1, 25/11/2026) : la fenêtre s'ouvre tout de suite
+watch(
+  () => conversation.value?.cote,
+  (cote) => {
+    if (cote !== 'prestataire' || route.query.proposition !== '1') return
+    fenetreProposition.value = true
+    routeur.replace({ query: {} })
+  },
+)
 const aBloquer = ref(false)
 // [Plus…] montre « Signaler… » et « Bloquer… », rangés pour ne pas encombrer le haut du fil
 const plusOuvert = ref(false)

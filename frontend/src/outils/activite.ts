@@ -29,17 +29,18 @@ export const GROUPES_ACTIVITE: { cle: GroupeActivite; titre: string; titreClient
 ]
 
 export const FONCTIONS_ACTIVITE: FonctionActivite[] = [
-  { cle: 'demandes-pres', groupe: 'clients', texte: 'Demandes près de chez moi', detail: 'Les clients qui cherchent mon métier', icone: 'demandes', pour: 'prestataire', vers: '/demandes' },
+  // « Demandes près de chez moi » retirée le 25/11/2026 (Raphael : « y'a deja l'onglet demandes ») ; le chiffre du haut reste
   // « Alertes » est dans « Paramètres › Notifications » depuis le 21/10/2026 (demande de Raphael)
   { cle: 'mise-en-avant', groupe: 'clients', texte: 'Être mis en avant', detail: 'Apparaître en premier dans les résultats', icone: 'fusee', pour: 'prestataire' },
 
   // « Mes demandes » a quitté Mon activité : elle est dans l'onglet « Demandes » (lot 14.2, grande maquette)
+  // Pour un prestataire, cachée tant qu'il n'a reçu aucun avis comme client (25/11/2026 : « Mes avis » suffit) ; voir sansAvisRecus
   { cle: 'mes-avis-recus', groupe: 'gerer', texte: 'Mes avis reçus', detail: 'Ce que les prestataires disent de moi', icone: 'etoile', pour: 'tous', vers: '/mes-avis-recus' },
   // Un seul endroit pour les rendez-vous : le calendrier (la page « Rendez-vous » a été retirée le 07/10/2026)
   { cle: 'agenda-prestataire', groupe: 'gerer', texte: 'Mon agenda', detail: 'Mes rendez-vous, mes horaires, mes jours fermés', icone: 'agenda', pour: 'prestataire', vers: '/mon-agenda' },
   { cle: 'agenda-client', groupe: 'gerer', texte: 'Mon agenda', detail: 'Le calendrier de mes rendez-vous', icone: 'agenda', pour: 'client', vers: '/mon-agenda' },
-  { cle: 'devis', groupe: 'gerer', texte: 'Devis', detail: 'Demandes de devis et devis envoyés', icone: 'devis', pour: 'tous', vers: '/devis' },
-  { cle: 'factures', groupe: 'gerer', texte: 'Factures', detail: 'Toutes mes factures en PDF', icone: 'devis', pour: 'tous', vers: '/factures' },
+  // « Devis » et « Factures » réunis le 25/11/2026 (demande de Raphael) : une page, un onglet « Factures »
+  { cle: 'devis-factures', groupe: 'gerer', texte: 'Devis et factures', detail: 'Mes devis, et toutes mes factures en PDF', icone: 'devis', pour: 'tous', vers: '/devis' },
   { cle: 'paiements-prestataire', groupe: 'gerer', texte: 'Paiements', detail: 'Ce que j’ai encaissé, par carte et en espèces', icone: 'euro', pour: 'prestataire', vers: '/mon-agenda?onglet=paiements' },
   { cle: 'paiements-client', groupe: 'gerer', texte: 'Paiements', detail: 'Ce que j’ai payé par carte', icone: 'euro', pour: 'client', vers: '/compte' },
   { cle: 'clients', groupe: 'gerer', texte: 'Mes clients', detail: 'Les personnes pour qui j’ai déjà travaillé', icone: 'clients', pour: 'prestataire', vers: '/mes-clients' },
@@ -54,8 +55,9 @@ export const FONCTIONS_ACTIVITE: FonctionActivite[] = [
 ]
 
 /** Les fonctions que ce compte voit (prestataireId : null pour un compte sans profil de prestataire) */
-export function fonctionsPour(prestataireId: number | null): FonctionActivite[] {
+export function fonctionsPour(prestataireId: number | null, sansAvisRecus = false): FonctionActivite[] {
   return FONCTIONS_ACTIVITE.filter((f) => f.pour === 'tous' || (f.pour === 'prestataire') === (prestataireId !== null))
+    .filter((f) => !(f.cle === 'mes-avis-recus' && prestataireId !== null && sansAvisRecus))
 }
 
 /** L'adresse ouverte par une fonction, ou null si elle n'est pas encore construite */

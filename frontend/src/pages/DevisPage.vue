@@ -1,12 +1,13 @@
 <script setup lang="ts">
-// Mes devis (.doc/ihm/RM-DEVIS-IHM.md ; RM-DEVIS.md) : « Mes demandes » (client), et « Devis reçus » pour un
-// prestataire. Retour de la page de paiement de Stripe (?devis=…&paiement=fait|annule) : arrhes ou solde.
+// Devis et factures (.doc/ihm/RM-DEVIS-IHM.md ; RM-DEVIS.md) : « Mes demandes de devis » (client), « Devis reçus » pour un
+// prestataire, et « Factures » (l'ancienne page « Mes factures », réunie ici le 25/11/2026). Retour de la page de paiement de Stripe (?devis=…&paiement=fait|annule) : arrhes ou solde.
 import EnteteActivite from '../components/EnteteActivite.vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../api'
 import OngletDevisRecus from '../components/devis/OngletDevisRecus.vue'
 import OngletMesDemandes from '../components/devis/OngletMesDemandes.vue'
+import ListeFactures from '../components/factures/ListeFactures.vue'
 import AppAlerte from '../components/ui/AppAlerte.vue'
 import AppBouton from '../components/ui/AppBouton.vue'
 import AppCarte from '../components/ui/AppCarte.vue'
@@ -41,10 +42,11 @@ async function charger() {
 onMounted(charger)
 watch(compte, charger)
 
+// Depuis le 25/11/2026, « Devis et factures » (une seule tuile) : un prestataire voit d'abord ses devis reçus
 const onglets = computed(() =>
   compte.value?.prestataire_id
-    ? [{ id: 'demandes', texte: 'Mes demandes' }, { id: 'recus', texte: 'Devis reçus' }]
-    : [{ id: 'demandes', texte: 'Mes demandes' }],
+    ? [{ id: 'recus', texte: 'Devis reçus' }, { id: 'demandes', texte: 'Mes demandes de devis' }, { id: 'factures', texte: 'Factures' }]
+    : [{ id: 'demandes', texte: 'Mes demandes de devis' }, { id: 'factures', texte: 'Factures' }],
 )
 // Compteurs orange : ce qui attend une action
 const compteurs = computed(() => ({
@@ -84,11 +86,12 @@ onUnmounted(() => clearTimeout(relecture))
   </AppCarte>
 
   <div v-else-if="compte" class="page">
-    <EnteteActivite titre="Devis" :texte="compte.prestataire_id ? 'Les devis que vous avez envoyés et leur réponse.' : 'Les devis que vous avez demandés et reçus.'" />
-    <AppOnglets v-if="onglets.length > 1" v-model="onglet" :onglets="onglets" :compteurs="compteurs" />
+    <EnteteActivite titre="Devis et factures" texte="Vos devis et toutes vos factures, au même endroit." />
+    <AppOnglets v-model="onglet" :onglets="onglets" :compteurs="compteurs" />
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <AppAlerte v-if="retourPaiement" :etat="retourPaiement.etat">{{ retourPaiement.texte }}</AppAlerte>
-    <template v-if="mesDemandes">
+    <ListeFactures v-if="onglet === 'factures'" :prestataire="!!compte.prestataire_id" />
+    <template v-else-if="mesDemandes">
       <OngletDevisRecus
         v-if="onglet === 'recus'"
         :demandes="recues"

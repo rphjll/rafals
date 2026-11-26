@@ -15,7 +15,7 @@ Les annonces sont retirées (`RM-PRESTATAIRES.md` § « Sans annonces »). Aprè
 **Construit le 09/10/2026 (lot 9.2)** : [Demander un devis] sur la page d'un prestataire au SIRET vérifié, avec le choix du métier s'il en a plusieurs. Le titre d'une demande de devis est le nom du métier (ex. « Maçon »).
 - Refus : pas de SIRET vérifié ; métier que le prestataire n'exerce pas ; devis demandé à soi-même.
 - **Moyens de paiement d'un devis (choix de Claude, différent de la ligne ci-dessus)** : « carte » si le prestataire a un SIRET vérifié et le paiement par carte activé, « en direct » toujours. Le choix par le prestataire en écrivant le devis demanderait une rubrique nouvelle dans la base (MLD à valider par Raphael).
-- **Pas encore construit** : répondre à une demande publiée par un devis ([Faire un devis] dans la conversation). La rubrique `demande_id` existe déjà dans la base (lot 9.1).
+- **Devis sur une demande publiée** (demande de Raphael du 25/11/2026, construit le même jour) : sous [Faire une proposition], le petit lien « ou un devis », pour les gros travaux. Seulement si le prestataire peut faire une proposition sur cette demande (métier, rayon, pas complète) **et** a un SIRET vérifié, et une seule fois par demande. Ex. Anne P. publie « Ballon d'eau chaude qui fuit » ; Karim, plombier au SIRET vérifié, envoie le devis de 450 €. En une seule fois : le devis est contrôlé (lignes, total, dates libres), puis la réponse à la demande est faite (elle compte dans les 10 réponses, ouvre la conversation et prévient le client), puis une demande de devis est créée au nom du client avec `demande_id` rempli, le titre et la description de la demande, et l'adresse de la demande (sauf si le client vient chez le prestataire). Ensuite tout suit les règles d'un devis normal. Si un contrôle échoue, rien n'est gardé et aucun mail ne part.
 
 ## Paiement d'un devis accepté : arrhes, puis solde (choix de Raphael le 02/10/2026)
 - Le prestataire fixe des **arrhes** dans son devis (un pourcentage du total). Elles sont payées par carte **dès que le client accepte** le devis, et versées au prestataire sans attendre, pour qu'il puisse acheter ses matériaux.
@@ -101,3 +101,9 @@ Un devis envoyé auquel le client n'a pas répondu au bout de **3 jours** : rafa
 - Exemple 2 : Julie accepte le devis le mardi : aucun mail de relance.
 - Pas de relance pour un devis déjà accepté, refusé, expiré, ou dont la date « Valable jusqu'au » est passée. Jamais de 2e relance.
 - Précisé par Claude (à relire) : le délai est un réglage (`DEVIS_RELANCE_SANS_REPONSE`, 3 jours) ; **aucune rubrique n'a été ajoutée à la base** : la tâche de fond passe toutes les heures et n'envoie le mail que dans l'heure qui suit les 3 jours, comme pour le rappel du solde. Si le serveur est arrêté pendant cette heure-là, la relance ne part pas.
+
+## Après l'audit du 14/11/2026 (corrections de Claude, à confirmer par Raphael)
+- Total d'un devis : 1 000 000 € au plus. Travaux : début dans les 2 ans, durée d'1 an au plus.
+- Un devis ne peut pas être accepté si le prestataire est en pause, bloqué ou arrêté.
+- Un prestataire ne peut pas arrêter son activité, et un client ne peut pas fermer son compte, tant qu'un devis est « accepté » ou « terminé » (pas encore payé).
+- Devis annulé par le client : « Vous gardez les arrhes » n'est écrit que si des arrhes ont été payées par carte.

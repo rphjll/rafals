@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // Carte d'une demande publique (.doc/ihm/RM-DEMANDES-IHM.md), « Demandes › Près de chez moi », comme la grande maquette.
-// Un prestataire qui peut répondre voit [Répondre] ; sinon [🔒 Répondre] et sa raison au clic.
+// Un prestataire qui peut répondre voit [Faire une proposition] (s'appelait [Répondre] avant le 25/11/2026 : la demande
+// est publique, il fait une offre) et, avec un SIRET vérifié, le petit lien « ou un devis » ; sinon le bouton verrouillé
+// et sa raison au clic.
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appelerServeur, messageErreur } from '../../api'
@@ -8,17 +10,37 @@ import { useCompte } from '../../composables/useCompte'
 import { texteNote } from '../../outils/avis'
 import { formaterDate } from '../../outils/dates'
 import { type DemandeVisible, REPONSES_MAX, texteBudget, texteQuand } from '../../outils/demandes'
+import type { ProfilPrestataire } from '../../outils/prestataires'
 import FenetreTexte, { type DemandeTexte } from '../FenetreTexte.vue'
+import FenetreEcrireDevis from '../devis/FenetreEcrireDevis.vue'
 import AppAlerte from '../ui/AppAlerte.vue'
 import AppBouton from '../ui/AppBouton.vue'
 import AppIcone from '../ui/AppIcone.vue'
 import AppInitiales from '../ui/AppInitiales.vue'
 
 const props = defineProps<{ demande: DemandeVisible }>()
+const emit = defineEmits<{ maj: [] }>()
 const routeur = useRouter()
 const { compte } = useCompte()
 const erreur = ref('')
 const occupe = ref(false)
+
+// « ou un devis » (25/11/2026) : la fenêtre de devis habituelle, envoyée sur la demande publiée
+const aDeviser = ref<DemandeVisible | null>(null)
+const factureTva = ref(false)
+async function ouvrirDevis() {
+  erreur.value = ''
+  try {
+    factureTva.value = (await appelerServeur<ProfilPrestataire>('/api/moi/prestataire')).facture_tva
+    aDeviser.value = props.demande
+  } catch (e) {
+    erreur.value = messageErreur(e)
+  }
+}
+function devisEnvoye() {
+  aDeviser.value = null
+  emit('maj')
+}
 
 // [Signaler…] : réservé aux prestataires ; l'administrateur laisse la demande ou la cache
 const aSignaler = ref<DemandeTexte | null>(null)
@@ -41,7 +63,8 @@ async function repondre() {
   occupe.value = true
   try {
     const { conversation_id } = await appelerServeur<{ conversation_id: number }>(`/api/demandes/${props.demande.id}/repondre`, {})
-    routeur.push(`/messages/${conversation_id}`)
+    // La fenêtre « Faire une proposition » s'ouvre tout de suite dans la conversation (25/11/2026)
+    routeur.push({ path: `/messages/${conversation_id}`, query: { proposition: '1' } })
   } catch (e) {
     erreur.value = messageErreur(e) // ex. « Cette demande est complète : 10 prestataires ont déjà répondu. »
   } finally {
@@ -93,23 +116,30 @@ async function repondre() {
           <AppIcone nom="messages" />Voir la conversation
         </RouterLink>
         <button v-else-if="demande.peut_repondre" type="button" class="btn btn-1 btn-petit" :aria-busy="occupe || undefined" @click="repondre">
-          <AppIcone nom="messages" />Répondre
+          Faire une proposition
         </button>
         <!-- Verrouillé, avec la raison au clic : autre métier, trop loin, activité en pause, pas d'adresse ; sans SIRET : métier
              qui en demande un, case manquante, plafond de l'année atteint -->
-        <AppBouton v-else-if="demande.raison_verrou" variante="verrouille" petit :raison-verrou="demande.raison_verrou">Répondre</AppBouton>
+        <AppBouton v-else-if="demande.raison_verrou" variante="verrouille" petit :raison-verrou="demande.raison_verrou">Faire une proposition</AppBouton>
         <AppBouton
           v-else-if="compte?.prestataire_id && demande.complete"
           variante="verrouille"
           petit
           :raison-verrou="`Cette demande est complète : ${REPONSES_MAX} prestataires ont déjà répondu.`"
         >
-          Répondre
+          Faire une proposition
         </AppBouton>
+        <!-- Pour les gros travaux (25/11/2026) : un devis à la place, en petit ; le bouton principal reste la proposition -->
+        <button v-if="demande.peut_devis" type="button" class="lien-devis" @click="ouvrirDevis">ou un devis</button>
         <button v-if="compte?.prestataire_id && !demande.a_moi" type="button" class="lien-discret" @click="signaler">Signaler…</button>
       </span>
     </div>
     <AppAlerte v-if="erreur">{{ erreur }}</AppAlerte>
     <FenetreTexte :demande="aSignaler" @fermer="aSignaler = null" @fait="aSignaler = null" />
+    <FenetreEcrireDevis :demande="null" :publiee="aDeviser" :facture-tva="factureTva" @fermer="aDeviser = null" @envoye="devisEnvoye" />
   </article>
 </template>
+
+<style scoped>
+.lien-devis{background:none;border:0;padding:0 4px;font-weight:600;font-size:14px;color:var(--primaire);text-decoration:underline;cursor:pointer}
+</style>

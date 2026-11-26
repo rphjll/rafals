@@ -306,6 +306,18 @@ def envoyer(demande_id: int, donnees: DevisDemande, db: Base, compte: CompteConn
     return _apres(db, devis, "prestataire")
 
 
+@routeur.post("/moi/prestataire/demandes/{demande_id}/devis", status_code=201)
+def envoyer_sur_une_demande(demande_id: int, donnees: DevisDemande, db: Base, compte: CompteConnecte) -> AvecPaiement:
+    """[ou un devis] sur une demande publiée : réponse + demande de devis + devis, en une fois."""
+    prestataire = mon_profil_ou_404(db, compte)
+    devis = service.sur_une_demande(
+        db, prestataire, demande_id, [service.Ligne(**ligne.model_dump()) for ligne in donnees.lignes],
+        arrhes_pourcent=donnees.arrhes_pourcent, travaux_debut=donnees.travaux_debut, travaux_fin=donnees.travaux_fin,
+        valable_jusqu_au=donnees.valable_jusqu_au, maintenant=maintenant(),
+    )
+    return _apres(db, devis, "prestataire")
+
+
 def _prestataire(db: Base, compte: Compte, devis_id: int) -> tuple[Prestataire, Devis]:
     prestataire = mon_profil_ou_404(db, compte)
     return prestataire, service.devis_du_prestataire(db, prestataire, devis_id)
